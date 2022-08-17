@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/nav_home"
+        android:icon="@drawable/selector_home"
+        android:title="@string/home" />
+    <item
+        android:id="@+id/nav_notebook"
+        android:icon="@drawable/selector_note"
+        android:title="@string/notebook" />
+    <item
+        android:id="@+id/nav_account"
+        android:icon="@drawable/selector_pig"
+        android:title="@string/account" />
+    <item
+        android:id="@+id/nav_schedule"
+        android:icon="@drawable/selector_schedule"
+        android:title="@string/schedule" />
+    <item
+        android:id="@+id/nav_memorial"
+        android:icon="@drawable/selector_calendar"
+        android:title="@string/memorial" />
+<!--    <item-->
+<!--        android:id="@+id/nav_profile"-->
+<!--        android:icon="@drawable/selector_profile"-->
+<!--        android:title="@string/nav_profile" />-->
+</menu>

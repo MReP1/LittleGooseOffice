@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <style name="gridlayout_number">
+        <item name="android:gravity">center</item>
+        <item name="android:textSize">24sp</item>
+        <item name="android:textColor">@color/nor_text_color</item>
+        <item name="android:foreground">?android:attr/selectableItemBackgroundBorderless</item>
+    </style>
+
+    <style name="gridlayout_text">
+        <item name="android:gravity">center</item>
+        <item name="android:textSize">20sp</item>
+        <item name="android:textColor">@color/nor_text_color</item>
+        <item name="android:foreground">?android:attr/selectableItemBackgroundBorderless</item>
+    </style>
+
+    <style name="timepicker_text">
+        <item name="android:textColor">@color/nor_text_color</item>
+        <item name="textSize">18sp</item>
+        <item name="android:layout_gravity">center</item>
+    </style>
+
+    <style name="normal_text">
+        <item name="android:textColor">@color/nor_text_color</item>
+        <item name="textSize">14sp</item>
+    </style>
+
+    <style name="small_text">
+        <item name="android:textColor">@color/nor_text_color</item>
+        <item name="textSize">12sp</item>
+    </style>
+    
+</resources>

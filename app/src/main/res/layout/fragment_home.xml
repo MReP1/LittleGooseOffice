@@ -1,0 +1,356 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".ui.home.HomeFragment">
+
+    <RelativeLayout
+        android:id="@+id/rl_calendar_title"
+        android:layout_width="match_parent"
+        android:layout_height="54dp"
+        android:background="@color/primary_color"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <TextView
+            android:id="@+id/tv_year"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignTop="@id/tv_month_date"
+            android:layout_marginStart="4dp"
+            android:layout_marginTop="3dp"
+            android:layout_toEndOf="@id/tv_month_date"
+            android:textColor="@color/nor_text_color"
+            android:textSize="10sp"
+            tools:ignore="RelativeOverlap,SmallSp"
+            tools:text="2021年" />
+
+        <TextView
+            android:id="@+id/tv_month_date"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentStart="true"
+            android:layout_centerVertical="true"
+            android:layout_marginStart="16dp"
+            android:gravity="center"
+            android:textColor="@color/nor_text_color"
+            android:textSize="26sp"
+            tools:text="12月12日" />
+
+        <TextView
+            android:id="@+id/tv_week_day"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignBottom="@id/tv_month_date"
+            android:layout_marginStart="4dp"
+            android:layout_marginBottom="3dp"
+            android:layout_toEndOf="@id/tv_month_date"
+            android:gravity="center"
+            android:textColor="@color/nor_text_color"
+            android:textSize="10sp"
+            tools:ignore="RelativeOverlap,SmallSp"
+            tools:text="星期三" />
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/cl_calendar"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:layout_alignParentEnd="true"
+            android:layout_centerVertical="true"
+            android:layout_marginEnd="16dp"
+            android:background="?android:attr/selectableItemBackgroundBorderless">
+
+            <ImageView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:src="@drawable/icon_calendar"
+                tools:ignore="ContentDescription" />
+
+            <TextView
+                android:id="@+id/tv_current_date"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/sec_text_color"
+                android:textSize="10sp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintVertical_bias="0.7"
+                tools:ignore="SmallSp"
+                tools:text="13" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+    </RelativeLayout>
+
+    <com.haibin.calendarview.CalendarLayout
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:orientation="vertical"
+        app:calendar_content_view_id="@id/scroll_view"
+        app:default_status="expand"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/rl_calendar_title">
+
+        <com.haibin.calendarview.CalendarView
+            android:id="@+id/calendar_view"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/primary_color"
+            app:current_day_text_color="@color/add_button"
+            app:day_text_size="18sp"
+            app:max_year="2040"
+            app:min_year="2000"
+            app:month_view="little.goose.account.ui.home.widget.AccountMonthView"
+            app:month_view_show_mode="mode_fix"
+            app:other_month_text_color="@color/other_month_color"
+            app:scheme_text_color="@color/nor_text_color"
+            app:selected_theme_color="@color/item_selected"
+            app:week_background="@color/primary_color"
+            app:week_bar_height="28dp"
+            app:week_text_color="@color/nor_text_color"
+            app:week_text_size="12sp"
+            app:week_view="little.goose.account.ui.home.widget.AccountWeekView" />
+
+
+        <ScrollView
+            android:id="@+id/scroll_view"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:scrollbars="none">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@color/background_color"
+                android:orientation="vertical"
+                android:paddingBottom="250dp">
+
+                <com.google.android.material.card.MaterialCardView
+                    android:id="@+id/card_memorial"
+                    android:layout_width="match_parent"
+                    android:layout_height="120dp"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginTop="12dp"
+                    android:layout_marginEnd="16dp"
+                    android:visibility="gone"
+                    app:cardBackgroundColor="@color/primary_color"
+                    app:cardCornerRadius="10dp"
+                    tools:visibility="visible">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:id="@+id/tv_memo_content"
+                            android:layout_width="match_parent"
+                            android:layout_height="36dp"
+                            android:background="@color/red_200"
+                            android:ellipsize="end"
+                            android:gravity="center"
+                            android:maxLines="1"
+                            android:textColor="@color/white"
+                            android:textSize="16sp"
+                            tools:text="纪念日捏还有" />
+
+                        <little.goose.account.ui.widget.text.MemorialTextView
+                            android:id="@+id/tv_memo_time"
+                            android:layout_width="match_parent"
+                            android:layout_height="0dp"
+                            android:layout_weight="1"
+                            android:gravity="center"
+                            android:textColor="@color/nor_text_color"
+                            android:textSize="48sp"
+                            app:switchable="false"
+                            tools:text="500" />
+
+                    </LinearLayout>
+
+                </com.google.android.material.card.MaterialCardView>
+
+                <com.google.android.material.card.MaterialCardView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginTop="12dp"
+                    android:layout_marginEnd="16dp"
+                    app:cardBackgroundColor="@color/primary_color"
+                    app:cardCornerRadius="10dp">
+
+                    <androidx.constraintlayout.widget.ConstraintLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:paddingTop="10dp">
+
+                        <TextView
+                            android:id="@+id/tv_income"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="16dp"
+                            android:text="@string/income"
+                            android:textColor="@color/nor_text_color"
+                            android:textSize="14sp"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toTopOf="parent" />
+
+                        <TextView
+                            android:id="@+id/tv_income_money"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="4dp"
+                            android:textColor="@color/nor_text_color"
+                            android:textSize="14sp"
+                            app:layout_constraintStart_toEndOf="@id/tv_income"
+                            app:layout_constraintTop_toTopOf="parent"
+                            tools:text="123.45" />
+
+                        <TextView
+                            android:id="@+id/tv_expense"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginEnd="4dp"
+                            android:text="@string/expense"
+                            android:textColor="@color/nor_text_color"
+                            android:textSize="14sp"
+                            app:layout_constraintEnd_toStartOf="@id/tv_expense_money"
+                            app:layout_constraintTop_toTopOf="parent" />
+
+                        <TextView
+                            android:id="@+id/tv_expense_money"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginEnd="16dp"
+                            android:textColor="@color/nor_text_color"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintTop_toTopOf="parent"
+                            tools:text="54523.21" />
+
+                        <androidx.recyclerview.widget.RecyclerView
+                            android:id="@+id/rcv_transaction"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="14dp"
+                            android:layout_marginTop="4dp"
+                            android:layout_marginEnd="16dp"
+                            android:layout_marginBottom="4dp"
+                            app:layout_constraintBottom_toTopOf="@id/tv_add_transaction"
+                            app:layout_constraintTop_toBottomOf="@id/tv_expense" />
+
+                        <TextView
+                            android:id="@+id/tv_add_transaction"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="8dp"
+                            android:layout_marginEnd="16dp"
+                            android:layout_marginBottom="10dp"
+                            android:background="?android:attr/selectableItemBackgroundBorderless"
+                            android:text="@string/add_transaction"
+                            android:textColor="@color/sec_text_color"
+                            android:textSize="16sp"
+                            app:layout_constraintBottom_toBottomOf="parent"
+                            app:layout_constraintEnd_toEndOf="parent" />
+
+                        <TextView
+                            android:id="@+id/tv_no_transaction"
+                            style="@style/normal_text"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="16dp"
+                            android:text="@string/today_no_transaction"
+                            app:layout_constraintBottom_toBottomOf="@id/tv_add_transaction"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toTopOf="@id/tv_add_transaction" />
+
+                        <ImageView
+                            android:id="@+id/iv_account_unfold"
+                            android:layout_width="wrap_content"
+                            android:layout_height="24dp"
+                            android:paddingStart="16dp"
+                            android:paddingEnd="16dp"
+                            android:src="@drawable/icon_arrow_drop"
+                            app:layout_constraintBottom_toBottomOf="parent"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintStart_toStartOf="parent"
+                            tools:ignore="ContentDescription" />
+
+                    </androidx.constraintlayout.widget.ConstraintLayout>
+
+                </com.google.android.material.card.MaterialCardView>
+
+                <com.google.android.material.card.MaterialCardView
+                    android:id="@+id/card_schedule"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginTop="12dp"
+                    android:layout_marginEnd="16dp"
+                    android:layout_marginBottom="12dp"
+                    app:cardBackgroundColor="@color/primary_color"
+                    app:cardCornerRadius="10dp">
+
+                    <androidx.constraintlayout.widget.ConstraintLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:paddingTop="10dp">
+
+                        <androidx.recyclerview.widget.RecyclerView
+                            android:id="@+id/rcv_schedule"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="14dp"
+                            android:layout_marginEnd="16dp"
+                            android:layout_marginBottom="4dp"
+                            app:layout_constraintBottom_toTopOf="@id/tv_add_schedule"
+                            app:layout_constraintTop_toTopOf="parent" />
+
+                        <TextView
+                            android:id="@+id/tv_add_schedule"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginEnd="16dp"
+                            android:layout_marginBottom="10dp"
+                            android:background="?android:attr/selectableItemBackgroundBorderless"
+                            android:text="@string/add_one"
+                            android:textColor="@color/sec_text_color"
+                            android:textSize="16sp"
+                            app:layout_constraintBottom_toBottomOf="parent"
+                            app:layout_constraintEnd_toEndOf="parent" />
+
+                        <TextView
+                            android:id="@+id/tv_no_schedule"
+                            style="@style/normal_text"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="16dp"
+                            android:text="@string/today_no_schedule"
+                            app:layout_constraintBottom_toBottomOf="@id/tv_add_schedule"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toTopOf="@id/tv_add_schedule" />
+
+                        <ImageView
+                            android:id="@+id/iv_schedule_unfold"
+                            android:layout_width="wrap_content"
+                            android:layout_height="24dp"
+                            android:paddingStart="16dp"
+                            android:paddingEnd="16dp"
+                            android:src="@drawable/icon_arrow_drop"
+                            app:layout_constraintBottom_toBottomOf="parent"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintStart_toStartOf="parent"
+                            tools:ignore="ContentDescription" />
+
+                    </androidx.constraintlayout.widget.ConstraintLayout>
+                </com.google.android.material.card.MaterialCardView>
+            </LinearLayout>
+
+        </ScrollView>
+
+    </com.haibin.calendarview.CalendarLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

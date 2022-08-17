@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<merge xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:parentTag="android.widget.LinearLayout">
+
+        <TextView
+            android:id="@+id/tv_last"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:paddingStart="10dp"
+            android:paddingEnd="10dp"
+            android:textColor="@color/hint_text_color"
+            android:foreground="@drawable/foreground_primary_button"
+            tools:text="11月"
+            app:drawableStartCompat="@drawable/icon_arrow_left" />
+
+        <TextView
+            android:id="@+id/tv_this"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:paddingStart="10dp"
+            android:paddingEnd="10dp"
+            android:textColor="@color/white"
+            android:background="@color/cancel_button"
+            android:foreground="@drawable/foreground_card_button"
+            tools:text="12月"/>
+
+        <TextView
+            android:id="@+id/tv_next"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:paddingStart="10dp"
+            android:paddingEnd="10dp"
+            android:textColor="@color/hint_text_color"
+            android:foreground="@drawable/foreground_primary_button"
+            tools:text="1月"
+            app:drawableEndCompat="@drawable/icon_arrow_right" />
+
+</merge>

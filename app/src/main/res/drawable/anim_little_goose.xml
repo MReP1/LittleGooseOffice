@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<animation-list xmlns:android="http://schemas.android.com/apk/res/android"
+    android:oneshot="false">
+    <item
+        android:drawable="@drawable/ic_little_goose"
+        android:duration="50" />
+    <item
+        android:drawable="@drawable/ic_little_goose_back"
+        android:duration="150" />
+    <item
+        android:drawable="@drawable/ic_little_goose"
+        android:duration="50" />
+    <item
+        android:drawable="@drawable/ic_little_goose_fore"
+        android:duration="150" />
+
+</animation-list>

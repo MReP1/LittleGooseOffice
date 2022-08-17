@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<little.goose.account.ui.account.transaction.widget.ItemTransactionCard xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/item_transaction"
+    android:layout_width="match_parent"
+    android:layout_height="66dp"
+    android:foreground="?android:attr/selectableItemBackground"
+    app:cardBackgroundColor="@color/primary_color"
+    app:cardCornerRadius="12dp"/>

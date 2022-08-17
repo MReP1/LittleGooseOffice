@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@color/primary_color">
+
+    <TextView
+        android:id="@+id/tv_cancel"
+        android:layout_width="88dp"
+        android:layout_height="56dp"
+        android:gravity="center"
+        android:text="@string/cancel"
+        android:textColor="@color/nor_text_color"
+        android:textSize="18sp"
+        android:foreground="?android:attr/selectableItemBackgroundBorderless"
+        app:layout_constraintBottom_toTopOf="@id/et_input"
+        app:layout_constraintEnd_toStartOf="@id/tv_confirm" />
+
+    <TextView
+        android:id="@+id/tv_confirm"
+        android:layout_width="88dp"
+        android:layout_height="56dp"
+        android:gravity="center"
+        android:text="@string/confirm"
+        android:textColor="@color/nor_text_color"
+        android:textSize="18sp"
+        android:foreground="?android:attr/selectableItemBackgroundBorderless"
+        app:layout_constraintBottom_toTopOf="@id/et_input"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <EditText
+        android:id="@+id/et_input"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:gravity="center_vertical"
+        android:paddingStart="24dp"
+        android:paddingEnd="24dp"
+        android:background="@drawable/bg_radius8"
+        android:importantForAutofill="no"
+        android:paddingTop="18dp"
+        android:paddingBottom="18dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        tools:ignore="LabelFor,TextFields" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>
