@@ -1,7 +1,6 @@
 package little.goose.account.ui
 
 import android.os.Bundle
-import android.view.View
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.datastore.preferences.core.edit
 import androidx.lifecycle.lifecycleScope
@@ -12,18 +11,19 @@ import little.goose.account.isAppInit
 import little.goose.account.logic.data.constant.*
 import little.goose.account.superScope
 import little.goose.account.ui.base.BaseActivity
-import little.goose.account.utils.*
+import little.goose.account.utils.KEY_PREF_PAGER
+import little.goose.account.utils.homeDataStore
+import little.goose.account.utils.viewBinding
+import little.goose.account.utils.withData
 
 class MainActivity : BaseActivity() {
 
-    private lateinit var binding: ActivityMainBinding
+    private val binding by viewBinding(ActivityMainBinding::inflate)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         val splashScreen = installSplashScreen()
         splashScreen.setKeepOnScreenCondition { !isAppInit }
         super.onCreate(savedInstanceState)
-        binding = ActivityMainBinding.inflate(layoutInflater)
-        setContentView(binding.root)
         initView()
     }
 

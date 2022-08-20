@@ -1,7 +1,9 @@
 package little.goose.account.utils
 
+import android.app.Activity
 import android.os.Handler
 import android.os.Looper
+import android.view.LayoutInflater
 import android.view.View
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.DefaultLifecycleObserver
@@ -10,8 +12,8 @@ import androidx.viewbinding.ViewBinding
 import kotlin.properties.ReadOnlyProperty
 import kotlin.reflect.KProperty
 
-@Suppress("unused", "NOTHING_TO_INLINE")
-inline fun <V : ViewBinding> Fragment.viewBinding(noinline viewBinder: (View) -> V)
+@Suppress("unused")
+fun <V : ViewBinding> Fragment.viewBinding(viewBinder: (View) -> V)
         : ReadOnlyProperty<Fragment, V> = FragmentViewBindingProperty(viewBinder)
 
 class FragmentViewBindingProperty<V : ViewBinding>(private val viewBinder: (View) -> V) :
@@ -32,6 +34,26 @@ class FragmentViewBindingProperty<V : ViewBinding>(private val viewBinder: (View
             })
             val view = thisRef.requireView()
             viewBinder(view).also { binding = it }
+        }
+    }
+
+}
+
+@Suppress("unused")
+fun <V : ViewBinding> Activity.viewBinding(
+    viewInflater: (LayoutInflater) -> V
+): ReadOnlyProperty<Activity, V> = ActivityViewBindingProperty(viewInflater)
+
+class ActivityViewBindingProperty<V : ViewBinding>(
+    private val viewInflater: (LayoutInflater) -> V
+) : ReadOnlyProperty<Activity, V> {
+
+    private var binding: V? = null
+
+    override fun getValue(thisRef: Activity, property: KProperty<*>): V {
+        return binding ?: viewInflater(thisRef.layoutInflater).also {
+            thisRef.setContentView(it.root)
+            binding = it
         }
     }
 
