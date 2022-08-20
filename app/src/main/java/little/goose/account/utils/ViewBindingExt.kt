@@ -5,6 +5,8 @@ import android.os.Handler
 import android.os.Looper
 import android.view.LayoutInflater
 import android.view.View
+import android.view.ViewGroup
+import androidx.annotation.LayoutRes
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.LifecycleOwner
@@ -53,6 +55,27 @@ class ActivityViewBindingProperty<V : ViewBinding>(
     override fun getValue(thisRef: Activity, property: KProperty<*>): V {
         return binding ?: viewInflater(thisRef.layoutInflater).also {
             thisRef.setContentView(it.root)
+            binding = it
+        }
+    }
+
+}
+
+@Suppress("unused")
+fun <V : ViewBinding> ViewGroup.viewBinding(
+    @LayoutRes layoutRes: Int,
+    viewBinder: (View) -> V
+): ReadOnlyProperty<ViewGroup, V> = ViewViewBindingProperty(layoutRes, viewBinder)
+
+class ViewViewBindingProperty<V : ViewBinding>(
+    @LayoutRes private val layoutRes: Int,
+    private val viewBinder: (View) -> V
+) : ReadOnlyProperty<ViewGroup, V> {
+
+    private var binding: V? = null
+
+    override fun getValue(thisRef: ViewGroup, property: KProperty<*>): V {
+        return binding ?: viewBinder(View.inflate(thisRef.context, layoutRes, thisRef)).also {
             binding = it
         }
     }

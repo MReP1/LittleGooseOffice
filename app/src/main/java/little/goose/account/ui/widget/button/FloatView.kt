@@ -6,16 +6,15 @@ import android.util.AttributeSet
 import com.google.android.material.card.MaterialCardView
 import little.goose.account.R
 import little.goose.account.databinding.ItemFlowButtonBinding
+import little.goose.account.utils.viewBinding
 
 class FloatView @JvmOverloads constructor(
     context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0
 ) : MaterialCardView(context, attrs, defStyleAttr) {
 
-    private var binding: ItemFlowButtonBinding
+    private val binding by viewBinding(R.layout.item_flow_button, ItemFlowButtonBinding::bind)
 
     init {
-        val view = inflate(context, R.layout.item_flow_button, this)
-        binding = ItemFlowButtonBinding.bind(view)
         val attributesArray =
             context.obtainStyledAttributes(attrs, R.styleable.FloatView, defStyleAttr, 0)
         val drawable = attributesArray.getDrawable(R.styleable.FloatView_drawable_src)
