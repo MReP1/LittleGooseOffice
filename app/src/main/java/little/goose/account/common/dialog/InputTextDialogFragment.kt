@@ -1,17 +1,30 @@
 package little.goose.account.common.dialog
 
+import android.os.Build
 import android.os.Bundle
 import android.view.*
-import androidx.fragment.app.DialogFragment
+import androidx.core.graphics.Insets
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsAnimationCompat
+import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.updateLayoutParams
 import androidx.fragment.app.FragmentManager
+import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import little.goose.account.R
 import little.goose.account.databinding.LayoutDialogInputTextBinding
-import little.goose.account.utils.KeyBoard
 import little.goose.account.utils.viewBinding
+import kotlin.math.abs
 
-class InputTextDialogFragment : DialogFragment(R.layout.layout_dialog_input_text) {
+class InputTextDialogFragment : BottomSheetDialogFragment() {
 
     private val binding by viewBinding(LayoutDialogInputTextBinding::bind)
+
+    override fun onCreateView(
+        inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
+    ): View {
+        return inflater.inflate(R.layout.layout_dialog_input_text, container, false)
+    }
+
     private var confirmCallback: Function1<String, Unit>? = null
     private var cancelCallback: Function0<Unit>? = null
     private var inputText: String? = null
@@ -23,6 +36,70 @@ class InputTextDialogFragment : DialogFragment(R.layout.layout_dialog_input_text
     }
 
     private fun initView() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            ViewCompat.setWindowInsetsAnimationCallback(
+                binding.root,
+                object : WindowInsetsAnimationCompat.Callback(DISPATCH_MODE_STOP) {
+
+                    private var startHeight = 0
+                    private var lastWindowInsetsCompat: WindowInsetsCompat? = null
+                    private var lastDiffH = 0
+
+                    override fun onPrepare(animation: WindowInsetsAnimationCompat) {
+                        if (startHeight == 0) {
+                            startHeight = binding.root.height
+                        }
+                    }
+
+                    override fun onProgress(
+                        insets: WindowInsetsCompat,
+                        runningAnimations: MutableList<WindowInsetsAnimationCompat>
+                    ): WindowInsetsCompat {
+
+                        lastWindowInsetsCompat = insets
+
+                        val typesInset = insets.getInsets(WindowInsetsCompat.Type.ime())
+                        val otherInset = insets.getInsets(WindowInsetsCompat.Type.systemBars())
+
+                        val diff = Insets.subtract(typesInset, otherInset).let {
+                            Insets.max(it, Insets.NONE)
+                        }
+
+                        binding.root.translationX = (diff.left - diff.right).toFloat()
+                        binding.root.translationY = (diff.top - diff.bottom).toFloat()
+
+                        val diffH = abs(diff.top - diff.bottom)
+                        binding.root.updateLayoutParams { height = startHeight + diffH }
+
+                        if (diffH < lastDiffH) {
+                            dismiss()
+                            ViewCompat.setWindowInsetsAnimationCallback(binding.root, null)
+                        }
+
+                        lastDiffH = diffH
+
+                        return insets
+                    }
+                }
+            )
+        } else {
+            binding.root.viewTreeObserver.addOnGlobalLayoutListener(object :
+                ViewTreeObserver.OnGlobalLayoutListener {
+                var lastBottom = 0
+                override fun onGlobalLayout() {
+                    ViewCompat.getRootWindowInsets(binding.root)?.let { insets ->
+                        val bottom = insets.getInsets(WindowInsetsCompat.Type.ime()).bottom
+                        if (lastBottom != 0 && bottom == 0) {
+                            // 收起键盘了，可以 dismiss 了
+                            dismiss()
+                            binding.root.viewTreeObserver.removeOnGlobalLayoutListener(this)
+                        }
+                        lastBottom = bottom
+                    }
+                }
+            })
+        }
+
         inputText?.let { binding.etInput.setText(it) }
         binding.etInput.requestFocus()
     }
@@ -55,17 +132,17 @@ class InputTextDialogFragment : DialogFragment(R.layout.layout_dialog_input_text
         }
     }
 
-    override fun onDestroyView() {
-        super.onDestroyView()
-        KeyBoard.hide(binding.etInput)
-    }
-
     private fun initBottomWindow() {
         dialog?.window?.apply {
             setBackgroundDrawable(null)
-            setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE)
+            setSoftInputMode(
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                    WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE or WindowManager.LayoutParams.SOFT_INPUT_ADJUST_NOTHING
+                } else {
+                    WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE
+                }
+            )
             attributes?.apply {
-                gravity = Gravity.BOTTOM
                 height = ViewGroup.LayoutParams.WRAP_CONTENT
                 width = ViewGroup.LayoutParams.MATCH_PARENT
             }
