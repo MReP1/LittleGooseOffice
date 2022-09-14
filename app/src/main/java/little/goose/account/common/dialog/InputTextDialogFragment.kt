@@ -9,6 +9,8 @@ import androidx.core.view.WindowInsetsAnimationCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.updateLayoutParams
 import androidx.fragment.app.FragmentManager
+import com.google.android.material.bottomsheet.BottomSheetBehavior
+import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import little.goose.account.R
 import little.goose.account.databinding.LayoutDialogInputTextBinding
@@ -42,7 +44,6 @@ class InputTextDialogFragment : BottomSheetDialogFragment() {
                 object : WindowInsetsAnimationCompat.Callback(DISPATCH_MODE_STOP) {
 
                     private var startHeight = 0
-                    private var lastWindowInsetsCompat: WindowInsetsCompat? = null
                     private var lastDiffH = 0
 
                     override fun onPrepare(animation: WindowInsetsAnimationCompat) {
@@ -56,8 +57,6 @@ class InputTextDialogFragment : BottomSheetDialogFragment() {
                         runningAnimations: MutableList<WindowInsetsAnimationCompat>
                     ): WindowInsetsCompat {
 
-                        lastWindowInsetsCompat = insets
-
                         val typesInset = insets.getInsets(WindowInsetsCompat.Type.ime())
                         val otherInset = insets.getInsets(WindowInsetsCompat.Type.systemBars())
 
@@ -65,11 +64,11 @@ class InputTextDialogFragment : BottomSheetDialogFragment() {
                             Insets.max(it, Insets.NONE)
                         }
 
-                        binding.root.translationX = (diff.left - diff.right).toFloat()
-                        binding.root.translationY = (diff.top - diff.bottom).toFloat()
-
                         val diffH = abs(diff.top - diff.bottom)
-                        binding.root.updateLayoutParams { height = startHeight + diffH }
+
+                        binding.etInput.updateLayoutParams<ViewGroup.MarginLayoutParams> {
+                            bottomMargin = diffH
+                        }
 
                         if (diffH < lastDiffH) {
                             dismiss()
@@ -132,6 +131,8 @@ class InputTextDialogFragment : BottomSheetDialogFragment() {
         }
     }
 
+    private var bottomSheetBehavior: BottomSheetBehavior<out View>? = null
+
     private fun initBottomWindow() {
         dialog?.window?.apply {
             setBackgroundDrawable(null)
@@ -147,6 +148,23 @@ class InputTextDialogFragment : BottomSheetDialogFragment() {
                 width = ViewGroup.LayoutParams.MATCH_PARENT
             }
         }
+
+        (dialog as? BottomSheetDialog)?.behavior?.apply {
+            bottomSheetBehavior = this
+            state = BottomSheetBehavior.STATE_EXPANDED
+            addBottomSheetCallback(bottomSheetCallback)
+        }
+    }
+
+    private val bottomSheetCallback = object : BottomSheetBehavior.BottomSheetCallback() {
+        override fun onStateChanged(bottomSheet: View, newState: Int) {
+            if (newState == BottomSheetBehavior.STATE_DRAGGING) {
+                //判断为向下拖动行为时，则强制设定状态为展开
+                bottomSheetBehavior?.state = BottomSheetBehavior.STATE_EXPANDED
+            }
+        }
+
+        override fun onSlide(bottomSheet: View, slideOffset: Float) {}
     }
 
     class Builder {
