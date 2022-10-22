@@ -13,8 +13,8 @@ android {
         applicationId "little.goose.account"
         minSdk 26
         targetSdk 32
-        versionCode 14
-        versionName "1.8.6"
+        versionCode 15
+        versionName "1.8.7"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
 
@@ -73,7 +73,7 @@ dependencies {
     implementation 'androidx.activity:activity-ktx:1.4.0'
 
     //SplashScreen
-    implementation 'androidx.core:core-splashscreen:1.0.0-beta02'
+    implementation 'androidx.core:core-splashscreen:1.0.0'
 
     //compose
     implementation 'androidx.activity:activity-compose:1.4.0'
