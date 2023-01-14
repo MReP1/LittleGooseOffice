@@ -1,7 +1,6 @@
 package little.goose.account.ui.account.widget
 
 import androidx.compose.foundation.layout.*
-import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -40,8 +39,7 @@ fun TransactionCard(
         modifier = Modifier
             .fillMaxWidth()
             .height(66.dp),
-        containerColor = MaterialTheme.colorScheme.surfaceVariant,
-        elevation = CardDefaults.elevatedCardElevation()
+        containerColor = MaterialTheme.colorScheme.surfaceVariant
     ) {
         Row(
             Modifier.fillMaxSize(),

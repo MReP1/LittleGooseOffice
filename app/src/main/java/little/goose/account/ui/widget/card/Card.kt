@@ -10,6 +10,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
+import androidx.compose.ui.unit.dp
 import little.goose.account.ui.theme.RoundedCorner12
 
 /**
@@ -25,8 +26,7 @@ fun ShadowCard(
     containerColor: Color = MaterialTheme.colorScheme.surfaceVariant,
     contentColor: Color = contentColorFor(containerColor),
     border: BorderStroke? = null,
-    elevation: CardElevation = CardDefaults.cardElevation(),
-    content: @Composable ColumnScope.() -> Unit
+    content: @Composable (ColumnScope.() -> Unit)
 ) {
     Surface(
         onClick = onClick,
@@ -34,9 +34,7 @@ fun ShadowCard(
         shape = shape,
         color = containerColor,
         contentColor = contentColor,
-        shadowElevation = elevation.shadowElevation(
-            interactionSource = interactionSource, enabled = false
-        ).value,
+        shadowElevation = 0.dp,
         border = border,
         interactionSource = interactionSource
     ) {
