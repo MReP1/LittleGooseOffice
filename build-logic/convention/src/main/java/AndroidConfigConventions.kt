@@ -13,7 +13,7 @@ object AndroidConfigConventions {
 
     val JAVA_VERSION = JavaVersion.VERSION_11
 
-    const val VersionCode = 1
-    const val VersionName = "1.0"
+    const val VersionCode = 16
+    const val VersionName = "1.8.8"
 
 }

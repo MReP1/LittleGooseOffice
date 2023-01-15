@@ -6,6 +6,7 @@ import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.plugins.PluginManager
 import org.gradle.kotlin.dsl.dependencies
+import org.gradle.kotlin.dsl.plugins
 
 class AndroidAppConventionPlugin : Plugin<Project> {
 
@@ -23,6 +24,9 @@ class AndroidAppConventionPlugin : Plugin<Project> {
     private fun PluginManager.applyPlugin() {
         apply("com.android.application")
         apply("org.jetbrains.kotlin.android")
+        apply("kotlin-kapt")
+        apply("kotlin-parcelize")
+        apply("com.google.devtools.ksp")
     }
 
     private fun BaseAppModuleExtension.configureAndroid() {
@@ -45,6 +49,7 @@ class AndroidAppConventionPlugin : Plugin<Project> {
         buildTypes {
             release {
                 isMinifyEnabled = true
+                isShrinkResources = true
                 proguardFiles(
                     getDefaultProguardFile("proguard-android-optimize.txt"),
                     "proguard-rules.pro"
