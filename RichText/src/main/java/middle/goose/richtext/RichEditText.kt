@@ -9,6 +9,7 @@ import android.view.inputmethod.InputMethodManager
 import androidx.annotation.ColorRes
 import androidx.appcompat.widget.AppCompatEditText
 import androidx.core.content.ContextCompat
+import little.goose.account.richtext.R
 import java.util.*
 
 class RichEditText @JvmOverloads constructor(
