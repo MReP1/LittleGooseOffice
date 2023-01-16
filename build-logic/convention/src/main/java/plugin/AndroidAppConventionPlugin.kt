@@ -6,7 +6,6 @@ import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.plugins.PluginManager
 import org.gradle.kotlin.dsl.dependencies
-import org.gradle.kotlin.dsl.plugins
 
 class AndroidAppConventionPlugin : Plugin<Project> {
 
@@ -30,21 +29,9 @@ class AndroidAppConventionPlugin : Plugin<Project> {
     }
 
     private fun BaseAppModuleExtension.configureAndroid() {
-        compileSdk = AndroidConfigConventions.COMPILE_SDK_VERSION
-        namespace = AndroidConfigConventions.APP_NAMESPACE
+        configureAndroidCommon()
 
-        defaultConfig {
-            applicationId = AndroidConfigConventions.APPLICATION_ID
-            minSdk = AndroidConfigConventions.MIN_SDK_VERSION
-            targetSdk = AndroidConfigConventions.TARGET_SDK_VERSION
-            versionCode = AndroidConfigConventions.VersionCode
-            versionName = AndroidConfigConventions.VersionName
-
-            testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
-            vectorDrawables {
-                useSupportLibrary = true
-            }
-        }
+        defaultConfig.targetSdk = AndroidConfigConventions.TARGET_SDK_VERSION
 
         buildTypes {
             release {
@@ -54,12 +41,6 @@ class AndroidAppConventionPlugin : Plugin<Project> {
                     getDefaultProguardFile("proguard-android-optimize.txt"),
                     "proguard-rules.pro"
                 )
-            }
-        }
-
-        packagingOptions {
-            resources {
-                excludes += "/META-INF/{AL2.0,LGPL2.1}"
             }
         }
     }

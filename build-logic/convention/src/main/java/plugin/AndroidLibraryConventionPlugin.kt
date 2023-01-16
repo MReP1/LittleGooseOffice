@@ -1,6 +1,5 @@
 package plugin
 
-import AndroidConfigConventions
 import com.android.build.gradle.LibraryExtension
 import org.gradle.api.Plugin
 import org.gradle.api.Project
@@ -26,12 +25,7 @@ class AndroidLibraryConventionPlugin : Plugin<Project> {
     }
 
     private fun LibraryExtension.configureAndroid() {
-        compileSdk = AndroidConfigConventions.COMPILE_SDK_VERSION
-
-        defaultConfig {
-            minSdk = AndroidConfigConventions.MIN_SDK_VERSION
-            consumerProguardFiles("consumer-rules.pro")
-        }
+        configureAndroidCommon()
 
         buildTypes {
             release {
@@ -40,12 +34,6 @@ class AndroidLibraryConventionPlugin : Plugin<Project> {
                     getDefaultProguardFile("proguard-android-optimize.txt"),
                     "proguard-rules.pro"
                 )
-            }
-        }
-
-        packagingOptions {
-            resources {
-                excludes += "/META-INF/{AL2.0,LGPL2.1}"
             }
         }
     }

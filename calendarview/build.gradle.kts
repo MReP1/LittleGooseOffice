@@ -3,11 +3,11 @@ plugins {
 }
 
 android {
-    android {
-        lint {
-            abortOnError = false
-        }
+
+    lint {
+        abortOnError = false
     }
+
 //    tasks.register("intoJar", Copy::class.java) {
 //        delete("build/libs/CalendarView.jar")
 //        from("build/intermediates/bundles/release/")

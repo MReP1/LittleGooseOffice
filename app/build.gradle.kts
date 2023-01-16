@@ -6,6 +6,16 @@ plugins {
 }
 
 android {
+    namespace = "little.goose.account"
+
+    defaultConfig {
+        applicationId = AndroidConfigConventions.LittleGoose.APPLICATION_ID
+        versionCode = AndroidConfigConventions.LittleGoose.VERSION_CODE
+        versionName = AndroidConfigConventions.LittleGoose.VERSION_NAME
+
+        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+    }
+
     buildFeatures {
         viewBinding = true
     }

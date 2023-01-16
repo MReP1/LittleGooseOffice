@@ -19,3 +19,21 @@ fun CommonExtension<*, *, *, *>.configureKotlin() {
     }
 
 }
+
+fun CommonExtension<*, *, *, *>.configureAndroidCommon() {
+    compileSdk = AndroidConfigConventions.COMPILE_SDK_VERSION
+
+    defaultConfig {
+        minSdk = AndroidConfigConventions.MIN_SDK_VERSION
+
+        vectorDrawables {
+            useSupportLibrary = true
+        }
+    }
+
+    packagingOptions {
+        resources {
+            excludes += "/META-INF/{AL2.0,LGPL2.1}"
+        }
+    }
+}
