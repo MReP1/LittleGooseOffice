@@ -1,3 +1,5 @@
+@file:Suppress("unused")
+
 import org.gradle.api.JavaVersion
 
 object AndroidConfigConventions {

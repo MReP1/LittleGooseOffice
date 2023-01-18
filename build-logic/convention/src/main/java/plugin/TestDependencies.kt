@@ -1,9 +1,10 @@
 package plugin
 
+import org.gradle.api.artifacts.VersionCatalog
 import org.gradle.kotlin.dsl.DependencyHandlerScope
 
-fun DependencyHandlerScope.implementationDefaultTestDependencies() {
-    "testImplementation"("junit:junit:4.13.2")
-    "androidTestImplementation"("androidx.test.ext:junit:1.1.4")
-    "androidTestImplementation"("androidx.test.espresso:espresso-core:3.5.0")
+fun DependencyHandlerScope.implementationDefaultTestDependencies(libs: VersionCatalog) {
+    add("testImplementation", libs.findLibrary("junit4").get())
+    add("androidTestImplementation", libs.findLibrary("androidx-test-ext").get())
+    add("androidTestImplementation", libs.findLibrary("androidx.test.espresso.core").get())
 }

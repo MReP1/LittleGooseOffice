@@ -2,6 +2,7 @@
 plugins {
     id("goose.android.app")
     id("goose.android.compose")
+    id("goose.android.hilt")
     alias(libs.plugins.ksp)
 }
 
@@ -32,6 +33,17 @@ dependencies {
 
     implementation(libs.androidx.activity.ktx)
     implementation(libs.androidx.fragment.ktx)
+
+    // Compose
+    implementation(libs.androidx.activity.compose)
+    implementation(libs.androidx.compose.ui)
+    implementation(libs.androidx.compose.ui.tool.preview)
+    implementation(libs.androidx.compose.material3)
+    implementation(libs.accompanist.navigation.animation)
+    implementation(libs.androidx.hilt.navigation.compose)
+    androidTestImplementation(libs.androidx.compose.ui.test)
+    debugImplementation(libs.androidx.compose.ui.tooling)
+    debugImplementation(libs.androidx.compose.ui.testManifest)
 
     // SplashScreen
     implementation(libs.androidx.core.splashscreen)
