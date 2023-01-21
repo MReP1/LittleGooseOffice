@@ -4,6 +4,8 @@ plugins {
 
 android {
 
+    namespace = "com.haibin.calendarview"
+
     lint {
         abortOnError = false
     }
