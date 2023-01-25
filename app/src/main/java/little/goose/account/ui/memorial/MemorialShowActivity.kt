@@ -9,6 +9,7 @@ import little.goose.account.databinding.ActivityMemorialShowBinding
 import little.goose.account.logic.data.constant.KEY_MEMORIAL
 import little.goose.account.logic.data.entities.Memorial
 import little.goose.account.ui.base.BaseActivity
+import little.goose.account.utils.parcelable
 
 class MemorialShowActivity : BaseActivity() {
 
@@ -19,7 +20,7 @@ class MemorialShowActivity : BaseActivity() {
     private val requestEditMemorial =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
             viewModel.memorial =
-                result.data?.getParcelableExtra(KEY_MEMORIAL) ?: return@registerForActivityResult
+                result.data?.parcelable(KEY_MEMORIAL) ?: return@registerForActivityResult
             viewModel.memorial?.let { binding.memoCard.setMemorial(it) }
         }
 
@@ -32,7 +33,7 @@ class MemorialShowActivity : BaseActivity() {
     }
 
     private fun initData() {
-        viewModel.memorial = intent.getParcelableExtra(KEY_MEMORIAL) ?: run {
+        viewModel.memorial = intent.parcelable(KEY_MEMORIAL) ?: run {
             finish()
             return
         }

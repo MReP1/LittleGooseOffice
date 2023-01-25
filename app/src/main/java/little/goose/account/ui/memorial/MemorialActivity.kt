@@ -10,15 +10,14 @@ import little.goose.account.common.dialog.InputTextDialogFragment
 import little.goose.account.common.dialog.time.DateTimePickerBottomDialog
 import little.goose.account.common.dialog.time.TimeType
 import little.goose.account.databinding.ActivityMemorialBinding
-import little.goose.account.logic.MemorialRepository
 import little.goose.account.logic.data.constant.KEY_MEMORIAL
 import little.goose.account.logic.data.constant.KEY_TYPE
 import little.goose.account.logic.data.constant.TYPE_ADD
 import little.goose.account.logic.data.constant.TYPE_MODIFY
 import little.goose.account.logic.data.entities.Memorial
-import little.goose.account.superScope
 import little.goose.account.ui.base.BaseActivity
 import little.goose.account.utils.appendTimeSuffix
+import little.goose.account.utils.parcelable
 import little.goose.account.utils.toChineseYearMonDayWeek
 
 class MemorialActivity : BaseActivity() {
@@ -36,7 +35,7 @@ class MemorialActivity : BaseActivity() {
 
     private fun initData() {
         viewModel.type = intent.getStringExtra(KEY_TYPE) ?: TYPE_ADD
-        viewModel.memorial = intent.getParcelableExtra(KEY_MEMORIAL) ?: return
+        viewModel.memorial = intent.parcelable(KEY_MEMORIAL) ?: return
         viewModel.memorial.also {
             lifecycleScope.launch {
                 viewModel.content.emit(it.content)

@@ -28,6 +28,7 @@ import little.goose.account.logic.data.models.TransactionIcon
 import little.goose.account.ui.account.transaction.icon.TransactionIconHelper
 import little.goose.account.ui.base.BaseActivity
 import little.goose.account.utils.SnackbarUtils
+import little.goose.account.utils.parcelable
 import little.goose.account.utils.toChineseMonthDayTime
 import java.math.BigDecimal
 import java.util.*
@@ -76,7 +77,7 @@ class TransactionActivity : BaseActivity(),
     }
 
     private fun initType() {
-        val transaction: Transaction? = intent.getParcelableExtra(TRANSACTION)
+        val transaction: Transaction? = intent.parcelable(TRANSACTION)
         transaction?.let {
             viewModel.apply {
                 setIconSelectedId(it.icon_id, it.type)

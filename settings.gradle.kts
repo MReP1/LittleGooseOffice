@@ -21,3 +21,4 @@ rootProject.name = "account"
 include(":app")
 include(":RichText")
 include(":calendarview")
+include(":core:utils")

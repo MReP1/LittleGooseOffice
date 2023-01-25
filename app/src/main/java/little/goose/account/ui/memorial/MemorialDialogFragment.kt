@@ -40,7 +40,7 @@ class MemorialDialogFragment : DialogFragment() {
     }
 
     private fun initView() {
-        memorial = arguments?.getParcelable(KEY_MEMORIAL) ?: Memorial(null, "null")
+        memorial = arguments?.parcelable(KEY_MEMORIAL) ?: Memorial(null, "null")
         binding.apply {
             tvContent.text = memorial.content.appendTimeSuffix(memorial.time)
             tvMemoTime.setTime(memorial.time)

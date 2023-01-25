@@ -44,13 +44,16 @@ class TransactionExampleActivity : BaseActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-            val time = intent.getSerializableExtra(KEY_TIME) as Date
-            val content = intent.getStringExtra(KEY_CONTENT)
-            val timeType = intent.getParcelableExtra<TimeType>(KEY_TIME_TYPE) ?: run {
+            val time = intent.serializable<Date>(KEY_TIME) ?: run {
                 finish()
                 return@setContent
             }
-            val moneyType = intent.getParcelableExtra<MoneyType>(KEY_MONEY_TYPE) ?: run {
+            val content = intent.getStringExtra(KEY_CONTENT)
+            val timeType = intent.parcelable<TimeType>(KEY_TIME_TYPE) ?: run {
+                finish()
+                return@setContent
+            }
+            val moneyType = intent.parcelable<MoneyType>(KEY_MONEY_TYPE) ?: run {
                 finish()
                 return@setContent
             }
@@ -166,7 +169,7 @@ private fun TransactionTimeScreen(
 
 @Composable
 private fun TitleBar(title: String, onBack: () -> Unit) {
-    SmallTopAppBar(
+    TopAppBar(
         title = { Text(text = title) },
         navigationIcon = {
             IconButton(onClick = { onBack() }) {

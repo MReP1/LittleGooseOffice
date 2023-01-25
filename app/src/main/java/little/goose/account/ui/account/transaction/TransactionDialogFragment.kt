@@ -34,7 +34,7 @@ class TransactionDialogFragment : DialogFragment(R.layout.layout_dialog_transact
     }
 
     private fun initView() {
-        transaction = arguments?.getParcelable(KEY_TRANSACTION)
+        transaction = arguments?.parcelable(KEY_TRANSACTION)
             ?: Transaction(
                 null, 0, BigDecimal(0), "null", "null", Date(), 1
             )

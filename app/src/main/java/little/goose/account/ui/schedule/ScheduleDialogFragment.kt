@@ -41,8 +41,8 @@ class ScheduleDialogFragment : DialogFragment() {
     }
 
     private fun initView() {
-        schedule = arguments?.getParcelable(KEY_SCHEDULE)
-        val time = arguments?.getSerializable(KEY_TIME) as Date?
+        schedule = arguments?.parcelable(KEY_SCHEDULE)
+        val time: Date? = arguments?.serializable(KEY_TIME)
 
         isModify = (schedule != null)
         if (isModify) {

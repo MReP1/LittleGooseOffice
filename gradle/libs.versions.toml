@@ -17,7 +17,7 @@ accompanistVersion = "0.28.0"
 androidxHiltNavigationCompose = "1.0.0"
 androidLifecycle = "2.5.1"
 junit4 = "4.13.2"
-kotlin = "1.7.21"
+kotlin = "1.7.20"
 
 hilt = "2.44.2"
 hiltCompose = "1.0.0"

@@ -72,4 +72,6 @@ dependencies {
     //自定义Calendar
     implementation(project(":calendarview"))
 
+    implementation(project(":core:utils"))
+
 }

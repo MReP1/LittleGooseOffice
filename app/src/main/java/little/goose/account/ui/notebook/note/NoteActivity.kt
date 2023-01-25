@@ -10,6 +10,7 @@ import little.goose.account.R
 import little.goose.account.databinding.ActivityNoteBinding
 import little.goose.account.logic.data.entities.Note
 import little.goose.account.ui.base.BaseActivity
+import little.goose.account.utils.parcelable
 import java.util.*
 
 class NoteActivity : BaseActivity() {
@@ -36,7 +37,7 @@ class NoteActivity : BaseActivity() {
     }
 
     private fun initNote() {
-        note = intent.getParcelableExtra(KEY_NOTE) ?: Note()
+        note = intent.parcelable(KEY_NOTE) ?: Note()
         note.id?.let {
             type = EDIT
             binding.etTitle.setText(note.title)
