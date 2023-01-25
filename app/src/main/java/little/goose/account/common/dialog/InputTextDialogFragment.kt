@@ -12,19 +12,18 @@ import androidx.fragment.app.FragmentManager
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
-import little.goose.account.R
 import little.goose.account.databinding.LayoutDialogInputTextBinding
-import little.goose.account.utils.viewBinding
 import kotlin.math.abs
 
 class InputTextDialogFragment : BottomSheetDialogFragment() {
 
-    private val binding by viewBinding(LayoutDialogInputTextBinding::bind)
+    private lateinit var binding: LayoutDialogInputTextBinding
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View {
-        return inflater.inflate(R.layout.layout_dialog_input_text, container, false)
+        binding = LayoutDialogInputTextBinding.inflate(inflater, container, false)
+        return binding.root
     }
 
     private var confirmCallback: Function1<String, Unit>? = null

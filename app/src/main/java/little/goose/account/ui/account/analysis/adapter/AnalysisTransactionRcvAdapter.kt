@@ -10,8 +10,6 @@ import little.goose.account.logic.data.models.TransactionPercent
 import little.goose.account.ui.account.TransactionExampleActivity
 import little.goose.account.ui.account.analysis.AnalysisFragmentViewModel.Companion.MONTH
 import little.goose.account.ui.account.analysis.viewholder.AnalysisTransactionRcvHolder
-import little.goose.account.utils.ELog
-import little.goose.account.utils.log
 import little.goose.account.utils.setMonth
 import little.goose.account.utils.setYear
 import java.util.*

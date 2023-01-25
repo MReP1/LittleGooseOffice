@@ -4,19 +4,18 @@ import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.widget.TextView
-import androidx.lifecycle.ViewModelProvider
 import little.goose.account.databinding.ActivityAccountAnalysisBinding
 import little.goose.account.ui.account.analysis.adapter.AnalysisFragmentPagerAdapter
 import little.goose.account.ui.base.BaseActivity
 import little.goose.account.ui.widget.selector.BottomTimeTypeSelector
+import little.goose.account.utils.viewBinding
 
 class AccountAnalysisActivity : BaseActivity() {
 
-    private lateinit var binding: ActivityAccountAnalysisBinding
+    private val binding by viewBinding(ActivityAccountAnalysisBinding::inflate)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        binding = ActivityAccountAnalysisBinding.inflate(layoutInflater)
         setContentView(binding.root)
         initView()
         initFragmentListener()

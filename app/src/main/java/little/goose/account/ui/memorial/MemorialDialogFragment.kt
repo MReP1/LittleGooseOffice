@@ -3,7 +3,6 @@ package little.goose.account.ui.memorial
 import android.content.Intent
 import android.os.Bundle
 import android.view.Gravity
-import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.DialogFragment
@@ -21,16 +20,10 @@ import little.goose.account.utils.*
 
 class MemorialDialogFragment : DialogFragment() {
 
-    private var _binding: LayoutDialogMemorialBinding? = null
-    private val binding get() = _binding!!
+    private val binding by viewBinding(LayoutDialogMemorialBinding::bind)
 
-    private lateinit var memorial: Memorial
-
-    override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
-    ): View {
-        _binding = LayoutDialogMemorialBinding.inflate(inflater, container, false)
-        return binding.root
+    private val memorial: Memorial by lazy(LazyThreadSafetyMode.NONE) {
+        arguments?.parcelable(KEY_MEMORIAL) ?: Memorial(null, "null")
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -40,7 +33,6 @@ class MemorialDialogFragment : DialogFragment() {
     }
 
     private fun initView() {
-        memorial = arguments?.parcelable(KEY_MEMORIAL) ?: Memorial(null, "null")
         binding.apply {
             tvContent.text = memorial.content.appendTimeSuffix(memorial.time)
             tvMemoTime.setTime(memorial.time)

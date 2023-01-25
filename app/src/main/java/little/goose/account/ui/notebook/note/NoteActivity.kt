@@ -11,11 +11,12 @@ import little.goose.account.databinding.ActivityNoteBinding
 import little.goose.account.logic.data.entities.Note
 import little.goose.account.ui.base.BaseActivity
 import little.goose.account.utils.parcelable
+import little.goose.account.utils.viewBinding
 import java.util.*
 
 class NoteActivity : BaseActivity() {
 
-    private lateinit var binding: ActivityNoteBinding
+    private val binding by viewBinding(ActivityNoteBinding::inflate)
     private val viewModel: NoteViewModel by lazy {
         ViewModelProvider(this)[NoteViewModel::class.java]
     }
@@ -30,7 +31,6 @@ class NoteActivity : BaseActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        binding = ActivityNoteBinding.inflate(layoutInflater)
         setContentView(binding.root)
         initNote()
         initView()

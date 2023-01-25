@@ -3,7 +3,6 @@ package little.goose.account.ui.schedule
 import android.content.Intent
 import android.os.Bundle
 import android.view.Gravity
-import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.DialogFragment
@@ -21,18 +20,11 @@ import little.goose.account.logic.data.entities.Schedule
 import little.goose.account.utils.*
 import java.util.*
 
-class ScheduleDialogFragment : DialogFragment() {
+class ScheduleDialogFragment : DialogFragment(R.layout.layout_card_schedule) {
 
-    private lateinit var binding: LayoutCardScheduleBinding
+    private val binding by viewBinding(LayoutCardScheduleBinding::bind)
     private var schedule: Schedule? = null
     private var isModify = false
-
-    override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
-    ): View {
-        binding = LayoutCardScheduleBinding.inflate(inflater, container, false)
-        return binding.root
-    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)

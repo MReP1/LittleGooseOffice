@@ -1,9 +1,7 @@
 package little.goose.account.ui.account.analysis
 
 import android.os.Bundle
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import com.google.android.material.tabs.TabLayout
@@ -22,10 +20,11 @@ import little.goose.account.ui.widget.selector.MonthSelectorCardView
 import little.goose.account.ui.widget.selector.YearSelector
 import little.goose.account.ui.widget.selector.YearSelectorCardView
 import little.goose.account.utils.launchAndRepeatWithViewLifeCycle
+import little.goose.account.utils.viewBinding
 
-class AccountAnalysisFragment : BaseFragment() {
+class AccountAnalysisFragment : BaseFragment(R.layout.fragment_account_analysis) {
 
-    private lateinit var binding: FragmentAccountAnalysisBinding
+    private val binding by viewBinding(FragmentAccountAnalysisBinding::bind)
 
     private lateinit var monthSelector: MonthSelectorCardView
     private lateinit var yearSelector: YearSelectorCardView
@@ -45,13 +44,6 @@ class AccountAnalysisFragment : BaseFragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         initData()
-    }
-
-    override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
-    ): View {
-        binding = FragmentAccountAnalysisBinding.inflate(inflater, container, false)
-        return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {

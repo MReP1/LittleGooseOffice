@@ -10,10 +10,11 @@ import little.goose.account.logic.data.constant.KEY_MEMORIAL
 import little.goose.account.logic.data.entities.Memorial
 import little.goose.account.ui.base.BaseActivity
 import little.goose.account.utils.parcelable
+import little.goose.account.utils.viewBinding
 
 class MemorialShowActivity : BaseActivity() {
 
-    private lateinit var binding: ActivityMemorialShowBinding
+    private val binding: ActivityMemorialShowBinding by viewBinding(ActivityMemorialShowBinding::inflate)
 
     private val viewModel: MemorialShowViewModel by viewModels()
 
@@ -26,7 +27,6 @@ class MemorialShowActivity : BaseActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        binding = ActivityMemorialShowBinding.inflate(layoutInflater)
         setContentView(binding.root)
         initData()
         initView()

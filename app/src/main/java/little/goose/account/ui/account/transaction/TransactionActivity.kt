@@ -30,13 +30,14 @@ import little.goose.account.ui.base.BaseActivity
 import little.goose.account.utils.SnackbarUtils
 import little.goose.account.utils.parcelable
 import little.goose.account.utils.toChineseMonthDayTime
+import little.goose.account.utils.viewBinding
 import java.math.BigDecimal
 import java.util.*
 
 class TransactionActivity : BaseActivity(),
     View.OnClickListener, TransactionViewModel.ButtonCallback {
 
-    lateinit var binding: ActivityAddTransactionBinding
+    private val binding by viewBinding(ActivityAddTransactionBinding::inflate)
     private val viewModel by lazy {
         ViewModelProvider(this)[TransactionViewModel::class.java]
     }
@@ -61,7 +62,6 @@ class TransactionActivity : BaseActivity(),
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        binding = ActivityAddTransactionBinding.inflate(layoutInflater)
         setContentView(binding.root)
         initView()
         initType()

@@ -40,7 +40,7 @@ import little.goose.account.utils.*
 
 class SearchActivity : BaseActivity() {
 
-    private lateinit var binding: ActivityScheduleSearchBinding
+    private val binding by viewBinding(ActivityScheduleSearchBinding::inflate)
 
     /** ----------- 存放 RcvAdapter ------------*/
     private lateinit var scheduleRcvAdapter: ScheduleRcvAdapter
@@ -54,7 +54,6 @@ class SearchActivity : BaseActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        binding = ActivityScheduleSearchBinding.inflate(layoutInflater)
         setContentView(binding.root)
         initType()
         initView()

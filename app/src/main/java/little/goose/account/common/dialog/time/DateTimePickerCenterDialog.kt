@@ -6,15 +6,13 @@ import android.widget.FrameLayout
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.FragmentManager
 import little.goose.account.databinding.LayoutDialogCenterTimePickerBinding
-import little.goose.account.utils.UIUtils
-import little.goose.account.utils.getDate
-import little.goose.account.utils.getMonth
-import little.goose.account.utils.getYear
+import little.goose.account.utils.*
+import little.goose.account.R
 import java.util.*
 
-class DateTimePickerCenterDialog : DialogFragment() {
+class DateTimePickerCenterDialog : DialogFragment(R.layout.layout_dialog_center_time_picker) {
 
-    private lateinit var binding: LayoutDialogCenterTimePickerBinding
+    private val binding by viewBinding(LayoutDialogCenterTimePickerBinding::bind)
 
     private var time: Date? = null
     private var confirmAction: Function1<Date, Unit>? = null
@@ -27,13 +25,6 @@ class DateTimePickerCenterDialog : DialogFragment() {
 
     private var width = UIUtils.getWidthPercentPixel(0.80F)
     private var height = ViewGroup.LayoutParams.WRAP_CONTENT
-
-    override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
-    ): View {
-        binding = LayoutDialogCenterTimePickerBinding.inflate(inflater, container, false)
-        return binding.root
-    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)

@@ -3,27 +3,22 @@ package little.goose.account.common.dialog
 import android.content.DialogInterface
 import android.os.Bundle
 import android.view.Gravity
-import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.FragmentManager
+import little.goose.account.R
 import little.goose.account.databinding.LayoutDialogNormalBinding
 import little.goose.account.utils.UIUtils
+import little.goose.account.utils.viewBinding
 
-class NormalDialogFragment : DialogFragment() {
+class NormalDialogFragment
+private constructor() : DialogFragment(R.layout.layout_dialog_normal) {
 
-    private lateinit var binding: LayoutDialogNormalBinding
+    private val binding by viewBinding(LayoutDialogNormalBinding::bind)
     private var content = ""
     private var confirmFunction: Function1<View, Any>? = null
     private var cancelFunction: Function0<Any>? = null
-
-    override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
-    ): View {
-        binding = LayoutDialogNormalBinding.inflate(inflater, container, false)
-        return binding.root
-    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
