@@ -10,6 +10,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import little.goose.account.AccountApplication
 import little.goose.account.R
+import little.goose.account.appScope
 import little.goose.account.databinding.ItemHomeWidgetBinding
 import little.goose.account.logic.ScheduleRepository
 import little.goose.account.logic.data.entities.Schedule
@@ -57,7 +58,7 @@ class HomeWidgetRcvAdapter(
                 schedule.title, schedule.time.getRealTime(), drawableId
             )
         ) {
-            AccountApplication.supervisorScope.launch(Dispatchers.Main) {
+            appScope.launch(Dispatchers.Main) {
                 schedule.isfinish = !schedule.isfinish
                 updateSchedule(schedule)
                 val tempDrawable = if (schedule.isfinish) {

@@ -7,6 +7,7 @@ import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withContext
 import little.goose.account.AccountApplication
+import little.goose.account.appScope
 import little.goose.account.logic.AccountRepository
 import little.goose.account.logic.data.constant.AccountConstant.EXPENSE
 import little.goose.account.logic.data.constant.AccountConstant.INCOME
@@ -76,7 +77,7 @@ object TransactionHelper {
     }
 
     private fun updateSum() {
-        AccountApplication.supervisorScope.launch {
+        appScope.launch {
             mutex.withLock {
                 val expenseSumDeferred = async(Dispatchers.IO) {
                     AccountRepository.getAllTransactionExpenseSumRaw()
@@ -126,7 +127,7 @@ object TransactionHelper {
 fun List<Transaction>.insertTime(): List<Transaction> {
     val arrayList = ArrayList<Transaction>()
     var timeString = ""
-    if (this.isNullOrEmpty()) {
+    if (this.isEmpty()) {
         return emptyList()
     }
     Calendar.getInstance().apply {

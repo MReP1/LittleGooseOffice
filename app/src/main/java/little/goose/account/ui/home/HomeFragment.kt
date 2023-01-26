@@ -12,8 +12,8 @@ import com.haibin.calendarview.Calendar
 import com.haibin.calendarview.CalendarView
 import kotlinx.coroutines.*
 import little.goose.account.R
+import little.goose.account.appScope
 import little.goose.account.common.dialog.time.DateTimePickerCenterDialog
-import little.goose.account.common.receiver.DeleteItemBroadcastReceiver
 import little.goose.account.databinding.FragmentHomeBinding
 import little.goose.account.logic.AccountRepository
 import little.goose.account.logic.MemorialRepository
@@ -24,7 +24,6 @@ import little.goose.account.logic.data.constant.AccountConstant.INCOME
 import little.goose.account.logic.data.entities.Memorial
 import little.goose.account.logic.data.entities.Schedule
 import little.goose.account.logic.data.entities.Transaction
-import little.goose.account.superScope
 import little.goose.account.ui.account.transaction.TransactionActivity
 import little.goose.account.ui.account.transaction.TransactionHelper
 import little.goose.account.ui.base.BaseFragment
@@ -35,7 +34,7 @@ import kotlin.properties.Delegates
 
 class HomeFragment : BaseFragment(R.layout.fragment_home) {
 
-    private val viewModel:HomeViewModel by viewModels()
+    private val viewModel: HomeViewModel by viewModels()
     private val binding by viewBinding(FragmentHomeBinding::bind)
 
     private val redColor by lazy { ContextCompat.getColor(requireContext(), R.color.add_button) }
@@ -96,6 +95,40 @@ class HomeFragment : BaseFragment(R.layout.fragment_home) {
         }
     }
 
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        viewModel.scheduleDeleteReceiver.register(
+            lifecycle,
+            NOTIFY_DELETE_SCHEDULE
+        ) { _, schedule ->
+            binding.root.showDeleteSnackbar {
+                appScope.launch {
+                    ScheduleRepository.addSchedule(schedule)
+                }
+            }
+        }
+        viewModel.transactionDeleteReceiver.register(
+            lifecycle,
+            NOTIFY_DELETE_TRANSACTION
+        ) { _, transaction ->
+            binding.root.showDeleteSnackbar {
+                appScope.launch {
+                    AccountRepository.addTransaction(transaction)
+                }
+            }
+        }
+        viewModel.memorialDeleteReceiver.register(
+            lifecycle,
+            NOTIFY_DELETE_MEMORIAL
+        ) { _, memorial ->
+            binding.root.showDeleteSnackbar {
+                appScope.launch {
+                    MemorialRepository.addMemorial(memorial)
+                }
+            }
+        }
+    }
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         initData()
@@ -109,16 +142,6 @@ class HomeFragment : BaseFragment(R.layout.fragment_home) {
         initClick()
         initTransactionRecyclerView()
         initScheduleRecyclerView()
-    }
-
-    override fun onResume() {
-        super.onResume()
-        registerReceiver()
-    }
-
-    override fun onPause() {
-        super.onPause()
-        unregisterReceiver()
     }
 
     private fun initCalendar() {
@@ -326,58 +349,6 @@ class HomeFragment : BaseFragment(R.layout.fragment_home) {
                 updateScheme(year, month)
             }
         }
-    }
-
-    private fun registerReceiver() {
-        if (viewModel.scheduleDeleteReceiver == null) {
-            viewModel.scheduleDeleteReceiver = DeleteItemBroadcastReceiver { _, schedule ->
-                binding.root.showDeleteSnackbar {
-                    superScope.launch {
-                        ScheduleRepository.addSchedule(schedule)
-                    }
-                }
-            }
-        }
-        localBroadcastManager.registerDeleteReceiver(
-            NOTIFY_DELETE_SCHEDULE,
-            viewModel.scheduleDeleteReceiver!!
-        )
-
-        if (viewModel.transactionDeleteReceiver == null) {
-            viewModel.transactionDeleteReceiver =
-                DeleteItemBroadcastReceiver { _, transaction ->
-                    binding.root.showDeleteSnackbar {
-                        superScope.launch {
-                            AccountRepository.addTransaction(transaction)
-                        }
-                    }
-                }
-        }
-        localBroadcastManager.registerDeleteReceiver(
-            NOTIFY_DELETE_TRANSACTION,
-            viewModel.transactionDeleteReceiver!!
-        )
-
-        if (viewModel.memorialDeleteReceiver == null) {
-            viewModel.memorialDeleteReceiver =
-                DeleteItemBroadcastReceiver { _, memorial ->
-                    binding.root.showDeleteSnackbar {
-                        superScope.launch {
-                            MemorialRepository.addMemorial(memorial)
-                        }
-                    }
-                }
-        }
-        localBroadcastManager.registerDeleteReceiver(
-            NOTIFY_DELETE_MEMORIAL,
-            viewModel.memorialDeleteReceiver!!
-        )
-    }
-
-    private fun unregisterReceiver() {
-        viewModel.transactionDeleteReceiver?.let { localBroadcastManager.unregisterReceiver(it) }
-        viewModel.scheduleDeleteReceiver?.let { localBroadcastManager.unregisterReceiver(it) }
-        viewModel.memorialDeleteReceiver?.let { localBroadcastManager.unregisterReceiver(it) }
     }
 
     private fun setTransactionCardVisibility(visible: Boolean) {

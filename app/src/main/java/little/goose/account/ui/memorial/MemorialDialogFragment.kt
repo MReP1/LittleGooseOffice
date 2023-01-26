@@ -15,10 +15,10 @@ import little.goose.account.logic.data.constant.KEY_DELETE_ITEM
 import little.goose.account.logic.data.constant.KEY_MEMORIAL
 import little.goose.account.logic.data.constant.NOTIFY_DELETE_MEMORIAL
 import little.goose.account.logic.data.entities.Memorial
-import little.goose.account.superScope
+import little.goose.account.appScope
 import little.goose.account.utils.*
 
-class MemorialDialogFragment : DialogFragment() {
+class MemorialDialogFragment : DialogFragment(R.layout.layout_dialog_memorial) {
 
     private val binding by viewBinding(LayoutDialogMemorialBinding::bind)
 
@@ -46,7 +46,7 @@ class MemorialDialogFragment : DialogFragment() {
                 NormalDialogFragment.Builder()
                     .setContent(requireContext().getString(R.string.confirm_delete))
                     .setConfirmCallback {
-                        superScope.launch {
+                        appScope.launch {
                             MemorialRepository.deleteMemorial(memorial)
                             sendDeleteBroadcast()
                         }

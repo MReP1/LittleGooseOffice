@@ -11,7 +11,7 @@ class AccountFragmentViewModel : ViewModel() {
 
     suspend fun getCurMonthTransactionFlow() = AccountRepository.getTransactionCurrentMonthFlow()
 
-    var deleteReceiver: DeleteItemBroadcastReceiver<Transaction>? = null
+    val deleteReceiver = DeleteItemBroadcastReceiver<Transaction>()
 
     suspend fun getTransactionByYearAndMonthFlow(year: Int, month: Int) =
         AccountRepository.getTransactionByYearMonthFlow(year, month).stateIn(viewModelScope)

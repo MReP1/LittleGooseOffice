@@ -9,6 +9,7 @@ import androidx.fragment.app.DialogFragment
 import kotlinx.coroutines.launch
 import little.goose.account.AccountApplication
 import little.goose.account.R
+import little.goose.account.appScope
 import little.goose.account.common.dialog.NormalDialogFragment
 import little.goose.account.databinding.LayoutDialogTransactionBinding
 import little.goose.account.logic.AccountRepository
@@ -52,7 +53,7 @@ class TransactionDialogFragment : DialogFragment(R.layout.layout_dialog_transact
             NormalDialogFragment.Builder()
                 .setContent(getString(R.string.confirm_delete))
                 .setConfirmCallback {
-                    AccountApplication.supervisorScope.launch {
+                    appScope.launch {
                         AccountRepository.deleteTransaction(transaction)
                         sendDeleteBroadcast()
                     }

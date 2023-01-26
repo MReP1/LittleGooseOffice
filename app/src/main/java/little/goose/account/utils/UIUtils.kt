@@ -2,9 +2,10 @@ package little.goose.account.utils
 
 import android.view.ViewGroup
 import little.goose.account.AccountApplication
+import little.goose.account.appContext
 
 object UIUtils {
-    private val displayMetrics = AccountApplication.context.resources.displayMetrics
+    private val displayMetrics = appContext.resources.displayMetrics
 
     private val density = displayMetrics.density
 

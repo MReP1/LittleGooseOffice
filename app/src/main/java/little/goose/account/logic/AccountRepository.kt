@@ -5,6 +5,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.withContext
 import little.goose.account.AccountApplication
+import little.goose.account.appContext
 import little.goose.account.logic.data.constant.AccountConstant.EXPENSE
 import little.goose.account.logic.data.constant.AccountConstant.INCOME
 import little.goose.account.logic.data.constant.MoneyType
@@ -18,7 +19,7 @@ import java.util.*
 object AccountRepository {
 
     private val database: AccountDatabase = Room.databaseBuilder(
-        AccountApplication.context,
+        appContext,
         AccountDatabase::class.java,
         TABLE_TRANSACTION
     ).build()

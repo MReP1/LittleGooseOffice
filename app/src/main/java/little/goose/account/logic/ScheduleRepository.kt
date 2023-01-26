@@ -5,6 +5,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.withContext
 import little.goose.account.AccountApplication
+import little.goose.account.appContext
 import little.goose.account.logic.data.constant.TABLE_SCHEDULE
 import little.goose.account.logic.data.database.ScheduleDatabase
 import little.goose.account.logic.data.entities.Schedule
@@ -13,7 +14,7 @@ import java.util.*
 
 object ScheduleRepository {
     private val database: ScheduleDatabase = Room.databaseBuilder(
-        AccountApplication.context,
+        appContext,
         ScheduleDatabase::class.java,
         TABLE_SCHEDULE
     ).build()

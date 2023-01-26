@@ -13,7 +13,7 @@ class ScheduleViewModel : ViewModel() {
     suspend fun getAllScheduleState() =
         ScheduleRepository.getAllScheduleFlow().stateIn(viewModelScope)
 
-    var deleteReceiver: DeleteItemBroadcastReceiver<Schedule>? = null
-    var updateReceiver: NormalBroadcastReceiver? = null
+    var deleteReceiver = DeleteItemBroadcastReceiver<Schedule>()
+    var updateReceiver: NormalBroadcastReceiver = NormalBroadcastReceiver()
 
 }

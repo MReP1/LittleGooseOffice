@@ -6,7 +6,6 @@ import androidx.viewpager2.adapter.FragmentStateAdapter
 import little.goose.account.logic.data.constant.COUNT
 import little.goose.account.ui.account.AccountFragment
 import little.goose.account.ui.home.HomeFragment
-import little.goose.account.ui.home.TestFragment
 import little.goose.account.ui.memorial.MemorialFragment
 import little.goose.account.ui.notebook.NotebookFragment
 import little.goose.account.ui.schedule.ScheduleFragment
@@ -23,7 +22,7 @@ class HomeFragmentPagerAdapter(fragmentActivity: FragmentActivity) :
             2 -> AccountFragment.newInstance()
             3 -> ScheduleFragment.newInstance()
             4 -> MemorialFragment.newInstance()
-            else -> TestFragment.getInstance()
+            else -> throw Exception("Not support this position")
         }
     }
 

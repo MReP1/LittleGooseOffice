@@ -1,7 +1,6 @@
 package little.goose.account.ui.schedule
 
 import android.annotation.SuppressLint
-import android.content.IntentFilter
 import android.os.Bundle
 import android.view.View
 import androidx.fragment.app.viewModels
@@ -9,11 +8,10 @@ import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import kotlinx.coroutines.launch
 import little.goose.account.R
+import little.goose.account.appScope
 import little.goose.account.common.ItemSelectCallback
 import little.goose.account.common.MultipleChoseHandler
 import little.goose.account.common.dialog.NormalDialogFragment
-import little.goose.account.common.receiver.DeleteItemBroadcastReceiver
-import little.goose.account.common.receiver.NormalBroadcastReceiver
 import little.goose.account.databinding.FragmentScheduleBinding
 import little.goose.account.logic.ScheduleRepository
 import little.goose.account.logic.data.constant.KEY_SCHEDULE
@@ -21,7 +19,6 @@ import little.goose.account.logic.data.constant.NOTIFY_DELETE_SCHEDULE
 import little.goose.account.logic.data.constant.NOTIFY_UPDATE_SCHEDULE
 import little.goose.account.logic.data.constant.SCHEDULE
 import little.goose.account.logic.data.entities.Schedule
-import little.goose.account.superScope
 import little.goose.account.ui.base.BaseFragment
 import little.goose.account.ui.decoration.ItemLinearLayoutDecoration
 import little.goose.account.ui.search.SearchActivity
@@ -31,13 +28,32 @@ import little.goose.account.utils.*
 class ScheduleFragment : BaseFragment(R.layout.fragment_schedule) {
 
     private val binding by viewBinding(FragmentScheduleBinding::bind)
-    private val scheduleViewModel:ScheduleViewModel by viewModels()
+    private val scheduleViewModel: ScheduleViewModel by viewModels()
     private var callback: ItemSelectCallback<Schedule>? = null
     private val multipleChoseHandler = MultipleChoseHandler<Schedule>()
 
     companion object {
         fun newInstance(): ScheduleFragment {
             return ScheduleFragment()
+        }
+    }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        scheduleViewModel.deleteReceiver.register(
+            lifecycle = lifecycle,
+            action = NOTIFY_DELETE_SCHEDULE
+        ) { _, schedule ->
+            binding.root.showSnackbar(R.string.deleted, 1000, R.string.undo) {
+                appScope.launch { ScheduleRepository.addSchedule(schedule) }
+            }
+        }
+
+        scheduleViewModel.updateReceiver.register(
+            lifecycle = lifecycle,
+            action = NOTIFY_UPDATE_SCHEDULE
+        ) { _, _ ->
+            refreshRecyclerView()
         }
     }
 
@@ -64,7 +80,7 @@ class ScheduleFragment : BaseFragment(R.layout.fragment_schedule) {
                 viewLifecycleOwner.lifecycleScope.launch {
                     val list = multipleChoseHandler.deleteItemList()
                     binding.root.showSnackbar(R.string.deleted, 1000, R.string.undo) {
-                        superScope.launch { ScheduleRepository.addScheduleList(list) }
+                        appScope.launch { ScheduleRepository.addScheduleList(list) }
                     }
                 }
             }
@@ -123,32 +139,6 @@ class ScheduleFragment : BaseFragment(R.layout.fragment_schedule) {
         }
     }
 
-    //监听Schedule修改刷新Adapter
-    private fun registerReceiver() {
-        if (scheduleViewModel.updateReceiver == null) {
-            scheduleViewModel.updateReceiver = NormalBroadcastReceiver { _, _ ->
-                refreshRecyclerView()
-            }
-        }
-        val filter = IntentFilter().apply { addAction(NOTIFY_UPDATE_SCHEDULE) }
-        localBroadcastManager.registerReceiver(scheduleViewModel.updateReceiver!!, filter)
-        if (scheduleViewModel.deleteReceiver == null) {
-            scheduleViewModel.deleteReceiver = DeleteItemBroadcastReceiver { _, schedule ->
-                binding.root.showSnackbar(R.string.deleted, 1000, R.string.undo) {
-                    superScope.launch { ScheduleRepository.addSchedule(schedule) }
-                }
-            }
-        }
-        localBroadcastManager.registerDeleteReceiver(
-            NOTIFY_DELETE_SCHEDULE, scheduleViewModel.deleteReceiver!!
-        )
-    }
-
-    private fun unregisterReceiver() {
-        scheduleViewModel.updateReceiver?.let { localBroadcastManager.unregisterReceiver(it) }
-        scheduleViewModel.deleteReceiver?.let { localBroadcastManager.unregisterReceiver(it) }
-    }
-
     private fun refreshRecyclerView() {
         viewLifecycleOwner.lifecycleScope.launch {
             updateRcvData(ScheduleRepository.getAllSchedule())
@@ -167,7 +157,6 @@ class ScheduleFragment : BaseFragment(R.layout.fragment_schedule) {
 
     override fun onResume() {
         super.onResume()
-        registerReceiver()
         if (multipleChoseHandler.needRefresh) {
             binding.rcvSchedule.adapter?.notifyDataSetChanged()
         }
@@ -175,7 +164,6 @@ class ScheduleFragment : BaseFragment(R.layout.fragment_schedule) {
 
     override fun onPause() {
         super.onPause()
-        unregisterReceiver()
         multipleChoseHandler.setNeedRefresh()
     }
 

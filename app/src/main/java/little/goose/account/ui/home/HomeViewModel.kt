@@ -34,9 +34,9 @@ class HomeViewModel : ViewModel() {
         memorialListFlow = MemorialRepository.getMemorialsByDateFlow(year, month, date)
     }
 
-    var transactionDeleteReceiver: DeleteItemBroadcastReceiver<Transaction>? = null
-    var scheduleDeleteReceiver: DeleteItemBroadcastReceiver<Schedule>? = null
-    var memorialDeleteReceiver: DeleteItemBroadcastReceiver<Memorial>? = null
+    val transactionDeleteReceiver = DeleteItemBroadcastReceiver<Transaction>()
+    val scheduleDeleteReceiver = DeleteItemBroadcastReceiver<Schedule>()
+    var memorialDeleteReceiver = DeleteItemBroadcastReceiver<Memorial>()
 
     init {
         Calendar.getInstance().apply {

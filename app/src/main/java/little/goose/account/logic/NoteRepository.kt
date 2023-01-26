@@ -4,13 +4,14 @@ import androidx.room.Room
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import little.goose.account.AccountApplication
+import little.goose.account.appContext
 import little.goose.account.logic.data.constant.TABLE_NOTE
 import little.goose.account.logic.data.database.NoteDatabase
 import little.goose.account.logic.data.entities.Note
 
 object NoteRepository {
     private val database: NoteDatabase = Room.databaseBuilder(
-        AccountApplication.context,
+        appContext,
         NoteDatabase::class.java,
         TABLE_NOTE
     ).build()

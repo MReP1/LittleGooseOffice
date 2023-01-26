@@ -19,11 +19,11 @@ class SearchActivityViewModel : ViewModel() {
 
     var type = 0
 
-    var transactionDeleteReceiver: DeleteItemBroadcastReceiver<Transaction>? = null
-    var scheduleDeleteReceiver: DeleteItemBroadcastReceiver<Schedule>? = null
-    var memorialDeleteReceiver: DeleteItemBroadcastReceiver<Memorial>? = null
+    val transactionDeleteReceiver = DeleteItemBroadcastReceiver<Transaction>()
+    val scheduleDeleteReceiver = DeleteItemBroadcastReceiver<Schedule>()
+    val memorialDeleteReceiver = DeleteItemBroadcastReceiver<Memorial>()
 
-    var scheduleUpdateReceiver: NormalBroadcastReceiver? = null
+    val scheduleUpdateReceiver: NormalBroadcastReceiver = NormalBroadcastReceiver()
 
     suspend fun searchTransactionList(keyWord: String): List<Transaction> {
         return keyWord.toDoubleOrNull()?.let {

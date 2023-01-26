@@ -15,7 +15,7 @@ import little.goose.account.databinding.FragmentNotebookBinding
 import little.goose.account.logic.NoteRepository
 import little.goose.account.logic.data.constant.NOTEBOOK
 import little.goose.account.logic.data.entities.Note
-import little.goose.account.superScope
+import little.goose.account.appScope
 import little.goose.account.ui.base.BaseFragment
 import little.goose.account.ui.decoration.ItemGridLayoutDecoration
 import little.goose.account.ui.notebook.note.NoteActivity
@@ -27,6 +27,7 @@ import little.goose.account.utils.*
 class NotebookFragment : BaseFragment(R.layout.fragment_notebook) {
 
     private val binding by viewBinding(FragmentNotebookBinding::bind)
+
     private val viewModel:NotebookViewModel by viewModels()
 
     private val multipleChoseHandler = MultipleChoseHandler<Note>()
@@ -41,7 +42,7 @@ class NotebookFragment : BaseFragment(R.layout.fragment_notebook) {
                 viewLifecycleOwner.lifecycleScope.launch {
                     val list = multipleChoseHandler.deleteItemList()
                     binding.root.showSnackbar(R.string.deleted, 1000, R.string.undo) {
-                        superScope.launch {
+                        appScope.launch {
                             NoteRepository.addNoteList(list)
                         }
                     }

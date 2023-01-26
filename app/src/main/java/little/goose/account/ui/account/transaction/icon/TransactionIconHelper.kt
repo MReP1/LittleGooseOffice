@@ -1,7 +1,5 @@
 package little.goose.account.ui.account.transaction.icon
 
-import kotlinx.coroutines.sync.Mutex
-import kotlinx.coroutines.sync.withLock
 import little.goose.account.R
 import little.goose.account.logic.data.constant.AccountConstant.EXPENSE
 import little.goose.account.logic.data.constant.AccountConstant.INCOME
@@ -12,43 +10,26 @@ object TransactionIconHelper {
     //1.修改数量
     private const val iconCount = 23
 
-    private val mutex by lazy { Mutex() }
+    val expenseIconList = ArrayList<TransactionIcon>()
+    val incomeIconList = ArrayList<TransactionIcon>()
 
-    private var expenseIconList = ArrayList<TransactionIcon>()
-    private var incomeIconList = ArrayList<TransactionIcon>()
-
-    suspend fun initIconData() {
-        //纯占位
-        mutex.withLock {
-            expenseIconList.add(TransactionIcon(0, EXPENSE, "其他", R.drawable.icon_money))
-            incomeIconList.add(TransactionIcon(0, INCOME, "其他", R.drawable.icon_money))
-            for (id in 1..iconCount) {
-                when (val type = getIconType(id)) {
-                    EXPENSE -> expenseIconList.add(
-                        TransactionIcon(
-                            id, type, getIconName(id), getIconPath(id)
-                        )
+    init {
+        expenseIconList.add(TransactionIcon(0, EXPENSE, "其他", R.drawable.icon_money))
+        incomeIconList.add(TransactionIcon(0, INCOME, "其他", R.drawable.icon_money))
+        for (id in 1..iconCount) {
+            when (val type = getIconType(id)) {
+                EXPENSE -> expenseIconList.add(
+                    TransactionIcon(
+                        id, type, getIconName(id), getIconPath(id)
                     )
-                    INCOME -> incomeIconList.add(
-                        TransactionIcon(
-                            id, type, getIconName(id), getIconPath(id)
-                        )
+                )
+                INCOME -> incomeIconList.add(
+                    TransactionIcon(
+                        id, type, getIconName(id), getIconPath(id)
                     )
-                }
+                )
             }
         }
-    }
-
-    suspend fun getExpenseIconList(): ArrayList<TransactionIcon> {
-        return if (expenseIconList.isEmpty()) {
-            mutex.withLock { expenseIconList }
-        } else expenseIconList
-    }
-
-    suspend fun getIncomeIconList(): ArrayList<TransactionIcon> {
-        return if (incomeIconList.isEmpty()) {
-            mutex.withLock { incomeIconList }
-        } else incomeIconList
     }
 
     //2.添加名称
@@ -82,7 +63,7 @@ object TransactionIconHelper {
     }
 
     //3.添加类型
-    fun getIconType(iconId: Int): Int {
+    private fun getIconType(iconId: Int): Int {
         return when (iconId) {
             1 -> EXPENSE
             2 -> EXPENSE

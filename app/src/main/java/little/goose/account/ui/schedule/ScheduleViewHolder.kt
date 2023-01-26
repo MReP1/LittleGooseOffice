@@ -6,6 +6,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
 import little.goose.account.AccountApplication
+import little.goose.account.appScope
 import little.goose.account.common.MultipleChoseHandler
 import little.goose.account.databinding.ItemScheduleBinding
 import little.goose.account.logic.ScheduleRepository
@@ -26,7 +27,7 @@ class ScheduleViewHolder(
             updateCheckBox(schedule.isfinish)
             initSelect(schedule)
             cbScheduleFinish.setOnClickListener {
-                AccountApplication.supervisorScope.launch(Dispatchers.Main) {
+                appScope.launch(Dispatchers.Main) {
                     schedule.isfinish = !schedule.isfinish
                     cbScheduleFinish.isChecked = schedule.isfinish
                     cbScheduleFinish.isClickable = false
@@ -38,7 +39,7 @@ class ScheduleViewHolder(
                 }
             }
             flScheduleFinish.setOnClickListener {
-                AccountApplication.supervisorScope.launch(Dispatchers.Main) {
+                appScope.launch(Dispatchers.Main) {
                     schedule.isfinish = !schedule.isfinish
                     cbScheduleFinish.isChecked = schedule.isfinish
                     flScheduleFinish.isClickable = false

@@ -9,7 +9,7 @@ import little.goose.account.R
 import little.goose.account.databinding.ActivityMainBinding
 import little.goose.account.isAppInit
 import little.goose.account.logic.data.constant.*
-import little.goose.account.superScope
+import little.goose.account.appScope
 import little.goose.account.ui.base.BaseActivity
 import little.goose.account.utils.KEY_PREF_PAGER
 import little.goose.account.utils.homeDataStore
@@ -53,7 +53,7 @@ class MainActivity : BaseActivity() {
     override fun onStop() {
         super.onStop()
         // 保存当前页面
-        superScope.launch {
+        appScope.launch {
             homeDataStore.edit { home ->
                 home[KEY_PREF_PAGER] = binding.homeViewPager.currentItem
             }

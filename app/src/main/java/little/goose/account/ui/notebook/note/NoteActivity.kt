@@ -7,6 +7,7 @@ import androidx.lifecycle.ViewModelProvider
 import kotlinx.coroutines.launch
 import little.goose.account.AccountApplication
 import little.goose.account.R
+import little.goose.account.appScope
 import little.goose.account.databinding.ActivityNoteBinding
 import little.goose.account.logic.data.entities.Note
 import little.goose.account.ui.base.BaseActivity
@@ -176,7 +177,7 @@ class NoteActivity : BaseActivity() {
 
     private fun insertDatabase() {
         if (!isNoteBlank()) {
-            AccountApplication.supervisorScope.launch {
+            appScope.launch {
                 val id = viewModel.insertNote(note)
                 if (!this@NoteActivity.isDestroyed) {
                     note.id = id

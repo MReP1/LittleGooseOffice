@@ -8,37 +8,38 @@ import little.goose.account.logic.data.entities.Memorial
 @Dao
 interface MemorialDao {
     @Insert
-    fun addMemorial(memorial: Memorial): Long
+    suspend fun addMemorial(memorial: Memorial): Long
 
     @Insert
-    fun addMemorials(memorials: List<Memorial>)
+    suspend fun addMemorials(memorials: List<Memorial>)
 
     @Update
-    fun updateMemorial(memorial: Memorial)
+    suspend fun updateMemorial(memorial: Memorial)
 
     @Update
-    fun updateMemorials(memorials: List<Memorial>)
+    suspend fun updateMemorials(memorials: List<Memorial>)
 
     @Query("SELECT * FROM $TABLE_MEMORIAL ORDER BY time DESC")
-    fun getAllMemorial(): List<Memorial>
+    suspend fun getAllMemorial(): List<Memorial>
+
+    @Query("SELECT * FROM $TABLE_MEMORIAL WHERE content LIKE '%'|| :keyword ||'%' ORDER BY time DESC")
+    suspend fun searchMemorialByText(keyword: String): List<Memorial>
+
+    @Query("SELECT * FROM $TABLE_MEMORIAL WHERE isTop = 1 ORDER BY time DESC")
+    fun getMemorialAtTop(): Flow<List<Memorial>>
+
+    @Query("SELECT * FROM $TABLE_MEMORIAL WHERE time > :startTime and time < :endTime ORDER BY time DESC")
+    suspend fun getMemorialByTime(startTime: Long, endTime: Long): List<Memorial>
+
+    @Delete
+    suspend fun deleteMemorial(memorial: Memorial)
+
+    @Delete
+    suspend fun deleteMemorials(memorials: List<Memorial>)
 
     @Query("SELECT * FROM $TABLE_MEMORIAL ORDER BY time DESC")
     fun getAllMemorialFlow(): Flow<List<Memorial>>
 
-    @Query("SELECT * FROM $TABLE_MEMORIAL WHERE content LIKE '%'|| :keyword ||'%' ORDER BY time DESC")
-    fun searchMemorialByText(keyword: String): List<Memorial>
-
-    @Query("SELECT * FROM $TABLE_MEMORIAL WHERE isTop = 1 ORDER BY time DESC")
-    fun getMemorialAtTop(): List<Memorial>
-
-    @Query("SELECT * FROM $TABLE_MEMORIAL WHERE time > :startTime and time < :endTime ORDER BY time DESC")
-    fun getMemorialByTime(startTime: Long, endTime: Long): List<Memorial>
-
     @Query("SELECT * FROM $TABLE_MEMORIAL WHERE time > :startTime and time < :endTime ORDER BY time DESC")
     fun getMemorialByTimeFlow(startTime: Long, endTime: Long): Flow<List<Memorial>>
-    @Delete
-    fun deleteMemorial(memorial: Memorial)
-
-    @Delete
-    fun deleteMemorialList(memorials: List<Memorial>)
 }

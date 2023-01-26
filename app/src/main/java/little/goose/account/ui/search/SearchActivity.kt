@@ -11,9 +11,9 @@ import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import kotlinx.coroutines.launch
 import little.goose.account.R
+import little.goose.account.appScope
 import little.goose.account.common.ItemClickCallback
 import little.goose.account.common.ItemSelectCallback
-import little.goose.account.common.receiver.DeleteItemBroadcastReceiver
 import little.goose.account.common.receiver.NormalBroadcastReceiver
 import little.goose.account.databinding.ActivityScheduleSearchBinding
 import little.goose.account.logic.AccountRepository
@@ -24,7 +24,6 @@ import little.goose.account.logic.data.entities.Memorial
 import little.goose.account.logic.data.entities.Note
 import little.goose.account.logic.data.entities.Schedule
 import little.goose.account.logic.data.entities.Transaction
-import little.goose.account.superScope
 import little.goose.account.ui.account.AccountRcvAdapter
 import little.goose.account.ui.account.transaction.TransactionDialogFragment
 import little.goose.account.ui.base.BaseActivity
@@ -59,11 +58,6 @@ class SearchActivity : BaseActivity() {
         initView()
     }
 
-    override fun onResume() {
-        super.onResume()
-        registerReceiver()
-    }
-
     private fun initView() {
         showSearch()
         binding.apply {
@@ -84,11 +78,13 @@ class SearchActivity : BaseActivity() {
                 viewModel.type = type
                 initRcvForAccount()
                 initEditTextForAccount()
+                registerTransactionReceiver()
             }
             SCHEDULE -> {
                 viewModel.type = type
                 initRcvForSchedule()
                 initEditTextForSchedule()
+                registerScheduleReceiver()
             }
             NOTEBOOK -> {
                 viewModel.type = type
@@ -99,19 +95,11 @@ class SearchActivity : BaseActivity() {
                 viewModel.type = type
                 initRcvForMemorial()
                 initEditTextForMemorial()
+                registerMemorialReceiver()
             }
             else -> finish()
         }
     }
-
-    private fun registerReceiver() {
-        when (viewModel.type) {
-            ACCOUNT -> registerTransactionReceiver()
-            SCHEDULE -> registerScheduleReceiver()
-            MEMORIAL -> registerMemorialReceiver()
-        }
-    }
-
 
     /**
      * ---------------------------------纪念日---------------------------------
@@ -157,20 +145,18 @@ class SearchActivity : BaseActivity() {
     }
 
     private fun registerMemorialReceiver() {
-        if (viewModel.memorialDeleteReceiver == null) {
-            viewModel.memorialDeleteReceiver = DeleteItemBroadcastReceiver { _, memorial ->
-                updateMemorialView()
-                binding.root.showDeleteSnackbar {
-                    superScope.launch {
-                        MemorialRepository.addMemorial(memorial)
-                        updateMemorialView()
-                    }
+        viewModel.memorialDeleteReceiver.register(
+            lifecycle,
+            NOTIFY_DELETE_MEMORIAL
+        ) { _, memorial ->
+            updateMemorialView()
+            binding.root.showDeleteSnackbar {
+                appScope.launch {
+                    MemorialRepository.addMemorial(memorial)
+                    updateMemorialView()
                 }
             }
         }
-        localBroadcastManager.registerDeleteReceiver(
-            NOTIFY_DELETE_MEMORIAL, viewModel.memorialDeleteReceiver!!
-        )
     }
 
 
@@ -219,20 +205,18 @@ class SearchActivity : BaseActivity() {
     }
 
     private fun registerTransactionReceiver() {
-        if (viewModel.transactionDeleteReceiver == null) {
-            viewModel.transactionDeleteReceiver = DeleteItemBroadcastReceiver { _, transaction ->
-                updateAccountView()
-                binding.root.showSnackbar(R.string.deleted, 1000, R.string.undo) {
-                    superScope.launch {
-                        AccountRepository.addTransaction(transaction)
-                        updateAccountView()
-                    }
+        viewModel.transactionDeleteReceiver.register(
+            lifecycle,
+            NOTIFY_DELETE_TRANSACTION
+        ) { _, transaction ->
+            updateAccountView()
+            binding.root.showSnackbar(R.string.deleted, 1000, R.string.undo) {
+                appScope.launch {
+                    AccountRepository.addTransaction(transaction)
+                    updateAccountView()
                 }
             }
         }
-        localBroadcastManager.registerDeleteReceiver(
-            NOTIFY_DELETE_TRANSACTION, viewModel.transactionDeleteReceiver!!
-        )
     }
 
     /**
@@ -281,28 +265,21 @@ class SearchActivity : BaseActivity() {
     }
 
     private fun registerScheduleReceiver() {
-        if (viewModel.scheduleUpdateReceiver == null) {
-            viewModel.scheduleUpdateReceiver = NormalBroadcastReceiver { _, _ ->
-                updateScheduleView()
-            }
+        viewModel.scheduleUpdateReceiver.register(lifecycle, NOTIFY_UPDATE_SCHEDULE) { _, _ ->
+            updateScheduleView()
         }
-        val filter = IntentFilter().apply { addAction(NOTIFY_UPDATE_SCHEDULE) }
-        localBroadcastManager.registerReceiver(viewModel.scheduleUpdateReceiver!!, filter)
-
-        if (viewModel.scheduleDeleteReceiver == null) {
-            viewModel.scheduleDeleteReceiver = DeleteItemBroadcastReceiver { _, schedule ->
-                updateScheduleView()
-                binding.root.showSnackbar(R.string.deleted, 1000, R.string.undo) {
-                    superScope.launch {
-                        ScheduleRepository.addSchedule(schedule)
-                        updateScheduleView()
-                    }
+        viewModel.scheduleDeleteReceiver.register(
+            lifecycle,
+            NOTIFY_DELETE_SCHEDULE
+        ) { _, schedule ->
+            updateScheduleView()
+            binding.root.showSnackbar(R.string.deleted, 1000, R.string.undo) {
+                appScope.launch {
+                    ScheduleRepository.addSchedule(schedule)
+                    updateScheduleView()
                 }
             }
         }
-        localBroadcastManager.registerDeleteReceiver(
-            NOTIFY_DELETE_SCHEDULE, viewModel.scheduleDeleteReceiver!!
-        )
     }
 
     /**
@@ -387,7 +364,8 @@ class SearchActivity : BaseActivity() {
         private const val TYPE = "type"
         fun open(context: Context, type: Int) {
             if (type == ACCOUNT || type == SCHEDULE
-                || type == NOTEBOOK || type == MEMORIAL) {
+                || type == NOTEBOOK || type == MEMORIAL
+            ) {
                 val intent = Intent(context, SearchActivity::class.java).apply {
                     putExtra(TYPE, type)
                 }

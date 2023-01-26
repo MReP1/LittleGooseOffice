@@ -9,18 +9,17 @@ import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import kotlinx.coroutines.*
 import little.goose.account.R
+import little.goose.account.appScope
 import little.goose.account.common.ItemSelectCallback
 import little.goose.account.common.MultipleChoseHandler
 import little.goose.account.common.dialog.NormalDialogFragment
 import little.goose.account.common.dialog.time.DateTimePickerCenterDialog
 import little.goose.account.common.dialog.time.TimeType
-import little.goose.account.common.receiver.DeleteItemBroadcastReceiver
 import little.goose.account.databinding.FragmentAccountBinding
 import little.goose.account.logic.AccountRepository
 import little.goose.account.logic.data.constant.ACCOUNT
 import little.goose.account.logic.data.constant.NOTIFY_DELETE_TRANSACTION
 import little.goose.account.logic.data.entities.Transaction
-import little.goose.account.superScope
 import little.goose.account.ui.account.analysis.AccountAnalysisActivity
 import little.goose.account.ui.account.transaction.TransactionActivity
 import little.goose.account.ui.account.transaction.TransactionDialogFragment
@@ -37,16 +36,21 @@ import kotlin.properties.Delegates
 class AccountFragment : BaseFragment(R.layout.fragment_account) {
 
     private val viewModel: AccountFragmentViewModel by viewModels()
+
     private val binding by viewBinding(FragmentAccountBinding::bind)
 
     private var itemSelectCallback: ItemSelectCallback<Transaction>? = null
+
     private val multipleChoseHandler = MultipleChoseHandler<Transaction>()
+
     private val addOnClickListener = View.OnClickListener {
         TransactionActivity.openAdd(requireContext())
     }
+
     private var isCurMonth by Delegates.observable(true) { _, _, newValue ->
         updateHeader(newValue)
     }
+
     private val deleteOnClickListener = View.OnClickListener {
         NormalDialogFragment.Builder()
             .setContent(getString(R.string.confirm_delete))
@@ -54,13 +58,25 @@ class AccountFragment : BaseFragment(R.layout.fragment_account) {
                 viewLifecycleOwner.lifecycleScope.launch {
                     val list = multipleChoseHandler.deleteItemList()
                     binding.root.showSnackbar(R.string.deleted, 1000, R.string.undo) {
-                        superScope.launch { AccountRepository.addTransactionList(list) }
+                        appScope.launch { AccountRepository.addTransactionList(list) }
                     }
                 }
             }
             .showNow(parentFragmentManager)
     }
+
     private var updateJob: Job? = null
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        viewModel.deleteReceiver.register(lifecycle, NOTIFY_DELETE_TRANSACTION) { _, transaction ->
+            binding.root.showSnackbar(R.string.deleted, 1000, R.string.undo) {
+                appScope.launch {
+                    AccountRepository.addTransaction(transaction)
+                }
+            }
+        }
+    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -225,7 +241,6 @@ class AccountFragment : BaseFragment(R.layout.fragment_account) {
 
     override fun onResume() {
         super.onResume()
-        registerDeleteReceiver()
         if (multipleChoseHandler.needRefresh) {
             binding.rcvAccount.adapter?.notifyDataSetChanged()
         }
@@ -233,28 +248,7 @@ class AccountFragment : BaseFragment(R.layout.fragment_account) {
 
     override fun onPause() {
         super.onPause()
-        unregisterDeleteReceiver()
         multipleChoseHandler.setNeedRefresh()
-    }
-
-    private fun registerDeleteReceiver() {
-        if (viewModel.deleteReceiver == null) {
-            viewModel.deleteReceiver = DeleteItemBroadcastReceiver { _, transaction ->
-                binding.root.showSnackbar(R.string.deleted, 1000, R.string.undo) {
-                    superScope.launch {
-                        AccountRepository.addTransaction(transaction)
-                    }
-                }
-            }
-        }
-        localBroadcastManager.registerDeleteReceiver(
-            NOTIFY_DELETE_TRANSACTION,
-            viewModel.deleteReceiver!!
-        )
-    }
-
-    private fun unregisterDeleteReceiver() {
-        viewModel.deleteReceiver?.let { localBroadcastManager.unregisterReceiver(it) }
     }
 
     companion object {

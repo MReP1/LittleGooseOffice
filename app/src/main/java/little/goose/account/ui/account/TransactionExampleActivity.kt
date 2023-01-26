@@ -22,13 +22,11 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import kotlinx.coroutines.launch
 import little.goose.account.R
 import little.goose.account.appContext
+import little.goose.account.appScope
 import little.goose.account.common.dialog.time.TimeType
-import little.goose.account.common.receiver.DeleteItemBroadcastReceiver
 import little.goose.account.common.viewModelInstance
 import little.goose.account.logic.AccountRepository
 import little.goose.account.logic.data.constant.*
-import little.goose.account.logic.data.entities.Transaction
-import little.goose.account.superScope
 import little.goose.account.ui.account.widget.TransactionCard
 import little.goose.account.ui.base.BaseActivity
 import little.goose.account.ui.theme.AccountTheme
@@ -43,6 +41,11 @@ class TransactionExampleActivity : BaseActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        viewModel.deleteReceiver.register(lifecycle, NOTIFY_DELETE_TRANSACTION) { _, transaction ->
+            lifecycleScope.launch { viewModel.deleteTransaction.emit(transaction) }
+        }
+
         setContent {
             val time = intent.serializable<Date>(KEY_TIME) ?: run {
                 finish()
@@ -86,20 +89,6 @@ class TransactionExampleActivity : BaseActivity() {
         }
     }
 
-    private val deleteReceiver = DeleteItemBroadcastReceiver<Transaction> { _, transaction ->
-        lifecycleScope.launch { viewModel.deleteTransaction.emit(transaction) }
-    }
-
-    override fun onResume() {
-        super.onResume()
-        localBroadcastManager.registerDeleteReceiver(NOTIFY_DELETE_TRANSACTION, deleteReceiver)
-    }
-
-    override fun onPause() {
-        super.onPause()
-        localBroadcastManager.unregisterReceiver(deleteReceiver)
-    }
-
     companion object {
         fun open(
             context: Context,
@@ -137,7 +126,7 @@ private fun TransactionTimeScreen(
         topBar = { TitleBar(title, onBack) },
         snackbarHost = {
             DeleteSnackbarHost(snackbarHostState) {
-                superScope.launch {
+                appScope.launch {
                     deleteTrans?.let { AccountRepository.addTransaction(it) }
                     viewModel.deleteTransaction.emit(null)
                 }

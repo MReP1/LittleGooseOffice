@@ -8,6 +8,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import little.goose.account.common.dialog.time.TimeType
+import little.goose.account.common.receiver.DeleteItemBroadcastReceiver
 import little.goose.account.logic.AccountRepository
 import little.goose.account.logic.data.constant.MoneyType
 import little.goose.account.logic.data.entities.Transaction
@@ -24,6 +25,8 @@ class TransactionExampleViewModel(
     lateinit var transactions: Flow<List<Transaction>>
 
     var deleteTransaction = MutableStateFlow<Transaction?>(null)
+
+    val deleteReceiver = DeleteItemBroadcastReceiver<Transaction>()
 
     init {
         viewModelScope.launch {

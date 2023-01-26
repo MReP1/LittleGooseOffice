@@ -16,6 +16,7 @@ import com.google.android.material.tabs.TabLayoutMediator
 import kotlinx.coroutines.launch
 import little.goose.account.AccountApplication
 import little.goose.account.R
+import little.goose.account.appScope
 import little.goose.account.common.dialog.InputTextDialogFragment
 import little.goose.account.common.dialog.time.DateTimePickerBottomDialog
 import little.goose.account.databinding.ActivityAddTransactionBinding
@@ -144,8 +145,8 @@ class TransactionActivity : BaseActivity(),
             binding.transactionViewPager.apply {
                 adapter = TransactionPagerAdapter(
                     listOf(
-                        TransactionIconHelper.getExpenseIconList(),
-                        TransactionIconHelper.getIncomeIconList()
+                        TransactionIconHelper.expenseIconList,
+                        TransactionIconHelper.incomeIconList
                     )
                 )
                 //获取目前所在页面位置
@@ -191,7 +192,7 @@ class TransactionActivity : BaseActivity(),
                 SnackbarUtils.showNormalMessage(binding.root, getString(R.string.money_cant_be_zero))
                 return
             }
-            AccountApplication.supervisorScope.launch {
+            appScope.launch {
                 viewModel.updateDatabase()
             }
             finish()
