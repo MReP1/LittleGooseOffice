@@ -14,15 +14,14 @@ private val LightColorScheme = lightColorScheme(
     secondary = Red200,
     onSecondary = OnSecondaryColorLight,
     background = BackgroundColor,
-    surface = SurfaceColor,             //表面颜色
+    surface = SurfaceColor,
     onSurface = OnSurfaceColor,
-    surfaceVariant = SurfaceVariantColor,      //卡片颜色
+    surfaceVariant = SurfaceVariantColor,
     onSurfaceVariant = OnSurfaceVariantColor
 )
 
 @Composable
 fun AccountTheme(content: @Composable () -> Unit) {
-    //todo 适配夜间模式
     MaterialTheme(
         colorScheme = LightColorScheme,
         typography = Typography,

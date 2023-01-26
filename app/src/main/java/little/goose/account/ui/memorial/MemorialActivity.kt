@@ -19,15 +19,15 @@ import little.goose.account.ui.base.BaseActivity
 import little.goose.account.utils.appendTimeSuffix
 import little.goose.account.utils.parcelable
 import little.goose.account.utils.toChineseYearMonDayWeek
+import little.goose.account.utils.viewBinding
 
 class MemorialActivity : BaseActivity() {
 
-    private lateinit var binding: ActivityMemorialBinding
+    private val binding by viewBinding(ActivityMemorialBinding::inflate)
     private val viewModel: MemorialActivityViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        binding = ActivityMemorialBinding.inflate(layoutInflater)
         setContentView(binding.root)
         initData()
         initView()

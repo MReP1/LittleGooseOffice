@@ -4,9 +4,6 @@ import android.app.Application
 import android.content.Context
 import kotlinx.coroutines.*
 import little.goose.account.ui.account.transaction.TransactionHelper
-import little.goose.account.ui.memorial.MemorialHelper
-import little.goose.account.ui.notebook.note.NoteHelper
-import little.goose.account.ui.schedule.ScheduleHelper
 import little.goose.account.utils.DataStoreHelper
 
 class AccountApplication : Application() {
@@ -22,10 +19,6 @@ class AccountApplication : Application() {
         appScope.launch {
             awaitAll(
                 async { TransactionHelper.initTransaction() },
-                async { ScheduleHelper.initSchedule() },
-                async { NoteHelper.initNote() },
-                async { MemorialHelper.initMemorials() },
-                async { MemorialHelper.initTopMemorial() },
                 async { DataStoreHelper.INSTANCE.initDataStore() }
             )
             isAppInit = true

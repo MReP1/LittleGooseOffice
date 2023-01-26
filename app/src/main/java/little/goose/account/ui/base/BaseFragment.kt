@@ -10,6 +10,6 @@ open class BaseFragment : Fragment {
     constructor(@LayoutRes layoutId: Int) : super(layoutId)
 
     init {
-        lifecycle.debugLifeCycle()
+        debugLifeCycle()
     }
 }

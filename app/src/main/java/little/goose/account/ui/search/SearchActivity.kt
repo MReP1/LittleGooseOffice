@@ -2,7 +2,6 @@ package little.goose.account.ui.search
 
 import android.content.Context
 import android.content.Intent
-import android.content.IntentFilter
 import android.os.Bundle
 import androidx.core.widget.addTextChangedListener
 import androidx.lifecycle.ViewModelProvider
@@ -14,7 +13,6 @@ import little.goose.account.R
 import little.goose.account.appScope
 import little.goose.account.common.ItemClickCallback
 import little.goose.account.common.ItemSelectCallback
-import little.goose.account.common.receiver.NormalBroadcastReceiver
 import little.goose.account.databinding.ActivityScheduleSearchBinding
 import little.goose.account.logic.AccountRepository
 import little.goose.account.logic.MemorialRepository
@@ -320,26 +318,9 @@ class SearchActivity : BaseActivity() {
 
     /** ---------------------------- */
 
-    override fun onPause() {
-        super.onPause()
-        unregisterReceiver()
-    }
-
     override fun onStart() {
         super.onStart()
         updateRcvData()
-    }
-
-    private fun unregisterReceiver() {
-        when (viewModel.type) {
-            ACCOUNT -> viewModel.transactionDeleteReceiver?.let {
-                localBroadcastManager.unregisterReceiver(it)
-            }
-            SCHEDULE -> {
-                viewModel.scheduleUpdateReceiver?.let { localBroadcastManager.unregisterReceiver(it) }
-                viewModel.scheduleDeleteReceiver?.let { localBroadcastManager.unregisterReceiver(it) }
-            }
-        }
     }
 
     private fun updateRcvData() {

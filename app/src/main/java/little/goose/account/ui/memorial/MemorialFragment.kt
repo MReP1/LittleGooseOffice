@@ -76,13 +76,16 @@ class MemorialFragment : BaseFragment(R.layout.fragment_memorial) {
     private fun initView() {
         binding.apply {
             rcvMemorial.apply {
-                adapter = MemorialRcvAdapter(MemorialHelper.memorialList, multipleChoseHandler,
-                    object : ItemClickCallback<Memorial> {
+                adapter = MemorialRcvAdapter(
+                    list = viewModel.memorials.value,
+                    multipleChoseHandler = multipleChoseHandler,
+                    callback = object : ItemClickCallback<Memorial> {
                         override fun onItemClick(item: Memorial) {
                             MemorialDialogFragment.newInstance(item)
                                 .showNow(parentFragmentManager, KEY_MEMORIAL)
                         }
-                    })
+                    }
+                )
                 layoutManager = LinearLayoutManager(context)
                 addItemDecoration(ItemLinearLayoutDecoration(16.dp(), 16.dp(), 12.dp()))
             }
@@ -93,7 +96,7 @@ class MemorialFragment : BaseFragment(R.layout.fragment_memorial) {
     }
 
     private fun initHeader() {
-        viewModel.topMemorial.collectWithLifecycleOwner(viewLifecycleOwner) { memorial ->
+        viewModel.topMemorial.collectLastWithLifecycleOwner(viewLifecycleOwner) { memorial ->
             setMemorialHeader(memorial)
         }
     }
@@ -110,7 +113,7 @@ class MemorialFragment : BaseFragment(R.layout.fragment_memorial) {
             setOnFloatButtonClickListener(openAddMemorial)
             setOnFloatAllClickListener {
                 multipleChoseHandler.clearItemList()
-                multipleChoseHandler.addList(MemorialHelper.memorialList)
+                multipleChoseHandler.addList(viewModel.memorials.value)
                 binding.rcvMemorial.adapter?.notifyDataSetChanged()
             }
             setOnFloatVectorClickListener { cancelMultiChose() }
@@ -140,21 +143,14 @@ class MemorialFragment : BaseFragment(R.layout.fragment_memorial) {
     }
 
     private fun initData() {
-        launchAndRepeatWithViewLifeCycle {
-            viewModel.allMemorialFlow.collect { list ->
-                updateRcvData(list)
-            }
+        viewModel.memorials.collectLastWithLifecycleOwner(viewLifecycleOwner) {
+            (binding.rcvMemorial.adapter as MemorialRcvAdapter).updateData(it)
         }
     }
 
     private fun cancelMultiChose() {
         multipleChoseHandler.release()
         binding.rcvMemorial.adapter?.notifyDataSetChanged()
-    }
-
-    private fun updateRcvData(list: List<Memorial>) {
-        MemorialHelper.memorialList = list
-        (binding.rcvMemorial.adapter as MemorialRcvAdapter).updateData(list)
     }
 
     override fun onResume() {

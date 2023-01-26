@@ -28,7 +28,7 @@ class MemorialActivityViewModel : ViewModel() {
     fun storeMemorial() {
         if (isChangeTop && memorial.isTop) { //在主线程判断，以免线程不同步
             appScope.launch {
-                val topList = MemorialRepository.getMemorialAtTop().first()
+                val topList = MemorialRepository.getMemorialAtTopFlow().first()
                 for (memorial in topList) {
                     memorial.isTop = false
                 }

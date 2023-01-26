@@ -20,7 +20,8 @@ import little.goose.account.logic.data.entities.Schedule
 import little.goose.account.utils.*
 import java.util.*
 
-class ScheduleDialogFragment : DialogFragment(R.layout.layout_card_schedule) {
+class ScheduleDialogFragment
+private constructor() : DialogFragment(R.layout.layout_card_schedule) {
 
     private val binding by viewBinding(LayoutCardScheduleBinding::bind)
     private var schedule: Schedule? = null

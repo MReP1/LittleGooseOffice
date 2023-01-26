@@ -8,6 +8,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.GridLayoutManager
 import kotlinx.coroutines.launch
 import little.goose.account.R
+import little.goose.account.appScope
 import little.goose.account.common.ItemSelectCallback
 import little.goose.account.common.MultipleChoseHandler
 import little.goose.account.common.dialog.NormalDialogFragment
@@ -15,26 +16,26 @@ import little.goose.account.databinding.FragmentNotebookBinding
 import little.goose.account.logic.NoteRepository
 import little.goose.account.logic.data.constant.NOTEBOOK
 import little.goose.account.logic.data.entities.Note
-import little.goose.account.appScope
 import little.goose.account.ui.base.BaseFragment
 import little.goose.account.ui.decoration.ItemGridLayoutDecoration
 import little.goose.account.ui.notebook.note.NoteActivity
-import little.goose.account.ui.notebook.note.NoteHelper
 import little.goose.account.ui.search.SearchActivity
 import little.goose.account.utils.*
 
 @SuppressLint("NotifyDataSetChanged")
-class NotebookFragment : BaseFragment(R.layout.fragment_notebook) {
+class NotebookFragment
+private constructor() : BaseFragment(R.layout.fragment_notebook) {
 
     private val binding by viewBinding(FragmentNotebookBinding::bind)
 
-    private val viewModel:NotebookViewModel by viewModels()
+    private val viewModel: NotebookViewModel by viewModels()
 
     private val multipleChoseHandler = MultipleChoseHandler<Note>()
 
     private val addOnclickListener = View.OnClickListener {
         NoteActivity.openAdd(requireContext())
     }
+
     private val deleteOnClickListener = View.OnClickListener {
         NormalDialogFragment.Builder()
             .setContent(getString(R.string.confirm_delete))
@@ -74,18 +75,14 @@ class NotebookFragment : BaseFragment(R.layout.fragment_notebook) {
     private fun setRecyclerView() {
         binding.rcvNotebook.apply {
             addItemDecoration(ItemGridLayoutDecoration(dp16, 18.dp(), 18.dp()))
-            adapter =
-                NotebookRcvAdapter(NoteHelper.getNoteList(), noteCallback, multipleChoseHandler)
+            adapter = NotebookRcvAdapter(viewModel.notes.value, noteCallback, multipleChoseHandler)
             layoutManager = GridLayoutManager(this@NotebookFragment.requireContext(), 2)
         }
     }
 
     private fun initFlow() {
-        launchAndRepeatWithViewLifeCycle {
-            viewModel.getAllNoteAsFlow().collect {
-                (binding.rcvNotebook.adapter as? NotebookRcvAdapter)?.updateData(it)
-                NoteHelper.setNoteList(it)
-            }
+        viewModel.notes.collectLastWithLifecycleOwner(viewLifecycleOwner) {
+            (binding.rcvNotebook.adapter as? NotebookRcvAdapter)?.updateData(it)
         }
     }
 
@@ -95,7 +92,7 @@ class NotebookFragment : BaseFragment(R.layout.fragment_notebook) {
                 setOnFloatButtonClickListener(addOnclickListener)
                 setOnFloatAllClickListener {
                     multipleChoseHandler.clearItemList()
-                    multipleChoseHandler.addList(NoteHelper.getNoteList())
+                    multipleChoseHandler.addList(viewModel.notes.value)
                     rcvNotebook.adapter?.notifyDataSetChanged()
                 }
                 setOnFloatVectorClickListener { cancelMultiChose() }

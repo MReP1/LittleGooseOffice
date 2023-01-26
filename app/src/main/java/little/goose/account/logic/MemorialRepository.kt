@@ -19,8 +19,6 @@ object MemorialRepository {
 
     fun getAllMemorialFlow() = memorialDao.getAllMemorialFlow()
 
-    suspend fun getAllMemorial() = memorialDao.getAllMemorial()
-
     suspend fun addMemorial(memorial: Memorial) = memorialDao.addMemorial(memorial)
 
     suspend fun addMemorials(memorials: List<Memorial>) = memorialDao.addMemorials(memorials)
@@ -33,7 +31,7 @@ object MemorialRepository {
 
     suspend fun searchMemorialByText(keyword: String) = memorialDao.searchMemorialByText(keyword)
 
-    fun getMemorialAtTop() = memorialDao.getMemorialAtTop()
+    fun getMemorialAtTopFlow() = memorialDao.getMemorialAtTop()
 
     suspend fun updateMemorials(memorials: List<Memorial>) = memorialDao.updateMemorials(memorials)
 

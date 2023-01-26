@@ -80,11 +80,7 @@ class MainActivity : BaseActivity() {
                     R.id.nav_memorial -> {
                         homeViewPager.setCurrentItem(MEMORIAL, false)
                     }
-//                  R.id.nav_profile -> {
-//                      viewPager.setCurrentItem(HomePageConstant.PROFILE, false)
-//                  }
                 }
-
                 return@setOnItemSelectedListener true
             }
         }

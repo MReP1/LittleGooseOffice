@@ -25,10 +25,11 @@ import little.goose.account.ui.search.SearchActivity
 import little.goose.account.utils.*
 
 @SuppressLint("NotifyDataSetChanged")
-class ScheduleFragment : BaseFragment(R.layout.fragment_schedule) {
+class ScheduleFragment
+private constructor() : BaseFragment(R.layout.fragment_schedule) {
 
     private val binding by viewBinding(FragmentScheduleBinding::bind)
-    private val scheduleViewModel: ScheduleViewModel by viewModels()
+    private val viewModel: ScheduleViewModel by viewModels()
     private var callback: ItemSelectCallback<Schedule>? = null
     private val multipleChoseHandler = MultipleChoseHandler<Schedule>()
 
@@ -40,7 +41,7 @@ class ScheduleFragment : BaseFragment(R.layout.fragment_schedule) {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        scheduleViewModel.deleteReceiver.register(
+        viewModel.deleteReceiver.register(
             lifecycle = lifecycle,
             action = NOTIFY_DELETE_SCHEDULE
         ) { _, schedule ->
@@ -49,11 +50,11 @@ class ScheduleFragment : BaseFragment(R.layout.fragment_schedule) {
             }
         }
 
-        scheduleViewModel.updateReceiver.register(
+        viewModel.updateReceiver.register(
             lifecycle = lifecycle,
             action = NOTIFY_UPDATE_SCHEDULE
         ) { _, _ ->
-            refreshRecyclerView()
+            viewModel.updateSchedules()
         }
     }
 
@@ -93,7 +94,7 @@ class ScheduleFragment : BaseFragment(R.layout.fragment_schedule) {
                 setOnFloatButtonClickListener(openAddListener)
                 setOnFloatAllClickListener {
                     multipleChoseHandler.clearItemList()
-                    multipleChoseHandler.addList(ScheduleHelper.scheduleList)
+                    multipleChoseHandler.addList(viewModel.schedules.value)
                     rcvSchedule.adapter?.notifyDataSetChanged()
                 }
                 setOnFloatVectorClickListener { cancelMultiChose() }
@@ -125,34 +126,18 @@ class ScheduleFragment : BaseFragment(R.layout.fragment_schedule) {
     private fun setRecyclerView() {
         setCallback()
         binding.rcvSchedule.apply {
-            adapter =
-                ScheduleRcvAdapter(ScheduleHelper.scheduleList, callback, multipleChoseHandler)
+            adapter = ScheduleRcvAdapter(viewModel.schedules.value, callback, multipleChoseHandler)
             addItemDecoration(ItemLinearLayoutDecoration(dp16, 18.dp(), 10.dp()))
             layoutManager = LinearLayoutManager(requireContext())
-
-            //观察数据变化
-            launchAndRepeatWithViewLifeCycle {
-                scheduleViewModel.getAllScheduleState().collect {
-                    updateRcvData(it)
-                }
+            viewModel.schedules.collectLastWithLifecycleOwner(viewLifecycleOwner) {
+                (binding.rcvSchedule.adapter as? ScheduleRcvAdapter)?.updateData(it)
             }
-        }
-    }
-
-    private fun refreshRecyclerView() {
-        viewLifecycleOwner.lifecycleScope.launch {
-            updateRcvData(ScheduleRepository.getAllSchedule())
         }
     }
 
     private fun cancelMultiChose() {
         multipleChoseHandler.release()
         binding.rcvSchedule.adapter?.notifyDataSetChanged()
-    }
-
-    private fun updateRcvData(list: List<Schedule>) {
-        ScheduleHelper.scheduleList = list
-        (binding.rcvSchedule.adapter as? ScheduleRcvAdapter)?.updateData(list)
     }
 
     override fun onResume() {

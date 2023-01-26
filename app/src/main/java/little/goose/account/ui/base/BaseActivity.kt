@@ -9,7 +9,7 @@ import little.goose.account.utils.debugLifeCycle
 open class BaseActivity : AppCompatActivity() {
 
     init {
-        lifecycle.debugLifeCycle()
+        debugLifeCycle()
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
