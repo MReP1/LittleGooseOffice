@@ -15,44 +15,23 @@ object NoteRepository {
         NoteDatabase::class.java,
         TABLE_NOTE
     ).build()
+
     private val noteDao = database.noteDao()
 
-    suspend fun addNote(note: Note) = withContext(Dispatchers.IO) {
-        noteDao.addNote(note)
-    }
+    suspend fun addNote(note: Note) = noteDao.addNote(note)
 
-    suspend fun addNoteList(noteList: List<Note>) {
-        withContext(Dispatchers.IO) {
-            noteDao.addNoteList(noteList)
-        }
-    }
+    suspend fun addNoteList(noteList: List<Note>) = noteDao.addNoteList(noteList)
 
-    suspend fun updateNote(note: Note) {
-        withContext(Dispatchers.IO) {
-            noteDao.updateNote(note)
-        }
-    }
+    suspend fun updateNote(note: Note) = noteDao.updateNote(note)
 
-    suspend fun getAllNote() = withContext(Dispatchers.IO) {
-        noteDao.getAllNote()
-    }
+    suspend fun getAllNote() = noteDao.getAllNote()
 
     fun getAllNoteFlow() = noteDao.getAllNoteFlow()
 
-    suspend fun deleteNote(note: Note) {
-        withContext(Dispatchers.IO) {
-            noteDao.deleteNote(note)
-        }
-    }
+    suspend fun deleteNote(note: Note) = noteDao.deleteNote(note)
 
-    suspend fun deleteNoteList(noteList: List<Note>) {
-        withContext(Dispatchers.IO) {
-            noteDao.deleteNoteList(noteList)
-        }
-    }
+    suspend fun deleteNoteList(noteList: List<Note>) = noteDao.deleteNoteList(noteList)
 
-    suspend fun searchNoteByText(text: String) = withContext(Dispatchers.IO) {
-        noteDao.searchNoteByText(text)
-    }
+    suspend fun searchNoteByText(text: String) = noteDao.searchNoteByText(text)
 
 }

@@ -81,7 +81,7 @@ private constructor() : BaseFragment(R.layout.fragment_schedule) {
                 viewLifecycleOwner.lifecycleScope.launch {
                     val list = multipleChoseHandler.deleteItemList()
                     binding.root.showSnackbar(R.string.deleted, 1000, R.string.undo) {
-                        appScope.launch { ScheduleRepository.addScheduleList(list) }
+                        appScope.launch { ScheduleRepository.addSchedules(list) }
                     }
                 }
             }

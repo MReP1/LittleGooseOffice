@@ -11,23 +11,23 @@ interface NoteDao {
     fun getAllNoteFlow(): Flow<List<Note>>
 
     @Query("SELECT * FROM $TABLE_NOTE ORDER BY time DESC")
-    fun getAllNote(): List<Note>
+    suspend fun getAllNote(): List<Note>
 
     @Insert
-    fun addNote(note: Note): Long
+    suspend fun addNote(note: Note): Long
 
     @Insert
-    fun addNoteList(noteList: List<Note>)
+    suspend fun addNoteList(noteList: List<Note>)
 
     @Update
-    fun updateNote(note: Note)
+    suspend fun updateNote(note: Note)
 
     @Delete
-    fun deleteNote(note: Note)
+    suspend fun deleteNote(note: Note)
 
     @Delete
-    fun deleteNoteList(noteList: List<Note>)
+    suspend fun deleteNoteList(noteList: List<Note>)
 
     @Query("SELECT * FROM $TABLE_NOTE WHERE title LIKE '%'|| :text ||'%' OR content LIKE '%'|| :text ||'%'")
-    fun searchNoteByText(text: String): List<Note>
+    suspend fun searchNoteByText(text: String): List<Note>
 }

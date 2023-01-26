@@ -15,10 +15,10 @@ interface AccountDao {
     fun getAllTransactionFlow(): Flow<List<Transaction>>
 
     @Query("SELECT * FROM $TABLE_TRANSACTION ORDER BY time DESC")
-    fun getAllTransaction(): List<Transaction>
+    suspend fun getAllTransaction(): List<Transaction>
 
     @Query("SELECT * FROM $TABLE_TRANSACTION WHERE time > :startTime and time < :endTime ORDER BY time DESC")
-    fun getTransactionByTime(startTime: Long, endTime: Long): List<Transaction>
+    suspend fun getTransactionByTime(startTime: Long, endTime: Long): List<Transaction>
 
     @Query("SELECT * FROM $TABLE_TRANSACTION WHERE time > :startTime and time < :endTime ORDER BY time DESC")
     fun getTransactionByTimeFlow(startTime: Long, endTime: Long): Flow<List<Transaction>>
@@ -34,38 +34,38 @@ interface AccountDao {
     ): Flow<List<Transaction>>
 
     @Insert
-    fun addTransaction(transaction: Transaction)
+    suspend fun addTransaction(transaction: Transaction)
 
     @Insert
-    fun addTransactionList(transactionList: List<Transaction>)
+    suspend fun addTransactionList(transactionList: List<Transaction>)
 
     @Update
-    fun updateTransaction(transaction: Transaction)
+    suspend fun updateTransaction(transaction: Transaction)
 
     @Delete
-    fun deleteTransaction(transaction: Transaction)
+    suspend fun deleteTransaction(transaction: Transaction)
 
     @Delete
-    fun deleteTransactionList(transactionList: List<Transaction>)
+   suspend fun deleteTransactionList(transactionList: List<Transaction>)
 
     @Query("SELECT SUM(money) FROM $TABLE_TRANSACTION")
-    fun getAllTransactionSum(): Double
+    suspend fun getAllTransactionSum(): Double
 
     @Query("SELECT SUM(money) FROM $TABLE_TRANSACTION WHERE type = $EXPENSE")
-    fun getAllTransactionExpenseSum(): Double
+    suspend fun getAllTransactionExpenseSum(): Double
 
     @Query("SELECT SUM(money) FROM $TABLE_TRANSACTION WHERE type = $INCOME")
-    fun getAllTransactionIncomeSum(): Double
+    suspend fun getAllTransactionIncomeSum(): Double
 
     @Query("SELECT SUM(money) FROM $TABLE_TRANSACTION WHERE time > :startTime and time < :endTime and type = $EXPENSE")
-    fun getTransactionExpenseSumByTime(startTime: Long, endTime: Long): Double
+    suspend fun getTransactionExpenseSumByTime(startTime: Long, endTime: Long): Double
 
     @Query("SELECT SUM(money) FROM $TABLE_TRANSACTION WHERE time > :startTime and time < :endTime and type = $INCOME")
-    fun getTransactionIncomeSumByTime(startTime: Long, endTime: Long): Double
+    suspend fun getTransactionIncomeSumByTime(startTime: Long, endTime: Long): Double
 
     @Query("SELECT * FROM $TABLE_TRANSACTION WHERE money LIKE '%'|| :money ||'%' OR description LIKE '%'|| :money ||'%' ")
-    fun searchTransactionByMoney(money: String): List<Transaction>
+    suspend fun searchTransactionByMoney(money: String): List<Transaction>
 
     @Query("SELECT * FROM $TABLE_TRANSACTION WHERE description LIKE '%'|| :text ||'%' OR content LIKE '%'|| :text ||'%'")
-    fun searchTransactionByText(text: String): List<Transaction>
+    suspend fun searchTransactionByText(text: String): List<Transaction>
 }

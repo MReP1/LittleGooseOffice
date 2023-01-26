@@ -54,7 +54,7 @@ class MultipleChoseHandler<T> {
             when (itemList[0]) {
                 is Schedule -> {
                     tempList = itemList.toList()
-                    ScheduleRepository.deleteScheduleList(
+                    ScheduleRepository.deleteSchedules(
                         tempList.toTypeOr(emptyList())
                     )
                 }

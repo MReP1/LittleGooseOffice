@@ -423,7 +423,7 @@ class HomeFragment : BaseFragment(R.layout.fragment_home) {
             }
 
             val mapSchedulesDeferred = async(Dispatchers.IO) {
-                ScheduleRepository.getScheduleByYearMonthRaw(year, month).getMapDayBoolean()
+                ScheduleRepository.getScheduleByYearMonth(year, month).getMapDayBoolean()
             }
 
             val mapMemorialsDeferred = async(Dispatchers.IO) {
