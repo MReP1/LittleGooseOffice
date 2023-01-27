@@ -1,9 +1,7 @@
 package little.goose.account.logic
 
 import androidx.room.Room
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.withContext
 import little.goose.account.appContext
 import little.goose.account.logic.data.constant.AccountConstant.EXPENSE
 import little.goose.account.logic.data.constant.AccountConstant.INCOME
@@ -27,63 +25,39 @@ object AccountRepository {
     //跑全库方法，不要乱用哦
     fun getAllTransactionFlow() = accountDao.getAllTransactionFlow()
 
-    suspend fun addTransaction(transaction: Transaction) {
-        withContext(Dispatchers.IO) {
-            accountDao.addTransaction(transaction)
-        }
-    }
+    suspend fun addTransaction(transaction: Transaction) = accountDao.addTransaction(transaction)
 
-    suspend fun addTransactionList(transactionList: List<Transaction>) {
-        withContext(Dispatchers.IO) {
-            accountDao.addTransactionList(transactionList)
-        }
-    }
+    suspend fun addTransactions(transactions: List<Transaction>) =
+        accountDao.addTransactions(transactions)
 
-    suspend fun updateTransaction(transaction: Transaction) {
-        withContext(Dispatchers.IO) {
-            accountDao.updateTransaction(transaction)
-        }
-    }
 
-    suspend fun deleteTransaction(transaction: Transaction) {
-        withContext(Dispatchers.IO) {
-            accountDao.deleteTransaction(transaction)
-        }
-    }
+    suspend fun updateTransaction(transaction: Transaction) =
+        accountDao.updateTransaction(transaction)
 
-    suspend fun deleteTransactionList(transactionList: List<Transaction>) {
-        withContext(Dispatchers.IO) {
-            accountDao.deleteTransactionList(transactionList)
-        }
-    }
+
+    suspend fun deleteTransaction(transaction: Transaction) =
+        accountDao.deleteTransaction(transaction)
+
+    suspend fun deleteTransactions(transactionList: List<Transaction>) =
+        accountDao.deleteTransactions(transactionList)
+
 
     suspend fun getTransactionCurrentMonth(): List<Transaction> {
-        return withContext(Dispatchers.IO) {
-            val curCalendar = Calendar.getInstance()
-            val curYear = curCalendar.getYear()
-            val curMonth = curCalendar.getMonth()
-            getTransactionByYearAndMonth(curYear, curMonth)
-        }
+        val curCalendar = Calendar.getInstance()
+        val curYear = curCalendar.getYear()
+        val curMonth = curCalendar.getMonth()
+        return getTransactionsByYearAndMonth(curYear, curMonth)
     }
 
-    suspend fun getTransactionCurrentMonthFlow(): Flow<List<Transaction>> {
-        return withContext(Dispatchers.IO) {
-            val curCalendar = Calendar.getInstance()
-            val curYear = curCalendar.getYear()
-            val curMonth = curCalendar.getMonth()
-            getTransactionByYearMonthFlow(curYear, curMonth)
-        }
+    fun getTransactionCurrentMonthFlow(): Flow<List<Transaction>> {
+        val curCalendar = Calendar.getInstance()
+        val curYear = curCalendar.getYear()
+        val curMonth = curCalendar.getMonth()
+        return getTransactionByYearMonthFlow(curYear, curMonth)
     }
 
-    private suspend fun getTransactionByYearAndMonth(year: Int, month: Int): List<Transaction> {
-        return withContext(Dispatchers.IO) {
-            getTransactionByYearAndMonthRaw(year, month)
-        }
-    }
-
-    suspend fun getTransactionByYearAndMonthRaw(year: Int, month: Int): List<Transaction> {
-        val calendar = Calendar.getInstance()
-        calendar.apply {
+    suspend fun getTransactionsByYearAndMonth(year: Int, month: Int): List<Transaction> {
+        val calendar = Calendar.getInstance().apply {
             clear()
             setDate(1)
             setYear(year)
@@ -95,9 +69,8 @@ object AccountRepository {
         return accountDao.getTransactionByTime(startTime, endTime)
     }
 
-    suspend fun getExpenseSumByYearMonthRaw(year: Int, month: Int): Double {
-        val calendar = Calendar.getInstance()
-        calendar.apply {
+    suspend fun getExpenseSumByYearMonth(year: Int, month: Int): Double {
+        val calendar = Calendar.getInstance().apply {
             clear()
             setDate(1)
             setYear(year)
@@ -109,9 +82,8 @@ object AccountRepository {
         return accountDao.getTransactionExpenseSumByTime(startTime, endTime)
     }
 
-    suspend fun getIncomeSumByYearMonthRaw(year: Int, month: Int): Double {
-        val calendar = Calendar.getInstance()
-        calendar.apply {
+    suspend fun getIncomeSumByYearMonth(year: Int, month: Int): Double {
+        val calendar = Calendar.getInstance().apply {
             clear()
             setDate(1)
             setYear(year)
@@ -123,9 +95,8 @@ object AccountRepository {
         return accountDao.getTransactionIncomeSumByTime(startTime, endTime)
     }
 
-    suspend fun getTransactionByYearRaw(year: Int): List<Transaction> {
-        val calendar = Calendar.getInstance()
-        calendar.apply {
+    suspend fun getTransactionByYear(year: Int): List<Transaction> {
+        val calendar = Calendar.getInstance().apply {
             clear()
             setDate(1)
             setYear(year)
@@ -136,9 +107,8 @@ object AccountRepository {
         return accountDao.getTransactionByTime(startTime, endTime)
     }
 
-    suspend fun getExpenseSumByYearRaw(year: Int): Double {
-        val calendar = Calendar.getInstance()
-        calendar.apply {
+    suspend fun getExpenseSumByYear(year: Int): Double {
+        val calendar = Calendar.getInstance().apply {
             clear()
             setDate(1)
             setYear(year)
@@ -149,9 +119,8 @@ object AccountRepository {
         return accountDao.getTransactionExpenseSumByTime(startTime, endTime)
     }
 
-    suspend fun getIncomeSumByYearRaw(year: Int): Double {
-        val calendar = Calendar.getInstance()
-        calendar.apply {
+    suspend fun getIncomeSumByYear(year: Int): Double {
+        val calendar = Calendar.getInstance().apply {
             clear()
             setDate(1)
             setYear(year)
@@ -182,8 +151,7 @@ object AccountRepository {
     fun getTransactionByYearMonthFlow(
         year: Int, month: Int, moneyType: MoneyType = MoneyType.BALANCE
     ): Flow<List<Transaction>> {
-        val calendar = Calendar.getInstance()
-        calendar.apply {
+        val calendar = Calendar.getInstance().apply {
             clear()
             setDate(1)
             setYear(year)
@@ -234,7 +202,7 @@ object AccountRepository {
         return accountDao.getTransactionByTimeFlowWithKeyContent(startTime, endTime, keyContent)
     }
 
-    suspend fun getAllTransactionExpenseSumRaw(): BigDecimal {
+    suspend fun getAllTransactionExpenseSum(): BigDecimal {
         val sum = accountDao.getAllTransactionExpenseSum()
         return if (sum == 0.00) {
             BigDecimal(0)
@@ -243,7 +211,7 @@ object AccountRepository {
         }
     }
 
-    suspend fun getAllTransactionIncomeSumRaw(): BigDecimal {
+    suspend fun getAllTransactionIncomeSum(): BigDecimal {
         val sum = accountDao.getAllTransactionIncomeSum()
         return if (sum == 0.00) {
             BigDecimal(0)
@@ -252,11 +220,7 @@ object AccountRepository {
         }
     }
 
-    suspend fun searchTransactionByMoney(money: String) = withContext(Dispatchers.IO) {
-        accountDao.searchTransactionByMoney(money)
-    }
+    suspend fun searchTransactionByMoney(money: String) = accountDao.searchTransactionByMoney(money)
 
-    suspend fun searchTransactionByText(text: String) = withContext(Dispatchers.IO) {
-        accountDao.searchTransactionByText(text)
-    }
+    suspend fun searchTransactionByText(text: String) = accountDao.searchTransactionByText(text)
 }

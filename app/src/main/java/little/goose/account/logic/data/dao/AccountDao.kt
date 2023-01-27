@@ -4,7 +4,6 @@ import androidx.room.*
 import kotlinx.coroutines.flow.Flow
 import little.goose.account.logic.data.constant.AccountConstant.EXPENSE
 import little.goose.account.logic.data.constant.AccountConstant.INCOME
-import little.goose.account.logic.data.constant.MoneyType
 import little.goose.account.logic.data.constant.TABLE_TRANSACTION
 import little.goose.account.logic.data.entities.Transaction
 
@@ -37,7 +36,7 @@ interface AccountDao {
     suspend fun addTransaction(transaction: Transaction)
 
     @Insert
-    suspend fun addTransactionList(transactionList: List<Transaction>)
+    suspend fun addTransactions(transactionList: List<Transaction>)
 
     @Update
     suspend fun updateTransaction(transaction: Transaction)
@@ -46,7 +45,7 @@ interface AccountDao {
     suspend fun deleteTransaction(transaction: Transaction)
 
     @Delete
-   suspend fun deleteTransactionList(transactionList: List<Transaction>)
+   suspend fun deleteTransactions(transactionList: List<Transaction>)
 
     @Query("SELECT SUM(money) FROM $TABLE_TRANSACTION")
     suspend fun getAllTransactionSum(): Double

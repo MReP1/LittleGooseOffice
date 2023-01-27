@@ -58,7 +58,7 @@ class AccountFragment : BaseFragment(R.layout.fragment_account) {
                 viewLifecycleOwner.lifecycleScope.launch {
                     val list = multipleChoseHandler.deleteItemList()
                     binding.root.showSnackbar(R.string.deleted, 1000, R.string.undo) {
-                        appScope.launch { AccountRepository.addTransactionList(list) }
+                        appScope.launch { AccountRepository.addTransactions(list) }
                     }
                 }
             }

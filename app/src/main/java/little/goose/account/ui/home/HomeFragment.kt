@@ -419,7 +419,7 @@ class HomeFragment : BaseFragment(R.layout.fragment_home) {
 
             //异步获取
             val mapDayMoneyDeferred = async(Dispatchers.IO) {
-                AccountRepository.getTransactionByYearAndMonthRaw(year, month).getMapDayMoney()
+                AccountRepository.getTransactionsByYearAndMonth(year, month).getMapDayMoney()
             }
 
             val mapSchedulesDeferred = async(Dispatchers.IO) {

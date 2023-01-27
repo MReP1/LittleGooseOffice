@@ -62,13 +62,13 @@ class AnalysisFragmentViewModel : ViewModel() {
     fun updateTransactionListYear() {
         viewModelScope.launch(Dispatchers.Default) {
             val listDeferred = async(Dispatchers.IO) {
-                AccountRepository.getTransactionByYearRaw(yearFlow.value)
+                AccountRepository.getTransactionByYear(yearFlow.value)
             }
             val expenseSumDeferred = async(Dispatchers.IO) {
-                AccountRepository.getExpenseSumByYearRaw(yearFlow.value)
+                AccountRepository.getExpenseSumByYear(yearFlow.value)
             }
             val incomeSumDeferred = async(Dispatchers.IO) {
-                AccountRepository.getIncomeSumByYearRaw(yearFlow.value)
+                AccountRepository.getIncomeSumByYear(yearFlow.value)
             }
             val list = listDeferred.await()
             val expenseSum = expenseSumDeferred.await()
@@ -88,13 +88,13 @@ class AnalysisFragmentViewModel : ViewModel() {
     fun updateTransactionListMonth() {
         viewModelScope.launch(Dispatchers.Default) {
             val listDeferred = async(Dispatchers.IO) {
-                AccountRepository.getTransactionByYearAndMonthRaw(yearFlow.value, monthFlow.value)
+                AccountRepository.getTransactionsByYearAndMonth(yearFlow.value, monthFlow.value)
             }
             val expenseSumDeferred = async(Dispatchers.IO) {
-                AccountRepository.getExpenseSumByYearMonthRaw(yearFlow.value, monthFlow.value)
+                AccountRepository.getExpenseSumByYearMonth(yearFlow.value, monthFlow.value)
             }
             val incomeSumDeferred = async(Dispatchers.IO) {
-                AccountRepository.getIncomeSumByYearMonthRaw(yearFlow.value, monthFlow.value)
+                AccountRepository.getIncomeSumByYearMonth(yearFlow.value, monthFlow.value)
             }
             val list = listDeferred.await()
             val expenseSum = expenseSumDeferred.await()

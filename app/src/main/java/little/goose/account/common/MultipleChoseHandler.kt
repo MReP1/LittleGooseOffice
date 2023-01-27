@@ -60,7 +60,7 @@ class MultipleChoseHandler<T> {
                 }
                 is Transaction -> {
                     tempList = itemList.toList()
-                    AccountRepository.deleteTransactionList(
+                    AccountRepository.deleteTransactions(
                         tempList.toTypeOr(emptyList())
                     )
                 }
