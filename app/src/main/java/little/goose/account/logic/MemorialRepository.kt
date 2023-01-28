@@ -35,7 +35,7 @@ object MemorialRepository {
 
     suspend fun updateMemorials(memorials: List<Memorial>) = memorialDao.updateMemorials(memorials)
 
-    suspend fun getMemorialsByYearMonthRaw(year: Int, month: Int): List<Memorial> {
+    suspend fun getMemorialsByYearMonth(year: Int, month: Int): List<Memorial> {
         val monthRange = getOneMonthRange(year, month)
         return memorialDao.getMemorialByTime(monthRange.startTime, monthRange.endTime)
     }

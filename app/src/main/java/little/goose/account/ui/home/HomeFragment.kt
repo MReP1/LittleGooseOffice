@@ -427,7 +427,7 @@ class HomeFragment : BaseFragment(R.layout.fragment_home) {
             }
 
             val mapMemorialsDeferred = async(Dispatchers.IO) {
-                MemorialRepository.getMemorialsByYearMonthRaw(year, month).getMapDayBoolean()
+                MemorialRepository.getMemorialsByYearMonth(year, month).getMapDayBoolean()
             }
 
             val mapDayMoney = mapDayMoneyDeferred.await()
