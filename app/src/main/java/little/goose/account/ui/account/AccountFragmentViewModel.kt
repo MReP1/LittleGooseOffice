@@ -9,7 +9,7 @@ import little.goose.account.logic.data.entities.Transaction
 
 class AccountFragmentViewModel : ViewModel() {
 
-    suspend fun getCurMonthTransactionFlow() = AccountRepository.getTransactionCurrentMonthFlow()
+    fun getCurMonthTransactionFlow() = AccountRepository.getTransactionCurrentMonthFlow()
 
     val deleteReceiver = DeleteItemBroadcastReceiver<Transaction>()
 

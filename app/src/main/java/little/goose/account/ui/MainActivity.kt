@@ -4,6 +4,7 @@ import android.os.Bundle
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.datastore.preferences.core.edit
 import androidx.lifecycle.lifecycleScope
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 import little.goose.account.R
 import little.goose.account.databinding.ActivityMainBinding
@@ -16,6 +17,7 @@ import little.goose.account.utils.homeDataStore
 import little.goose.account.utils.viewBinding
 import little.goose.account.utils.withData
 
+@AndroidEntryPoint
 class MainActivity : BaseActivity() {
 
     private val binding by viewBinding(ActivityMainBinding::inflate)

@@ -5,6 +5,7 @@ import android.content.Intent
 import android.os.Bundle
 import androidx.activity.viewModels
 import androidx.lifecycle.lifecycleScope
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 import little.goose.account.common.dialog.InputTextDialogFragment
 import little.goose.account.common.dialog.time.DateTimePickerBottomDialog
@@ -21,6 +22,7 @@ import little.goose.account.utils.parcelable
 import little.goose.account.utils.toChineseYearMonDayWeek
 import little.goose.account.utils.viewBinding
 
+@AndroidEntryPoint
 class MemorialActivity : BaseActivity() {
 
     private val binding by viewBinding(ActivityMemorialBinding::inflate)

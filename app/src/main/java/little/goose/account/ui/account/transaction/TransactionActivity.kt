@@ -13,8 +13,8 @@ import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.viewpager2.widget.ViewPager2
 import com.google.android.material.tabs.TabLayoutMediator
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
-import little.goose.account.AccountApplication
 import little.goose.account.R
 import little.goose.account.appScope
 import little.goose.account.common.dialog.InputTextDialogFragment
@@ -35,6 +35,7 @@ import little.goose.account.utils.viewBinding
 import java.math.BigDecimal
 import java.util.*
 
+@AndroidEntryPoint
 class TransactionActivity : BaseActivity(),
     View.OnClickListener, TransactionViewModel.ButtonCallback {
 

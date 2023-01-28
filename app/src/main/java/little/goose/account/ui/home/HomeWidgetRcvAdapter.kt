@@ -8,7 +8,6 @@ import androidx.recyclerview.widget.RecyclerView
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import little.goose.account.AccountApplication
 import little.goose.account.R
 import little.goose.account.appScope
 import little.goose.account.databinding.ItemHomeWidgetBinding
@@ -82,8 +81,7 @@ class HomeWidgetRcvAdapter(
             )
         )
         holder.itemView.setOnClickListener {
-            TransactionDialogFragment.newInstance(transaction)
-                .showNow(fragmentManager, "transaction")
+            TransactionDialogFragment.showNow(transaction, fragmentManager)
         }
     }
 

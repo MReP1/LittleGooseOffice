@@ -4,8 +4,8 @@ import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import androidx.lifecycle.ViewModelProvider
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
-import little.goose.account.AccountApplication
 import little.goose.account.R
 import little.goose.account.appScope
 import little.goose.account.databinding.ActivityNoteBinding
@@ -15,6 +15,7 @@ import little.goose.account.utils.parcelable
 import little.goose.account.utils.viewBinding
 import java.util.*
 
+@AndroidEntryPoint
 class NoteActivity : BaseActivity() {
 
     private val binding by viewBinding(ActivityNoteBinding::inflate)

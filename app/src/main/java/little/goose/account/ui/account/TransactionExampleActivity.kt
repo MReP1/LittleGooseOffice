@@ -7,6 +7,7 @@ import android.os.Parcelable
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -14,19 +15,17 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
-import androidx.fragment.app.FragmentManager
-import androidx.lifecycle.lifecycleScope
-import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.hilt.navigation.compose.hiltViewModel
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 import little.goose.account.R
-import little.goose.account.appContext
-import little.goose.account.appScope
 import little.goose.account.common.dialog.time.TimeType
-import little.goose.account.common.viewModelInstance
-import little.goose.account.logic.AccountRepository
 import little.goose.account.logic.data.constant.*
+import little.goose.account.logic.data.entities.Transaction
+import little.goose.account.ui.account.transaction.TransactionDialogFragment
 import little.goose.account.ui.account.widget.TransactionCard
 import little.goose.account.ui.base.BaseActivity
 import little.goose.account.ui.theme.AccountTheme
@@ -35,56 +34,32 @@ import little.goose.account.utils.*
 import java.io.Serializable
 import java.util.*
 
+@AndroidEntryPoint
 class TransactionExampleActivity : BaseActivity() {
-
-    private lateinit var viewModel: TransactionExampleViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
-        viewModel.deleteReceiver.register(lifecycle, NOTIFY_DELETE_TRANSACTION) { _, transaction ->
-            lifecycleScope.launch { viewModel.deleteTransaction.emit(transaction) }
-        }
-
         setContent {
-            val time = intent.serializable<Date>(KEY_TIME) ?: run {
-                finish()
-                return@setContent
-            }
-            val content = intent.getStringExtra(KEY_CONTENT)
-            val timeType = intent.parcelable<TimeType>(KEY_TIME_TYPE) ?: run {
-                finish()
-                return@setContent
-            }
-            val moneyType = intent.parcelable<MoneyType>(KEY_MONEY_TYPE) ?: run {
-                finish()
-                return@setContent
-            }
-
-            viewModel = viewModelInstance {
-                TransactionExampleViewModel(time, content, timeType, moneyType)
-            }
-
-            val title = when (timeType) {
-                TimeType.DATE -> {
-                    time.toChineseYearMonthDay()
+            val title = remember {
+                val time = intent.serializable<Date>(KEY_TIME)!!
+                when (intent.parcelable<TimeType>(KEY_TIME_TYPE)!!) {
+                    TimeType.DATE -> time.toChineseYearMonthDay()
+                    TimeType.YEAR_MONTH -> time.toChineseYearMonth()
+                    TimeType.YEAR -> time.toChineseYear()
+                    else -> throw IllegalArgumentException()
                 }
-                TimeType.YEAR_MONTH -> {
-                    time.toChineseYearMonth()
-                }
-                TimeType.YEAR -> {
-                    time.toChineseYear()
-                }
-                else -> "不支持"
             }
-
             AccountTheme {
                 TransactionTimeScreen(
+                    modifier = Modifier.fillMaxSize(),
                     title = title,
-                    fragmentManager = supportFragmentManager
-                ) {
-                    finish()
-                }
+                    onTransactionClick = { transaction ->
+                        TransactionDialogFragment.showNow(transaction, supportFragmentManager)
+                    },
+                    onBack = {
+                        finish()
+                    }
+                )
             }
         }
     }
@@ -110,28 +85,47 @@ class TransactionExampleActivity : BaseActivity() {
 
 @Composable
 private fun TransactionTimeScreen(
+    modifier: Modifier = Modifier,
     title: String,
-    fragmentManager: FragmentManager? = null,
+    onTransactionClick: (Transaction) -> Unit,
     onBack: () -> Unit
 ) {
     val scope = rememberCoroutineScope()
+    val context = LocalContext.current
 
-    val viewModel = viewModel<TransactionExampleViewModel>()
+    val viewModel = hiltViewModel<TransactionExampleViewModel>()
+
     val transactions by viewModel.transactions.collectAsState(initial = emptyList())
-    val deleteTrans by viewModel.deleteTransaction.collectAsState()
+    val deleteTransaction by viewModel.deleteTransaction.collectAsState()
 
     val snackbarHostState = remember { SnackbarHostState() }
 
     Scaffold(
-        topBar = { TitleBar(title, onBack) },
-        snackbarHost = {
-            DeleteSnackbarHost(snackbarHostState) {
-                appScope.launch {
-                    deleteTrans?.let { AccountRepository.addTransaction(it) }
-                    viewModel.deleteTransaction.emit(null)
+        modifier = modifier,
+        topBar = {
+            TopAppBar(
+                modifier = Modifier,
+                title = { Text(text = title) },
+                navigationIcon = {
+                    IconButton(onClick = { onBack() }) {
+                        Icon(
+                            painter = painterResource(id = R.drawable.icon_back),
+                            contentDescription = ""
+                        )
+                    }
                 }
-                snackbarHostState.currentSnackbarData?.dismiss()
-            }
+            )
+        },
+        snackbarHost = {
+            DeleteSnackbarHost(
+                action = {
+                    scope.launch {
+                        viewModel.undo()
+                        snackbarHostState.currentSnackbarData?.dismiss()
+                    }
+                },
+                snackbarHostState = snackbarHostState
+            )
         }
     ) { paddingValues ->
         LazyColumn(
@@ -139,44 +133,40 @@ private fun TransactionTimeScreen(
             contentPadding = PaddingValues(16.dp, 16.dp),
             verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
-            items(transactions, key = { it.id!! }) { transaction ->
-                TransactionCard(transaction, fragmentManager)
+            items(
+                items = transactions,
+                key = { it.id!! }
+            ) { transaction ->
+                TransactionCard(
+                    transaction = transaction,
+                    onTransactionClick = onTransactionClick
+                )
             }
         }
     }
 
-    deleteTrans?.let {
-        scope.launch {
+    LaunchedEffect(deleteTransaction) {
+        if (deleteTransaction != null) {
             snackbarHostState.showSnackbar(
-                message = appContext.getString(R.string.deleted),
-                actionLabel = appContext.getString(R.string.undo),
-                1000L
+                message = context.getString(R.string.deleted),
+                actionLabel = context.getString(R.string.undo),
+                duration = 2000L
             )
         }
     }
 }
 
-@Composable
-private fun TitleBar(title: String, onBack: () -> Unit) {
-    TopAppBar(
-        title = { Text(text = title) },
-        navigationIcon = {
-            IconButton(onClick = { onBack() }) {
-                Icon(painter = painterResource(id = R.drawable.icon_back), contentDescription = "")
-            }
-        }
-    )
-}
 
 @Composable
 fun DeleteSnackbarHost(
-    snackbarHostState: SnackbarHostState,
-    action: () -> Unit
+    modifier: Modifier = Modifier,
+    action: () -> Unit,
+    snackbarHostState: SnackbarHostState
 ) {
     SnackbarHost(hostState = snackbarHostState) { snackbarData ->
-        Snackbar(modifier = Modifier.padding(12.dp), action = {
+        Snackbar(modifier = modifier.padding(12.dp), action = {
             snackbarData.visuals.actionLabel?.let { label ->
-                TextButton(onClick = { action() }) {
+                TextButton(onClick = action) {
                     Text(text = label, color = Red200)
                 }
             }

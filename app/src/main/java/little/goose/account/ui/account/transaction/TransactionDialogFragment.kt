@@ -6,8 +6,8 @@ import android.view.Gravity
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.DialogFragment
+import androidx.fragment.app.FragmentManager
 import kotlinx.coroutines.launch
-import little.goose.account.AccountApplication
 import little.goose.account.R
 import little.goose.account.appScope
 import little.goose.account.common.dialog.NormalDialogFragment
@@ -58,7 +58,7 @@ class TransactionDialogFragment : DialogFragment(R.layout.layout_dialog_transact
                         sendDeleteBroadcast()
                     }
                 }
-                .setCancelCallback {  }
+                .setCancelCallback { }
                 .showNow(parentFragmentManager)
             this.dismiss()
         }
@@ -86,11 +86,12 @@ class TransactionDialogFragment : DialogFragment(R.layout.layout_dialog_transact
     }
 
     companion object {
-        fun newInstance(transaction: Transaction): TransactionDialogFragment {
-            val bundle = Bundle().apply {
-                putParcelable(KEY_TRANSACTION, transaction)
-            }
-            return TransactionDialogFragment().apply { arguments = bundle }
+        fun showNow(transaction: Transaction, fragmentManager: FragmentManager) {
+            TransactionDialogFragment().apply {
+                arguments = Bundle().apply {
+                    putParcelable(KEY_TRANSACTION, transaction)
+                }
+            }.showNow(fragmentManager, KEY_TRANSACTION)
         }
     }
 }

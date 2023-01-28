@@ -221,8 +221,7 @@ class AccountFragment : BaseFragment(R.layout.fragment_account) {
     private fun setCallback() {
         itemSelectCallback = object : ItemSelectCallback<Transaction> {
             override fun onItemClick(item: Transaction) {
-                TransactionDialogFragment.newInstance(item)
-                    .showNow(parentFragmentManager, "transaction")
+                TransactionDialogFragment.showNow(item, parentFragmentManager)
             }
 
             override fun onItemLongClick(item: Transaction) {}

@@ -8,6 +8,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 import little.goose.account.R
 import little.goose.account.appScope
@@ -35,6 +36,7 @@ import little.goose.account.ui.schedule.ScheduleDialogFragment
 import little.goose.account.ui.schedule.ScheduleRcvAdapter
 import little.goose.account.utils.*
 
+@AndroidEntryPoint
 class SearchActivity : BaseActivity() {
 
     private val binding by viewBinding(ActivityScheduleSearchBinding::inflate)
@@ -188,8 +190,7 @@ class SearchActivity : BaseActivity() {
     private fun initRcvForAccount() {
         val accountCallback = object : ItemSelectCallback<Transaction> {
             override fun onItemClick(item: Transaction) {
-                TransactionDialogFragment.newInstance(item)
-                    .showNow(supportFragmentManager, "transaction")
+                TransactionDialogFragment.showNow(item, supportFragmentManager)
             }
 
             override fun onItemLongClick(item: Transaction) {}

@@ -7,7 +7,6 @@ import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleOwner
 import little.goose.account.logic.data.constant.KEY_DELETE_ITEM
-import little.goose.account.logic.data.constant.NOTIFY_DELETE_MEMORIAL
 import little.goose.account.utils.localBroadcastManager
 import little.goose.account.utils.registerDeleteReceiver
 
@@ -45,6 +44,15 @@ class DeleteItemBroadcastReceiver<T> : BroadcastReceiver() {
                 )
             }
         })
+    }
+
+    fun registerForever(action: String, onDeleteReceiver: OnDeleteReceiver<T>) {
+        this.onDeleteReceiver = onDeleteReceiver
+        localBroadcastManager.registerDeleteReceiver(action, this)
+    }
+
+    fun unregisterReceiver() {
+        localBroadcastManager.unregisterReceiver(this)
     }
 
 }

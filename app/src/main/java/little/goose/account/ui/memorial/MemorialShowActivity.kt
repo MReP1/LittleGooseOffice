@@ -5,6 +5,7 @@ import android.content.Intent
 import android.os.Bundle
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
+import dagger.hilt.android.AndroidEntryPoint
 import little.goose.account.databinding.ActivityMemorialShowBinding
 import little.goose.account.logic.data.constant.KEY_MEMORIAL
 import little.goose.account.logic.data.entities.Memorial
@@ -12,6 +13,7 @@ import little.goose.account.ui.base.BaseActivity
 import little.goose.account.utils.parcelable
 import little.goose.account.utils.viewBinding
 
+@AndroidEntryPoint
 class MemorialShowActivity : BaseActivity() {
 
     private val binding: ActivityMemorialShowBinding by viewBinding(ActivityMemorialShowBinding::inflate)

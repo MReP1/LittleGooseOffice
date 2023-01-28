@@ -4,12 +4,14 @@ import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.widget.TextView
+import dagger.hilt.android.AndroidEntryPoint
 import little.goose.account.databinding.ActivityAccountAnalysisBinding
 import little.goose.account.ui.account.analysis.adapter.AnalysisFragmentPagerAdapter
 import little.goose.account.ui.base.BaseActivity
 import little.goose.account.ui.widget.selector.BottomTimeTypeSelector
 import little.goose.account.utils.viewBinding
 
+@AndroidEntryPoint
 class AccountAnalysisActivity : BaseActivity() {
 
     private val binding by viewBinding(ActivityAccountAnalysisBinding::inflate)

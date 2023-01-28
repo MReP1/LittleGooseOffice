@@ -2,10 +2,12 @@ package little.goose.account
 
 import android.app.Application
 import android.content.Context
+import dagger.hilt.android.HiltAndroidApp
 import kotlinx.coroutines.*
 import little.goose.account.ui.account.transaction.TransactionHelper
 import little.goose.account.utils.DataStoreHelper
 
+@HiltAndroidApp
 class AccountApplication : Application() {
 
     override fun onCreate() {
