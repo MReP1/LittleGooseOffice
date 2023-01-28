@@ -39,6 +39,7 @@ fun TransactionCard(
             Icon(
                 modifier = Modifier.padding(18.dp, 0.dp, 12.dp, 0.dp),
                 painter = painterResource(id = TransactionIconHelper.getIconPath(transaction.icon_id)),
+                tint = MaterialTheme.colorScheme.primary,
                 contentDescription = null
             )
             Text(

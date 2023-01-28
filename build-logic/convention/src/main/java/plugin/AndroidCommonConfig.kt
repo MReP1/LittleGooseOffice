@@ -15,6 +15,8 @@ fun CommonExtension<*, *, *, *>.configureKotlin() {
         freeCompilerArgs = freeCompilerArgs.toMutableList().apply {
             add("-opt-in=androidx.compose.material3.ExperimentalMaterial3Api")
             add("-opt-in=androidx.compose.animation.ExperimentalAnimationApi")
+            // open Kotlin context feature
+            add("-Xcontext-receivers")
         }
     }
 
