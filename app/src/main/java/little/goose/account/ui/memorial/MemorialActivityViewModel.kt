@@ -1,8 +1,10 @@
 package little.goose.account.ui.memorial
 
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import little.goose.account.logic.MemorialRepository
@@ -10,46 +12,48 @@ import little.goose.account.logic.data.constant.TYPE_ADD
 import little.goose.account.logic.data.constant.TYPE_MODIFY
 import little.goose.account.logic.data.entities.Memorial
 import little.goose.account.appScope
+import little.goose.account.logic.data.constant.KEY_MEMORIAL
+import little.goose.account.logic.data.constant.KEY_TYPE
 import java.util.*
+import javax.inject.Inject
 
-class MemorialActivityViewModel : ViewModel() {
-    var type = TYPE_ADD
-    var memorial: Memorial = Memorial(null, "纪念日", false, Date())
-    val content = MutableStateFlow("纪念日")
-    val time = MutableStateFlow(Date())
+@HiltViewModel
+class MemorialActivityViewModel @Inject constructor(
+    savedStateHandle: SavedStateHandle
+) : ViewModel() {
+
+    val type: String by lazy(LazyThreadSafetyMode.NONE) { savedStateHandle[KEY_TYPE]!! }
+
+    private val _memorial = MutableStateFlow(
+        value = savedStateHandle[KEY_MEMORIAL] ?: Memorial(null, "纪念日", false, Date())
+    )
+    val memorial = _memorial.asStateFlow()
 
     var isChangeTop = false
 
-    init {
-        viewModelScope.launch { time.collect { memorial.time = it } }
-        viewModelScope.launch { content.collect { memorial.content = it } }
+    fun updateMemorial(memorial: Memorial) {
+        _memorial.value = memorial
     }
 
     fun storeMemorial() {
-        if (isChangeTop && memorial.isTop) { //在主线程判断，以免线程不同步
+        if (isChangeTop && memorial.value.isTop) { //在主线程判断，以免线程不同步
             appScope.launch {
                 val topList = MemorialRepository.getMemorialAtTopFlow().first()
-                for (memorial in topList) {
-                    memorial.isTop = false
-                }
-                launch { MemorialRepository.updateMemorials(topList) }
-
-                launch {
-                    when (type) {
-                        TYPE_MODIFY -> MemorialRepository.updateMemorial(memorial)
-                        TYPE_ADD -> MemorialRepository.addMemorial(memorial)
-                    }
+                    .map { it.copy(isTop = false) }
+                MemorialRepository.updateMemorials(topList)
+                when (type) {
+                    TYPE_MODIFY -> MemorialRepository.updateMemorial(memorial.value)
+                    TYPE_ADD -> MemorialRepository.addMemorial(memorial.value)
                 }
             }
         } else {
             appScope.launch {
                 when (type) {
-                    TYPE_MODIFY -> MemorialRepository.updateMemorial(memorial)
-                    TYPE_ADD -> MemorialRepository.addMemorial(memorial)
+                    TYPE_MODIFY -> MemorialRepository.updateMemorial(memorial.value)
+                    TYPE_ADD -> MemorialRepository.addMemorial(memorial.value)
                 }
             }
         }
-
     }
 
 }

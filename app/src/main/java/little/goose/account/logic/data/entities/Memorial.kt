@@ -11,8 +11,8 @@ import java.util.*
 @Entity(tableName = TABLE_MEMORIAL)
 data class Memorial(
     @PrimaryKey(autoGenerate = true)
-    var id: Long? = null,
-    var content: String,
-    var isTop: Boolean = false,
-    var time: Date = Date()
+    val id: Long? = null,
+    val content: String,
+    val isTop: Boolean = false,
+    val time: Date = Date()
 ) : Parcelable

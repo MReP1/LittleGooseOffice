@@ -10,6 +10,7 @@ import little.goose.account.databinding.ActivityMemorialShowBinding
 import little.goose.account.logic.data.constant.KEY_MEMORIAL
 import little.goose.account.logic.data.entities.Memorial
 import little.goose.account.ui.base.BaseActivity
+import little.goose.account.utils.collectLastWithLifecycle
 import little.goose.account.utils.parcelable
 import little.goose.account.utils.viewBinding
 
@@ -22,35 +23,27 @@ class MemorialShowActivity : BaseActivity() {
 
     private val requestEditMemorial =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
-            viewModel.memorial =
-                result.data?.parcelable(KEY_MEMORIAL) ?: return@registerForActivityResult
-            viewModel.memorial?.let { binding.memoCard.setMemorial(it) }
+            val memorial = result.data?.parcelable<Memorial>(KEY_MEMORIAL)
+                ?: return@registerForActivityResult
+            viewModel.updateMemorial(memorial)
         }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(binding.root)
-        initData()
         initView()
     }
 
-    private fun initData() {
-        viewModel.memorial = intent.parcelable(KEY_MEMORIAL) ?: run {
-            finish()
-            return
-        }
-    }
-
     private fun initView() {
-        binding.apply {
-            viewModel.memorial?.let { binding.memoCard.setMemorial(it) }
-            actionBar.setOnBackClickListener { finish() }
-            floatButton.setOnFloatButtonClickListener {
-                val intent = viewModel.memorial?.let { memorial ->
-                    MemorialActivity.getEditIntent(this@MemorialShowActivity, memorial)
-                }
-                requestEditMemorial.launch(intent)
-            }
+        binding.actionBar.setOnBackClickListener { finish() }
+        binding.floatButton.setOnFloatButtonClickListener {
+            val intent = MemorialActivity.getEditIntent(
+                this@MemorialShowActivity, viewModel.memorial.value
+            )
+            requestEditMemorial.launch(intent)
+        }
+        viewModel.memorial.collectLastWithLifecycle(lifecycle) { memorial ->
+            binding.memoCard.setMemorial(memorial)
         }
     }
 

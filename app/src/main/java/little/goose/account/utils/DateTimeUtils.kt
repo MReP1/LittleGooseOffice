@@ -2,6 +2,7 @@
 
 package little.goose.account.utils
 
+import android.content.Context
 import little.goose.account.R
 import little.goose.account.appContext
 import little.goose.account.logic.data.models.TimeRange
@@ -74,15 +75,15 @@ object DateTimeUtils {
             time
         }
 
-    fun getWeekDay(weekDay: Int): String {
+    fun getWeekDay(weekDay: Int, context: Context = appContext): String {
         return when (weekDay) {
-            1 -> appContext.getString(R.string.sunday)
-            2 -> appContext.getString(R.string.monday)
-            3 -> appContext.getString(R.string.tuesday)
-            4 -> appContext.getString(R.string.wednesday)
-            5 -> appContext.getString(R.string.thursday)
-            6 -> appContext.getString(R.string.friday)
-            7 -> appContext.getString(R.string.saturday)
+            1 -> context.getString(R.string.sunday)
+            2 -> context.getString(R.string.monday)
+            3 -> context.getString(R.string.tuesday)
+            4 -> context.getString(R.string.wednesday)
+            5 -> context.getString(R.string.thursday)
+            6 -> context.getString(R.string.friday)
+            7 -> context.getString(R.string.saturday)
             else -> "unknown"
         }
     }
@@ -100,12 +101,17 @@ object DateTimeUtils {
         }
     }
 
-    fun getWeekFormYearMonthDate(year: Int, month: Int, date: Int): String {
+    fun getWeekFormYearMonthDate(
+        year: Int,
+        month: Int,
+        date: Int,
+        context: Context = appContext
+    ): String {
         return Calendar.getInstance().run {
             setYear(year)
             setMonth(month)
             setDate(date)
-            getWeekDay(get(Calendar.DAY_OF_WEEK))
+            getWeekDay(get(Calendar.DAY_OF_WEEK), context)
         }
     }
 
@@ -167,13 +173,13 @@ fun Date.toChineseStringWithYear(): String {
     }
 }
 
-fun Date.toChineseYearMonDayWeek(): String {
+fun Date.toChineseYearMonDayWeek(context: Context = appContext): String {
     Calendar.getInstance().apply {
         time = this@toChineseYearMonDayWeek
         val year = getYear()
         val month = getMonth()
         val day = getDate()
-        return "${year}年${month}月${day}日 ${getWeekFormYearMonthDate(year, month, day)}"
+        return "${year}年${month}月${day}日 ${getWeekFormYearMonthDate(year, month, day, context)}"
     }
 }
 

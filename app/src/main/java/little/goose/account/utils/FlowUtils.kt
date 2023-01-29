@@ -23,14 +23,14 @@ inline fun <T> Flow<T>.collectLastWithLifecycleOwner(
     lifecycleOwner: LifecycleOwner,
     minActiveState: Lifecycle.State = Lifecycle.State.STARTED,
     crossinline block: suspend CoroutineScope.(data: T) -> Unit
-) = this.collectWithLifecycle(lifecycleOwner.lifecycle, minActiveState, block)
+) = this.collectLastWithLifecycle(lifecycleOwner.lifecycle, minActiveState, block)
 
-inline fun <T> Flow<T>.collectWithLifecycle(
+inline fun <T> Flow<T>.collectLastWithLifecycle(
     lifecycle: Lifecycle,
     minActiveState: Lifecycle.State = Lifecycle.State.STARTED,
     crossinline block: suspend CoroutineScope.(data: T) -> Unit
 ) = lifecycle.coroutineScope.launch {
-    this@collectWithLifecycle.flowWithLifecycle(lifecycle, minActiveState).collectLatest {
+    this@collectLastWithLifecycle.flowWithLifecycle(lifecycle, minActiveState).collectLatest {
         block(it)
     }
 }

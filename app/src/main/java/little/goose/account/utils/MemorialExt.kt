@@ -1,5 +1,6 @@
 package little.goose.account.utils
 
+import android.content.Context
 import little.goose.account.R
 import little.goose.account.appContext
 import little.goose.account.logic.data.entities.Memorial
@@ -8,10 +9,10 @@ import kotlin.collections.HashMap
 
 private val calendar by lazy { Calendar.getInstance() }
 
-fun String.appendTimeSuffix(time: Date) = if (time.isFuture()) {
+fun String.appendTimeSuffix(time: Date, context: Context = appContext) = if (time.isFuture()) {
     appContext.getString(R.string.content_future, this)
 } else {
-    appContext.getString(R.string.content_past, this)
+    context.getString(R.string.content_past, this)
 }
 
 fun String.appendTimePrefix(time: Date) = if (time.isFuture()) {
