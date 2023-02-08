@@ -28,8 +28,8 @@ import little.goose.account.logic.data.entities.Transaction
 import little.goose.account.ui.account.transaction.TransactionDialogFragment
 import little.goose.account.ui.account.widget.TransactionCard
 import little.goose.account.ui.base.BaseActivity
-import little.goose.account.ui.theme.AccountTheme
-import little.goose.account.ui.theme.Red200
+import little.goose.design.system.theme.AccountTheme
+import little.goose.design.system.theme.Red200
 import little.goose.account.utils.*
 import java.io.Serializable
 import java.util.*

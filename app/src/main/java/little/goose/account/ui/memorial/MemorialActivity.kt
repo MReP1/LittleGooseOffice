@@ -35,7 +35,7 @@ import little.goose.account.logic.data.constant.TYPE_ADD
 import little.goose.account.logic.data.constant.TYPE_MODIFY
 import little.goose.account.logic.data.entities.Memorial
 import little.goose.account.ui.base.BaseActivity
-import little.goose.account.ui.theme.AccountTheme
+import little.goose.design.system.theme.AccountTheme
 import little.goose.account.ui.widget.text.MemorialTextView
 import little.goose.account.utils.appendTimeSuffix
 import little.goose.account.utils.toChineseYearMonDayWeek

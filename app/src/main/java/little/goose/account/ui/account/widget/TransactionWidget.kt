@@ -16,7 +16,7 @@ import little.goose.account.R
 import little.goose.account.logic.data.constant.AccountConstant.EXPENSE
 import little.goose.account.logic.data.entities.Transaction
 import little.goose.account.ui.account.transaction.icon.TransactionIconHelper
-import little.goose.account.ui.theme.AccountTheme
+import little.goose.design.system.theme.AccountTheme
 import little.goose.account.utils.toSignString
 import java.math.BigDecimal
 import java.util.*

@@ -1,4 +1,4 @@
-package little.goose.account.ui.theme
+package little.goose.design.system.theme
 
 import androidx.compose.material3.Typography
 
