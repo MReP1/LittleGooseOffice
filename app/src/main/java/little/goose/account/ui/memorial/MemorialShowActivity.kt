@@ -143,6 +143,9 @@ private fun MemorialShowScreen(
                 },
                 onMainButtonClick = {
                     onEditClick(memorial)
+                    scope.launch(Dispatchers.Main.immediate) {
+                        state.fold()
+                    }
                 },
                 topSubButtonContent = {
                     Icon(imageVector = Icons.Default.Image, contentDescription = "image")

@@ -3,7 +3,6 @@ package little.goose.account.ui.memorial
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
-import android.view.Gravity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -21,7 +20,6 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.viewinterop.AndroidView
 import androidx.fragment.app.FragmentActivity
 import androidx.hilt.navigation.compose.hiltViewModel
 import dagger.hilt.android.AndroidEntryPoint
@@ -35,10 +33,10 @@ import little.goose.account.logic.data.constant.TYPE_ADD
 import little.goose.account.logic.data.constant.TYPE_MODIFY
 import little.goose.account.logic.data.entities.Memorial
 import little.goose.account.ui.base.BaseActivity
-import little.goose.design.system.theme.AccountTheme
-import little.goose.account.ui.widget.text.MemorialTextView
+import little.goose.account.ui.memorial.widget.MemorialText
 import little.goose.account.utils.appendTimeSuffix
 import little.goose.account.utils.toChineseYearMonDayWeek
+import little.goose.design.system.theme.AccountTheme
 import java.util.*
 
 @AndroidEntryPoint
@@ -155,16 +153,14 @@ private fun MemorialScreen(
                     .verticalScroll(state),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                AndroidView(
-                    factory = { context -> MemorialTextView(context) },
+
+                MemorialText(
+                    memorial = memorial,
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(200.dp)
-                ) { memorialTextView ->
-                    memorialTextView.gravity = Gravity.CENTER
-                    memorialTextView.textSize = 78F
-                    memorialTextView.setTime(memorial.time)
-                }
+                        .padding(24.dp)
+                )
 
                 Row(
                     modifier = Modifier
