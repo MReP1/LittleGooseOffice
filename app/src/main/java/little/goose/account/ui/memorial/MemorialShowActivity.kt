@@ -9,10 +9,7 @@ import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.compose.setContent
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.*
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
@@ -38,6 +35,7 @@ import little.goose.account.ui.memorial.widget.MemorialCard
 import little.goose.account.utils.parcelable
 import little.goose.design.system.component.MovableActionButton
 import little.goose.design.system.component.MovableActionButtonState
+import little.goose.design.system.theme.AccountTheme
 
 @AndroidEntryPoint
 class MemorialShowActivity : BaseActivity() {
@@ -45,7 +43,9 @@ class MemorialShowActivity : BaseActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-            MemorialShowRoute()
+            AccountTheme {
+                MemorialShowRoute()
+            }
         }
     }
 
@@ -118,7 +118,9 @@ private fun MemorialShowScreen(
             MemorialCard(
                 memorial = memorial,
                 shape = RoundedCornerShape(24.dp),
-                modifier = Modifier.align(Alignment.Center)
+                modifier = Modifier
+                    .width(280.dp)
+                    .align(Alignment.Center)
             )
 
             MovableActionButton(
