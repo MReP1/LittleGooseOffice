@@ -4,19 +4,17 @@ import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.compose.setContent
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.activity.viewModels
 import androidx.compose.animation.*
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -28,48 +26,21 @@ import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import little.goose.account.R
-import little.goose.account.databinding.ActivityMemorialShowBinding
 import little.goose.account.logic.data.constant.KEY_MEMORIAL
 import little.goose.account.logic.data.entities.Memorial
 import little.goose.account.ui.base.BaseActivity
-import little.goose.account.utils.collectLastWithLifecycle
+import little.goose.account.ui.memorial.widget.MemorialC
 import little.goose.account.utils.parcelable
-import little.goose.account.utils.viewBinding
 import little.goose.design.system.component.MovableActionButton
 import little.goose.design.system.component.MovableActionButtonState
 
 @AndroidEntryPoint
 class MemorialShowActivity : BaseActivity() {
 
-    private val binding: ActivityMemorialShowBinding by viewBinding(ActivityMemorialShowBinding::inflate)
-
-    private val viewModel: MemorialShowViewModel by viewModels()
-
-    private val requestEditMemorial =
-        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
-            val memorial = result.data?.parcelable<Memorial>(KEY_MEMORIAL)
-                ?: return@registerForActivityResult
-            viewModel.updateMemorial(memorial)
-        }
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
             MemorialShowRoute()
-        }
-//        initView()
-    }
-
-    private fun initView() {
-        binding.actionBar.setOnBackClickListener { finish() }
-        binding.floatButton.setOnFloatButtonClickListener {
-            val intent = MemorialActivity.getEditIntent(
-                this@MemorialShowActivity, viewModel.memorial.value
-            )
-            requestEditMemorial.launch(intent)
-        }
-        viewModel.memorial.collectLastWithLifecycle(lifecycle) { memorial ->
-            binding.memoCard.setMemorial(memorial)
         }
     }
 
@@ -87,10 +58,8 @@ class MemorialShowActivity : BaseActivity() {
 @Composable
 private fun MemorialShowRoute() {
     val viewModel: MemorialShowViewModel = hiltViewModel()
-
     val context = LocalContext.current
     val memorial by viewModel.memorial.collectAsState()
-
     val register = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.StartActivityForResult(),
         onResult = { result ->
@@ -139,8 +108,12 @@ private fun MemorialShowScreen(
         ) {
             val state = remember { MovableActionButtonState() }
             val scope = rememberCoroutineScope()
+            val context = LocalContext.current
 
-            // TODO Memorial Card
+            MemorialC(
+                memorial = memorial,
+                modifier = Modifier.align(Alignment.Center)
+            )
 
             MovableActionButton(
                 modifier = Modifier
@@ -164,18 +137,18 @@ private fun MemorialShowScreen(
                     onEditClick(memorial)
                 },
                 topSubButtonContent = {
-
+                    Icon(imageVector = Icons.Default.Image, contentDescription = "image")
                 },
                 onTopSubButtonClick = {
-                    scope.launch(Dispatchers.Main.immediate) {
-                        state.fold()
-                    }
+                    Toast.makeText(context, "//TODO: 修改背景", Toast.LENGTH_SHORT).show()
                 },
                 bottomSubButtonContent = {
 
                 },
                 onBottomSubButtonClick = {
-
+                    scope.launch(Dispatchers.Main.immediate) {
+                        state.fold()
+                    }
                 }
             )
         }

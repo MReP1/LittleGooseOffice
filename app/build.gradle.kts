@@ -71,5 +71,6 @@ dependencies {
     implementation(project(":calendarview"))
 
     implementation(project(":core:utils"))
+    implementation(project(":core:common"))
 
 }
