@@ -29,7 +29,7 @@ import little.goose.account.R
 import little.goose.account.logic.data.constant.KEY_MEMORIAL
 import little.goose.account.logic.data.entities.Memorial
 import little.goose.account.ui.base.BaseActivity
-import little.goose.account.ui.memorial.widget.MemorialC
+import little.goose.account.ui.memorial.widget.MemorialCard
 import little.goose.account.utils.parcelable
 import little.goose.design.system.component.MovableActionButton
 import little.goose.design.system.component.MovableActionButtonState
@@ -110,7 +110,7 @@ private fun MemorialShowScreen(
             val scope = rememberCoroutineScope()
             val context = LocalContext.current
 
-            MemorialC(
+            MemorialCard(
                 memorial = memorial,
                 modifier = Modifier.align(Alignment.Center)
             )
