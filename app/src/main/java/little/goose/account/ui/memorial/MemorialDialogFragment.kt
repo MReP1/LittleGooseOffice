@@ -3,57 +3,82 @@ package little.goose.account.ui.memorial
 import android.content.Intent
 import android.os.Bundle
 import android.view.Gravity
+import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Button
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.RectangleShape
+import androidx.compose.ui.platform.ComposeView
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.dp
 import androidx.fragment.app.DialogFragment
 import kotlinx.coroutines.launch
 import little.goose.account.R
 import little.goose.account.common.dialog.NormalDialogFragment
-import little.goose.account.databinding.LayoutDialogMemorialBinding
 import little.goose.account.logic.MemorialRepository
 import little.goose.account.logic.data.constant.KEY_DELETE_ITEM
 import little.goose.account.logic.data.constant.KEY_MEMORIAL
 import little.goose.account.logic.data.constant.NOTIFY_DELETE_MEMORIAL
 import little.goose.account.logic.data.entities.Memorial
 import little.goose.account.appScope
+import little.goose.account.ui.memorial.widget.MemorialCard
 import little.goose.account.utils.*
+import little.goose.design.system.theme.AccountTheme
 
-class MemorialDialogFragment : DialogFragment(R.layout.layout_dialog_memorial) {
-
-    private val binding by viewBinding(LayoutDialogMemorialBinding::bind)
+class MemorialDialogFragment : DialogFragment() {
 
     private val memorial: Memorial by lazy(LazyThreadSafetyMode.NONE) {
         arguments?.parcelable(KEY_MEMORIAL) ?: Memorial(null, "null")
     }
 
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View {
+        return ComposeView(requireContext()).apply {
+            setContent {
+                AccountTheme {
+                    MaterialDialogScreen(
+                        modifier = Modifier.fillMaxWidth(),
+                        memorial = memorial,
+                        onDelete = ::delete,
+                        onEdit = ::edit
+                    )
+                }
+            }
+        }
+    }
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         initWindow()
-        initView()
     }
 
-    private fun initView() {
-        binding.apply {
-            tvContent.text = memorial.content.appendTimeSuffix(memorial.time)
-            tvMemoTime.setTime(memorial.time)
-            tvOriTime.text = memorial.time.toChineseYearMonDayWeek().appendTimePrefix(memorial.time)
+    private fun edit() {
+        MemorialShowActivity.open(requireContext(), memorial)
+        dismiss()
+    }
 
-            btModify.setOnClickListener {
-                MemorialShowActivity.open(requireContext(), memorial)
-                dismiss()
-            }
-            btDelete.setOnClickListener {
-                NormalDialogFragment.Builder()
-                    .setContent(requireContext().getString(R.string.confirm_delete))
-                    .setConfirmCallback {
-                        appScope.launch {
-                            MemorialRepository.deleteMemorial(memorial)
-                            sendDeleteBroadcast()
-                        }
-                    }.showNow(parentFragmentManager)
-                dismiss()
-            }
-        }
+    private fun delete() {
+        NormalDialogFragment.Builder()
+            .setContent(requireContext().getString(R.string.confirm_delete))
+            .setConfirmCallback {
+                appScope.launch {
+                    MemorialRepository.deleteMemorial(memorial)
+                    sendDeleteBroadcast()
+                }
+            }.showNow(parentFragmentManager)
+        dismiss()
     }
 
     private fun initWindow() {
@@ -77,6 +102,41 @@ class MemorialDialogFragment : DialogFragment(R.layout.layout_dialog_memorial) {
         fun newInstance(memorial: Memorial): MemorialDialogFragment {
             val bundle = Bundle().also { it.putParcelable(KEY_MEMORIAL, memorial) }
             return MemorialDialogFragment().apply { arguments = bundle }
+        }
+    }
+}
+
+@Composable
+private fun MaterialDialogScreen(
+    modifier: Modifier,
+    memorial: Memorial,
+    onDelete: () -> Unit,
+    onEdit: () -> Unit
+) {
+    Column(modifier.clip(RoundedCornerShape(24.dp))) {
+        MemorialCard(
+            memorial = memorial,
+            shape = RectangleShape
+        )
+        Row(modifier.fillMaxWidth()) {
+            Button(
+                modifier = Modifier
+                    .weight(1F)
+                    .height(56.dp),
+                onClick = onDelete,
+                shape = RectangleShape
+            ) {
+                Text(text = stringResource(id = R.string.delete))
+            }
+            Button(
+                modifier = Modifier
+                    .weight(1F)
+                    .height(56.dp),
+                onClick = onEdit,
+                shape = RectangleShape
+            ) {
+                Text(text = stringResource(id = R.string.edit))
+            }
         }
     }
 }

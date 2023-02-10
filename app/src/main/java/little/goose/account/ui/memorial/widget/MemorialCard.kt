@@ -4,7 +4,6 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -14,6 +13,8 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.RectangleShape
+import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import little.goose.account.logic.data.entities.Memorial
@@ -25,12 +26,12 @@ import java.util.*
 @Composable
 fun MemorialCard(
     modifier: Modifier = Modifier,
+    shape: Shape = RectangleShape,
     memorial: Memorial
 ) {
     val context = LocalContext.current
-    val curCalendar = remember(memorial) {
-        Calendar.getInstance()
-    }
+    val curCalendar = remember(memorial) { Calendar.getInstance() }
+
     val times = remember(memorial) {
         CircularLinkList<String>().apply {
             val memorialCalendar = Calendar.getInstance()
@@ -58,12 +59,12 @@ fun MemorialCard(
     val currentTime by times.currentNote.collectAsState("")
     Surface(
         modifier = modifier,
-        shape = RoundedCornerShape(24.dp),
+        shape = shape,
         shadowElevation = 3.dp
     ) {
         Column(
             modifier = modifier
-                .width(280.dp)
+                .fillMaxWidth()
                 .height(240.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
@@ -101,7 +102,7 @@ fun MemorialCard(
             }
 
             Text(text = memorial.time.toChineseYearMonDayWeek().appendTimePrefix(memorial.time))
-            
+
             Spacer(modifier = Modifier.height(18.dp))
         }
     }
