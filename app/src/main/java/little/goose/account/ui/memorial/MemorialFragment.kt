@@ -2,8 +2,20 @@ package little.goose.account.ui.memorial
 
 import android.annotation.SuppressLint
 import android.os.Bundle
+import android.view.LayoutInflater
 import android.view.View
+import android.view.ViewGroup
+import androidx.compose.foundation.layout.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.ComposeView
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.unit.dp
+import androidx.fragment.app.FragmentActivity
 import androidx.fragment.app.viewModels
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import kotlinx.coroutines.Dispatchers
@@ -21,11 +33,14 @@ import little.goose.account.logic.data.constant.NOTIFY_DELETE_MEMORIAL
 import little.goose.account.logic.data.entities.Memorial
 import little.goose.account.ui.base.BaseFragment
 import little.goose.account.ui.decoration.ItemLinearLayoutDecoration
+import little.goose.account.ui.memorial.widget.MemorialColumn
+import little.goose.account.ui.memorial.widget.MemorialTitle
 import little.goose.account.ui.search.SearchActivity
 import little.goose.account.utils.*
+import little.goose.design.system.theme.AccountTheme
 
 @SuppressLint("NotifyDataSetChanged")
-class MemorialFragment : BaseFragment(R.layout.fragment_memorial) {
+class MemorialFragment : BaseFragment() {
 
     private val viewModel: MemorialFragmentViewModel by viewModels()
 
@@ -67,10 +82,24 @@ class MemorialFragment : BaseFragment(R.layout.fragment_memorial) {
         }
     }
 
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View {
+        return ComposeView(requireContext()).apply {
+            setContent {
+                AccountTheme {
+                    MemorialFragmentRoute(modifier = Modifier.fillMaxSize())
+                }
+            }
+        }
+    }
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        initView()
-        initData()
+//        initView()
+//        initData()
     }
 
     private fun initView() {
@@ -167,5 +196,47 @@ class MemorialFragment : BaseFragment(R.layout.fragment_memorial) {
 
     companion object {
         fun newInstance() = MemorialFragment()
+    }
+}
+
+@Composable
+private fun MemorialFragmentRoute(
+    modifier: Modifier
+) {
+    val viewModel: MemorialFragmentViewModel = hiltViewModel()
+    val memorials by viewModel.memorials.collectAsState()
+    val topMemorial by viewModel.topMemorial.collectAsState()
+    val activity = LocalContext.current as FragmentActivity
+    MemorialFragmentScreen(
+        modifier = modifier,
+        memorials = memorials,
+        topMemorial = topMemorial,
+        onMemorialClick = { memorial ->
+            MemorialDialogFragment.newInstance(memorial)
+                .showNow(activity.supportFragmentManager, KEY_MEMORIAL)
+        }
+    )
+}
+
+@Composable
+private fun MemorialFragmentScreen(
+    modifier: Modifier,
+    memorials: List<Memorial>,
+    topMemorial: Memorial?,
+    onMemorialClick: (Memorial) -> Unit
+) {
+    Column(modifier = modifier) {
+        if (topMemorial != null) {
+            MemorialTitle(
+                modifier = Modifier
+                    .height(130.dp)
+                    .fillMaxWidth(),
+                memorial = topMemorial
+            )
+        }
+        MemorialColumn(
+            memorials = memorials,
+            onMemorialClick = onMemorialClick
+        )
     }
 }

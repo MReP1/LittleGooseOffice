@@ -39,6 +39,7 @@ dependencies {
     implementation(project(":core:design-system"))
     implementation(libs.accompanist.navigation.animation)
     implementation(libs.androidx.hilt.navigation.compose)
+    implementation(libs.androidx.constraintLayout.compose)
     androidTestImplementation(libs.androidx.compose.ui.test)
     debugImplementation(libs.androidx.compose.ui.tooling)
     debugImplementation(libs.androidx.compose.ui.testManifest)

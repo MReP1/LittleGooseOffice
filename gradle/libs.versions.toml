@@ -15,6 +15,7 @@ androidxEspresso = "3.5.0"
 androidMaterial = "1.6.1"
 accompanistVersion = "0.28.0"
 androidxHiltNavigationCompose = "1.0.0"
+androidxConstraintLayoutCompose = "1.0.1"
 androidLifecycle = "2.5.1"
 junit4 = "4.13.2"
 kotlin = "1.7.20"
@@ -40,6 +41,7 @@ androidx-lifecycle-viewModel-compose = { group = "androidx.lifecycle", name = "l
 androidx-lifecycle-viewModel-savedState = { group = "androidx.lifecycle", name = "lifecycle-viewmodel-savedstate", version.ref = "androidLifecycle" }
 androidx-activity-compose = { group = "androidx.activity", name = "activity-compose", version.ref = "androidxActivityCompose" }
 androidx-hilt-navigation-compose = { group = "androidx.hilt", name = "hilt-navigation-compose", version.ref = "androidxHiltNavigationCompose" }
+androidx-constraintLayout-compose = { group = "androidx.constraintlayout", name = "constraintlayout-compose", version.ref = "androidxConstraintLayoutCompose"}
 androidx-compose-bom = { group = "androidx.compose", name = "compose-bom", version.ref = "androidxComposeBom" }
 androidx-compose-ui = { group = "androidx.compose.ui", name = "ui" }
 androidx-compose-ui-tool-preview = { group = "androidx.compose.ui", name = "ui-tooling-preview" }

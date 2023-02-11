@@ -15,10 +15,10 @@ fun String.appendTimeSuffix(time: Date, context: Context = appContext) = if (tim
     context.getString(R.string.content_past, this)
 }
 
-fun String.appendTimePrefix(time: Date) = if (time.isFuture()) {
-    appContext.getString(R.string.target_time, this)
+fun String.appendTimePrefix(time: Date, context: Context = appContext) = if (time.isFuture()) {
+    context.getString(R.string.target_time, this)
 } else {
-    appContext.getString(R.string.original_time, this)
+    context.getString(R.string.original_time, this)
 }
 
 fun List<Memorial>.getMapDayBoolean(): Map<Int, Boolean> {

@@ -21,7 +21,8 @@ import java.util.*
 @Composable
 fun MemorialText(
     modifier: Modifier = Modifier,
-    memorial: Memorial
+    memorial: Memorial,
+    switchable: Boolean = true
 ) {
     val curCalendar = remember(memorial) { Calendar.getInstance() }
     val times = remember(memorial) {
@@ -54,7 +55,8 @@ fun MemorialText(
         modifier = modifier
             .clickable(
                 interactionSource = remember { MutableInteractionSource() },
-                indication = null
+                indication = null,
+                enabled = switchable
             ) {
                 times.next()
             },
