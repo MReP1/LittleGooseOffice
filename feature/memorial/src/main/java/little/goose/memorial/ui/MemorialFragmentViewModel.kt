@@ -13,15 +13,17 @@ import little.goose.memorial.logic.MemorialRepository
 import javax.inject.Inject
 
 @HiltViewModel
-class MemorialFragmentViewModel @Inject constructor() : ViewModel() {
+class MemorialFragmentViewModel @Inject constructor(
+    memorialRepository: MemorialRepository
+) : ViewModel() {
 
-    val memorials = MemorialRepository.getAllMemorialFlow().stateIn(
+    val memorials = memorialRepository.getAllMemorialFlow().stateIn(
         scope = viewModelScope,
         started = SharingStarted.Eagerly,
         initialValue = listOf()
     )
 
-    val topMemorial: StateFlow<Memorial?> = MemorialRepository.getMemorialAtTopFlow()
+    val topMemorial: StateFlow<Memorial?> = memorialRepository.getMemorialAtTopFlow()
         .map { it.firstOrNull() }
         .stateIn(
             scope = viewModelScope,

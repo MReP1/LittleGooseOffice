@@ -18,6 +18,7 @@ import androidx.fragment.app.FragmentActivity
 import androidx.fragment.app.viewModels
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.lifecycleScope
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 import little.goose.account.utils.*
 import little.goose.common.MultipleChoseHandler
@@ -27,11 +28,11 @@ import little.goose.design.system.theme.AccountTheme
 import little.goose.memorial.R
 import little.goose.memorial.data.constant.KEY_MEMORIAL
 import little.goose.memorial.data.entities.Memorial
-import little.goose.memorial.logic.MemorialRepository
 import little.goose.memorial.ui.widget.MemorialColumn
 import little.goose.memorial.ui.widget.MemorialTitle
 
 @SuppressLint("NotifyDataSetChanged")
+@AndroidEntryPoint
 class MemorialFragment : Fragment() {
 
     private val viewModel: MemorialFragmentViewModel by viewModels()
@@ -44,7 +45,7 @@ class MemorialFragment : Fragment() {
             .setConfirmCallback {
                 viewLifecycleOwner.lifecycleScope.launch {
                     multipleChoseHandler.deleteItemList {
-                        MemorialRepository.deleteMemorials(it)
+//                        MemorialRepository.deleteMemorials(it)
 //                        binding.root.showSnackbar(R.string.deleted, 1000, R.string.undo) {
 //                            lifecycleScope.launch { MemorialRepository.addMemorials(list) }
 //                        }
@@ -55,7 +56,11 @@ class MemorialFragment : Fragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        viewModel.deleteReceiver.register(requireContext(), lifecycle, NOTIFY_DELETE_MEMORIAL) { _, memorial ->
+        viewModel.deleteReceiver.register(
+            requireContext(),
+            lifecycle,
+            NOTIFY_DELETE_MEMORIAL
+        ) { _, memorial ->
 //            binding.root.showSnackbar(R.string.deleted, 1000, R.string.undo) {
 //                lifecycleScope.launch {
 //                    MemorialRepository.addMemorial(memorial)
@@ -72,7 +77,13 @@ class MemorialFragment : Fragment() {
         return ComposeView(requireContext()).apply {
             setContent {
                 AccountTheme {
-                    MemorialFragmentRoute(modifier = Modifier.fillMaxSize())
+                    MemorialFragmentRoute(
+                        modifier = Modifier.fillMaxSize(),
+                        onMemorialClick = {
+                            MemorialDialogFragment.newInstance(it)
+                                .showNow(parentFragmentManager, KEY_MEMORIAL)
+                        }
+                    )
                 }
             }
         }
@@ -134,20 +145,17 @@ class MemorialFragment : Fragment() {
 
 @Composable
 private fun MemorialFragmentRoute(
-    modifier: Modifier
+    modifier: Modifier,
+    onMemorialClick: (Memorial) -> Unit
 ) {
     val viewModel: MemorialFragmentViewModel = hiltViewModel()
     val memorials by viewModel.memorials.collectAsState()
     val topMemorial by viewModel.topMemorial.collectAsState()
-    val activity = LocalContext.current as FragmentActivity
     MemorialFragmentScreen(
         modifier = modifier,
         memorials = memorials,
         topMemorial = topMemorial,
-        onMemorialClick = { memorial ->
-            MemorialDialogFragment.newInstance(memorial)
-                .showNow(activity.supportFragmentManager, KEY_MEMORIAL)
-        }
+        onMemorialClick = onMemorialClick
     )
 }
 

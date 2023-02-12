@@ -1,5 +1,6 @@
 package little.goose.memorial.logic
 
+import android.app.Application
 import android.content.Context
 import androidx.room.Room
 import kotlinx.coroutines.flow.Flow
@@ -9,18 +10,15 @@ import little.goose.account.utils.getOneDayRange
 import little.goose.account.utils.getOneMonthRange
 import little.goose.memorial.data.constant.TABLE_MEMORIAL
 
-object MemorialRepository {
+class MemorialRepository(application: Application) {
 
-    lateinit var appContext: Context
+    private val database: MemorialDatabase = Room.databaseBuilder(
+        application,
+        MemorialDatabase::class.java,
+        TABLE_MEMORIAL
+    ).build()
 
-    private val database: MemorialDatabase by lazy {
-        Room.databaseBuilder(
-            appContext,
-            MemorialDatabase::class.java,
-            TABLE_MEMORIAL
-        ).build()
-    }
-    private val memorialDao by lazy { database.memorialDao() }
+    private val memorialDao = database.memorialDao()
 
     fun getAllMemorialFlow() = memorialDao.getAllMemorialFlow()
 

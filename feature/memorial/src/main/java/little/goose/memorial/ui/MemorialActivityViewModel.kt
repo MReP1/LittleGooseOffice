@@ -19,7 +19,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class MemorialActivityViewModel @Inject constructor(
-    savedStateHandle: SavedStateHandle
+    savedStateHandle: SavedStateHandle,
+    private val memorialRepository: MemorialRepository
 ) : ViewModel() {
 
     val type: String by lazy(LazyThreadSafetyMode.NONE) { savedStateHandle[KEY_TYPE]!! }
@@ -39,19 +40,19 @@ class MemorialActivityViewModel @Inject constructor(
         if (isChangeTop && memorial.value.isTop) { //在主线程判断，以免线程不同步
             // FIXME scope
             viewModelScope.launch {
-                val topList = MemorialRepository.getMemorialAtTopFlow().first()
+                val topList = memorialRepository.getMemorialAtTopFlow().first()
                     .map { it.copy(isTop = false) }
-                MemorialRepository.updateMemorials(topList)
+                memorialRepository.updateMemorials(topList)
                 when (type) {
-                    TYPE_MODIFY -> MemorialRepository.updateMemorial(memorial.value)
-                    TYPE_ADD -> MemorialRepository.addMemorial(memorial.value)
+                    TYPE_MODIFY -> memorialRepository.updateMemorial(memorial.value)
+                    TYPE_ADD -> memorialRepository.addMemorial(memorial.value)
                 }
             }
         } else {
             viewModelScope.launch {
                 when (type) {
-                    TYPE_MODIFY -> MemorialRepository.updateMemorial(memorial.value)
-                    TYPE_ADD -> MemorialRepository.addMemorial(memorial.value)
+                    TYPE_MODIFY -> memorialRepository.updateMemorial(memorial.value)
+                    TYPE_ADD -> memorialRepository.addMemorial(memorial.value)
                 }
             }
         }

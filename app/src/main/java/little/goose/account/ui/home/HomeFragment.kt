@@ -10,6 +10,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.haibin.calendarview.Calendar
 import com.haibin.calendarview.CalendarView
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.*
 import little.goose.account.R
 import little.goose.account.appScope
@@ -37,6 +38,7 @@ import little.goose.memorial.utils.appendTimeSuffix
 import little.goose.memorial.utils.getMapDayBoolean
 import kotlin.properties.Delegates
 
+@AndroidEntryPoint
 class HomeFragment : BaseFragment(R.layout.fragment_home) {
 
     private val viewModel: HomeViewModel by viewModels()
@@ -130,9 +132,7 @@ class HomeFragment : BaseFragment(R.layout.fragment_home) {
             NOTIFY_DELETE_MEMORIAL
         ) { _, memorial ->
             binding.root.showDeleteSnackbar {
-                appScope.launch {
-                    MemorialRepository.addMemorial(memorial)
-                }
+                viewModel.addMemorial(memorial)
             }
         }
     }
@@ -435,7 +435,7 @@ class HomeFragment : BaseFragment(R.layout.fragment_home) {
             }
 
             val mapMemorialsDeferred = async(Dispatchers.IO) {
-                MemorialRepository.getMemorialsByYearMonth(year, month).getMapDayBoolean()
+                viewModel.getMemorialsByYearMonth(year, month).getMapDayBoolean()
             }
 
             val mapDayMoney = mapDayMoneyDeferred.await()

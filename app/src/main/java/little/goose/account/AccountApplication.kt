@@ -8,7 +8,6 @@ import little.goose.account.ui.account.transaction.TransactionHelper
 import little.goose.account.utils.DataStoreHelper
 import little.goose.account.utils.DateTimeUtils
 import little.goose.account.utils.UIUtils
-import little.goose.memorial.logic.MemorialRepository
 
 @HiltAndroidApp
 class AccountApplication : Application() {
@@ -19,7 +18,6 @@ class AccountApplication : Application() {
 
         DateTimeUtils.appContext = this
         UIUtils.appContext = this
-        MemorialRepository.appContext = this
 
         initData()
     }
