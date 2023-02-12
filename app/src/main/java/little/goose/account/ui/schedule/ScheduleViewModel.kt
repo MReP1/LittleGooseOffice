@@ -5,8 +5,8 @@ import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
-import little.goose.account.common.receiver.DeleteItemBroadcastReceiver
-import little.goose.account.common.receiver.NormalBroadcastReceiver
+import little.goose.common.receiver.DeleteItemBroadcastReceiver
+import little.goose.common.receiver.NormalBroadcastReceiver
 import little.goose.account.logic.ScheduleRepository
 import little.goose.account.logic.data.entities.Schedule
 import javax.inject.Inject

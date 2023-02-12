@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="monday">星期一</string>
+    <string name="tuesday">星期二</string>
+    <string name="wednesday">星期三</string>
+    <string name="thursday">星期四</string>
+    <string name="friday">星期五</string>
+    <string name="saturday">星期六</string>
+    <string name="sunday">星期日</string>
+
+    <string name="monday_z">周一</string>
+    <string name="tuesday_z">周二</string>
+    <string name="wednesday_z">周三</string>
+    <string name="thursday_z">周四</string>
+    <string name="friday_z">周五</string>
+    <string name="saturday_z">周六</string>
+    <string name="sunday_z">周日</string>
+
+</resources>

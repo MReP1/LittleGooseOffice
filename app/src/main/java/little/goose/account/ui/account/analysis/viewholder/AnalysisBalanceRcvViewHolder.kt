@@ -1,7 +1,7 @@
 package little.goose.account.ui.account.analysis.viewholder
 
 import androidx.recyclerview.widget.RecyclerView
-import little.goose.account.common.dialog.time.TimeType
+import little.goose.common.dialog.time.TimeType
 import little.goose.account.databinding.ItemAnalysisBalanceBinding
 import little.goose.account.logic.data.models.TransactionBalance
 import little.goose.account.ui.account.TransactionExampleActivity

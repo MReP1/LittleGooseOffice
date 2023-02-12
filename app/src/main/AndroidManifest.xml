@@ -13,17 +13,17 @@
             android:name=".ui.account.TransactionExampleActivity"
             android:exported="false" />
         <activity
-            android:name=".ui.memorial.MemorialShowActivity"
+            android:name="little.goose.memorial.ui.MemorialShowActivity"
             android:exported="false" />
         <activity
-            android:name=".ui.memorial.MemorialActivity"
+            android:name="little.goose.memorial.ui.MemorialActivity"
             android:exported="false" />
         <activity
             android:name=".ui.account.analysis.AccountAnalysisActivity"
             android:exported="false" />
-        <activity
-            android:name=".ui.search.SearchActivity"
-            android:exported="false" />
+<!--        <activity-->
+<!--            android:name=".ui.search.SearchActivity"-->
+<!--            android:exported="false" />-->
         <activity
             android:name=".ui.account.transaction.TransactionActivity"
             android:exported="false"

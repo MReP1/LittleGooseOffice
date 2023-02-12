@@ -95,11 +95,4 @@
     <string name="change_time">修改时间</string>
 
     <string name="no_transaction">没有记账</string>
-
-    <string name="content_future">%s还有</string>
-    <string name="content_past">%s已经</string>
-
-    <string name="original_time">起始日：%s</string>
-    <string name="target_time">目标日：%s</string>
-
 </resources>

@@ -2,7 +2,7 @@ package little.goose.account.ui.notebook
 
 import android.view.View
 import androidx.recyclerview.widget.RecyclerView
-import little.goose.account.common.MultipleChoseHandler
+import little.goose.common.MultipleChoseHandler
 import little.goose.account.databinding.ItemNoteBinding
 import little.goose.account.logic.data.entities.Note
 import little.goose.account.utils.toChineseMonthDayTime

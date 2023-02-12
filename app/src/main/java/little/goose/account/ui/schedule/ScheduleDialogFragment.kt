@@ -11,13 +11,16 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import little.goose.account.R
-import little.goose.account.common.dialog.NormalDialogFragment
-import little.goose.account.common.dialog.time.DateTimePickerBottomDialog
+import little.goose.common.dialog.NormalDialogFragment
+import little.goose.common.dialog.DateTimePickerBottomDialog
 import little.goose.account.databinding.LayoutCardScheduleBinding
 import little.goose.account.logic.ScheduleRepository
 import little.goose.account.logic.data.constant.*
 import little.goose.account.logic.data.entities.Schedule
 import little.goose.account.utils.*
+import little.goose.common.constants.NOTIFY_DELETE_SCHEDULE
+import little.goose.common.constants.NOTIFY_UPDATE_SCHEDULE
+import little.goose.common.localBroadcastManager
 import java.util.*
 
 class ScheduleDialogFragment
@@ -121,7 +124,7 @@ private constructor() : DialogFragment(R.layout.layout_card_schedule) {
             schedule?.let { ScheduleRepository.updateSchedule(it) }
             //更新完返回
             KeyBoard.hide(binding.root)
-            localBroadcastManager.sendBroadcast(Intent(NOTIFY_UPDATE_SCHEDULE))
+            requireContext().localBroadcastManager.sendBroadcast(Intent(NOTIFY_UPDATE_SCHEDULE))
         }
     }
 
@@ -137,7 +140,7 @@ private constructor() : DialogFragment(R.layout.layout_card_schedule) {
             setPackage(`package`)
             putExtra(KEY_DELETE_ITEM, schedule)
         }
-        localBroadcastManager.sendBroadcast(intent)
+        requireContext().localBroadcastManager.sendBroadcast(intent)
     }
 
     private fun updateData() {

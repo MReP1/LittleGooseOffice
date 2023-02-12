@@ -1,7 +1,7 @@
 package little.goose.account.ui.account
 
 import androidx.recyclerview.widget.RecyclerView
-import little.goose.account.common.MultipleChoseHandler
+import little.goose.common.MultipleChoseHandler
 import little.goose.account.databinding.ItemTransactionHolderBinding
 import little.goose.account.logic.data.entities.Transaction
 

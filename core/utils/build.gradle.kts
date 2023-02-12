@@ -4,6 +4,10 @@ plugins {
 
 android {
     namespace = "little.goose.account.utils"
+
+    buildFeatures {
+        viewBinding = true
+    }
 }
 
 dependencies {

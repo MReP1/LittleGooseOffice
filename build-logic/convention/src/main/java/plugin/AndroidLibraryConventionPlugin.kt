@@ -25,6 +25,7 @@ class AndroidLibraryConventionPlugin : Plugin<Project> {
     private fun PluginManager.applyPlugin() {
         apply("com.android.library")
         apply("org.jetbrains.kotlin.android")
+        apply("kotlin-parcelize") // TODO
     }
 
     private fun LibraryExtension.configureAndroid() {

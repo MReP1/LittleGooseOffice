@@ -22,7 +22,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 import little.goose.account.R
-import little.goose.account.common.dialog.time.TimeType
+import little.goose.common.dialog.time.TimeType
 import little.goose.account.logic.data.constant.*
 import little.goose.account.logic.data.entities.Transaction
 import little.goose.account.ui.account.transaction.TransactionDialogFragment

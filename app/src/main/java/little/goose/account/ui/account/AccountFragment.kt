@@ -10,15 +10,8 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import kotlinx.coroutines.*
 import little.goose.account.R
 import little.goose.account.appScope
-import little.goose.account.common.ItemSelectCallback
-import little.goose.account.common.MultipleChoseHandler
-import little.goose.account.common.dialog.NormalDialogFragment
-import little.goose.account.common.dialog.time.DateTimePickerCenterDialog
-import little.goose.account.common.dialog.time.TimeType
 import little.goose.account.databinding.FragmentAccountBinding
 import little.goose.account.logic.AccountRepository
-import little.goose.account.logic.data.constant.ACCOUNT
-import little.goose.account.logic.data.constant.NOTIFY_DELETE_TRANSACTION
 import little.goose.account.logic.data.entities.Transaction
 import little.goose.account.ui.account.analysis.AccountAnalysisActivity
 import little.goose.account.ui.account.transaction.TransactionActivity
@@ -27,9 +20,14 @@ import little.goose.account.ui.account.transaction.TransactionHelper
 import little.goose.account.ui.account.transaction.insertTime
 import little.goose.account.ui.base.BaseFragment
 import little.goose.account.ui.decoration.ItemLinearLayoutDecoration
-import little.goose.account.ui.search.SearchActivity
 import little.goose.account.ui.widget.selector.MonthSelector
 import little.goose.account.utils.*
+import little.goose.common.ItemSelectCallback
+import little.goose.common.MultipleChoseHandler
+import little.goose.common.constants.NOTIFY_DELETE_TRANSACTION
+import little.goose.common.dialog.DateTimePickerCenterDialog
+import little.goose.common.dialog.NormalDialogFragment
+import little.goose.common.dialog.time.TimeType
 import kotlin.properties.Delegates
 
 @SuppressLint("NotifyDataSetChanged")
@@ -56,9 +54,11 @@ class AccountFragment : BaseFragment(R.layout.fragment_account) {
             .setContent(getString(R.string.confirm_delete))
             .setConfirmCallback {
                 viewLifecycleOwner.lifecycleScope.launch {
-                    val list = multipleChoseHandler.deleteItemList()
-                    binding.root.showSnackbar(R.string.deleted, 1000, R.string.undo) {
-                        appScope.launch { AccountRepository.addTransactions(list) }
+                    multipleChoseHandler.deleteItemList {
+                        AccountRepository.deleteTransactions(it)
+                        binding.root.showSnackbar(R.string.deleted, 1000, R.string.undo) {
+                            appScope.launch { AccountRepository.addTransactions(it) }
+                        }
                     }
                 }
             }
@@ -69,7 +69,7 @@ class AccountFragment : BaseFragment(R.layout.fragment_account) {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        viewModel.deleteReceiver.register(lifecycle, NOTIFY_DELETE_TRANSACTION) { _, transaction ->
+        viewModel.deleteReceiver.register(requireContext(), lifecycle, NOTIFY_DELETE_TRANSACTION) { _, transaction ->
             binding.root.showSnackbar(R.string.deleted, 1000, R.string.undo) {
                 appScope.launch {
                     AccountRepository.addTransaction(transaction)
@@ -105,7 +105,9 @@ class AccountFragment : BaseFragment(R.layout.fragment_account) {
                 setOnBackPressListener { cancelMultiChose() }
                 setButtonAllVisibility(false)
                 setOnFloatUpClickListener { AccountAnalysisActivity.open(requireContext()) }
-                setOnFloatSideClickListener { SearchActivity.open(requireContext(), ACCOUNT) }
+                setOnFloatSideClickListener {
+//                    SearchActivity.open(requireContext(), ACCOUNT)
+                }
             }
         }
     }

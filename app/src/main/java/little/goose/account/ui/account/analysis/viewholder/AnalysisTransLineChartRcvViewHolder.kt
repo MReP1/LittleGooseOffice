@@ -12,7 +12,7 @@ import com.github.mikephil.charting.data.LineDataSet
 import com.github.mikephil.charting.highlight.Highlight
 import com.github.mikephil.charting.listener.OnChartValueSelectedListener
 import little.goose.account.R
-import little.goose.account.common.dialog.time.TimeType
+import little.goose.common.dialog.time.TimeType
 import little.goose.account.databinding.LayoutHeaderTransLineChartBinding
 import little.goose.account.logic.data.constant.MoneyType
 import little.goose.account.logic.data.models.TimeMoney

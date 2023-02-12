@@ -9,20 +9,18 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import kotlinx.coroutines.launch
 import little.goose.account.R
 import little.goose.account.appScope
-import little.goose.account.common.ItemSelectCallback
-import little.goose.account.common.MultipleChoseHandler
-import little.goose.account.common.dialog.NormalDialogFragment
 import little.goose.account.databinding.FragmentScheduleBinding
 import little.goose.account.logic.ScheduleRepository
 import little.goose.account.logic.data.constant.KEY_SCHEDULE
-import little.goose.account.logic.data.constant.NOTIFY_DELETE_SCHEDULE
-import little.goose.account.logic.data.constant.NOTIFY_UPDATE_SCHEDULE
-import little.goose.account.logic.data.constant.SCHEDULE
 import little.goose.account.logic.data.entities.Schedule
 import little.goose.account.ui.base.BaseFragment
 import little.goose.account.ui.decoration.ItemLinearLayoutDecoration
-import little.goose.account.ui.search.SearchActivity
 import little.goose.account.utils.*
+import little.goose.common.ItemSelectCallback
+import little.goose.common.MultipleChoseHandler
+import little.goose.common.constants.NOTIFY_DELETE_SCHEDULE
+import little.goose.common.constants.NOTIFY_UPDATE_SCHEDULE
+import little.goose.common.dialog.NormalDialogFragment
 
 @SuppressLint("NotifyDataSetChanged")
 class ScheduleFragment
@@ -42,6 +40,7 @@ private constructor() : BaseFragment(R.layout.fragment_schedule) {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         viewModel.deleteReceiver.register(
+            context = requireContext(),
             lifecycle = lifecycle,
             action = NOTIFY_DELETE_SCHEDULE
         ) { _, schedule ->
@@ -51,6 +50,7 @@ private constructor() : BaseFragment(R.layout.fragment_schedule) {
         }
 
         viewModel.updateReceiver.register(
+            context = requireContext(),
             lifecycle = lifecycle,
             action = NOTIFY_UPDATE_SCHEDULE
         ) { _, _ ->
@@ -79,9 +79,11 @@ private constructor() : BaseFragment(R.layout.fragment_schedule) {
             .setContent(getString(R.string.confirm_delete))
             .setConfirmCallback {
                 viewLifecycleOwner.lifecycleScope.launch {
-                    val list = multipleChoseHandler.deleteItemList()
-                    binding.root.showSnackbar(R.string.deleted, 1000, R.string.undo) {
-                        appScope.launch { ScheduleRepository.addSchedules(list) }
+                    multipleChoseHandler.deleteItemList {
+                        ScheduleRepository.deleteSchedules(it)
+                        binding.root.showSnackbar(R.string.deleted, 1000, R.string.undo) {
+                            appScope.launch { ScheduleRepository.addSchedules(it) }
+                        }
                     }
                 }
             }
@@ -99,7 +101,9 @@ private constructor() : BaseFragment(R.layout.fragment_schedule) {
                 }
                 setOnFloatVectorClickListener { cancelMultiChose() }
                 setOnBackPressListener { cancelMultiChose() }
-                setOnFloatSideClickListener { SearchActivity.open(requireContext(), SCHEDULE) }
+                setOnFloatSideClickListener {
+//                    SearchActivity.open(requireContext(), SCHEDULE)
+                }
             }
         }
     }

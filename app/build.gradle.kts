@@ -34,6 +34,8 @@ dependencies {
     implementation(libs.androidx.activity.ktx)
     implementation(libs.androidx.fragment.ktx)
 
+    implementation(project(":feature:memorial"))
+
     // Compose
     implementation(libs.androidx.activity.compose)
     implementation(project(":core:design-system"))

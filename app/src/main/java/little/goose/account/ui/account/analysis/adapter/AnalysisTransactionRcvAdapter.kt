@@ -4,7 +4,7 @@ import android.annotation.SuppressLint
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
-import little.goose.account.common.dialog.time.TimeType
+import little.goose.common.dialog.time.TimeType
 import little.goose.account.databinding.ItemTransactionAnalysisBinding
 import little.goose.account.logic.data.models.TransactionPercent
 import little.goose.account.ui.account.TransactionExampleActivity

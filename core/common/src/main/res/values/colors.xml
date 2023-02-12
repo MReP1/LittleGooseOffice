@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="red_200">#FFEF8D89</color>
+    <color name="red_500">#FFE46962</color>
+    <color name="red_700">#FFB3261E</color>
+    <color name="teal_200">#FF03DAC5</color>
+    <color name="teal_700">#FF018786</color>
+
+    <color name="green_500">#26AA89</color>
+    <color name="green_700">#22856C</color>
+
+    <color name="black">#FF000000</color>
+    <color name="white">#FFFFFFFF</color>
+    <color name="transparent">#00FFFFFF</color>
+
+    <color name="white25">#40FFFFFF</color>
+    <color name="confirm_button_25">#40E46962</color>
+
+    <color name="nor_text_color">#2B2B2B</color>
+    <color name="sec_text_color">#424242</color>
+    <color name="hint_text_color">#717171</color>
+    <color name="nav_ripper_color">#C4C4C4</color>
+
+    <color name="primary_color">#FFFBF9</color>
+    <color name="background_color">#F7F0F0</color>
+
+    <color name="add_button">#E46962</color>
+
+    <color name="confirm_button">#E46962</color>
+    <color name="cancel_button">#EF8D89</color>
+
+    <color name="item_selected">#F0E5E3</color>
+
+    <color name="other_month_color">#AAC8C8C8</color>
+
+    <color name="test_color1">#87C0C2</color>
+</resources>

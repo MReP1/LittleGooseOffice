@@ -9,8 +9,8 @@ import com.google.android.material.tabs.TabLayoutMediator
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import little.goose.account.R
-import little.goose.account.common.dialog.time.DateTimePickerBottomDialog
-import little.goose.account.common.dialog.time.TimeType
+import little.goose.common.dialog.DateTimePickerBottomDialog
+import little.goose.common.dialog.time.TimeType
 import little.goose.account.databinding.FragmentAccountAnalysisBinding
 import little.goose.account.ui.account.analysis.adapter.AnalysisVPAdapter
 import little.goose.account.ui.account.analysis.widget.ItemTabTransactionTypeView

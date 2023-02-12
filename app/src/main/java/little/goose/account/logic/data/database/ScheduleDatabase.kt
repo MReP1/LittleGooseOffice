@@ -5,6 +5,7 @@ import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
 import little.goose.account.logic.data.dao.ScheduleDao
 import little.goose.account.logic.data.entities.Schedule
+import little.goose.common.converters.CommonTypeConverters
 
 @Database(entities = [Schedule::class], version = 1, exportSchema = false)
 @TypeConverters(CommonTypeConverters::class)

@@ -13,23 +13,28 @@ import com.haibin.calendarview.CalendarView
 import kotlinx.coroutines.*
 import little.goose.account.R
 import little.goose.account.appScope
-import little.goose.account.common.dialog.time.DateTimePickerCenterDialog
+import little.goose.common.dialog.DateTimePickerCenterDialog
 import little.goose.account.databinding.FragmentHomeBinding
 import little.goose.account.logic.AccountRepository
-import little.goose.account.logic.MemorialRepository
+import little.goose.memorial.logic.MemorialRepository
 import little.goose.account.logic.ScheduleRepository
 import little.goose.account.logic.data.constant.*
 import little.goose.account.logic.data.constant.AccountConstant.EXPENSE
 import little.goose.account.logic.data.constant.AccountConstant.INCOME
-import little.goose.account.logic.data.entities.Memorial
+import little.goose.memorial.data.entities.Memorial
 import little.goose.account.logic.data.entities.Schedule
 import little.goose.account.logic.data.entities.Transaction
 import little.goose.account.ui.account.transaction.TransactionActivity
 import little.goose.account.ui.account.transaction.TransactionHelper
 import little.goose.account.ui.base.BaseFragment
-import little.goose.account.ui.memorial.MemorialDialogFragment
+import little.goose.memorial.ui.MemorialDialogFragment
 import little.goose.account.ui.schedule.ScheduleDialogFragment
 import little.goose.account.utils.*
+import little.goose.common.constants.NOTIFY_DELETE_MEMORIAL
+import little.goose.common.constants.NOTIFY_DELETE_SCHEDULE
+import little.goose.common.constants.NOTIFY_DELETE_TRANSACTION
+import little.goose.memorial.utils.appendTimeSuffix
+import little.goose.memorial.utils.getMapDayBoolean
 import kotlin.properties.Delegates
 
 class HomeFragment : BaseFragment(R.layout.fragment_home) {
@@ -98,6 +103,7 @@ class HomeFragment : BaseFragment(R.layout.fragment_home) {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         viewModel.scheduleDeleteReceiver.register(
+            requireContext(),
             lifecycle,
             NOTIFY_DELETE_SCHEDULE
         ) { _, schedule ->
@@ -108,6 +114,7 @@ class HomeFragment : BaseFragment(R.layout.fragment_home) {
             }
         }
         viewModel.transactionDeleteReceiver.register(
+            requireContext(),
             lifecycle,
             NOTIFY_DELETE_TRANSACTION
         ) { _, transaction ->
@@ -118,6 +125,7 @@ class HomeFragment : BaseFragment(R.layout.fragment_home) {
             }
         }
         viewModel.memorialDeleteReceiver.register(
+            requireContext(),
             lifecycle,
             NOTIFY_DELETE_MEMORIAL
         ) { _, memorial ->
@@ -263,7 +271,7 @@ class HomeFragment : BaseFragment(R.layout.fragment_home) {
                     ContextCompat.getColor(requireContext(), R.color.green_500)
                 }
             )
-            tvMemoContent.text = memorial.content.appendTimeSuffix(memorial.time)
+            tvMemoContent.text = memorial.content.appendTimeSuffix(memorial.time, requireContext())
             tvMemoTime.setTime(memorial.time)
             cardMemorial.setOnClickListener {
                 MemorialDialogFragment.newInstance(memorial)

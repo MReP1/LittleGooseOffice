@@ -4,8 +4,8 @@ import android.annotation.SuppressLint
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
-import little.goose.account.common.ItemSelectCallback
-import little.goose.account.common.MultipleChoseHandler
+import little.goose.common.ItemSelectCallback
+import little.goose.common.MultipleChoseHandler
 import little.goose.account.databinding.ItemScheduleBinding
 import little.goose.account.logic.data.entities.Schedule
 

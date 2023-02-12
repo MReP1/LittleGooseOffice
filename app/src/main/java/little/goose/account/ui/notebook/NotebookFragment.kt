@@ -9,18 +9,16 @@ import androidx.recyclerview.widget.GridLayoutManager
 import kotlinx.coroutines.launch
 import little.goose.account.R
 import little.goose.account.appScope
-import little.goose.account.common.ItemSelectCallback
-import little.goose.account.common.MultipleChoseHandler
-import little.goose.account.common.dialog.NormalDialogFragment
 import little.goose.account.databinding.FragmentNotebookBinding
 import little.goose.account.logic.NoteRepository
-import little.goose.account.logic.data.constant.NOTEBOOK
 import little.goose.account.logic.data.entities.Note
 import little.goose.account.ui.base.BaseFragment
 import little.goose.account.ui.decoration.ItemGridLayoutDecoration
 import little.goose.account.ui.notebook.note.NoteActivity
-import little.goose.account.ui.search.SearchActivity
 import little.goose.account.utils.*
+import little.goose.common.ItemSelectCallback
+import little.goose.common.MultipleChoseHandler
+import little.goose.common.dialog.NormalDialogFragment
 
 @SuppressLint("NotifyDataSetChanged")
 class NotebookFragment
@@ -41,10 +39,12 @@ private constructor() : BaseFragment(R.layout.fragment_notebook) {
             .setContent(getString(R.string.confirm_delete))
             .setConfirmCallback {
                 viewLifecycleOwner.lifecycleScope.launch {
-                    val list = multipleChoseHandler.deleteItemList()
-                    binding.root.showSnackbar(R.string.deleted, 1000, R.string.undo) {
-                        appScope.launch {
-                            NoteRepository.addNoteList(list)
+                    multipleChoseHandler.deleteItemList {
+                        NoteRepository.deleteNoteList(it)
+                        binding.root.showSnackbar(R.string.deleted, 1000, R.string.undo) {
+                            appScope.launch {
+                                NoteRepository.addNoteList(it)
+                            }
                         }
                     }
                 }
@@ -97,7 +97,9 @@ private constructor() : BaseFragment(R.layout.fragment_notebook) {
                 }
                 setOnFloatVectorClickListener { cancelMultiChose() }
                 setOnBackPressListener { cancelMultiChose() }
-                setOnFloatSideClickListener { SearchActivity.open(requireContext(), NOTEBOOK) }
+                setOnFloatSideClickListener {
+//                    SearchActivity.open(requireContext(), NOTEBOOK)
+                }
             }
         }
         launchAndRepeatWithViewLifeCycle {

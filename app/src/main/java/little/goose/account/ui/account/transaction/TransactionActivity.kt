@@ -17,8 +17,8 @@ import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 import little.goose.account.R
 import little.goose.account.appScope
-import little.goose.account.common.dialog.InputTextDialogFragment
-import little.goose.account.common.dialog.time.DateTimePickerBottomDialog
+import little.goose.common.dialog.InputTextDialogFragment
+import little.goose.common.dialog.DateTimePickerBottomDialog
 import little.goose.account.databinding.ActivityAddTransactionBinding
 import little.goose.account.databinding.ItemIconCardBinding
 import little.goose.account.databinding.LayoutAddTransactionBinding

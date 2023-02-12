@@ -5,9 +5,8 @@ import androidx.recyclerview.widget.RecyclerView
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
-import little.goose.account.AccountApplication
 import little.goose.account.appScope
-import little.goose.account.common.MultipleChoseHandler
+import little.goose.common.MultipleChoseHandler
 import little.goose.account.databinding.ItemScheduleBinding
 import little.goose.account.logic.ScheduleRepository
 import little.goose.account.logic.data.entities.Schedule

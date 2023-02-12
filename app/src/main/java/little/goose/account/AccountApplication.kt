@@ -6,6 +6,9 @@ import dagger.hilt.android.HiltAndroidApp
 import kotlinx.coroutines.*
 import little.goose.account.ui.account.transaction.TransactionHelper
 import little.goose.account.utils.DataStoreHelper
+import little.goose.account.utils.DateTimeUtils
+import little.goose.account.utils.UIUtils
+import little.goose.memorial.logic.MemorialRepository
 
 @HiltAndroidApp
 class AccountApplication : Application() {
@@ -13,6 +16,11 @@ class AccountApplication : Application() {
     override fun onCreate() {
         super.onCreate()
         appContext = applicationContext
+
+        DateTimeUtils.appContext = this
+        UIUtils.appContext = this
+        MemorialRepository.appContext = this
+
         initData()
     }
 

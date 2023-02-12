@@ -10,15 +10,16 @@ import androidx.fragment.app.FragmentManager
 import kotlinx.coroutines.launch
 import little.goose.account.R
 import little.goose.account.appScope
-import little.goose.account.common.dialog.NormalDialogFragment
+import little.goose.common.dialog.NormalDialogFragment
 import little.goose.account.databinding.LayoutDialogTransactionBinding
 import little.goose.account.logic.AccountRepository
 import little.goose.account.logic.data.constant.KEY_DELETE_ITEM
 import little.goose.account.logic.data.constant.KEY_TRANSACTION
-import little.goose.account.logic.data.constant.NOTIFY_DELETE_TRANSACTION
+import little.goose.common.constants.NOTIFY_DELETE_TRANSACTION
 import little.goose.account.logic.data.entities.Transaction
 import little.goose.account.ui.account.transaction.icon.TransactionIconHelper
 import little.goose.account.utils.*
+import little.goose.common.localBroadcastManager
 import java.math.BigDecimal
 import java.util.*
 
@@ -82,7 +83,7 @@ class TransactionDialogFragment : DialogFragment(R.layout.layout_dialog_transact
             setPackage(`package`)
             putExtra(KEY_DELETE_ITEM, transaction)
         }
-        localBroadcastManager.sendBroadcast(intent)
+        requireContext().localBroadcastManager.sendBroadcast(intent)
     }
 
     companion object {
