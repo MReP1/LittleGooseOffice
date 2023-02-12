@@ -1,19 +1,18 @@
 package little.goose.memorial.logic
 
-import android.app.Application
 import android.content.Context
 import androidx.room.Room
 import kotlinx.coroutines.flow.Flow
+import little.goose.common.utils.getOneDayRange
+import little.goose.common.utils.getOneMonthRange
+import little.goose.memorial.data.constant.TABLE_MEMORIAL
 import little.goose.memorial.data.database.MemorialDatabase
 import little.goose.memorial.data.entities.Memorial
-import little.goose.account.utils.getOneDayRange
-import little.goose.account.utils.getOneMonthRange
-import little.goose.memorial.data.constant.TABLE_MEMORIAL
 
-class MemorialRepository(application: Application) {
+class MemorialRepository(context: Context) {
 
     private val database: MemorialDatabase = Room.databaseBuilder(
-        application,
+        context,
         MemorialDatabase::class.java,
         TABLE_MEMORIAL
     ).build()

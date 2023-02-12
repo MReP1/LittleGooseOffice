@@ -14,10 +14,10 @@ import androidx.constraintlayout.compose.ChainStyle
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
 import little.goose.memorial.data.entities.Memorial
-import little.goose.account.utils.DateTimeUtils
+import little.goose.common.utils.DateTimeUtils
 import little.goose.memorial.utils.appendTimePrefix
 import little.goose.memorial.utils.appendTimeSuffix
-import little.goose.account.utils.toChineseYearMonDayWeek
+import little.goose.common.utils.toChineseYearMonDayWeek
 import little.goose.memorial.R
 import java.util.*
 

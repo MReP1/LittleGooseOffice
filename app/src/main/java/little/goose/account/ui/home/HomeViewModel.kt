@@ -9,19 +9,20 @@ import kotlinx.coroutines.launch
 import little.goose.common.receiver.DeleteItemBroadcastReceiver
 import little.goose.account.logic.AccountRepository
 import little.goose.memorial.logic.MemorialRepository
-import little.goose.account.logic.ScheduleRepository
 import little.goose.memorial.data.entities.Memorial
-import little.goose.account.logic.data.entities.Schedule
 import little.goose.account.logic.data.entities.Transaction
-import little.goose.account.utils.getDate
-import little.goose.account.utils.getMonth
-import little.goose.account.utils.getYear
+import little.goose.common.utils.getDate
+import little.goose.common.utils.getMonth
+import little.goose.common.utils.getYear
+import little.goose.schedule.data.entities.Schedule
+import little.goose.schedule.logic.ScheduleRepository
 import java.util.*
 import javax.inject.Inject
 
 @HiltViewModel
 class HomeViewModel @Inject constructor(
-    private val memorialRepository: MemorialRepository
+    private val memorialRepository: MemorialRepository,
+    private val scheduleRepository: ScheduleRepository
 ) : ViewModel() {
 
     var transactionListFlow: Flow<List<Transaction>>
@@ -35,7 +36,7 @@ class HomeViewModel @Inject constructor(
     }
 
     fun updateOneDayScheduleListFlow(year: Int, month: Int, date: Int) {
-        scheduleListFlow = ScheduleRepository.getScheduleByDateFlow(year, month, date)
+        scheduleListFlow = scheduleRepository.getScheduleByDateFlow(year, month, date)
     }
 
     fun updateOneDayMemorialListFLow(year: Int, month: Int, date: Int) {
@@ -52,6 +53,22 @@ class HomeViewModel @Inject constructor(
         }
     }
 
+    fun addSchedule(schedule: Schedule) {
+        viewModelScope.launch(Dispatchers.IO) {
+            scheduleRepository.addSchedule(schedule)
+        }
+    }
+
+    fun updateSchedule(schedule: Schedule) {
+        viewModelScope.launch(Dispatchers.IO) {
+            scheduleRepository.updateSchedule(schedule)
+        }
+    }
+
+    suspend fun getScheduleByYearMonth(year: Int, month: Int): List<Schedule> {
+        return scheduleRepository.getScheduleByYearMonth(year, month)
+    }
+
     suspend fun getMemorialsByYearMonth(year: Int, month: Int): List<Memorial> {
         return memorialRepository.getMemorialsByYearMonth(year, month)
     }
@@ -62,7 +79,7 @@ class HomeViewModel @Inject constructor(
             val month = getMonth()
             val date = getDate()
             transactionListFlow = AccountRepository.getTransactionByDateFlow(year, month, date)
-            scheduleListFlow = ScheduleRepository.getScheduleByDateFlow(year, month, date)
+            scheduleListFlow = scheduleRepository.getScheduleByDateFlow(year, month, date)
             memorialListFlow = memorialRepository.getMemorialsByDateFlow(year, month, date)
         }
     }

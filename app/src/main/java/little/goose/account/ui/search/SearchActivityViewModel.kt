@@ -8,10 +8,10 @@ package little.goose.account.ui.search
 //import little.goose.account.logic.AccountRepository
 //import little.goose.memorial.logic.MemorialRepository
 //import little.goose.account.logic.NoteRepository
-//import little.goose.account.logic.ScheduleRepository
+//import little.goose.schedule.logic.ScheduleRepository
 //import little.goose.memorial.data.entities.Memorial
 //import little.goose.account.logic.data.entities.Note
-//import little.goose.account.logic.data.entities.Schedule
+//import little.goose.schedule.data.entities.Schedule
 //import little.goose.account.logic.data.entities.Transaction
 //import middle.goose.richtext.HtmlParser
 //

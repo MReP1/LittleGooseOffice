@@ -12,7 +12,7 @@ import little.goose.account.R
 import little.goose.account.logic.data.constant.ACCOUNT
 import little.goose.account.logic.data.constant.MEMORIAL
 import little.goose.account.logic.data.constant.SCHEDULE
-import little.goose.account.utils.dpf
+import little.goose.common.utils.dpf
 
 class AccountWeekView(context: Context?) : WeekView(context) {
 

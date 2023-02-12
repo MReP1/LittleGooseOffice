@@ -11,9 +11,9 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import little.goose.memorial.data.entities.Memorial
-import little.goose.account.utils.DateTimeUtils
-import little.goose.account.utils.getMonth
-import little.goose.account.utils.getYear
+import little.goose.common.utils.DateTimeUtils
+import little.goose.common.utils.getMonth
+import little.goose.common.utils.getYear
 import little.goose.common.collections.CircularLinkList
 import little.goose.design.system.component.AutoResizedText
 import java.util.*

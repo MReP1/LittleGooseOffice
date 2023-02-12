@@ -7,8 +7,8 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.FragmentManager
-import little.goose.account.utils.UIUtils
-import little.goose.account.utils.viewBinding
+import little.goose.common.utils.UIUtils
+import little.goose.common.utils.viewBinding
 import little.goose.common.R
 import little.goose.common.databinding.LayoutDialogNormalBinding
 

@@ -3,6 +3,7 @@ package little.goose.account.ui.notebook.note
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
@@ -10,13 +11,12 @@ import little.goose.account.R
 import little.goose.account.appScope
 import little.goose.account.databinding.ActivityNoteBinding
 import little.goose.account.logic.data.entities.Note
-import little.goose.account.ui.base.BaseActivity
-import little.goose.account.utils.parcelable
-import little.goose.account.utils.viewBinding
+import little.goose.common.utils.parcelable
+import little.goose.common.utils.viewBinding
 import java.util.*
 
 @AndroidEntryPoint
-class NoteActivity : BaseActivity() {
+class NoteActivity : AppCompatActivity() {
 
     private val binding by viewBinding(ActivityNoteBinding::inflate)
     private val viewModel: NoteViewModel by lazy {

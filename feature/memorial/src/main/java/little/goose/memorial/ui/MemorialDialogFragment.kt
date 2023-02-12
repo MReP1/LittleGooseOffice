@@ -24,11 +24,12 @@ import androidx.fragment.app.DialogFragment
 import androidx.lifecycle.lifecycleScope
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
-import little.goose.account.utils.*
 import little.goose.common.constants.KEY_DELETE_ITEM
 import little.goose.common.constants.NOTIFY_DELETE_MEMORIAL
 import little.goose.common.dialog.NormalDialogFragment
 import little.goose.common.localBroadcastManager
+import little.goose.common.utils.UIUtils
+import little.goose.common.utils.parcelable
 import little.goose.design.system.theme.AccountTheme
 import little.goose.memorial.data.entities.Memorial
 import little.goose.memorial.logic.MemorialRepository
@@ -77,7 +78,7 @@ class MemorialDialogFragment : DialogFragment() {
 
     private fun delete() {
         NormalDialogFragment.Builder()
-            .setContent(requireContext().getString(R.string.confirm_delete))
+            .setContent(requireContext().getString(little.goose.common.R.string.confirm_delete))
             .setConfirmCallback {
                 lifecycleScope.launch {
                     memorialRepository.deleteMemorial(memorial)

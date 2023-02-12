@@ -8,7 +8,7 @@ import little.goose.account.ui.account.AccountFragment
 import little.goose.account.ui.home.HomeFragment
 import little.goose.memorial.ui.MemorialFragment
 import little.goose.account.ui.notebook.NotebookFragment
-import little.goose.account.ui.schedule.ScheduleFragment
+import little.goose.schedule.ui.ScheduleFragment
 
 class HomeFragmentPagerAdapter(fragmentActivity: FragmentActivity) :
     FragmentStateAdapter(fragmentActivity) {

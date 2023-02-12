@@ -53,4 +53,15 @@
         <attr name="type" />
     </declare-styleable>
 
+    <!--悬浮按钮-->
+    <declare-styleable name="FloatView">
+        <attr name="drawable_src" format="reference|color" />
+    </declare-styleable>
+
+    <declare-styleable name="MultiFloatView">
+        <attr name="main_drawable_src" format="reference|color" />
+        <attr name="is_side_show" format="boolean"/>
+        <attr name="is_up_show" format="boolean" />
+    </declare-styleable>
+
 </resources>

@@ -6,6 +6,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
@@ -17,8 +18,6 @@ import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 import little.goose.account.R
 import little.goose.account.appScope
-import little.goose.common.dialog.InputTextDialogFragment
-import little.goose.common.dialog.DateTimePickerBottomDialog
 import little.goose.account.databinding.ActivityAddTransactionBinding
 import little.goose.account.databinding.ItemIconCardBinding
 import little.goose.account.databinding.LayoutAddTransactionBinding
@@ -27,16 +26,17 @@ import little.goose.account.logic.data.constant.AccountConstant.INCOME
 import little.goose.account.logic.data.entities.Transaction
 import little.goose.account.logic.data.models.TransactionIcon
 import little.goose.account.ui.account.transaction.icon.TransactionIconHelper
-import little.goose.account.ui.base.BaseActivity
-import little.goose.account.utils.SnackbarUtils
-import little.goose.account.utils.parcelable
-import little.goose.account.utils.toChineseMonthDayTime
-import little.goose.account.utils.viewBinding
+import little.goose.common.dialog.DateTimePickerBottomDialog
+import little.goose.common.dialog.InputTextDialogFragment
+import little.goose.common.utils.SnackbarUtils
+import little.goose.common.utils.parcelable
+import little.goose.common.utils.toChineseMonthDayTime
+import little.goose.common.utils.viewBinding
 import java.math.BigDecimal
 import java.util.*
 
 @AndroidEntryPoint
-class TransactionActivity : BaseActivity(),
+class TransactionActivity : AppCompatActivity(),
     View.OnClickListener, TransactionViewModel.ButtonCallback {
 
     private val binding by viewBinding(ActivityAddTransactionBinding::inflate)

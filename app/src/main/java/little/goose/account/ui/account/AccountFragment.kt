@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.os.Bundle
 import android.view.View
 import android.view.ViewGroup
+import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -18,8 +19,7 @@ import little.goose.account.ui.account.transaction.TransactionActivity
 import little.goose.account.ui.account.transaction.TransactionDialogFragment
 import little.goose.account.ui.account.transaction.TransactionHelper
 import little.goose.account.ui.account.transaction.insertTime
-import little.goose.account.ui.base.BaseFragment
-import little.goose.account.ui.decoration.ItemLinearLayoutDecoration
+import little.goose.common.decoration.ItemLinearLayoutDecoration
 import little.goose.account.ui.widget.selector.MonthSelector
 import little.goose.account.utils.*
 import little.goose.common.ItemSelectCallback
@@ -28,10 +28,11 @@ import little.goose.common.constants.NOTIFY_DELETE_TRANSACTION
 import little.goose.common.dialog.DateTimePickerCenterDialog
 import little.goose.common.dialog.NormalDialogFragment
 import little.goose.common.dialog.time.TimeType
+import little.goose.common.utils.*
 import kotlin.properties.Delegates
 
 @SuppressLint("NotifyDataSetChanged")
-class AccountFragment : BaseFragment(R.layout.fragment_account) {
+class AccountFragment : Fragment(R.layout.fragment_account) {
 
     private val viewModel: AccountFragmentViewModel by viewModels()
 
@@ -51,12 +52,16 @@ class AccountFragment : BaseFragment(R.layout.fragment_account) {
 
     private val deleteOnClickListener = View.OnClickListener {
         NormalDialogFragment.Builder()
-            .setContent(getString(R.string.confirm_delete))
+            .setContent(getString(little.goose.common.R.string.confirm_delete))
             .setConfirmCallback {
                 viewLifecycleOwner.lifecycleScope.launch {
                     multipleChoseHandler.deleteItemList {
                         AccountRepository.deleteTransactions(it)
-                        binding.root.showSnackbar(R.string.deleted, 1000, R.string.undo) {
+                        binding.root.showSnackbar(
+                            little.goose.common.R.string.deleted,
+                            1000,
+                            little.goose.common.R.string.undo
+                        ) {
                             appScope.launch { AccountRepository.addTransactions(it) }
                         }
                     }
@@ -69,8 +74,16 @@ class AccountFragment : BaseFragment(R.layout.fragment_account) {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        viewModel.deleteReceiver.register(requireContext(), lifecycle, NOTIFY_DELETE_TRANSACTION) { _, transaction ->
-            binding.root.showSnackbar(R.string.deleted, 1000, R.string.undo) {
+        viewModel.deleteReceiver.register(
+            requireContext(),
+            lifecycle,
+            NOTIFY_DELETE_TRANSACTION
+        ) { _, transaction ->
+            binding.root.showSnackbar(
+                little.goose.common.R.string.deleted,
+                1000,
+                little.goose.common.R.string.undo
+            ) {
                 appScope.launch {
                     AccountRepository.addTransaction(transaction)
                 }

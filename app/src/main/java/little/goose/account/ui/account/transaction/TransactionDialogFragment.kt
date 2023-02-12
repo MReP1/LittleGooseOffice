@@ -18,8 +18,8 @@ import little.goose.account.logic.data.constant.KEY_TRANSACTION
 import little.goose.common.constants.NOTIFY_DELETE_TRANSACTION
 import little.goose.account.logic.data.entities.Transaction
 import little.goose.account.ui.account.transaction.icon.TransactionIconHelper
-import little.goose.account.utils.*
 import little.goose.common.localBroadcastManager
+import little.goose.common.utils.*
 import java.math.BigDecimal
 import java.util.*
 
@@ -52,7 +52,7 @@ class TransactionDialogFragment : DialogFragment(R.layout.layout_dialog_transact
     private fun initClick() {
         binding.btDelete.setOnClickListener {
             NormalDialogFragment.Builder()
-                .setContent(getString(R.string.confirm_delete))
+                .setContent(getString(little.goose.common.R.string.confirm_delete))
                 .setConfirmCallback {
                     appScope.launch {
                         AccountRepository.deleteTransaction(transaction)

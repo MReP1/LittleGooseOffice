@@ -6,8 +6,8 @@ import little.goose.account.databinding.ItemAnalysisBalanceBinding
 import little.goose.account.logic.data.models.TransactionBalance
 import little.goose.account.ui.account.TransactionExampleActivity
 import little.goose.account.ui.account.analysis.AnalysisFragmentViewModel.Companion.MONTH
-import little.goose.account.utils.getRealDate
-import little.goose.account.utils.getRealMonth
+import little.goose.common.utils.getRealDate
+import little.goose.common.utils.getRealMonth
 
 class AnalysisBalanceRcvViewHolder(
     val binding: ItemAnalysisBalanceBinding,

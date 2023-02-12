@@ -7,22 +7,20 @@ import androidx.fragment.app.FragmentManager
 import androidx.recyclerview.widget.RecyclerView
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import little.goose.account.R
 import little.goose.account.appScope
 import little.goose.account.databinding.ItemHomeWidgetBinding
-import little.goose.account.logic.ScheduleRepository
-import little.goose.account.logic.data.entities.Schedule
 import little.goose.account.logic.data.entities.Transaction
 import little.goose.account.ui.account.transaction.TransactionDialogFragment
 import little.goose.account.ui.account.transaction.icon.TransactionIconHelper
-import little.goose.account.ui.schedule.ScheduleDialogFragment
-import little.goose.account.utils.getRealTime
-import little.goose.account.utils.toSignString
+import little.goose.common.utils.getRealTime
+import little.goose.common.utils.toSignString
+import little.goose.schedule.data.entities.Schedule
 
 class HomeWidgetRcvAdapter(
     private var list: List<Any>,
-    private var fragmentManager: FragmentManager
+    private var fragmentManager: FragmentManager,
+    private val updateSchedule: (Schedule) -> Unit
 ) : RecyclerView.Adapter<HomeWidgetViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): HomeWidgetViewHolder {
@@ -69,7 +67,7 @@ class HomeWidgetRcvAdapter(
             }
         }
         holder.itemView.setOnClickListener {
-            ScheduleDialogFragment.newInstance(schedule).showNow(fragmentManager, "schedule")
+            little.goose.schedule.ui.ScheduleDialogFragment.newInstance(schedule).showNow(fragmentManager, "schedule")
         }
     }
 
@@ -82,12 +80,6 @@ class HomeWidgetRcvAdapter(
         )
         holder.itemView.setOnClickListener {
             TransactionDialogFragment.showNow(transaction, fragmentManager)
-        }
-    }
-
-    private suspend fun updateSchedule(schedule: Schedule) {
-        withContext(Dispatchers.IO) {
-            ScheduleRepository.updateSchedule(schedule)
         }
     }
 

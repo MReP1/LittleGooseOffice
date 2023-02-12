@@ -2,6 +2,7 @@ package little.goose.account.ui.account.analysis
 
 import android.os.Bundle
 import android.view.View
+import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import com.google.android.material.tabs.TabLayout
@@ -14,15 +15,14 @@ import little.goose.common.dialog.time.TimeType
 import little.goose.account.databinding.FragmentAccountAnalysisBinding
 import little.goose.account.ui.account.analysis.adapter.AnalysisVPAdapter
 import little.goose.account.ui.account.analysis.widget.ItemTabTransactionTypeView
-import little.goose.account.ui.base.BaseFragment
 import little.goose.account.ui.widget.selector.MonthSelector
 import little.goose.account.ui.widget.selector.MonthSelectorCardView
 import little.goose.account.ui.widget.selector.YearSelector
 import little.goose.account.ui.widget.selector.YearSelectorCardView
-import little.goose.account.utils.launchAndRepeatWithViewLifeCycle
-import little.goose.account.utils.viewBinding
+import little.goose.common.utils.launchAndRepeatWithViewLifeCycle
+import little.goose.common.utils.viewBinding
 
-class AccountAnalysisFragment : BaseFragment(R.layout.fragment_account_analysis) {
+class AccountAnalysisFragment : Fragment(R.layout.fragment_account_analysis) {
 
     private val binding by viewBinding(FragmentAccountAnalysisBinding::bind)
 

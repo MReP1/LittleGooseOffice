@@ -12,8 +12,8 @@ import little.goose.account.logic.data.entities.Transaction
 import little.goose.account.logic.data.models.TimeMoney
 import little.goose.account.logic.data.models.TransactionBalance
 import little.goose.account.logic.data.models.TransactionPercent
-import little.goose.account.utils.getMonth
-import little.goose.account.utils.getYear
+import little.goose.common.utils.getMonth
+import little.goose.common.utils.getYear
 import java.util.*
 
 class AnalysisFragmentViewModel : ViewModel() {

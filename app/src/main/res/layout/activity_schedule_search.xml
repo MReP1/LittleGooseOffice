@@ -3,8 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:context=".ui.search.SearchActivity">
+    android:layout_height="match_parent">
 
     <LinearLayout
         android:id="@+id/ll_search_bar"
@@ -47,7 +46,7 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintTop_toBottomOf="@id/ll_search_bar" />
 
-    <little.goose.account.ui.widget.button.MultiFloatView
+    <little.goose.common.widget.button.MultiFloatView
         android:id="@+id/multi_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

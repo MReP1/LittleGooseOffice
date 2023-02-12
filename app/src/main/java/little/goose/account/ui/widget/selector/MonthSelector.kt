@@ -5,8 +5,8 @@ import android.util.AttributeSet
 import android.widget.LinearLayout
 import android.widget.TextView
 import little.goose.account.R
-import little.goose.account.utils.getMonth
-import little.goose.account.utils.getYear
+import little.goose.common.utils.getMonth
+import little.goose.common.utils.getYear
 import java.util.*
 import kotlin.collections.HashMap
 

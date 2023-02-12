@@ -1,8 +1,8 @@
 package little.goose.memorial.utils
 
 import android.content.Context
-import little.goose.account.utils.getRealDate
-import little.goose.account.utils.isFuture
+import little.goose.common.utils.getRealDate
+import little.goose.common.utils.isFuture
 import little.goose.memorial.R
 import little.goose.memorial.data.entities.Memorial
 import java.util.*

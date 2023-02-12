@@ -1,69 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <!--时间选择器-->
-    <attr name="fadingEdgeEnabled" format="boolean" />
-    <attr name="max" format="integer" />
-    <attr name="min" format="integer" />
-    <attr name="selectedTextColor" format="color" />
-    <attr name="textColor" format="color" />
-    <attr name="textSize" format="dimension" />
-    <attr name="typeface" format="string" />
-    <attr name="wheelItemCount" format="integer" />
-    <attr name="wrapSelectorWheel" format="boolean" />
-    <attr name="align">
-        <enum name="LEFT" value="0" />
-        <enum name="CENTER" value="1" />
-        <enum name="RIGHT" value="2" />
-    </attr>
-    <attr name="type">
-        <enum name="date_time" value="0" />
-        <enum name="date" value="1" />
-        <enum name="time" value="2" />
-        <enum name="year" value="3" />
-        <enum name="month" value="4" />
-        <enum name="day" value="5" />
-        <enum name="year_month" value="6" />
-    </attr>
-
-    <declare-styleable name="WheelPicker">
-        <attr name="fadingEdgeEnabled" />
-        <attr name="max" />
-        <attr name="min" />
-        <attr name="selectedTextColor" />
-        <attr name="textColor" />
-        <attr name="textSize" />
-        <attr name="typeface" />
-        <attr name="wheelItemCount" />
-        <attr name="wrapSelectorWheel" />
-        <attr name="align" />
-    </declare-styleable>
-
-    <declare-styleable name="WheelTimePicker">
-        <attr name="fadingEdgeEnabled" />
-        <attr name="max" />
-        <attr name="min" />
-        <attr name="selectedTextColor" />
-        <attr name="textColor" />
-        <attr name="textSize" />
-        <attr name="typeface" />
-        <attr name="wheelItemCount" />
-        <attr name="wrapSelectorWheel" />
-        <attr name="align" />
-        <attr name="type" />
-    </declare-styleable>
-
-    <!--悬浮按钮-->
-    <declare-styleable name="FloatView">
-        <attr name="drawable_src" format="reference|color" />
-    </declare-styleable>
-
-    <declare-styleable name="MultiFloatView">
-        <attr name="main_drawable_src" format="reference|color" />
-        <attr name="is_side_show" format="boolean"/>
-        <attr name="is_up_show" format="boolean" />
-    </declare-styleable>
-
     <!--ActionBar-->
     <declare-styleable name="NormalActionBar">
         <attr name="titleText" format="string" localization="suggested" />

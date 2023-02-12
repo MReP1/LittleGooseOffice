@@ -41,7 +41,7 @@ class MemorialFragment : Fragment() {
 
     private val deleteListener = View.OnClickListener {
         NormalDialogFragment.Builder()
-            .setContent(getString(R.string.confirm_delete))
+            .setContent(getString(little.goose.common.R.string.confirm_delete))
             .setConfirmCallback {
                 viewLifecycleOwner.lifecycleScope.launch {
                     multipleChoseHandler.deleteItemList {

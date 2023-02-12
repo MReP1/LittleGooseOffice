@@ -7,7 +7,7 @@ import android.widget.TextView
 import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
 import little.goose.common.dialog.time.TimeType
-import little.goose.account.utils.DateTimeUtils
+import little.goose.common.utils.DateTimeUtils
 import little.goose.common.R
 import little.goose.common.widget.adapter.*
 import java.util.*

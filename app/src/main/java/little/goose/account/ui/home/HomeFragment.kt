@@ -4,6 +4,8 @@ import android.os.Bundle
 import android.view.View
 import android.widget.ImageView
 import androidx.core.content.ContextCompat
+import androidx.core.view.isVisible
+import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -17,29 +19,26 @@ import little.goose.account.appScope
 import little.goose.common.dialog.DateTimePickerCenterDialog
 import little.goose.account.databinding.FragmentHomeBinding
 import little.goose.account.logic.AccountRepository
-import little.goose.memorial.logic.MemorialRepository
-import little.goose.account.logic.ScheduleRepository
 import little.goose.account.logic.data.constant.*
 import little.goose.account.logic.data.constant.AccountConstant.EXPENSE
 import little.goose.account.logic.data.constant.AccountConstant.INCOME
 import little.goose.memorial.data.entities.Memorial
-import little.goose.account.logic.data.entities.Schedule
 import little.goose.account.logic.data.entities.Transaction
 import little.goose.account.ui.account.transaction.TransactionActivity
 import little.goose.account.ui.account.transaction.TransactionHelper
-import little.goose.account.ui.base.BaseFragment
 import little.goose.memorial.ui.MemorialDialogFragment
-import little.goose.account.ui.schedule.ScheduleDialogFragment
 import little.goose.account.utils.*
 import little.goose.common.constants.NOTIFY_DELETE_MEMORIAL
 import little.goose.common.constants.NOTIFY_DELETE_SCHEDULE
 import little.goose.common.constants.NOTIFY_DELETE_TRANSACTION
+import little.goose.common.utils.*
 import little.goose.memorial.utils.appendTimeSuffix
 import little.goose.memorial.utils.getMapDayBoolean
+import little.goose.schedule.utils.getMapDayBoolean
 import kotlin.properties.Delegates
 
 @AndroidEntryPoint
-class HomeFragment : BaseFragment(R.layout.fragment_home) {
+class HomeFragment : Fragment(R.layout.fragment_home) {
 
     private val viewModel: HomeViewModel by viewModels()
     private val binding by viewBinding(FragmentHomeBinding::bind)
@@ -62,7 +61,9 @@ class HomeFragment : BaseFragment(R.layout.fragment_home) {
     private var listTransaction: List<Transaction> by Delegates.observable(emptyList()) { _, _, newValue ->
         binding.rcvTransaction.updateAdapter(newValue, isAccountUnfold)
     }
-    private var listSchedule: List<Schedule> by Delegates.observable(emptyList()) { _, _, newValue ->
+    private var listSchedule: List<little.goose.schedule.data.entities.Schedule> by Delegates.observable(
+        emptyList()
+    ) { _, _, newValue ->
         binding.rcvSchedule.updateAdapter(newValue, isScheduleUnfold)
     }
     private var listMemorial: List<Memorial> by Delegates.observable(emptyList()) { _, _, newValue ->
@@ -88,9 +89,21 @@ class HomeFragment : BaseFragment(R.layout.fragment_home) {
 
     private fun RecyclerView.initAdapter(list: List<Any>, isUnfold: Boolean) {
         if (isUnfold) {
-            this.adapter = HomeWidgetRcvAdapter(list.take(10), parentFragmentManager)
+            this.adapter = HomeWidgetRcvAdapter(
+                list.take(10),
+                parentFragmentManager,
+                updateSchedule = {
+                    viewModel.updateSchedule(it)
+                }
+            )
         } else {
-            this.adapter = HomeWidgetRcvAdapter(list.take(3), parentFragmentManager)
+            this.adapter = HomeWidgetRcvAdapter(
+                list.take(3),
+                parentFragmentManager,
+                updateSchedule = {
+                    viewModel.updateSchedule(it)
+                }
+            )
         }
     }
 
@@ -111,7 +124,7 @@ class HomeFragment : BaseFragment(R.layout.fragment_home) {
         ) { _, schedule ->
             binding.root.showDeleteSnackbar {
                 appScope.launch {
-                    ScheduleRepository.addSchedule(schedule)
+                    viewModel.addSchedule(schedule)
                 }
             }
         }
@@ -240,7 +253,7 @@ class HomeFragment : BaseFragment(R.layout.fragment_home) {
                 )
             }
             tvAddSchedule.setOnClickListener {
-                ScheduleDialogFragment.newInstance(
+                little.goose.schedule.ui.ScheduleDialogFragment.newInstance(
                     time = DateTimeUtils.getSelectDateOfThisTime(year, month, day)
                 ).showNow(parentFragmentManager, "schedule")
             }
@@ -361,47 +374,27 @@ class HomeFragment : BaseFragment(R.layout.fragment_home) {
 
     private fun setTransactionCardVisibility(visible: Boolean) {
         binding.apply {
-            if (visible) {
-                tvNoTransaction.setGone()
-                tvIncome.setVisible()
-                tvIncomeMoney.setVisible()
-                tvExpense.setVisible()
-                tvExpenseMoney.setVisible()
-                rcvTransaction.setVisible()
-                ivAccountUnfold.setVisible()
-            } else {
-                tvNoTransaction.setVisible()
-                tvIncome.setGone()
-                tvIncomeMoney.setGone()
-                tvExpense.setGone()
-                tvExpenseMoney.setGone()
-                rcvTransaction.setGone()
-                ivAccountUnfold.setGone()
-            }
+            tvNoTransaction.isVisible = !visible
+            tvIncome.isVisible = visible
+            tvIncomeMoney.isVisible = visible
+            tvExpense.isVisible = visible
+            tvExpenseMoney.isVisible = visible
+            rcvTransaction.isVisible = visible
+            ivAccountUnfold.isVisible = visible
         }
     }
 
     private fun setScheduleCardVisibility(visible: Boolean) {
         binding.apply {
-            if (visible) {
-                rcvSchedule.setVisible()
-                ivScheduleUnfold.setVisible()
-                tvNoSchedule.setGone()
-            } else {
-                rcvSchedule.setGone()
-                ivScheduleUnfold.setGone()
-                tvNoSchedule.setVisible()
-            }
+            rcvSchedule.isVisible = visible
+            ivScheduleUnfold.isVisible = visible
+            tvNoSchedule.isVisible = !visible
         }
     }
 
     private fun setMemorialCardVisibility(visible: Boolean) {
         binding.apply {
-            if (visible) {
-                cardMemorial.setVisible()
-            } else {
-                cardMemorial.setGone()
-            }
+            cardMemorial.isVisible = visible
         }
     }
 
@@ -431,7 +424,7 @@ class HomeFragment : BaseFragment(R.layout.fragment_home) {
             }
 
             val mapSchedulesDeferred = async(Dispatchers.IO) {
-                ScheduleRepository.getScheduleByYearMonth(year, month).getMapDayBoolean()
+                viewModel.getScheduleByYearMonth(year, month).getMapDayBoolean()
             }
 
             val mapMemorialsDeferred = async(Dispatchers.IO) {

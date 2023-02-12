@@ -1,6 +1,7 @@
 package little.goose.account.ui
 
 import android.os.Bundle
+import androidx.appcompat.app.AppCompatActivity
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.datastore.preferences.core.edit
 import androidx.lifecycle.lifecycleScope
@@ -11,14 +12,13 @@ import little.goose.account.databinding.ActivityMainBinding
 import little.goose.account.isAppInit
 import little.goose.account.logic.data.constant.*
 import little.goose.account.appScope
-import little.goose.account.ui.base.BaseActivity
 import little.goose.account.utils.KEY_PREF_PAGER
 import little.goose.account.utils.homeDataStore
-import little.goose.account.utils.viewBinding
+import little.goose.common.utils.viewBinding
 import little.goose.account.utils.withData
 
 @AndroidEntryPoint
-class MainActivity : BaseActivity() {
+class MainActivity : AppCompatActivity() {
 
     private val binding by viewBinding(ActivityMainBinding::inflate)
 

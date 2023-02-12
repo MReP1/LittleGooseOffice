@@ -5,7 +5,7 @@ import androidx.recyclerview.widget.RecyclerView
 import little.goose.common.MultipleChoseHandler
 import little.goose.account.databinding.ItemNoteBinding
 import little.goose.account.logic.data.entities.Note
-import little.goose.account.utils.toChineseMonthDayTime
+import little.goose.common.utils.toChineseMonthDayTime
 
 class NoteViewHolder(
     private val binding: ItemNoteBinding,

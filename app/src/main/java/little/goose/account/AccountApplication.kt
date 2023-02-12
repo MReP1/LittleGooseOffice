@@ -6,8 +6,9 @@ import dagger.hilt.android.HiltAndroidApp
 import kotlinx.coroutines.*
 import little.goose.account.ui.account.transaction.TransactionHelper
 import little.goose.account.utils.DataStoreHelper
-import little.goose.account.utils.DateTimeUtils
-import little.goose.account.utils.UIUtils
+import little.goose.common.utils.DateTimeUtils
+import little.goose.common.utils.KeyBoard
+import little.goose.common.utils.UIUtils
 
 @HiltAndroidApp
 class AccountApplication : Application() {
@@ -18,6 +19,8 @@ class AccountApplication : Application() {
 
         DateTimeUtils.appContext = this
         UIUtils.appContext = this
+        KeyBoard.appContext = this
+
 
         initData()
     }

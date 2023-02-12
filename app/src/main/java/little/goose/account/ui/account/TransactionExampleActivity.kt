@@ -5,6 +5,7 @@ import android.content.Intent
 import android.os.Bundle
 import android.os.Parcelable
 import androidx.activity.compose.setContent
+import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
@@ -20,6 +21,8 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import little.goose.account.R
 import little.goose.common.dialog.time.TimeType
@@ -27,15 +30,14 @@ import little.goose.account.logic.data.constant.*
 import little.goose.account.logic.data.entities.Transaction
 import little.goose.account.ui.account.transaction.TransactionDialogFragment
 import little.goose.account.ui.account.widget.TransactionCard
-import little.goose.account.ui.base.BaseActivity
 import little.goose.design.system.theme.AccountTheme
 import little.goose.design.system.theme.Red200
-import little.goose.account.utils.*
+import little.goose.common.utils.*
 import java.io.Serializable
 import java.util.*
 
 @AndroidEntryPoint
-class TransactionExampleActivity : BaseActivity() {
+class TransactionExampleActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -147,11 +149,21 @@ private fun TransactionTimeScreen(
 
     LaunchedEffect(deleteTransaction) {
         if (deleteTransaction != null) {
-            snackbarHostState.showSnackbar(
-                message = context.getString(R.string.deleted),
-                actionLabel = context.getString(R.string.undo),
-                duration = 2000L
-            )
+            coroutineScope {
+                launch {
+                    val withDismissAction = context.getString(little.goose.common.R.string.undo).isNotEmpty()
+                    snackbarHostState.showSnackbar(
+                        context.getString(little.goose.common.R.string.deleted),
+                        context.getString(little.goose.common.R.string.undo),
+                        withDismissAction,
+                        SnackbarDuration.Indefinite
+                    )
+                }
+                launch {
+                    delay(2000L)
+                    snackbarHostState.currentSnackbarData?.dismiss()
+                }
+            }
         }
     }
 }

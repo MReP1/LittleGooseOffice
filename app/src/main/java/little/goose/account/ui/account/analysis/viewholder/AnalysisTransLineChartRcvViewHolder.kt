@@ -18,8 +18,8 @@ import little.goose.account.logic.data.constant.MoneyType
 import little.goose.account.logic.data.models.TimeMoney
 import little.goose.account.ui.account.TransactionExampleActivity
 import little.goose.account.ui.account.analysis.AnalysisFragmentViewModel.Companion.MONTH
-import little.goose.account.utils.toChineseMonth
-import little.goose.account.utils.toChineseMonthDay
+import little.goose.common.utils.toChineseMonth
+import little.goose.common.utils.toChineseMonthDay
 import java.math.BigDecimal
 
 const val DEFAULT = 0

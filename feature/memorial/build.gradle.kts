@@ -13,12 +13,10 @@ android {
 dependencies {
     implementation(libs.androidx.appcompat)
 
-    implementation("androidx.localbroadcastmanager:localbroadcastmanager:1.0.0")
-
+    implementation(libs.androidx.localbroadcastManager)
 
     implementation(project(":core:design-system"))
     implementation(project(":core:common"))
-    implementation(project(":core:utils"))
 
     implementation(libs.androidx.fragment.ktx)
 

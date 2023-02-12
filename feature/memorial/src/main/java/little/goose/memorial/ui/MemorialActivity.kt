@@ -24,7 +24,7 @@ import androidx.compose.ui.unit.dp
 import androidx.fragment.app.FragmentActivity
 import androidx.hilt.navigation.compose.hiltViewModel
 import dagger.hilt.android.AndroidEntryPoint
-import little.goose.account.utils.toChineseYearMonDayWeek
+import little.goose.common.utils.toChineseYearMonDayWeek
 import little.goose.common.constants.KEY_TYPE
 import little.goose.common.constants.TYPE_ADD
 import little.goose.common.constants.TYPE_MODIFY

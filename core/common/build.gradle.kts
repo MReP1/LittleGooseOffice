@@ -15,14 +15,13 @@ android {
 dependencies {
     implementation(libs.androidx.appcompat)
     implementation(libs.androidx.core.ktx)
-    implementation("androidx.localbroadcastmanager:localbroadcastmanager:1.0.0")
+    implementation(libs.androidx.localbroadcastManager)
+    implementation(libs.androidx.lifecycle.rumtime.ktx)
 
     implementation(libs.kotlinx.coroutines.core)
     implementation(libs.kotlinx.coroutines.android)
 
     implementation(libs.google.android.material)
-
-    implementation(project(":core:utils"))
 
     // Room database
     implementation(libs.room.runtime)

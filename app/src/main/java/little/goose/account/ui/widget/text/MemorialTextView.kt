@@ -4,9 +4,9 @@ import android.content.Context
 import android.util.AttributeSet
 import androidx.appcompat.widget.AppCompatTextView
 import little.goose.account.R
-import little.goose.account.utils.DateTimeUtils
-import little.goose.account.utils.getMonth
-import little.goose.account.utils.getYear
+import little.goose.common.utils.DateTimeUtils
+import little.goose.common.utils.getMonth
+import little.goose.common.utils.getYear
 import java.util.*
 
 class MemorialTextView @JvmOverloads constructor(
