@@ -34,6 +34,7 @@ dependencies {
     implementation(libs.androidx.activity.ktx)
     implementation(libs.androidx.fragment.ktx)
 
+    implementation(project(":feature:note"))
     implementation(project(":feature:memorial"))
     implementation(project(":feature:schedule"))
 
@@ -69,8 +70,6 @@ dependencies {
     //MPAndroidChart
     implementation("com.github.PhilJay:MPAndroidChart:v3.1.0")
 
-    //富文本
-    implementation(project(":RichText"))
     //自定义Calendar
     implementation(project(":calendarview"))
 

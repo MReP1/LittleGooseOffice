@@ -2,7 +2,7 @@ package little.goose.schedule.data.dao
 
 import androidx.room.*
 import kotlinx.coroutines.flow.Flow
-import little.goose.schedule.data.constant.TABLE_SCHEDULE
+import little.goose.schedule.data.constants.TABLE_SCHEDULE
 
 @Dao
 interface ScheduleDao {

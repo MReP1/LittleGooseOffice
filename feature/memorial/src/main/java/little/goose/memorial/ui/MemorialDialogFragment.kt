@@ -35,7 +35,7 @@ import little.goose.memorial.data.entities.Memorial
 import little.goose.memorial.logic.MemorialRepository
 import little.goose.memorial.ui.widget.MemorialCard
 import little.goose.memorial.R
-import little.goose.memorial.data.constant.KEY_MEMORIAL
+import little.goose.memorial.data.constants.KEY_MEMORIAL
 import javax.inject.Inject
 
 @AndroidEntryPoint

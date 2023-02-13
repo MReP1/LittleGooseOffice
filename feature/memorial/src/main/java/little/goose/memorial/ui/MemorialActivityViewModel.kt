@@ -11,7 +11,7 @@ import kotlinx.coroutines.launch
 import little.goose.common.constants.KEY_TYPE
 import little.goose.common.constants.TYPE_ADD
 import little.goose.common.constants.TYPE_MODIFY
-import little.goose.memorial.data.constant.KEY_MEMORIAL
+import little.goose.memorial.data.constants.KEY_MEMORIAL
 import little.goose.memorial.data.entities.Memorial
 import little.goose.memorial.logic.MemorialRepository
 import java.util.*

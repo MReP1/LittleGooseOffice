@@ -20,7 +20,7 @@ package little.goose.account.ui.search
 //import little.goose.schedule.logic.ScheduleRepository
 //import little.goose.account.logic.data.constant.*
 //import little.goose.memorial.data.entities.Memorial
-//import little.goose.account.logic.data.entities.Note
+//import little.goose.note.data.entities.Note
 //import little.goose.schedule.data.entities.Schedule
 //import little.goose.account.logic.data.entities.Transaction
 //import little.goose.account.ui.account.AccountRcvAdapter
@@ -29,8 +29,8 @@ package little.goose.account.ui.search
 //import little.goose.common.decoration.ItemGridLayoutDecoration
 //import little.goose.common.decoration.ItemLinearLayoutDecoration
 //import little.goose.memorial.ui.MemorialDialogFragment
-//import little.goose.account.ui.notebook.NotebookRcvAdapter
-//import little.goose.account.ui.notebook.note.NoteActivity
+//import little.goose.note.ui.NotebookRcvAdapter
+//import little.goose.note.ui.NoteActivity
 //import little.goose.schedule.ui.ScheduleDialogFragment
 //import little.goose.schedule.ui.ScheduleRcvAdapter
 //import little.goose.account.utils.*

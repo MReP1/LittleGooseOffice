@@ -5,7 +5,7 @@ import androidx.room.Room
 import kotlinx.coroutines.flow.Flow
 import little.goose.common.utils.getOneDayRange
 import little.goose.common.utils.getOneMonthRange
-import little.goose.memorial.data.constant.TABLE_MEMORIAL
+import little.goose.memorial.data.constants.TABLE_MEMORIAL
 import little.goose.memorial.data.database.MemorialDatabase
 import little.goose.memorial.data.entities.Memorial
 

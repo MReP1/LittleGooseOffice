@@ -4,7 +4,7 @@ import android.os.Parcelable
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import kotlinx.parcelize.Parcelize
-import little.goose.memorial.data.constant.TABLE_MEMORIAL
+import little.goose.memorial.data.constants.TABLE_MEMORIAL
 import java.util.*
 
 @Parcelize

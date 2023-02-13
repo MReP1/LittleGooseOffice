@@ -33,7 +33,7 @@ import little.goose.design.system.component.MovableActionButton
 import little.goose.design.system.component.MovableActionButtonState
 import little.goose.design.system.theme.AccountTheme
 import little.goose.memorial.R
-import little.goose.memorial.data.constant.KEY_MEMORIAL
+import little.goose.memorial.data.constants.KEY_MEMORIAL
 import little.goose.memorial.data.entities.Memorial
 import little.goose.memorial.ui.widget.MemorialCard
 

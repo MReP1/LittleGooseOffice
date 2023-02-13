@@ -7,10 +7,10 @@ package little.goose.account.ui.search
 //import little.goose.common.receiver.NormalBroadcastReceiver
 //import little.goose.account.logic.AccountRepository
 //import little.goose.memorial.logic.MemorialRepository
-//import little.goose.account.logic.NoteRepository
+//import little.goose.note.logic.NoteRepository
 //import little.goose.schedule.logic.ScheduleRepository
 //import little.goose.memorial.data.entities.Memorial
-//import little.goose.account.logic.data.entities.Note
+//import little.goose.note.data.entities.Note
 //import little.goose.schedule.data.entities.Schedule
 //import little.goose.account.logic.data.entities.Transaction
 //import middle.goose.richtext.HtmlParser

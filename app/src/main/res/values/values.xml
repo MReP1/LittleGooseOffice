@@ -2,10 +2,6 @@
 <resources>
 
     <!--ActionBar-->
-    <declare-styleable name="NormalActionBar">
-        <attr name="titleText" format="string" localization="suggested" />
-    </declare-styleable>
-
     <attr name="unSelectTextColor" format="reference|color" />
 
     <!--时间选择器-->

@@ -5,7 +5,7 @@ import androidx.room.Room
 import kotlinx.coroutines.flow.Flow
 import little.goose.common.utils.getOneDayRange
 import little.goose.common.utils.getOneMonthRange
-import little.goose.schedule.data.constant.TABLE_SCHEDULE
+import little.goose.schedule.data.constants.TABLE_SCHEDULE
 
 class ScheduleRepository(context: Context) {
 

@@ -33,7 +33,7 @@ import little.goose.common.dialog.InputTextDialogFragment
 import little.goose.common.dialog.time.TimeType
 import little.goose.design.system.theme.AccountTheme
 import little.goose.memorial.R
-import little.goose.memorial.data.constant.KEY_MEMORIAL
+import little.goose.memorial.data.constants.KEY_MEMORIAL
 import little.goose.memorial.data.entities.Memorial
 import little.goose.memorial.ui.widget.MemorialText
 import little.goose.memorial.utils.appendTimeSuffix

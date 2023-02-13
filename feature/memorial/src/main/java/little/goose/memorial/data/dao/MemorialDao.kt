@@ -2,7 +2,7 @@ package little.goose.memorial.data.dao
 
 import androidx.room.*
 import kotlinx.coroutines.flow.Flow
-import little.goose.memorial.data.constant.TABLE_MEMORIAL
+import little.goose.memorial.data.constants.TABLE_MEMORIAL
 import little.goose.memorial.data.entities.Memorial
 
 @Dao

@@ -11,10 +11,8 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.ComposeView
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.FragmentActivity
 import androidx.fragment.app.viewModels
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.lifecycleScope
@@ -25,8 +23,7 @@ import little.goose.common.MultipleChoseHandler
 import little.goose.common.constants.NOTIFY_DELETE_MEMORIAL
 import little.goose.common.dialog.NormalDialogFragment
 import little.goose.design.system.theme.AccountTheme
-import little.goose.memorial.R
-import little.goose.memorial.data.constant.KEY_MEMORIAL
+import little.goose.memorial.data.constants.KEY_MEMORIAL
 import little.goose.memorial.data.entities.Memorial
 import little.goose.memorial.ui.widget.MemorialColumn
 import little.goose.memorial.ui.widget.MemorialTitle

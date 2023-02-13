@@ -7,7 +7,6 @@ import androidx.fragment.app.FragmentManager
 import androidx.recyclerview.widget.RecyclerView
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import little.goose.account.R
 import little.goose.account.appScope
 import little.goose.account.databinding.ItemHomeWidgetBinding
 import little.goose.account.logic.data.entities.Transaction
@@ -46,9 +45,9 @@ class HomeWidgetRcvAdapter(
 
     private fun setScheduleHolder(holder: HomeWidgetViewHolder, schedule: Schedule) {
         val drawableId = if (schedule.isfinish) {
-            R.drawable.icon_checked_box
+            little.goose.common.R.drawable.icon_checked_box
         } else {
-            R.drawable.icon_uncheck_box
+            little.goose.common.R.drawable.icon_uncheck_box
         }
         holder.setData(
             ItemHomeWidget(
@@ -59,9 +58,9 @@ class HomeWidgetRcvAdapter(
                 schedule.isfinish = !schedule.isfinish
                 updateSchedule(schedule)
                 val tempDrawable = if (schedule.isfinish) {
-                    R.drawable.icon_checked_box
+                    little.goose.common.R.drawable.icon_checked_box
                 } else {
-                    R.drawable.icon_uncheck_box
+                    little.goose.common.R.drawable.icon_uncheck_box
                 }
                 holder.updateImgResource(tempDrawable)
             }

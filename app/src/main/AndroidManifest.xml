@@ -29,7 +29,7 @@
             android:exported="false"
             android:windowSoftInputMode="adjustPan" />
         <activity
-            android:name=".ui.notebook.note.NoteActivity"
+            android:name="little.goose.note.ui.note.NoteActivity"
             android:exported="false" />
         <activity
             android:name=".ui.MainActivity"

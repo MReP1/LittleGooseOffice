@@ -4,7 +4,7 @@ import android.os.Parcelable
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import kotlinx.parcelize.Parcelize
-import little.goose.schedule.data.constant.TABLE_SCHEDULE
+import little.goose.schedule.data.constants.TABLE_SCHEDULE
 import java.util.*
 
 @Parcelize

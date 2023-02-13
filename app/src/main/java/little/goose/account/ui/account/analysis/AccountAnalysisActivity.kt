@@ -26,11 +26,6 @@ class AccountAnalysisActivity : AppCompatActivity() {
     private fun initView() {
         initViewPager()
         initBottomBar()
-        initActionBar()
-    }
-
-    private fun initActionBar() {
-        binding.actionBar.setOnBackClickListener{ finish() }
     }
 
     private fun initViewPager() {

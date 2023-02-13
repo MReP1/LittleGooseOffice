@@ -111,7 +111,7 @@ private fun TransactionTimeScreen(
                 navigationIcon = {
                     IconButton(onClick = onBack) {
                         Icon(
-                            painter = painterResource(id = R.drawable.icon_back),
+                            painter = painterResource(id = little.goose.common.R.drawable.icon_back),
                             contentDescription = ""
                         )
                     }
