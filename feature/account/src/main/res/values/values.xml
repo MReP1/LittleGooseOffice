@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <attr name="unSelectTextColor" format="reference|color" />
+
+    <declare-styleable name="MonthSelector">
+        <attr name="unSelectTextColor"/>
+    </declare-styleable>
+
+    <declare-styleable name="YearSelector">
+        <attr name="unSelectTextColor" />
+    </declare-styleable>
+
+    <declare-styleable name="HorizontalPercentView">
+        <attr name="contentColor" format="reference|color" />
+        <attr name="baseColor" format="reference|color" />
+    </declare-styleable>
+</resources>

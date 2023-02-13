@@ -105,7 +105,7 @@
             app:day_text_size="18sp"
             app:max_year="2040"
             app:min_year="2000"
-            app:month_view="little.goose.account.ui.home.widget.AccountMonthView"
+            app:month_view="little.goose.office.ui.home.widget.AccountMonthView"
             app:month_view_show_mode="mode_fix"
             app:other_month_text_color="@color/other_month_color"
             app:scheme_text_color="@color/nor_text_color"
@@ -114,7 +114,7 @@
             app:week_bar_height="28dp"
             app:week_text_color="@color/nor_text_color"
             app:week_text_size="12sp"
-            app:week_view="little.goose.account.ui.home.widget.AccountWeekView" />
+            app:week_view="little.goose.office.ui.home.widget.AccountWeekView" />
 
 
         <ScrollView
@@ -159,7 +159,7 @@
                             android:textSize="16sp"
                             tools:text="纪念日捏还有" />
 
-                        <little.goose.account.ui.widget.text.MemorialTextView
+                        <little.goose.office.ui.widget.text.MemorialTextView
                             android:id="@+id/tv_memo_time"
                             android:layout_width="match_parent"
                             android:layout_height="0dp"

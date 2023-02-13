@@ -19,7 +19,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />
 
-        <little.goose.account.ui.widget.graph.HorizontalPercentView
+        <little.goose.account.ui.widget.HorizontalPercentView
             android:layout_width="400dp"
             android:layout_height="400dp" />
 

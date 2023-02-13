@@ -7,7 +7,7 @@ plugins {
 }
 
 android {
-    namespace = "little.goose.account"
+    namespace = "little.goose.office"
 
     defaultConfig {
         applicationId = AndroidConfigConventions.LittleGoose.APPLICATION_ID
@@ -34,6 +34,7 @@ dependencies {
     implementation(libs.androidx.activity.ktx)
     implementation(libs.androidx.fragment.ktx)
 
+    implementation(project(":feature:account"))
     implementation(project(":feature:note"))
     implementation(project(":feature:memorial"))
     implementation(project(":feature:schedule"))
@@ -66,9 +67,6 @@ dependencies {
     // lifecycle
     implementation(libs.androidx.lifecycle.rumtime.ktx)
     implementation(libs.androidx.lifecycle.viewModel.ktx)
-
-    //MPAndroidChart
-    implementation("com.github.PhilJay:MPAndroidChart:v3.1.0")
 
     //自定义Calendar
     implementation(project(":calendarview"))

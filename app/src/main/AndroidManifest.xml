@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="little.goose.account">
+    package="little.goose.office">
 
     <application
         android:name=".AccountApplication"
@@ -10,7 +10,7 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Account">
         <activity
-            android:name=".ui.account.TransactionExampleActivity"
+            android:name="little.goose.account.ui.TransactionExampleActivity"
             android:exported="false" />
         <activity
             android:name="little.goose.memorial.ui.MemorialShowActivity"
@@ -19,20 +19,17 @@
             android:name="little.goose.memorial.ui.MemorialActivity"
             android:exported="false" />
         <activity
-            android:name=".ui.account.analysis.AccountAnalysisActivity"
+            android:name="little.goose.account.ui.analysis.AccountAnalysisActivity"
             android:exported="false" />
-<!--        <activity-->
-<!--            android:name=".ui.search.SearchActivity"-->
-<!--            android:exported="false" />-->
         <activity
-            android:name=".ui.account.transaction.TransactionActivity"
+            android:name="little.goose.account.ui.transaction.TransactionActivity"
             android:exported="false"
             android:windowSoftInputMode="adjustPan" />
         <activity
             android:name="little.goose.note.ui.note.NoteActivity"
             android:exported="false" />
         <activity
-            android:name=".ui.MainActivity"
+            android:name="little.goose.office.ui.MainActivity"
             android:theme="@style/Theme.AppSplashScreen"
             android:exported="true">
             <intent-filter>

@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="current_month_expense">本月支出</string>
+    <string name="current_month_income">本月收入</string>
+    <string name="current_month_balance">本月结余</string>
+    <string name="balance">结余</string>
+    <string name="income">收入</string>
+    <string name="expense">支出</string>
+    <string name="transaction_description">描述…</string>
+    <string name="money_cant_be_zero">金额不能为0</string>
+    <string name="finish">完成</string>
+    <string name="some_month">%d月</string>
+    <string name="date">日期</string>
+    <string name="no_transaction">没有记账</string>
+    <string name="consume">消费</string>
+    <string name="some_year">%d年</string>
+
+</resources>
