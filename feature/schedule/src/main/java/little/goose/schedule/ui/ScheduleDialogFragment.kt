@@ -1,157 +1,131 @@
 package little.goose.schedule.ui
 
-import android.content.Intent
 import android.os.Bundle
 import android.view.Gravity
+import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Button
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.ExperimentalComposeUiApi
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.RectangleShape
+import androidx.compose.ui.platform.ComposeView
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.dp
 import androidx.fragment.app.DialogFragment
-import androidx.lifecycle.lifecycleScope
+import androidx.fragment.app.viewModels
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import little.goose.common.constants.*
 import little.goose.common.dialog.DateTimePickerBottomDialog
 import little.goose.common.dialog.NormalDialogFragment
-import little.goose.common.localBroadcastManager
 import little.goose.common.utils.*
+import little.goose.design.system.theme.AccountTheme
 import little.goose.schedule.R
-import little.goose.schedule.databinding.LayoutCardScheduleBinding
-import little.goose.schedule.logic.ScheduleRepository
+import little.goose.schedule.data.entities.Schedule
 import java.util.*
-import javax.inject.Inject
 
 @AndroidEntryPoint
 class ScheduleDialogFragment
-private constructor() : DialogFragment(R.layout.layout_card_schedule) {
+private constructor() : DialogFragment() {
 
-    @Inject lateinit var scheduleRepository: ScheduleRepository
+    private val viewModel by viewModels<ScheduleDialogViewModel>()
 
-    private val binding by viewBinding(LayoutCardScheduleBinding::bind)
-    private var schedule: little.goose.schedule.data.entities.Schedule? = null
-    private var isModify = false
+    @OptIn(ExperimentalComposeUiApi::class)
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View {
+        return ComposeView(requireContext()).apply {
+            setContent {
+                AccountTheme {
+                    val state by viewModel.scheduleDialogState.collectAsState()
+                    ScheduleDialogScreen(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .wrapContentSize(),
+                        state = state
+                    )
+
+                    val keyboard = LocalSoftwareKeyboardController.current
+                    LaunchedEffect(viewModel.event) {
+                        viewModel.event.collect { event ->
+                            when (event) {
+                                ScheduleDialogViewModel.Event.Cancel -> {
+                                    dismiss()
+                                }
+                                ScheduleDialogViewModel.Event.Confirm -> {
+                                    confirm()
+                                }
+                                ScheduleDialogViewModel.Event.Delete -> {
+                                    delete()
+                                }
+                                ScheduleDialogViewModel.Event.ChangeTime -> {
+                                    changeTime()
+                                }
+                                ScheduleDialogViewModel.Event.Dismiss -> {
+                                    dismiss()
+                                }
+                                ScheduleDialogViewModel.Event.HideKeyboard -> {
+                                    keyboard?.hide()
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    private fun confirm() {
+        val schedule = viewModel.scheduleDialogState.value.schedule
+        if (schedule.title.isBlank()) {
+            Toast.makeText(
+                requireContext(),
+                getString(R.string.schedule_cant_be_blank),
+                Toast.LENGTH_SHORT
+            ).show()
+        } else {
+            val isAdded = schedule.id == null
+            if (isAdded) {
+                viewModel.addSchedule()
+            } else {
+                viewModel.updateSchedule()
+            }
+        }
+    }
+
+    private fun delete() {
+        NormalDialogFragment.Builder()
+            .setContent(getString(little.goose.common.R.string.confirm_delete))
+            .setConfirmCallback { viewModel.deleteSchedule() }
+            .showNow(parentFragmentManager)
+        dismiss()
+    }
+
+    private fun changeTime() {
+        DateTimePickerBottomDialog.Builder()
+            .setTime(viewModel.scheduleDialogState.value.schedule.time)
+            .setConfirmAction(viewModel::changeTime)
+            .setDimVisibility(false)
+            .showNow(parentFragmentManager)
+    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         initWindow()
-        initView()
-    }
-
-    private fun initView() {
-        schedule = arguments?.parcelable(KEY_SCHEDULE)
-        val time: Date? = arguments?.serializable(KEY_TIME)
-
-        isModify = (schedule != null)
-        if (isModify) {
-            initModifyPage()
-        } else {
-            schedule = time?.let { little.goose.schedule.data.entities.Schedule(null, "", "", it) }
-                ?: little.goose.schedule.data.entities.Schedule(null, "", "", Date())
-            initAddPage()
-        }
-        binding.apply {
-            buttonDate.text = schedule?.time?.toChineseStringWithYear()
-            buttonDate.setOnClickListener {
-                DateTimePickerBottomDialog.Builder()
-                    .setTime(schedule?.time)
-                    .setConfirmAction {
-                        schedule?.time = it
-                        buttonDate.text = it.toChineseStringWithYear()
-                    }
-                    .setDimVisibility(false)
-                    .showNow(parentFragmentManager)
-            }
-        }
-
-    }
-
-    private fun initAddPage() {
-        binding.apply {
-            confirmButton.setOnClickListener {
-                if (etScheduleTitle.text.toString().isBlank()) {
-                    SnackbarUtils.showNormalMessage(
-                        binding.root, getString(R.string.schedule_cant_be_blank)
-                    )
-                } else {
-                    lifecycleScope.launch {
-                        addSchedule()
-                        dismiss()
-                    }
-                }
-            }
-            cancelButton.setOnClickListener {
-                dismiss()
-            }
-        }
-    }
-
-    private fun initModifyPage() {
-        binding.apply {
-            cardTitle.text = resources.getString(R.string.modify_schedule)
-            etScheduleTitle.setText(schedule?.title)
-            etScheduleContent.setText(schedule?.content)
-            confirmButton.setOnClickListener {
-                if (etScheduleTitle.text.toString().isBlank()) {
-                    SnackbarUtils.showNormalMessage(
-                        binding.root, getString(R.string.schedule_cant_be_blank)
-                    )
-                } else {
-                    lifecycleScope.launch {
-                        updateSchedule()
-                        dismiss()
-                    }
-                }
-            }
-            cancelButton.text = getString(little.goose.common.R.string.delete)
-            cancelButton.setOnClickListener {
-                NormalDialogFragment.Builder()
-                    .setContent(getString(little.goose.common.R.string.confirm_delete))
-                    .setConfirmCallback {
-                        lifecycleScope.launch {
-                            schedule?.let { schedule ->
-                                scheduleRepository.deleteSchedule(schedule)
-                            }
-                            sendDeleteBroadcast()
-                        }
-                    }
-                    .setCancelCallback { }
-                    .showNow(parentFragmentManager)
-                dismiss()
-            }
-        }
-    }
-
-    private suspend fun updateSchedule() {
-        withContext(Dispatchers.IO) {
-            updateData()
-            schedule?.let { scheduleRepository.updateSchedule(it) }
-            //更新完返回
-            KeyBoard.hide(binding.root)
-            requireContext().localBroadcastManager.sendBroadcast(Intent(NOTIFY_UPDATE_SCHEDULE))
-        }
-    }
-
-    private suspend fun addSchedule() {
-        withContext(Dispatchers.IO) {
-            updateData()
-            schedule?.let { scheduleRepository.addSchedule(it) }
-        }
-    }
-
-    private fun sendDeleteBroadcast() {
-        val intent = Intent(NOTIFY_DELETE_SCHEDULE).apply {
-            setPackage(`package`)
-            putExtra(KEY_DELETE_ITEM, schedule)
-        }
-        requireContext().localBroadcastManager.sendBroadcast(intent)
-    }
-
-    private fun updateData() {
-        schedule?.apply {
-            title = binding.etScheduleTitle.text.toString()
-            content = binding.etScheduleContent.text.toString()
-        }
     }
 
     private fun initWindow() {
@@ -165,16 +139,115 @@ private constructor() : DialogFragment(R.layout.layout_card_schedule) {
 
     companion object {
         fun newInstance(
-            schedule: little.goose.schedule.data.entities.Schedule? = null,
+            schedule: Schedule? = null,
             time: Date? = null
         ): ScheduleDialogFragment {
             return ScheduleDialogFragment().apply {
                 arguments = Bundle().apply {
-                    putParcelable(KEY_SCHEDULE, schedule)
-                    putSerializable(KEY_TIME, time)
+                    schedule?.let { putParcelable(KEY_SCHEDULE, it) }
+                    time?.let { putSerializable(KEY_TIME, it) }
                 }
             }
         }
     }
 
+}
+
+data class ScheduleDialogState(
+    val schedule: Schedule,
+    val onChangeTimeClick: () -> Unit,
+    val onTitleChange: (String) -> Unit,
+    val onContentChange: (String) -> Unit,
+    val onCancelClick: () -> Unit,
+    val onConfirmClick: () -> Unit,
+    val onDeleteClick: () -> Unit
+)
+
+@Composable
+private fun ScheduleDialogScreen(
+    modifier: Modifier = Modifier,
+    state: ScheduleDialogState,
+) {
+    Surface(
+        modifier = modifier,
+        shape = RoundedCornerShape(24.dp)
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .wrapContentHeight(),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            val isAdd = state.schedule.id == null
+
+            Spacer(modifier = Modifier.height(28.dp))
+
+            Text(text = stringResource(id = R.string.add_schedule))
+
+            Spacer(modifier = Modifier.height(20.dp))
+
+            Button(onClick = state.onChangeTimeClick) {
+                Text(text = state.schedule.time.toChineseStringWithYear())
+            }
+
+            Spacer(modifier = Modifier.height(20.dp))
+
+            OutlinedTextField(
+                value = state.schedule.title,
+                onValueChange = state.onTitleChange,
+                modifier = Modifier
+                    .padding(horizontal = 24.dp)
+                    .fillMaxWidth()
+            )
+
+            Spacer(modifier = Modifier.height(20.dp))
+
+            OutlinedTextField(
+                value = state.schedule.content,
+                onValueChange = state.onContentChange,
+                modifier = Modifier
+                    .padding(horizontal = 24.dp)
+                    .fillMaxWidth()
+            )
+
+            Spacer(modifier = Modifier.height(30.dp))
+
+            Row(modifier = Modifier.fillMaxWidth()) {
+
+                Button(
+                    onClick = {
+                        if (isAdd) {
+                            state.onCancelClick()
+                        } else {
+                            state.onDeleteClick()
+                        }
+                    },
+                    modifier = Modifier
+                        .weight(1F)
+                        .height(58.dp),
+                    shape = RectangleShape
+                ) {
+                    Text(
+                        text = stringResource(
+                            id = if (isAdd) {
+                                little.goose.common.R.string.cancel
+                            } else {
+                                little.goose.common.R.string.delete
+                            }
+                        )
+                    )
+                }
+
+                Button(
+                    onClick = state.onConfirmClick,
+                    modifier = Modifier
+                        .weight(1F)
+                        .height(58.dp),
+                    shape = RectangleShape
+                ) {
+                    Text(text = stringResource(id = little.goose.common.R.string.confirm))
+                }
+            }
+        }
+    }
 }

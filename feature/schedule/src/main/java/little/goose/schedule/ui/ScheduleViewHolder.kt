@@ -20,14 +20,18 @@ class ScheduleViewHolder(
     private val updateSchedule: (Schedule) -> Unit
 ) : RecyclerView.ViewHolder(binding.root) {
 
+    private var schedule: Schedule? = null
+
     fun bindData(schedule: Schedule) {
+        this.schedule = schedule
         binding.apply {
             tvScheduleContent.text = schedule.title
             updateCheckBox(schedule.isfinish)
             initSelect(schedule)
             cbScheduleFinish.setOnClickListener {
                 commonScope.launch(Dispatchers.Main) {
-                    schedule.isfinish = !schedule.isfinish
+                    val sc = this@ScheduleViewHolder.schedule
+                    this@ScheduleViewHolder.schedule = sc?.copy(isfinish = !sc.isfinish)
                     cbScheduleFinish.isChecked = schedule.isfinish
                     cbScheduleFinish.isClickable = false
                     coroutineScope {
@@ -39,7 +43,8 @@ class ScheduleViewHolder(
             }
             flScheduleFinish.setOnClickListener {
                 commonScope.launch(Dispatchers.Main) {
-                    schedule.isfinish = !schedule.isfinish
+                    val sc = this@ScheduleViewHolder.schedule
+                    this@ScheduleViewHolder.schedule = sc?.copy(isfinish = !sc.isfinish)
                     cbScheduleFinish.isChecked = schedule.isfinish
                     flScheduleFinish.isClickable = false
                     coroutineScope {

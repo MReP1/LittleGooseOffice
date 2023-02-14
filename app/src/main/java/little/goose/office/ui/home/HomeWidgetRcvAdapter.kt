@@ -53,7 +53,8 @@ class HomeWidgetRcvAdapter(
             )
         ) {
             appScope.launch(Dispatchers.Main) {
-                schedule.isfinish = !schedule.isfinish
+                // FIXME
+//                schedule.isfinish = !schedule.isfinish
                 updateSchedule(schedule)
                 val tempDrawable = if (schedule.isfinish) {
                     little.goose.common.R.drawable.icon_checked_box

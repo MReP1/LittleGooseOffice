@@ -12,8 +12,8 @@ import java.util.*
 data class Schedule(
     @PrimaryKey(autoGenerate = true)
     val id: Long? = null,
-    var title: String,
-    var content: String,
-    var time: Date = Date(),
-    var isfinish: Boolean = false
+    val title: String = "",
+    val content: String = "",
+    val time: Date = Date(),
+    val isfinish: Boolean = false
 ) : Parcelable
