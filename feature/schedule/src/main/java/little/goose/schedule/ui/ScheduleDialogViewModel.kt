@@ -46,12 +46,32 @@ class ScheduleDialogViewModel @Inject constructor(
     private val _scheduleDialogState = MutableStateFlow(
         ScheduleDialogState(
             schedule = schedule.value,
-            onTitleChange = ::onTitleChange,
-            onContentChange = ::onContentChange,
-            onChangeTimeClick = ::onChangeTime,
-            onConfirmClick = ::onConfirm,
-            onCancelClick = ::onCancel,
-            onDeleteClick = ::onDelete
+            onTitleChange = { title ->
+                savedStateHandle[KEY_SCHEDULE] = schedule.value.copy(title = title)
+            },
+            onContentChange = { content ->
+                savedStateHandle[KEY_SCHEDULE] = schedule.value.copy(content = content)
+            },
+            onChangeTimeClick = {
+                viewModelScope.launch {
+                    _event.emit(Event.ChangeTime)
+                }
+            },
+            onConfirmClick = {
+                viewModelScope.launch {
+                    _event.emit(Event.Confirm)
+                }
+            },
+            onCancelClick = {
+                viewModelScope.launch {
+                    _event.emit(Event.Cancel)
+                }
+            },
+            onDeleteClick = {
+                viewModelScope.launch {
+                    _event.emit(Event.Delete)
+                }
+            }
         )
     )
     val scheduleDialogState = _scheduleDialogState.asStateFlow()
@@ -61,42 +81,6 @@ class ScheduleDialogViewModel @Inject constructor(
             schedule.collect { schedule ->
                 _scheduleDialogState.value = scheduleDialogState.value.copy(schedule = schedule)
             }
-        }
-    }
-
-    private fun setSchedule(schedule: Schedule) {
-        savedStateHandle[KEY_SCHEDULE] = schedule
-    }
-
-    private fun onTitleChange(title: String) {
-        setSchedule(schedule.value.copy(title = title))
-    }
-
-    private fun onContentChange(content: String) {
-        setSchedule(schedule.value.copy(content = content))
-    }
-
-    private fun onDelete() {
-        viewModelScope.launch {
-            _event.emit(Event.Delete)
-        }
-    }
-
-    private fun onChangeTime() {
-        viewModelScope.launch {
-            _event.emit(Event.ChangeTime)
-        }
-    }
-
-    private fun onConfirm() {
-        viewModelScope.launch {
-            _event.emit(Event.Confirm)
-        }
-    }
-
-    private fun onCancel() {
-        viewModelScope.launch {
-            _event.emit(Event.Cancel)
         }
     }
 
@@ -123,9 +107,8 @@ class ScheduleDialogViewModel @Inject constructor(
         }
     }
 
-    // FIXME 不符合MVI
     fun changeTime(time: Date) {
-        setSchedule(schedule.value.copy(time = time))
+        savedStateHandle[KEY_SCHEDULE] = schedule.value.copy(time = time)
     }
 
     private fun sendDeleteBroadcast() {
