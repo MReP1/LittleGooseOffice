@@ -6,6 +6,7 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.NonCancellable
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -28,11 +29,9 @@ class ScheduleDialogViewModel @Inject constructor(
 
     enum class Event {
         Cancel,
-        Confirm,
-        Delete,
-        ChangeTime,
         Dismiss,
-        HideKeyboard
+        HideKeyboard,
+        NoContent
     }
 
     private val schedule = savedStateHandle.getStateFlow(
@@ -52,24 +51,10 @@ class ScheduleDialogViewModel @Inject constructor(
             onContentChange = { content ->
                 savedStateHandle[KEY_SCHEDULE] = schedule.value.copy(content = content)
             },
-            onChangeTimeClick = {
-                viewModelScope.launch {
-                    _event.emit(Event.ChangeTime)
-                }
-            },
-            onConfirmClick = {
-                viewModelScope.launch {
-                    _event.emit(Event.Confirm)
-                }
-            },
+            onConfirmClick = ::confirm,
             onCancelClick = {
                 viewModelScope.launch {
                     _event.emit(Event.Cancel)
-                }
-            },
-            onDeleteClick = {
-                viewModelScope.launch {
-                    _event.emit(Event.Delete)
                 }
             }
         )
@@ -84,26 +69,30 @@ class ScheduleDialogViewModel @Inject constructor(
         }
     }
 
+    private fun confirm() {
+        val schedule = schedule.value
+        viewModelScope.launch(NonCancellable + Dispatchers.Main.immediate) {
+            if (schedule.title.isBlank()) {
+                _event.emit(Event.NoContent)
+            } else {
+                val isAdded = schedule.id == null
+                if (isAdded) {
+                    scheduleRepository.addSchedule(schedule)
+                    _event.emit(Event.Dismiss)
+                } else {
+                    scheduleRepository.updateSchedule(schedule)
+                    getApplication<Application>()
+                        .localBroadcastManager.sendBroadcast(Intent(NOTIFY_UPDATE_SCHEDULE))
+                    _event.emit(Event.Dismiss)
+                }
+            }
+        }
+    }
+
     fun deleteSchedule(schedule: Schedule = scheduleDialogState.value.schedule) {
         viewModelScope.launch(NonCancellable) {
             scheduleRepository.deleteSchedule(schedule)
             sendDeleteBroadcast()
-        }
-    }
-
-    fun addSchedule(schedule: Schedule = scheduleDialogState.value.schedule) {
-        viewModelScope.launch(NonCancellable) {
-            scheduleRepository.addSchedule(schedule)
-            _event.emit(Event.Dismiss)
-        }
-    }
-
-    fun updateSchedule(schedule: Schedule = scheduleDialogState.value.schedule) {
-        viewModelScope.launch(NonCancellable) {
-            scheduleRepository.updateSchedule(schedule)
-            getApplication<Application>()
-                .localBroadcastManager.sendBroadcast(Intent(NOTIFY_UPDATE_SCHEDULE))
-            _event.emit(Event.Dismiss)
         }
     }
 

@@ -56,7 +56,9 @@ private constructor() : DialogFragment() {
                         modifier = Modifier
                             .fillMaxWidth()
                             .wrapContentSize(),
-                        state = state
+                        state = state,
+                        onDeleteClick = ::delete,
+                        onChangeTimeClick = ::changeTime
                     )
 
                     val keyboard = LocalSoftwareKeyboardController.current
@@ -66,43 +68,24 @@ private constructor() : DialogFragment() {
                                 ScheduleDialogViewModel.Event.Cancel -> {
                                     dismiss()
                                 }
-                                ScheduleDialogViewModel.Event.Confirm -> {
-                                    confirm()
-                                }
-                                ScheduleDialogViewModel.Event.Delete -> {
-                                    delete()
-                                }
-                                ScheduleDialogViewModel.Event.ChangeTime -> {
-                                    changeTime()
-                                }
                                 ScheduleDialogViewModel.Event.Dismiss -> {
                                     dismiss()
                                 }
                                 ScheduleDialogViewModel.Event.HideKeyboard -> {
                                     keyboard?.hide()
                                 }
+                                ScheduleDialogViewModel.Event.NoContent -> {
+                                    context?.let {
+                                        Toast.makeText(
+                                            it, getString(R.string.schedule_cant_be_blank),
+                                            Toast.LENGTH_SHORT
+                                        ).show()
+                                    }
+                                }
                             }
                         }
                     }
                 }
-            }
-        }
-    }
-
-    private fun confirm() {
-        val schedule = viewModel.scheduleDialogState.value.schedule
-        if (schedule.title.isBlank()) {
-            Toast.makeText(
-                requireContext(),
-                getString(R.string.schedule_cant_be_blank),
-                Toast.LENGTH_SHORT
-            ).show()
-        } else {
-            val isAdded = schedule.id == null
-            if (isAdded) {
-                viewModel.addSchedule()
-            } else {
-                viewModel.updateSchedule()
             }
         }
     }
@@ -155,18 +138,18 @@ private constructor() : DialogFragment() {
 
 data class ScheduleDialogState(
     val schedule: Schedule,
-    val onChangeTimeClick: () -> Unit,
     val onTitleChange: (String) -> Unit,
     val onContentChange: (String) -> Unit,
     val onCancelClick: () -> Unit,
-    val onConfirmClick: () -> Unit,
-    val onDeleteClick: () -> Unit
+    val onConfirmClick: () -> Unit
 )
 
 @Composable
 private fun ScheduleDialogScreen(
     modifier: Modifier = Modifier,
     state: ScheduleDialogState,
+    onDeleteClick: () -> Unit,
+    onChangeTimeClick: () -> Unit
 ) {
     Surface(
         modifier = modifier,
@@ -186,7 +169,7 @@ private fun ScheduleDialogScreen(
 
             Spacer(modifier = Modifier.height(20.dp))
 
-            Button(onClick = state.onChangeTimeClick) {
+            Button(onClick = onChangeTimeClick) {
                 Text(text = state.schedule.time.toChineseStringWithYear())
             }
 
@@ -213,13 +196,12 @@ private fun ScheduleDialogScreen(
             Spacer(modifier = Modifier.height(30.dp))
 
             Row(modifier = Modifier.fillMaxWidth()) {
-
                 Button(
                     onClick = {
                         if (isAdd) {
                             state.onCancelClick()
                         } else {
-                            state.onDeleteClick()
+                            onDeleteClick()
                         }
                     },
                     modifier = Modifier
