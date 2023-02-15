@@ -4,11 +4,9 @@ import android.app.Application
 import android.content.Context
 import dagger.hilt.android.HiltAndroidApp
 import kotlinx.coroutines.*
-import little.goose.account.ui.transaction.TransactionHelper
-import little.goose.office.utils.DataStoreHelper
 import little.goose.common.utils.DateTimeUtils
-import little.goose.common.utils.KeyBoard
 import little.goose.common.utils.UIUtils
+import little.goose.home.utils.DataStoreHelper
 
 @HiltAndroidApp
 class AccountApplication : Application() {
@@ -19,8 +17,6 @@ class AccountApplication : Application() {
 
         DateTimeUtils.appContext = this
         UIUtils.appContext = this
-        KeyBoard.appContext = this
-
 
         initData()
     }
@@ -29,7 +25,7 @@ class AccountApplication : Application() {
     private fun initData() {
         appScope.launch {
             awaitAll(
-                async { DataStoreHelper.INSTANCE.initDataStore() }
+                async { DataStoreHelper.INSTANCE.initDataStore(this@AccountApplication) }
             )
             isAppInit = true
         }

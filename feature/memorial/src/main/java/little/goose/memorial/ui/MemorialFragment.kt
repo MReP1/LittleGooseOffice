@@ -6,6 +6,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.compose.foundation.layout.*
+import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -163,18 +164,20 @@ private fun MemorialFragmentScreen(
     topMemorial: Memorial?,
     onMemorialClick: (Memorial) -> Unit
 ) {
-    Column(modifier = modifier) {
-        if (topMemorial != null) {
-            MemorialTitle(
-                modifier = Modifier
-                    .height(130.dp)
-                    .fillMaxWidth(),
-                memorial = topMemorial
+    Surface(modifier = modifier) {
+        Column(modifier = Modifier.fillMaxSize()) {
+            if (topMemorial != null) {
+                MemorialTitle(
+                    modifier = Modifier
+                        .height(130.dp)
+                        .fillMaxWidth(),
+                    memorial = topMemorial
+                )
+            }
+            MemorialColumn(
+                memorials = memorials,
+                onMemorialClick = onMemorialClick
             )
         }
-        MemorialColumn(
-            memorials = memorials,
-            onMemorialClick = onMemorialClick
-        )
     }
 }

@@ -34,6 +34,7 @@ dependencies {
     implementation(libs.androidx.activity.ktx)
     implementation(libs.androidx.fragment.ktx)
 
+    implementation(project(":feature:home"))
     implementation(project(":feature:account"))
     implementation(project(":feature:note"))
     implementation(project(":feature:memorial"))

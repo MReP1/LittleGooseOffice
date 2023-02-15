@@ -15,7 +15,10 @@ fun MemorialColumn(
     onMemorialClick: (Memorial) -> Unit
 ) {
     LazyColumn(modifier = modifier) {
-        items(memorials) { memorial ->
+        items(
+            items = memorials,
+            key = { it.id ?: -1 }
+        ) { memorial ->
             MemorialItem(
                 modifier = Modifier.padding(16.dp),
                 memorial = memorial,

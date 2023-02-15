@@ -1,5 +1,6 @@
 package little.goose.schedule.ui
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -19,10 +20,6 @@ class ScheduleViewModel @Inject constructor(
 
     private val _schedules = MutableStateFlow<List<Schedule>>(listOf())
     val schedules = _schedules.asStateFlow()
-
-    var deleteReceiver = DeleteItemBroadcastReceiver<Schedule>()
-
-    var updateReceiver: NormalBroadcastReceiver = NormalBroadcastReceiver()
 
     fun addSchedule(schedule: Schedule) {
         viewModelScope.launch(Dispatchers.IO) {

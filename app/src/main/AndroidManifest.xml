@@ -29,7 +29,7 @@
             android:name="little.goose.note.ui.note.NoteActivity"
             android:exported="false" />
         <activity
-            android:name="little.goose.office.ui.MainActivity"
+            android:name="little.goose.office.MainActivity"
             android:theme="@style/Theme.AppSplashScreen"
             android:exported="true">
             <intent-filter>
