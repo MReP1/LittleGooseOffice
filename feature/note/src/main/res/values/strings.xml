@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="title">标题</string>
+    <string name="notebook">备忘录</string>
 
 </resources>

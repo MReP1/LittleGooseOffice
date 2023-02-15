@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string name="schedule">事务</string>
     <string name="add_schedule">添加事务</string>
     <string name="modify_schedule">修改事务</string>
     <string name="input_schedule_title">请输入事务</string>

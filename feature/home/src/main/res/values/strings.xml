@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="some_month_date">%s月%s日</string>
+    <string name="home">主页</string>
 
 
 </resources>

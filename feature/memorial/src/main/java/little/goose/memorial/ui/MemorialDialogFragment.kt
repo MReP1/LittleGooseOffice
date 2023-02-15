@@ -23,6 +23,7 @@ import androidx.compose.ui.unit.dp
 import androidx.fragment.app.DialogFragment
 import androidx.lifecycle.lifecycleScope
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.NonCancellable
 import kotlinx.coroutines.launch
 import little.goose.common.constants.KEY_DELETE_ITEM
 import little.goose.common.constants.NOTIFY_DELETE_MEMORIAL
@@ -41,7 +42,8 @@ import javax.inject.Inject
 @AndroidEntryPoint
 class MemorialDialogFragment : DialogFragment() {
 
-    @Inject lateinit var memorialRepository: MemorialRepository
+    @Inject
+    lateinit var memorialRepository: MemorialRepository
 
     private val memorial: Memorial by lazy(LazyThreadSafetyMode.NONE) {
         arguments?.parcelable(KEY_MEMORIAL) ?: Memorial(null, "null")
@@ -80,7 +82,7 @@ class MemorialDialogFragment : DialogFragment() {
         NormalDialogFragment.Builder()
             .setContent(requireContext().getString(little.goose.common.R.string.confirm_delete))
             .setConfirmCallback {
-                lifecycleScope.launch {
+                lifecycleScope.launch(NonCancellable) {
                     memorialRepository.deleteMemorial(memorial)
                     sendDeleteBroadcast()
                 }

@@ -142,7 +142,7 @@ class MemorialFragment : Fragment() {
 }
 
 @Composable
-private fun MemorialFragmentRoute(
+fun MemorialFragmentRoute(
     modifier: Modifier,
     onMemorialClick: (Memorial) -> Unit
 ) {

@@ -1,14 +1,19 @@
 package little.goose.office
 
 import android.os.Bundle
+import androidx.activity.compose.setContent
 import androidx.appcompat.app.AppCompatActivity
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.ui.Modifier
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.datastore.preferences.core.edit
 import androidx.lifecycle.lifecycleScope
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 import little.goose.common.utils.viewBinding
+import little.goose.design.system.theme.AccountTheme
 import little.goose.home.data.*
+import little.goose.home.ui.HomeScreen
 import little.goose.home.utils.KEY_PREF_PAGER
 import little.goose.home.utils.homeDataStore
 import little.goose.home.utils.withData
@@ -23,7 +28,12 @@ class MainActivity : AppCompatActivity() {
         val splashScreen = installSplashScreen()
         splashScreen.setKeepOnScreenCondition { !isAppInit }
         super.onCreate(savedInstanceState)
-        initView()
+        setContent {
+            AccountTheme {
+                HomeScreen(modifier = Modifier.fillMaxSize())
+            }
+        }
+//        initView()
     }
 
     private fun initView() {

@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string name="account">账本</string>
     <string name="current_month_expense">本月支出</string>
     <string name="current_month_income">本月收入</string>
     <string name="current_month_balance">本月结余</string>

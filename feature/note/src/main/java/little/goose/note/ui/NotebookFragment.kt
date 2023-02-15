@@ -3,6 +3,11 @@ package little.goose.note.ui
 import android.annotation.SuppressLint
 import android.os.Bundle
 import android.view.View
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
@@ -17,6 +22,7 @@ import little.goose.common.MultipleChoseHandler
 import little.goose.common.dialog.NormalDialogFragment
 import little.goose.common.utils.*
 import little.goose.note.R
+import little.goose.note.data.entities.Note
 import little.goose.note.databinding.FragmentNotebookBinding
 
 @SuppressLint("NotifyDataSetChanged")
@@ -136,4 +142,39 @@ private constructor() : Fragment(R.layout.fragment_notebook) {
             return NotebookFragment()
         }
     }
+}
+
+@Composable
+fun NoteBookRoute(
+    modifier: Modifier = Modifier
+) {
+
+}
+
+@Composable
+fun NoteBookScreen(
+    modifier: Modifier = Modifier,
+    notes: List<Note>
+) {
+    LazyVerticalGrid(
+        modifier = modifier,
+        columns = GridCells.Fixed(2),
+        content = {
+            items(
+                items = notes,
+                key = { it.id ?: -1 }
+            ) {
+
+
+            }
+        }
+    )
+}
+
+@Composable
+fun NoteItem(
+    modifier: Modifier = Modifier
+) {
+
+
 }

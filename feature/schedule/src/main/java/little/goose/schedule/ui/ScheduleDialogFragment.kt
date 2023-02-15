@@ -165,7 +165,11 @@ private fun ScheduleDialogScreen(
 
             Spacer(modifier = Modifier.height(28.dp))
 
-            Text(text = stringResource(id = R.string.add_schedule))
+            Text(
+                text = stringResource(
+                    id = if (isAdd) R.string.add_schedule else R.string.modify_schedule
+                )
+            )
 
             Spacer(modifier = Modifier.height(20.dp))
 

@@ -1,10 +1,5 @@
 package little.goose.schedule.ui
 
-import android.annotation.SuppressLint
-import android.os.Bundle
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -14,69 +9,13 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.unit.dp
-import androidx.fragment.app.Fragment
-import androidx.fragment.app.viewModels
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.lifecycleScope
-import androidx.recyclerview.widget.LinearLayoutManager
-import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.launch
-import little.goose.common.ItemSelectCallback
-import little.goose.common.MultipleChoseHandler
-import little.goose.common.constants.KEY_SCHEDULE
-import little.goose.common.constants.NOTIFY_DELETE_SCHEDULE
-import little.goose.common.constants.NOTIFY_UPDATE_SCHEDULE
-import little.goose.common.decoration.ItemLinearLayoutDecoration
-import little.goose.common.dialog.NormalDialogFragment
 import little.goose.common.utils.*
-import little.goose.design.system.theme.AccountTheme
-import little.goose.schedule.R
-import little.goose.schedule.databinding.FragmentScheduleBinding
 import little.goose.schedule.data.entities.Schedule
 
-@SuppressLint("NotifyDataSetChanged")
-@AndroidEntryPoint
-class ScheduleFragment
-private constructor() : Fragment() {
-
-    private val viewModel: ScheduleViewModel by viewModels()
-    private var callback: ItemSelectCallback<Schedule>? = null
-
-    companion object {
-        fun newInstance(): ScheduleFragment {
-            return ScheduleFragment()
-        }
-    }
-
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View {
-        return ComposeView(requireContext()).apply {
-            setContent {
-                AccountTheme {
-                    ScheduleRoute(
-                        modifier = Modifier.fillMaxSize(),
-                        onScheduleClick = {
-
-                        }
-                    )
-                }
-            }
-        }
-    }
-
-    override fun onDestroyView() {
-        super.onDestroyView()
-        callback = null
-    }
-}
-
 @Composable
-private fun ScheduleRoute(
+fun ScheduleRoute(
     modifier: Modifier,
     onScheduleClick: (Schedule) -> Unit
 ) {
