@@ -8,29 +8,27 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
-inline fun Fragment.launchAndRepeatWithViewLifeCycle(
+fun Fragment.launchAndRepeatWithViewLifeCycle(
     minActiveState: Lifecycle.State = Lifecycle.State.STARTED,
-    crossinline block: suspend CoroutineScope.() -> Unit
+    block: suspend CoroutineScope.() -> Unit
 ): Job {
     return viewLifecycleOwner.lifecycleScope.launch {
-        viewLifecycleOwner.lifecycle.repeatOnLifecycle(minActiveState) {
-            block()
-        }
+        viewLifecycleOwner.lifecycle.repeatOnLifecycle(minActiveState, block)
     }
 }
 
-inline fun <T> Flow<T>.collectLastWithLifecycleOwner(
+fun <T> Flow<T>.collectLastWithLifecycleOwner(
     lifecycleOwner: LifecycleOwner,
     minActiveState: Lifecycle.State = Lifecycle.State.STARTED,
-    crossinline block: suspend CoroutineScope.(data: T) -> Unit
+    block: suspend (data: T) -> Unit
 ) = this.collectLastWithLifecycle(lifecycleOwner.lifecycle, minActiveState, block)
 
-inline fun <T> Flow<T>.collectLastWithLifecycle(
+fun <T> Flow<T>.collectLastWithLifecycle(
     lifecycle: Lifecycle,
     minActiveState: Lifecycle.State = Lifecycle.State.STARTED,
-    crossinline block: suspend CoroutineScope.(data: T) -> Unit
+    block: suspend (data: T) -> Unit
 ) = lifecycle.coroutineScope.launch {
-    this@collectLastWithLifecycle.flowWithLifecycle(lifecycle, minActiveState).collectLatest {
-        block(it)
-    }
+    this@collectLastWithLifecycle
+        .flowWithLifecycle(lifecycle, minActiveState)
+        .collectLatest(block)
 }

@@ -62,11 +62,11 @@ class MainActivity : AppCompatActivity() {
     override fun onStop() {
         super.onStop()
         // 保存当前页面
-        appScope.launch {
-            homeDataStore.edit { home ->
-                home[KEY_PREF_PAGER] = binding.homeViewPager.currentItem
-            }
-        }
+//        appScope.launch {
+//            homeDataStore.edit { home ->
+//                home[KEY_PREF_PAGER] = binding.homeViewPager.currentItem
+//            }
+//        }
     }
 
     private fun initNavigation() {

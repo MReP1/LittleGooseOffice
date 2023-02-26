@@ -7,23 +7,34 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.fragment.app.FragmentActivity
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.rememberPagerState
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import little.goose.common.constants.KEY_SCHEDULE
 import little.goose.design.system.component.MovableActionButton
 import little.goose.design.system.component.MovableActionButtonState
 import little.goose.home.data.*
-import little.goose.memorial.ui.MemorialFragmentRoute
+import little.goose.memorial.ui.MemorialActivity
+import little.goose.memorial.ui.MemorialRoute
+import little.goose.memorial.ui.MemorialShowActivity
+import little.goose.note.ui.NoteBookRoute
+import little.goose.note.ui.note.NoteActivity
+import little.goose.schedule.ui.ScheduleDialogFragment
 import little.goose.schedule.ui.ScheduleRoute
+import java.util.*
 
 @OptIn(ExperimentalPagerApi::class)
 @Composable
 fun HomeScreen(
     modifier: Modifier,
 ) {
+    val context = LocalContext.current
+    val fragmentManager = (context as FragmentActivity).supportFragmentManager
     val scope = rememberCoroutineScope()
     val pagerState = rememberPagerState()
     val currentHomePage = remember(pagerState.currentPage) {
@@ -58,7 +69,12 @@ fun HomeScreen(
                             Box(modifier = Modifier.fillMaxSize())
                         }
                         NOTEBOOK -> {
-                            Box(modifier = Modifier.fillMaxSize())
+                            NoteBookRoute(
+                                modifier = Modifier.fillMaxSize(),
+                                onNoteClick = {
+                                    NoteActivity.openEdit(context, it)
+                                }
+                            )
                         }
                         ACCOUNT -> {
                             Box(modifier = Modifier.fillMaxSize())
@@ -67,14 +83,17 @@ fun HomeScreen(
                             ScheduleRoute(
                                 modifier = Modifier.fillMaxSize(),
                                 onScheduleClick = {
-
+                                    ScheduleDialogFragment.newInstance(it)
+                                        .showNow(fragmentManager, KEY_SCHEDULE)
                                 }
                             )
                         }
                         MEMORIAL -> {
-                            MemorialFragmentRoute(
+                            MemorialRoute(
                                 modifier = Modifier.fillMaxSize(),
-                                onMemorialClick = {}
+                                onMemorialClick = {
+                                    MemorialShowActivity.open(context, it)
+                                }
                             )
                         }
                     }
@@ -91,6 +110,22 @@ fun HomeScreen(
                             )
                         },
                         onMainButtonClick = {
+                            when (currentHomePage) {
+                                HomePage.Notebook -> {
+                                    NoteActivity.openAdd(context)
+                                }
+                                HomePage.ACCOUNT -> {
+
+                                }
+                                HomePage.Schedule -> {
+                                    ScheduleDialogFragment.newInstance(null, Date())
+                                        .showNow(fragmentManager, KEY_SCHEDULE)
+                                }
+                                HomePage.Memorial -> {
+                                    MemorialActivity.openAdd(context)
+                                }
+                                else -> {}
+                            }
 
                         },
                         topSubButtonContent = {

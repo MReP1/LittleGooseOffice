@@ -6,9 +6,12 @@ import android.os.Bundle
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import dagger.hilt.android.AndroidEntryPoint
-import little.goose.common.utils.parcelable
+import little.goose.common.constants.TYPE_ADD
+import little.goose.common.constants.TYPE_MODIFY
+import little.goose.common.utils.collectLastWithLifecycle
 import little.goose.common.utils.viewBinding
 import little.goose.note.R
+import little.goose.note.data.constants.KEY_NOTE
 import little.goose.note.data.entities.Note
 import little.goose.note.databinding.ActivityNoteBinding
 import java.util.*
@@ -18,8 +21,6 @@ class NoteActivity : AppCompatActivity() {
 
     private val binding by viewBinding(ActivityNoteBinding::inflate)
     private val viewModel by viewModels<NoteViewModel>()
-    private lateinit var note: Note
-    private var type = ADD
 
     private var isBold = false
     private var isItalic = false
@@ -35,9 +36,7 @@ class NoteActivity : AppCompatActivity() {
     }
 
     private fun initNote() {
-        note = intent.parcelable(KEY_NOTE) ?: Note()
-        note.id?.let {
-            type = EDIT
+        viewModel.note.collectLastWithLifecycle(lifecycle) { note ->
             binding.etTitle.setText(note.title)
             binding.retContent.fromHtml(note.content)
         }
@@ -158,46 +157,22 @@ class NoteActivity : AppCompatActivity() {
     override fun onPause() {
         super.onPause()
         updateNote()
-        when (type) {
-            ADD -> insertDatabase()
-            EDIT -> updateDatabase()
+        when (viewModel.type) {
+            TYPE_ADD -> viewModel.insertDatabase()
+            TYPE_MODIFY -> viewModel.updateDatabase()
         }
     }
 
     private fun updateNote() {
-        note.apply {
-            title = binding.etTitle.text.toString()
-            content = binding.retContent.toHtml()
+        val newNote = viewModel.note.value.copy(
+            title = binding.etTitle.text.toString(),
+            content = binding.retContent.toHtml(),
             time = Date()
-        }
+        )
+        viewModel.setNote(newNote)
     }
-
-    private fun insertDatabase() {
-        if (!isNoteBlank()) {
-            viewModel.insertNote(note) { id ->
-                if (!this@NoteActivity.isDestroyed) {
-                    note.id = id
-                    type = EDIT
-                }
-            }
-        }
-    }
-
-    private fun updateDatabase() {
-        if (!isNoteBlank()) {
-            viewModel.updateNote(note)
-        } else {
-            viewModel.deleteNote(note)
-        }
-    }
-
-    private fun isNoteBlank() = note.title.isBlank() && note.content.isBlank()
 
     companion object {
-        private const val KEY_NOTE = "note"
-        private const val ADD = 0
-        private const val EDIT = 1
-
         fun openAdd(context: Context) {
             val intent = Intent(context, NoteActivity::class.java)
             context.startActivity(intent)

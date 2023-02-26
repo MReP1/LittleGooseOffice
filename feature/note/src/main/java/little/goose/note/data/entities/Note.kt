@@ -11,10 +11,10 @@ import java.util.*
 @Entity(tableName = TABLE_NOTE)
 data class Note(
     @PrimaryKey(autoGenerate = true)
-    var id: Long? = null,
-    var title: String,
-    var content: String,
-    var time: Date = Date()
+    val id: Long? = null,
+    val title: String,
+    val content: String,
+    val time: Date = Date()
 ) : Parcelable {
     constructor(): this(null, "", "", Date())
 }
