@@ -53,8 +53,14 @@ interface AccountDao {
     @Query("SELECT SUM(money) FROM $TABLE_TRANSACTION WHERE type = $EXPENSE")
     suspend fun getAllTransactionExpenseSum(): Double
 
+    @Query("SELECT SUM(money) FROM $TABLE_TRANSACTION WHERE type = $EXPENSE")
+    fun getAllTransactionExpenseSumFlow(): Flow<Double>
+
     @Query("SELECT SUM(money) FROM $TABLE_TRANSACTION WHERE type = $INCOME")
     suspend fun getAllTransactionIncomeSum(): Double
+
+    @Query("SELECT SUM(money) FROM $TABLE_TRANSACTION WHERE type = $INCOME")
+    fun getAllTransactionIncomeSumFlow(): Flow<Double>
 
     @Query("SELECT SUM(money) FROM $TABLE_TRANSACTION WHERE time > :startTime and time < :endTime and type = $EXPENSE")
     suspend fun getTransactionExpenseSumByTime(startTime: Long, endTime: Long): Double

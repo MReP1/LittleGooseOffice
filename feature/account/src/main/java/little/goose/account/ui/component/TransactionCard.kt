@@ -1,4 +1,4 @@
-package little.goose.account.ui.widget
+package little.goose.account.ui.component
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.Card
@@ -12,6 +12,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import little.goose.account.R
 import little.goose.account.data.constants.AccountConstant.EXPENSE
 import little.goose.account.data.entities.Transaction
 import little.goose.account.ui.transaction.icon.TransactionIconHelper
@@ -63,7 +64,7 @@ private fun DefaultPreview() {
         TransactionCard(
             transaction = Transaction(
                 null, EXPENSE, BigDecimal(71),
-                "消费", "null", Date(), little.goose.account.R.drawable.icon_book
+                "消费", "null", Date(), R.drawable.icon_book
             ), onTransactionClick = {
             }
         )

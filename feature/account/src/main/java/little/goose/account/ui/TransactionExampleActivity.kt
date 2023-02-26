@@ -27,7 +27,7 @@ import kotlinx.coroutines.launch
 import little.goose.account.data.constants.MoneyType
 import little.goose.common.dialog.time.TimeType
 import little.goose.account.ui.transaction.TransactionDialogFragment
-import little.goose.account.ui.widget.TransactionCard
+import little.goose.account.ui.component.TransactionCard
 import little.goose.common.constants.KEY_CONTENT
 import little.goose.common.constants.KEY_MONEY_TYPE
 import little.goose.common.constants.KEY_TIME
@@ -37,6 +37,8 @@ import little.goose.design.system.theme.Red200
 import little.goose.common.utils.*
 import java.io.Serializable
 import java.util.*
+import little.goose.account.data.entities.Transaction
+import little.goose.account.ui.component.TransactionColumn
 
 @AndroidEntryPoint
 class TransactionExampleActivity : AppCompatActivity() {
@@ -91,7 +93,7 @@ class TransactionExampleActivity : AppCompatActivity() {
 private fun TransactionTimeScreen(
     modifier: Modifier = Modifier,
     title: String,
-    onTransactionClick: (little.goose.account.data.entities.Transaction) -> Unit,
+    onTransactionClick: (Transaction) -> Unit,
     onBack: () -> Unit
 ) {
     val scope = rememberCoroutineScope()
@@ -132,28 +134,19 @@ private fun TransactionTimeScreen(
             )
         }
     ) { paddingValues ->
-        LazyColumn(
+        TransactionColumn(
             modifier = Modifier.padding(paddingValues),
-            contentPadding = PaddingValues(16.dp, 16.dp),
-            verticalArrangement = Arrangement.spacedBy(12.dp)
-        ) {
-            items(
-                items = transactions,
-                key = { it.id!! }
-            ) { transaction ->
-                TransactionCard(
-                    transaction = transaction,
-                    onTransactionClick = onTransactionClick
-                )
-            }
-        }
+            transactions = transactions,
+            onTransactionClick = onTransactionClick
+        )
     }
 
     LaunchedEffect(deleteTransaction) {
         if (deleteTransaction != null) {
             coroutineScope {
                 launch {
-                    val withDismissAction = context.getString(little.goose.common.R.string.undo).isNotEmpty()
+                    val withDismissAction =
+                        context.getString(little.goose.common.R.string.undo).isNotEmpty()
                     snackbarHostState.showSnackbar(
                         context.getString(little.goose.common.R.string.deleted),
                         context.getString(little.goose.common.R.string.undo),

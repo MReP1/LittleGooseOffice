@@ -10,6 +10,7 @@ android {
 dependencies {
     api(libs.androidx.compose.ui)
     api(libs.androidx.compose.ui.tool.preview)
+    api(libs.androidx.compose.ui.tooling)
     api(libs.androidx.compose.material3)
     api(libs.androidx.compose.material.iconsExtended)
 }

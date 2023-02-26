@@ -4,18 +4,30 @@ import android.annotation.SuppressLint
 import android.os.Bundle
 import android.view.View
 import android.view.ViewGroup
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.wrapContentHeight
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.ui.Modifier
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.recyclerview.widget.LinearLayoutManager
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.*
 import little.goose.account.R
+import little.goose.account.data.entities.Transaction
 import little.goose.account.databinding.FragmentAccountBinding
 import little.goose.account.ui.analysis.AccountAnalysisActivity
+import little.goose.account.ui.component.AccountTitle
+import little.goose.account.ui.component.AccountTitleState
+import little.goose.account.ui.component.MonthSelectorState
+import little.goose.account.ui.component.TransactionColumn
 import little.goose.account.ui.transaction.TransactionActivity
 import little.goose.account.ui.transaction.TransactionDialogFragment
-import little.goose.account.ui.transaction.TransactionHelper
 import little.goose.account.ui.transaction.insertTime
 import little.goose.account.ui.widget.MonthSelector
 import little.goose.account.utils.*
@@ -28,14 +40,10 @@ import little.goose.common.dialog.NormalDialogFragment
 import little.goose.common.dialog.time.TimeType
 import little.goose.common.utils.*
 import kotlin.properties.Delegates
-import little.goose.account.data.entities.Transaction
-import javax.inject.Inject
 
 @SuppressLint("NotifyDataSetChanged")
 @AndroidEntryPoint
 class AccountFragment : Fragment(R.layout.fragment_account) {
-
-    @Inject lateinit var transactionHelper: TransactionHelper
 
     private val viewModel: AccountFragmentViewModel by viewModels()
 
@@ -126,9 +134,7 @@ class AccountFragment : Fragment(R.layout.fragment_account) {
             addItemDecoration(ItemLinearLayoutDecoration(dp16, dp16, 10.dp()))
             layoutManager = LinearLayoutManager(this@AccountFragment.requireContext())
             viewLifecycleOwner.lifecycleScope.launch {
-                val listIncludeTime = withContext(Dispatchers.Default) {
-                    transactionHelper.listTransaction.insertTime()
-                }
+                val listIncludeTime = viewModel.curMonthTransactionWithTime.value
                 adapter =
                     AccountRcvAdapter(listIncludeTime, itemSelectCallback, multipleChoseHandler)
             }
@@ -137,14 +143,10 @@ class AccountFragment : Fragment(R.layout.fragment_account) {
 
     private fun initFlowListener() {
         updateJob?.cancel()
-        updateJob = launchAndRepeatWithViewLifeCycle {
-            viewModel.getCurMonthTransactionFlow().collect {
-                val listIncludeTime = async(Dispatchers.Default) { it.insertTime() }
-                transactionHelper.updateTransactionList(it)
-                coroutineScope { transactionHelper.updateMoneyFromTransactionListWithMonth(it) }
-                updateHeader(isCurMonth)
-                (binding.rcvAccount.adapter as? AccountRcvAdapter)?.updateData(listIncludeTime.await())
-            }
+        updateJob = viewModel.curMonthTransactionFlow.collectLastWithLifecycle(lifecycle) {
+            val listIncludeTime = it.insertTime()
+            updateHeader(isCurMonth)
+            (binding.rcvAccount.adapter as? AccountRcvAdapter)?.updateData(listIncludeTime)
         }
     }
 
@@ -196,8 +198,6 @@ class AccountFragment : Fragment(R.layout.fragment_account) {
         updateJob = launchAndRepeatWithViewLifeCycle {
             viewModel.getTransactionByYearAndMonthFlow(year, month).collect {
                 val listIncludeTime = async(Dispatchers.Default) { it.insertTime() }
-                transactionHelper.updateTransactionList(it)
-                coroutineScope { transactionHelper.updateMoneyFromTransactionListWithMonth(it) }
                 updateHeader(isCurMonth)
                 (binding.rcvAccount.adapter as? AccountRcvAdapter)?.updateData(listIncludeTime.await())
             }
@@ -210,19 +210,16 @@ class AccountFragment : Fragment(R.layout.fragment_account) {
                 tvTitleExpense.text = getString(R.string.current_month_expense)
                 tvTitleIncome.text = getString(R.string.current_month_income)
                 tvTitleBalance.text = getString(R.string.current_month_balance)
-                tvExpense.text = transactionHelper.curMonthExpenseSum.toPlainString()
-                tvIncome.text = transactionHelper.curMonthIncomeSum.toPlainString()
-                tvBalance.text = transactionHelper.curMonthBalance.toPlainString()
+                tvExpense.text = viewModel.curMonthExpenseSum.value.toPlainString()
+                tvIncome.text = viewModel.curMonthIncomeSum.value.toPlainString()
+                tvBalance.text = viewModel.curMonthBalance.value.toPlainString()
             } else {
                 tvTitleExpense.text = getString(R.string.expense)
                 tvTitleIncome.text = getString(R.string.income)
                 tvTitleBalance.text = getString(R.string.balance)
-                lifecycleScope.launch {
-                    val sumMap = transactionHelper.getAllSum()
-                    tvExpense.text = sumMap[transactionHelper.KEY_EXPENSE]?.toPlainString() ?: "0"
-                    tvIncome.text = sumMap[transactionHelper.KEY_INCOME]?.toPlainString() ?: "0"
-                    tvBalance.text = sumMap[transactionHelper.KEY_BALANCE]?.toPlainString() ?: "0"
-                }
+                tvExpense.text = viewModel.totalExpenseSum.value.toPlainString()
+                tvIncome.text = viewModel.totalIncomeSum.value.toPlainString()
+                tvBalance.text = viewModel.totalBalance.value.toPlainString()
             }
         }
     }
@@ -261,5 +258,47 @@ class AccountFragment : Fragment(R.layout.fragment_account) {
 
     companion object {
         fun newInstance(): AccountFragment = AccountFragment()
+    }
+}
+
+@Composable
+fun AccountRoute(
+    modifier: Modifier = Modifier,
+    onTransactionClick: (Transaction) -> Unit
+) {
+    val viewModel = viewModel<AccountFragmentViewModel>()
+    val transactions by viewModel.curMonthTransactionWithTime.collectAsState()
+    val accountTitleState by viewModel.accountTitleState.collectAsState()
+    val monthSelectorState by viewModel.monthSelectorState.collectAsState()
+    AccountScreen(
+        modifier = modifier,
+        transactionsWithTime = transactions,
+        accountTitleState = accountTitleState,
+        onTransactionClick = onTransactionClick,
+        monthSelectorState = monthSelectorState
+    )
+}
+
+@Composable
+fun AccountScreen(
+    modifier: Modifier = Modifier,
+    transactionsWithTime: List<Transaction>,
+    onTransactionClick: (Transaction) -> Unit,
+    accountTitleState: AccountTitleState,
+    monthSelectorState: MonthSelectorState
+) {
+    Column(modifier) {
+        AccountTitle(
+            modifier = Modifier
+                .fillMaxWidth()
+                .wrapContentHeight(),
+            accountTitleState = accountTitleState,
+            monthSelectorState = monthSelectorState
+        )
+        TransactionColumn(
+            modifier = Modifier.weight(1F),
+            transactions = transactionsWithTime,
+            onTransactionClick = onTransactionClick
+        )
     }
 }

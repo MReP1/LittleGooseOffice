@@ -3,10 +3,12 @@ package little.goose.account.logic
 import android.content.Context
 import androidx.room.Room
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.map
 import little.goose.account.data.constants.AccountConstant.EXPENSE
 import little.goose.account.data.constants.AccountConstant.INCOME
 import little.goose.account.data.constants.MoneyType
 import little.goose.account.data.constants.TABLE_TRANSACTION
+import little.goose.account.data.entities.Transaction
 import little.goose.common.utils.*
 import java.math.BigDecimal
 import java.util.*
@@ -25,38 +27,42 @@ class AccountRepository(
     //跑全库方法，不要乱用哦
     fun getAllTransactionFlow() = accountDao.getAllTransactionFlow()
 
-    suspend fun addTransaction(transaction: little.goose.account.data.entities.Transaction) = accountDao.addTransaction(transaction)
+    suspend fun addTransaction(transaction: Transaction) =
+        accountDao.addTransaction(transaction)
 
-    suspend fun addTransactions(transactions: List<little.goose.account.data.entities.Transaction>) =
+    suspend fun addTransactions(transactions: List<Transaction>) =
         accountDao.addTransactions(transactions)
 
 
-    suspend fun updateTransaction(transaction: little.goose.account.data.entities.Transaction) =
+    suspend fun updateTransaction(transaction: Transaction) =
         accountDao.updateTransaction(transaction)
 
 
-    suspend fun deleteTransaction(transaction: little.goose.account.data.entities.Transaction) =
+    suspend fun deleteTransaction(transaction: Transaction) =
         accountDao.deleteTransaction(transaction)
 
-    suspend fun deleteTransactions(transactionList: List<little.goose.account.data.entities.Transaction>) =
+    suspend fun deleteTransactions(transactionList: List<Transaction>) =
         accountDao.deleteTransactions(transactionList)
 
 
-    suspend fun getTransactionCurrentMonth(): List<little.goose.account.data.entities.Transaction> {
+    suspend fun getTransactionCurrentMonth(): List<Transaction> {
         val curCalendar = Calendar.getInstance()
         val curYear = curCalendar.getYear()
         val curMonth = curCalendar.getMonth()
         return getTransactionsByYearAndMonth(curYear, curMonth)
     }
 
-    fun getTransactionCurrentMonthFlow(): Flow<List<little.goose.account.data.entities.Transaction>> {
+    fun getTransactionCurrentMonthFlow(): Flow<List<Transaction>> {
         val curCalendar = Calendar.getInstance()
         val curYear = curCalendar.getYear()
         val curMonth = curCalendar.getMonth()
         return getTransactionByYearMonthFlow(curYear, curMonth)
     }
 
-    suspend fun getTransactionsByYearAndMonth(year: Int, month: Int): List<little.goose.account.data.entities.Transaction> {
+    suspend fun getTransactionsByYearAndMonth(
+        year: Int,
+        month: Int
+    ): List<Transaction> {
         val calendar = Calendar.getInstance().apply {
             clear()
             setDate(1)
@@ -95,7 +101,7 @@ class AccountRepository(
         return accountDao.getTransactionIncomeSumByTime(startTime, endTime)
     }
 
-    suspend fun getTransactionByYear(year: Int): List<little.goose.account.data.entities.Transaction> {
+    suspend fun getTransactionByYear(year: Int): List<Transaction> {
         val calendar = Calendar.getInstance().apply {
             clear()
             setDate(1)
@@ -133,7 +139,7 @@ class AccountRepository(
 
     fun getTransactionByDateFlow(
         year: Int, month: Int, date: Int, moneyType: MoneyType = MoneyType.BALANCE
-    ): Flow<List<little.goose.account.data.entities.Transaction>> {
+    ): Flow<List<Transaction>> {
         val dayRange = getOneDayRange(year, month, date)
         val startTime = dayRange.startTime
         val endTime = dayRange.endTime
@@ -150,7 +156,7 @@ class AccountRepository(
 
     fun getTransactionByYearMonthFlow(
         year: Int, month: Int, moneyType: MoneyType = MoneyType.BALANCE
-    ): Flow<List<little.goose.account.data.entities.Transaction>> {
+    ): Flow<List<Transaction>> {
         val calendar = Calendar.getInstance().apply {
             clear()
             setDate(1)
@@ -174,7 +180,7 @@ class AccountRepository(
     fun getTransactionByYearFlowWithKeyContent(
         year: Int,
         keyContent: String
-    ): Flow<List<little.goose.account.data.entities.Transaction>> {
+    ): Flow<List<Transaction>> {
         val calendar = Calendar.getInstance()
         calendar.clear()
         calendar.setYear(year)
@@ -190,7 +196,7 @@ class AccountRepository(
         year: Int,
         month: Int,
         keyContent: String
-    ): Flow<List<little.goose.account.data.entities.Transaction>> {
+    ): Flow<List<Transaction>> {
         val calendar = Calendar.getInstance()
         calendar.clear()
         calendar.setYear(year)
@@ -211,12 +217,32 @@ class AccountRepository(
         }
     }
 
+    fun getAllTransactionExpenseSumFlow(): Flow<BigDecimal> {
+        return accountDao.getAllTransactionExpenseSumFlow().map { sum ->
+            if (sum == 0.00) {
+                BigDecimal(0)
+            } else {
+                BigDecimal(sum).getRoundTwo()
+            }
+        }
+    }
+
     suspend fun getAllTransactionIncomeSum(): BigDecimal {
         val sum = accountDao.getAllTransactionIncomeSum()
         return if (sum == 0.00) {
             BigDecimal(0)
         } else {
             BigDecimal(sum).getRoundTwo()
+        }
+    }
+
+    fun getAllTransactionIncomeSumFlow(): Flow<BigDecimal> {
+        return accountDao.getAllTransactionIncomeSumFlow().map { sum ->
+            if (sum == 0.00) {
+                BigDecimal(0)
+            } else {
+                BigDecimal(sum).getRoundTwo()
+            }
         }
     }
 

@@ -15,6 +15,8 @@ import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.rememberPagerState
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import little.goose.account.ui.AccountRoute
+import little.goose.account.ui.transaction.TransactionActivity
 import little.goose.common.constants.KEY_SCHEDULE
 import little.goose.design.system.component.MovableActionButton
 import little.goose.design.system.component.MovableActionButtonState
@@ -78,7 +80,12 @@ fun HomeScreen(
                             )
                         }
                         ACCOUNT -> {
-                            Box(modifier = Modifier.fillMaxSize())
+                            AccountRoute(
+                                modifier = Modifier.fillMaxSize(),
+                                onTransactionClick = {
+                                    TransactionActivity.openEdit(context, it)
+                                }
+                            )
                         }
                         SCHEDULE -> {
                             ScheduleRoute(
@@ -117,7 +124,7 @@ fun HomeScreen(
                                     NoteActivity.openAdd(context)
                                 }
                                 HomePage.ACCOUNT -> {
-
+                                    TransactionActivity.openAdd(context)
                                 }
                                 HomePage.Schedule -> {
                                     ScheduleDialogFragment.newInstance(null, Date())

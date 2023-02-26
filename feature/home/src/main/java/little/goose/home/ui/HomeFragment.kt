@@ -16,7 +16,6 @@ import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.*
 import little.goose.account.data.constants.AccountConstant.EXPENSE
 import little.goose.account.data.constants.AccountConstant.INCOME
-import little.goose.account.ui.transaction.TransactionHelper
 import little.goose.account.utils.*
 import little.goose.common.commonScope
 import little.goose.common.constants.NOTIFY_DELETE_MEMORIAL
@@ -36,14 +35,10 @@ import little.goose.memorial.ui.MemorialDialogFragment
 import little.goose.memorial.utils.appendTimeSuffix
 import little.goose.memorial.utils.getMapDayBoolean
 import little.goose.schedule.utils.getMapDayBoolean
-import javax.inject.Inject
 import kotlin.properties.Delegates
 
 @AndroidEntryPoint
 class HomeFragment : Fragment(R.layout.fragment_home) {
-
-    @Inject
-    lateinit var transactionHelper: TransactionHelper
 
     private val viewModel: HomeViewModel by viewModels()
     private val binding by viewBinding(FragmentHomeBinding::bind)
@@ -343,10 +338,10 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
                         setTransactionCardVisibility(false)
                     } else {
                         setTransactionCardVisibility(true)
-                        transactionHelper.getSumFromTransactionList(it).apply {
-                            tvExpenseMoney.text = get(EXPENSE)?.toPlainString() ?: "0"
-                            tvIncomeMoney.text = get(INCOME)?.toPlainString() ?: "0"
-                        }
+//                        transactionHelper.getSumFromTransactionList(it).apply {
+//                            tvExpenseMoney.text = get(EXPENSE)?.toPlainString() ?: "0"
+//                            tvIncomeMoney.text = get(INCOME)?.toPlainString() ?: "0"
+//                        }
                     }
                 }
                 updateScheme(year, month)

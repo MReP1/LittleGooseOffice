@@ -1,10 +1,14 @@
 @file:Suppress("NOTHING_TO_INLINE")
+
 package little.goose.account.ui.analysis
 
 import little.goose.account.data.constants.AccountConstant.EXPENSE
 import little.goose.account.data.constants.AccountConstant.INCOME
 import little.goose.account.ui.analysis.AnalysisFragmentViewModel.Companion.MONTH
 import little.goose.account.ui.analysis.AnalysisFragmentViewModel.Companion.YEAR
+import little.goose.account.data.models.TransactionPercent
+import little.goose.account.data.models.TimeMoney
+import little.goose.account.data.entities.Transaction
 import little.goose.account.utils.*
 import little.goose.common.utils.*
 import java.math.BigDecimal
@@ -12,22 +16,22 @@ import java.util.*
 import kotlin.math.min
 
 class AnalysisHelper {
-    var mapExpensePercent: HashMap<Int, little.goose.account.data.models.TransactionPercent> = HashMap()
-    var mapIncomePercent: HashMap<Int, little.goose.account.data.models.TransactionPercent> = HashMap()
+    var mapExpensePercent: HashMap<Int, TransactionPercent> = HashMap()
+    var mapIncomePercent: HashMap<Int, TransactionPercent> = HashMap()
     var mapBalance: HashMap<Int, little.goose.account.data.models.TransactionBalance> = HashMap()
 
     private val calendar = Calendar.getInstance()
 
-    val timeExpenseList = ArrayList<little.goose.account.data.models.TimeMoney>()
-    val timeIncomeList = ArrayList<little.goose.account.data.models.TimeMoney>()
-    val timeBalanceList = ArrayList<little.goose.account.data.models.TimeMoney>()
+    val timeExpenseList = ArrayList<TimeMoney>()
+    val timeIncomeList = ArrayList<TimeMoney>()
+    val timeBalanceList = ArrayList<TimeMoney>()
 
     var expenseSum = BigDecimal(0)
     var incomeSum = BigDecimal(0)
     var balance = BigDecimal(0)
 
     fun analyseTransactionList(
-        list: List<little.goose.account.data.entities.Transaction>,
+        list: List<Transaction>,
         expenseSum: Double,
         incomeSum: Double,
         year: Int,
@@ -89,9 +93,9 @@ class AnalysisHelper {
             for (day in 1..days) {
                 setDate(day)
                 val time = calendar.time
-                timeExpenseList.add(little.goose.account.data.models.TimeMoney(time, BigDecimal(0)))
-                timeIncomeList.add(little.goose.account.data.models.TimeMoney(time, BigDecimal(0)))
-                timeBalanceList.add(little.goose.account.data.models.TimeMoney(time, BigDecimal(0)))
+                timeExpenseList.add(TimeMoney(time, BigDecimal(0)))
+                timeIncomeList.add(TimeMoney(time, BigDecimal(0)))
+                timeBalanceList.add(TimeMoney(time, BigDecimal(0)))
             }
         }
     }
@@ -103,14 +107,14 @@ class AnalysisHelper {
             for (month in 1..12) {
                 setMonth(month)
                 val time = calendar.time
-                timeExpenseList.add(little.goose.account.data.models.TimeMoney(time, BigDecimal(0)))
-                timeIncomeList.add(little.goose.account.data.models.TimeMoney(time, BigDecimal(0)))
-                timeBalanceList.add(little.goose.account.data.models.TimeMoney(time, BigDecimal(0)))
+                timeExpenseList.add(TimeMoney(time, BigDecimal(0)))
+                timeIncomeList.add(TimeMoney(time, BigDecimal(0)))
+                timeBalanceList.add(TimeMoney(time, BigDecimal(0)))
             }
         }
     }
 
-    private inline fun dealWithListYear(list: List<little.goose.account.data.entities.Transaction>) {
+    private inline fun dealWithListYear(list: List<Transaction>) {
         for (value in list) {
             when (value.type) {
                 EXPENSE -> {
@@ -129,7 +133,7 @@ class AnalysisHelper {
         }
     }
 
-    private inline fun dealWithListMonth(list: List<little.goose.account.data.entities.Transaction>) {
+    private inline fun dealWithListMonth(list: List<Transaction>) {
         for (value in list) {
             when (value.type) {
                 EXPENSE -> {
@@ -148,7 +152,7 @@ class AnalysisHelper {
         }
     }
 
-    private inline fun dealWithBalanceOfExpenseMonth(value: little.goose.account.data.entities.Transaction) {
+    private inline fun dealWithBalanceOfExpenseMonth(value: Transaction) {
         val date = value.time.getRealDate()
         val transactionBalance = mapBalance[date]
         if (transactionBalance != null) {
@@ -161,7 +165,7 @@ class AnalysisHelper {
         timeExpenseList[date - 1].money += value.money
     }
 
-    private inline fun dealWithBalanceOfExpenseYear(value: little.goose.account.data.entities.Transaction) {
+    private inline fun dealWithBalanceOfExpenseYear(value: Transaction) {
         val month = value.time.getRealMonth()
         val transactionBalance = mapBalance[month]
         if (transactionBalance != null) {
@@ -174,7 +178,7 @@ class AnalysisHelper {
         timeExpenseList[month - 1].money += value.money
     }
 
-    private inline fun dealWithBalanceOfIncomeMonth(value: little.goose.account.data.entities.Transaction) {
+    private inline fun dealWithBalanceOfIncomeMonth(value: Transaction) {
         val date = value.time.getRealDate()
         val transactionBalance = mapBalance[date]
         if (transactionBalance != null) {
@@ -187,7 +191,7 @@ class AnalysisHelper {
         timeIncomeList[date - 1].money += value.money
     }
 
-    private inline fun dealWithBalanceOfIncomeYear(value: little.goose.account.data.entities.Transaction) {
+    private inline fun dealWithBalanceOfIncomeYear(value: Transaction) {
         val month = value.time.getRealMonth()
         val transactionBalance = mapBalance[month]
         if (transactionBalance != null) {
@@ -200,33 +204,23 @@ class AnalysisHelper {
         timeIncomeList[month - 1].money += value.money
     }
 
-    private inline fun dealWithExpense(value: little.goose.account.data.entities.Transaction) {
+    private inline fun dealWithExpense(value: Transaction) {
         val expensePercent = mapExpensePercent[value.icon_id]
         if (expensePercent != null) {
             expensePercent.money += value.money
         } else {
             mapExpensePercent[value.icon_id] =
-                little.goose.account.data.models.TransactionPercent(
-                    value.icon_id,
-                    value.content,
-                    value.money,
-                    0.0
-                )
+                TransactionPercent(value.icon_id, value.content, value.money, 0.0)
         }
     }
 
-    private inline fun dealWithIncome(value: little.goose.account.data.entities.Transaction) {
+    private inline fun dealWithIncome(value: Transaction) {
         val incomePercent = mapIncomePercent[value.icon_id]
         if (incomePercent != null) {
             incomePercent.money += value.money
         } else {
             mapIncomePercent[value.icon_id] =
-                little.goose.account.data.models.TransactionPercent(
-                    value.icon_id,
-                    value.content,
-                    value.money,
-                    0.0
-                )
+                TransactionPercent(value.icon_id, value.content, value.money, 0.0)
         }
     }
 

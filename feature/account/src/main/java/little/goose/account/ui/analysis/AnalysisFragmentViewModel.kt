@@ -7,7 +7,9 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import little.goose.account.data.entities.Transaction
 import little.goose.account.logic.AccountRepository
 import little.goose.common.utils.getMonth
 import little.goose.common.utils.getYear
@@ -17,18 +19,19 @@ import javax.inject.Inject
 @HiltViewModel
 class AnalysisFragmentViewModel @Inject constructor(
     private val accountRepository: AccountRepository
-): ViewModel() {
+) : ViewModel() {
 
     private val analysisHelper = AnalysisHelper()
 
     var type = 0
     private val _monthFlow = MutableStateFlow(-1)
-    val monthFlow: StateFlow<Int> = _monthFlow
+    val monthFlow: StateFlow<Int> = _monthFlow.asStateFlow()
+
     private val _yearFlow = MutableStateFlow(2010)
-    var yearFlow: StateFlow<Int> = _yearFlow
-    private val _transactionList: MutableStateFlow<List<little.goose.account.data.entities.Transaction>> =
-        MutableStateFlow(emptyList())
-    val transactionList: StateFlow<List<little.goose.account.data.entities.Transaction>> = _transactionList
+    var yearFlow: StateFlow<Int> = _yearFlow.asStateFlow()
+
+    private val _transactionList = MutableStateFlow(emptyList<Transaction>())
+    val transactionList: StateFlow<List<Transaction>> = _transactionList.asStateFlow()
 
     fun setTime(year: Int, month: Int) {
         _yearFlow.tryEmit(year)
@@ -53,12 +56,19 @@ class AnalysisFragmentViewModel @Inject constructor(
         analysisHelper.mapBalance.map { it.value }.sortedBy { it.time }
 
     fun getExpenseSumStr(): String = analysisHelper.expenseSum.toPlainString()
+
     fun getIncomeSumStr(): String = analysisHelper.incomeSum.toPlainString()
+
     fun getBalanceStr(): String = analysisHelper.balance.toPlainString()
 
-    fun getTimeExpenseList(): List<little.goose.account.data.models.TimeMoney> = analysisHelper.timeExpenseList
-    fun getTimeIncomeList(): List<little.goose.account.data.models.TimeMoney> = analysisHelper.timeIncomeList
-    fun getTimeBalanceList(): List<little.goose.account.data.models.TimeMoney> = analysisHelper.timeBalanceList
+    fun getTimeExpenseList(): List<little.goose.account.data.models.TimeMoney> =
+        analysisHelper.timeExpenseList
+
+    fun getTimeIncomeList(): List<little.goose.account.data.models.TimeMoney> =
+        analysisHelper.timeIncomeList
+
+    fun getTimeBalanceList(): List<little.goose.account.data.models.TimeMoney> =
+        analysisHelper.timeBalanceList
 
     fun updateTransactionListYear() {
         viewModelScope.launch(Dispatchers.Default) {
