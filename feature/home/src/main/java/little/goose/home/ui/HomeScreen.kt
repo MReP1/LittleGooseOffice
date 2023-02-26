@@ -19,10 +19,11 @@ import little.goose.common.constants.KEY_SCHEDULE
 import little.goose.design.system.component.MovableActionButton
 import little.goose.design.system.component.MovableActionButtonState
 import little.goose.home.data.*
+import little.goose.memorial.data.constants.KEY_MEMORIAL
 import little.goose.memorial.ui.MemorialActivity
+import little.goose.memorial.ui.MemorialDialogFragment
 import little.goose.memorial.ui.MemorialRoute
-import little.goose.memorial.ui.MemorialShowActivity
-import little.goose.note.ui.NoteBookRoute
+import little.goose.note.ui.NotebookRoute
 import little.goose.note.ui.note.NoteActivity
 import little.goose.schedule.ui.ScheduleDialogFragment
 import little.goose.schedule.ui.ScheduleRoute
@@ -69,7 +70,7 @@ fun HomeScreen(
                             Box(modifier = Modifier.fillMaxSize())
                         }
                         NOTEBOOK -> {
-                            NoteBookRoute(
+                            NotebookRoute(
                                 modifier = Modifier.fillMaxSize(),
                                 onNoteClick = {
                                     NoteActivity.openEdit(context, it)
@@ -92,7 +93,8 @@ fun HomeScreen(
                             MemorialRoute(
                                 modifier = Modifier.fillMaxSize(),
                                 onMemorialClick = {
-                                    MemorialShowActivity.open(context, it)
+                                    MemorialDialogFragment.newInstance(it)
+                                        .showNow(fragmentManager, KEY_MEMORIAL)
                                 }
                             )
                         }

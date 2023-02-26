@@ -29,8 +29,9 @@ import androidx.fragment.app.viewModels
 import dagger.hilt.android.AndroidEntryPoint
 import little.goose.common.constants.*
 import little.goose.common.dialog.DateTimePickerBottomDialog
-import little.goose.common.dialog.NormalDialogFragment
 import little.goose.common.utils.*
+import little.goose.design.system.component.dialog.DeleteDialog
+import little.goose.design.system.component.dialog.rememberDialogState
 import little.goose.design.system.theme.AccountTheme
 import little.goose.schedule.R
 import little.goose.schedule.data.entities.Schedule
@@ -52,13 +53,22 @@ private constructor() : DialogFragment() {
             setContent {
                 AccountTheme {
                     val state by viewModel.scheduleDialogState.collectAsState()
+                    val deleteDialogState = rememberDialogState()
                     ScheduleDialogScreen(
                         modifier = Modifier
                             .fillMaxWidth()
                             .wrapContentSize(),
                         state = state,
-                        onDeleteClick = ::delete,
+                        onDeleteClick = deleteDialogState::show,
                         onChangeTimeClick = ::changeTime
+                    )
+
+                    DeleteDialog(
+                        state = deleteDialogState,
+                        onConfirm = {
+                            viewModel.deleteSchedule()
+                            dismiss()
+                        }
                     )
 
                     val keyboard = LocalSoftwareKeyboardController.current
@@ -88,14 +98,6 @@ private constructor() : DialogFragment() {
                 }
             }
         }
-    }
-
-    private fun delete() {
-        NormalDialogFragment.Builder()
-            .setContent(getString(little.goose.common.R.string.confirm_delete))
-            .setConfirmCallback { viewModel.deleteSchedule() }
-            .showNow(parentFragmentManager)
-        dismiss()
     }
 
     private fun changeTime() {

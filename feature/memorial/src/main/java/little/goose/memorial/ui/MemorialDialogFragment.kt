@@ -27,16 +27,17 @@ import kotlinx.coroutines.NonCancellable
 import kotlinx.coroutines.launch
 import little.goose.common.constants.KEY_DELETE_ITEM
 import little.goose.common.constants.NOTIFY_DELETE_MEMORIAL
-import little.goose.common.dialog.NormalDialogFragment
 import little.goose.common.localBroadcastManager
 import little.goose.common.utils.UIUtils
 import little.goose.common.utils.parcelable
+import little.goose.design.system.component.dialog.DeleteDialog
+import little.goose.design.system.component.dialog.rememberDialogState
 import little.goose.design.system.theme.AccountTheme
+import little.goose.memorial.R
+import little.goose.memorial.data.constants.KEY_MEMORIAL
 import little.goose.memorial.data.entities.Memorial
 import little.goose.memorial.logic.MemorialRepository
 import little.goose.memorial.ui.widget.MemorialCard
-import little.goose.memorial.R
-import little.goose.memorial.data.constants.KEY_MEMORIAL
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -57,11 +58,16 @@ class MemorialDialogFragment : DialogFragment() {
         return ComposeView(requireContext()).apply {
             setContent {
                 AccountTheme {
+                    val deleteDialogState = rememberDialogState()
                     MaterialDialogScreen(
                         modifier = Modifier.fillMaxWidth(),
                         memorial = memorial,
-                        onDelete = ::delete,
+                        onDelete = deleteDialogState::show,
                         onEdit = ::edit
+                    )
+                    DeleteDialog(
+                        state = deleteDialogState,
+                        onConfirm = ::deleteMemorial
                     )
                 }
             }
@@ -73,20 +79,20 @@ class MemorialDialogFragment : DialogFragment() {
         initWindow()
     }
 
-    private fun edit() {
-        MemorialShowActivity.open(requireContext(), memorial)
-        dismiss()
+    private fun deleteMemorial() {
+        lifecycleScope.launch(NonCancellable) {
+            val intent = Intent(NOTIFY_DELETE_MEMORIAL).apply {
+                setPackage(`package`)
+                putExtra(KEY_DELETE_ITEM, memorial)
+            }
+            memorialRepository.deleteMemorial(memorial)
+            requireContext().localBroadcastManager.sendBroadcast(intent)
+            dismiss()
+        }
     }
 
-    private fun delete() {
-        NormalDialogFragment.Builder()
-            .setContent(requireContext().getString(little.goose.common.R.string.confirm_delete))
-            .setConfirmCallback {
-                lifecycleScope.launch(NonCancellable) {
-                    memorialRepository.deleteMemorial(memorial)
-                    sendDeleteBroadcast()
-                }
-            }.showNow(parentFragmentManager)
+    private fun edit() {
+        MemorialShowActivity.open(requireContext(), memorial)
         dismiss()
     }
 
@@ -97,14 +103,6 @@ class MemorialDialogFragment : DialogFragment() {
             height = ViewGroup.LayoutParams.WRAP_CONTENT
             gravity = Gravity.CENTER
         }
-    }
-
-    private fun sendDeleteBroadcast() {
-        val intent = Intent(NOTIFY_DELETE_MEMORIAL).apply {
-            setPackage(`package`)
-            putExtra(KEY_DELETE_ITEM, memorial)
-        }
-        requireContext().localBroadcastManager.sendBroadcast(intent)
     }
 
     companion object {

@@ -23,7 +23,7 @@ fun MemorialRoute(
     val viewModel: MemorialFragmentViewModel = hiltViewModel()
     val memorials by viewModel.memorials.collectAsState()
     val topMemorial by viewModel.topMemorial.collectAsState()
-    MemorialFragmentScreen(
+    MemorialScreen(
         modifier = modifier,
         memorials = memorials,
         topMemorial = topMemorial,
@@ -32,7 +32,7 @@ fun MemorialRoute(
 }
 
 @Composable
-private fun MemorialFragmentScreen(
+private fun MemorialScreen(
     modifier: Modifier,
     memorials: List<Memorial>,
     topMemorial: Memorial?,

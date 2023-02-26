@@ -5,6 +5,3 @@ interface ItemSelectCallback<T> {
     fun onItemLongClick(item: T)
 }
 
-interface ItemClickCallback<T> {
-    fun onItemClick(item: T)
-}
