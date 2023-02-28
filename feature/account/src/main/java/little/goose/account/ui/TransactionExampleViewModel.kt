@@ -74,7 +74,7 @@ class TransactionExampleViewModel @Inject constructor(
     }
 
     suspend fun undo() {
-        deleteTransaction.value?.let { accountRepository.addTransaction(it) }
+        deleteTransaction.value?.let { accountRepository.insertTransaction(it) }
         _deleteTransaction.value = null
     }
 

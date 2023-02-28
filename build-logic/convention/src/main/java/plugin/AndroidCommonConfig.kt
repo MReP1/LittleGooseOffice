@@ -13,8 +13,13 @@ fun CommonExtension<*, *, *, *>.configureKotlin() {
     kotlinOptions {
         jvmTarget = AndroidConfigConventions.JAVA_VERSION.toString()
         freeCompilerArgs = freeCompilerArgs.toMutableList().apply {
-            add("-opt-in=androidx.compose.material3.ExperimentalMaterial3Api")
-            add("-opt-in=androidx.compose.animation.ExperimentalAnimationApi")
+            addAll(
+                listOf(
+                    "-opt-in=kotlinx.coroutines.ExperimentalCoroutinesApi",
+                    "-opt-in=androidx.compose.animation.ExperimentalAnimationApi",
+                    "-opt-in=androidx.compose.material3.ExperimentalMaterial3Api"
+                )
+            )
             // open Kotlin context feature
             add("-Xcontext-receivers")
         }

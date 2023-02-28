@@ -3,18 +3,19 @@ package little.goose.account.ui.transaction.icon
 import little.goose.account.R
 import little.goose.account.data.constants.AccountConstant.EXPENSE
 import little.goose.account.data.constants.AccountConstant.INCOME
+import little.goose.account.data.models.TransactionIcon
 
 object TransactionIconHelper {
 
     //1.修改数量
     private const val iconCount = 23
 
-    val expenseIconList = ArrayList<little.goose.account.data.models.TransactionIcon>()
-    val incomeIconList = ArrayList<little.goose.account.data.models.TransactionIcon>()
+    val expenseIconList = ArrayList<TransactionIcon>()
+    val incomeIconList = ArrayList<TransactionIcon>()
 
     init {
         expenseIconList.add(
-            little.goose.account.data.models.TransactionIcon(
+            TransactionIcon(
                 0,
                 EXPENSE,
                 "其他",
@@ -22,7 +23,7 @@ object TransactionIconHelper {
             )
         )
         incomeIconList.add(
-            little.goose.account.data.models.TransactionIcon(
+            TransactionIcon(
                 0,
                 INCOME,
                 "其他",
@@ -32,12 +33,12 @@ object TransactionIconHelper {
         for (id in 1..iconCount) {
             when (val type = getIconType(id)) {
                 EXPENSE -> expenseIconList.add(
-                    little.goose.account.data.models.TransactionIcon(
+                    TransactionIcon(
                         id, type, getIconName(id), getIconPath(id)
                     )
                 )
                 INCOME -> incomeIconList.add(
-                    little.goose.account.data.models.TransactionIcon(
+                    TransactionIcon(
                         id, type, getIconName(id), getIconPath(id)
                     )
                 )

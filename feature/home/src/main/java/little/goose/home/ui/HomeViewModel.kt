@@ -68,7 +68,7 @@ class HomeViewModel @Inject constructor(
 
     fun addTransaction(transaction: Transaction) {
         viewModelScope.launch(Dispatchers.IO) {
-            accountRepository.addTransaction(transaction)
+            accountRepository.insertTransaction(transaction)
         }
     }
 

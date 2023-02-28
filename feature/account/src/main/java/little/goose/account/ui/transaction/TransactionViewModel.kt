@@ -24,6 +24,8 @@ class TransactionViewModel @Inject constructor(
     private val accountRepository: AccountRepository
 ) : ViewModel() {
 
+    private val moneyCalculator = MoneyCalculator()
+
     private val _moneyStateFlow = MutableStateFlow("0")
     val moneyStateFlow: StateFlow<String> = _moneyStateFlow
 
@@ -48,190 +50,16 @@ class TransactionViewModel @Inject constructor(
         )
     )
 
-    fun appendMoneyEnd(num: Char) {
-        if (money.toString() != "0") {
-            //如果不为0
-            if (money.contains('.')) {
-                //如果有小数点
-                val dotIndex = money.lastIndexOf('.')
-                if (money.lastIndex != dotIndex + 2) {
-                    //如果不在小数点后面两位
-                    money.append(num)
-                } else {
-                    if (money.indexOfOperation() > dotIndex) {
-                        //有一位小数，同时有操作符
-                        money.append(num)
-                    }
-                    //如果为操作符号
-                    if (num.isOperation()) {
-                        money.append(num)
-                    }
-                }
-            } else {
-                //如果没小数点
-                if (!num.isOperation() || !money.last().isOperation()) {
-                    //如果是操作符同时，最后一位是操作符
-                    money.append(num)
-                }
-            }
-        } else {
-            //如果为0
-            if (num.isOperation() || num == '.') {
-                //如果为操作符
-                money.append(num)
-            } else {
-                money[0] = num
-            }
-        }
-        updateData()
-        buttonCallback?.allButtonCallback()
+    fun appendMoneyEnd(num: Char) = moneyCalculator.appendMoneyEnd(num)
+
+    fun modifyOther(logic: MoneyCalculatorLogic) = moneyCalculator.modifyOther(logic)
+
+    fun done() {
+
     }
 
-    fun modifyOther(type: Int) {
-        when (type) {
-            DOT -> {
-                if (money.contains('.')) {
-                    val indexOfDot = money.indexOf('.')  //第一个小数点
-                    if (money.containsOperation()  //存在运算符
-                        && indexOfDot == money.lastIndexOf('.') //唯一一个小数点
-                        && indexOfDot < money.indexOfOperation() //这个小数点在运算符前面
-                    ) {
-                        appendMoneyEnd('.')
-                    }
-                } else {
-                    appendMoneyEnd('.')
-                }
-            }
-            PLUS -> preOperate(PLUS)
-            SUB -> preOperate(SUB)
-            BACKSPACE -> {
-                backSpace()
-                buttonCallback?.allButtonCallback()
-            }
-            AGAIN -> {
-                resetData()
-            }
-            DONE -> {
-                done()
-            }
-        }
-    }
+    fun again() {
 
-    private fun preOperate(operate: Int) {
-        if (money.containsOperation()) {
-            //包含运算符
-            operation(operate)
-        } else {
-            //不包含运算符
-            if (money.last() == '.') {
-                backSpace()
-            }
-            when (operate) {
-                PLUS -> appendMoneyEnd('+')
-                SUB -> appendMoneyEnd('-')
-            }
-        }
-    }
-
-    private fun operation(operate: Int) {
-        when (operate) {
-            PLUS -> {
-                done('+')
-            }
-            SUB -> {
-                done('-')
-            }
-        }
-    }
-
-    private fun done(append: Char? = null) {
-        operate()
-        append?.let {
-            appendMoneyEnd(it)
-        } ?: run {
-            buttonCallback?.doneCallback()
-        }
-        buttonCallback?.allButtonCallback()
-    }
-
-    private fun resetData() {
-        viewModelScope.launch(Dispatchers.Main) {
-            operate()
-            buttonCallback?.allButtonCallback()
-            if (listTransaction[0].money == BigDecimal(0)) {
-                buttonCallback?.againCallback(true)
-            } else {
-                val time = listTransaction.firstOrNull()?.time ?: Date()
-                updateDatabase {
-                    moneyCleanAndSet("0")
-                    listTransaction = listOf(
-                        Transaction(
-                            null, EXPENSE, BigDecimal("0"),
-                            TransactionIconHelper.getIconName(1), "", time, 1
-                        ),
-                        Transaction(
-                            null, INCOME, BigDecimal("0"),
-                            TransactionIconHelper.getIconName(11), "", time, 11
-                        )
-                    )
-                    type = ADD
-                    buttonCallback?.againCallback(false)
-                }
-            }
-        }
-    }
-
-    private fun operate() {
-        if (money.last() == '.') {
-            backSpace()
-        }
-        var plusIndex = money.indexOf('+')
-        if (plusIndex == money.lastIndex) {
-            backSpace()
-            plusIndex = -1
-        }
-        if (plusIndex > 0) {
-            val preNum = BigDecimal(money.substring(0, plusIndex))
-            val endNum = BigDecimal(money.substring(plusIndex + 1, money.length))
-            val sum = preNum + endNum
-            moneyCleanAndSet(sum)
-        }
-        var subIndex = money.lastIndexOf('-')
-        if (subIndex == money.lastIndex) {
-            backSpace()
-            subIndex = -1
-        }
-        if (subIndex > 0) {
-            val preNum = BigDecimal(money.substring(0, subIndex))
-            val endNum = BigDecimal(money.substring(subIndex + 1, money.length))
-            val sub = preNum - endNum
-            moneyCleanAndSet(sub)
-        }
-    }
-
-    fun moneyCleanAndSet(text: BigDecimal) {
-        money.clear()
-        money.append(text)
-        updateData()
-    }
-
-    fun moneyCleanAndSet(text: String) {
-        money.clear()
-        money.append(text)
-        updateData()
-    }
-
-    private fun backSpace() {
-        money.deleteCharAt(money.lastIndex)
-        if (money.isEmpty() || money.toString() == "-") {
-            moneyCleanAndSet("0")
-        } else {
-            updateData()
-        }
-    }
-
-    private fun updateData() {
-        _moneyStateFlow.value = money.toString()
     }
 
     //最后将数字1.00，1.0之类的后面无意义的小数去掉，只在数据中去掉，视图不显示。
@@ -247,35 +75,15 @@ class TransactionViewModel @Inject constructor(
         return money
     }
 
-    //字符是否操作符
-    private fun Char.isOperation() = this == '+' || this == '-'
-
-    //SB是否含有操作符
-    private fun StringBuilder.containsOperation() = this.contains('+') || this.lastIndexOf('-') > 0
-    fun isContainsOperation() = money.containsOperation()
-
-    //SB的操作符位置
-    private fun StringBuilder.indexOfOperation(): Int {
-        if (this.contains('+')) {
-            return this.indexOf('+')
-        } else {
-            val indexOfSub = this.lastIndexOf('-')
-            if (indexOfSub > 0) {
-                return indexOfSub
-            }
-        }
-        return -1
-    }
-
     fun updateDatabase(action: (() -> Unit)? = null) {
-        viewModelScope.launch(Dispatchers.IO + NonCancellable) {
+        viewModelScope.launch(NonCancellable) {
             when (type) {
                 ADD -> {
                     when (position) {
-                        EXPENSE -> accountRepository.addTransaction(
+                        EXPENSE -> accountRepository.insertTransaction(
                             listTransaction[position].getNegative()
                         )
-                        INCOME -> accountRepository.addTransaction(
+                        INCOME -> accountRepository.insertTransaction(
                             listTransaction[position].getAbs()
                         )
                     }
@@ -291,7 +99,7 @@ class TransactionViewModel @Inject constructor(
                     }
                 }
             }
-            launch(Dispatchers.Main) {
+            launch(Dispatchers.Main.immediate) {
                 action?.invoke()
             }
         }

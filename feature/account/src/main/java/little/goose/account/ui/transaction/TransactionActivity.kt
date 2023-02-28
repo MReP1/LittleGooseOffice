@@ -6,7 +6,10 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.activity.compose.setContent
 import androidx.appcompat.app.AppCompatActivity
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.ui.Modifier
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
@@ -29,6 +32,7 @@ import little.goose.common.utils.SnackbarUtils
 import little.goose.common.utils.parcelable
 import little.goose.common.utils.toChineseMonthDayTime
 import little.goose.common.utils.viewBinding
+import little.goose.design.system.theme.AccountTheme
 import java.math.BigDecimal
 import java.util.*
 
@@ -51,7 +55,10 @@ class TransactionActivity : AppCompatActivity(),
             context.startActivity(intent)
         }
 
-        fun openEdit(context: Context, transaction: little.goose.account.data.entities.Transaction) {
+        fun openEdit(
+            context: Context,
+            transaction: little.goose.account.data.entities.Transaction
+        ) {
             val intent = Intent(context, TransactionActivity::class.java).apply {
                 putExtra(TRANSACTION, transaction)
             }
@@ -61,11 +68,18 @@ class TransactionActivity : AppCompatActivity(),
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(binding.root)
-        initView()
-        initType()
-        updateDate()
-        updateDescription()
+        setContent {
+            AccountTheme {
+                TransactionScreen(
+                    modifier = Modifier.fillMaxSize()
+                )
+            }
+        }
+//        setContentView(binding.root)
+//        initView()
+//        initType()
+//        updateDate()
+//        updateDescription()
     }
 
     private fun initView() {
@@ -111,7 +125,7 @@ class TransactionActivity : AppCompatActivity(),
                         )
                     }
                 }
-                moneyCleanAndSet(it.money)
+//                moneyCleanAndSet(it.money)
             }
             if (it.type == INCOME) {
                 binding.transactionViewPager.setCurrentItem(1, false)
@@ -189,7 +203,10 @@ class TransactionActivity : AppCompatActivity(),
         //完成
         if (binding.buttonDone.text == getString(R.string.finish)) {
             if (viewModel.listTransaction[0].money == BigDecimal(0)) {
-                SnackbarUtils.showNormalMessage(binding.root, getString(R.string.money_cant_be_zero))
+                SnackbarUtils.showNormalMessage(
+                    binding.root,
+                    getString(R.string.money_cant_be_zero)
+                )
                 return
             }
             viewModel.updateDatabase()
@@ -198,12 +215,12 @@ class TransactionActivity : AppCompatActivity(),
     }
 
     override fun allButtonCallback() {
-        //刷新右下角按键
-        if (viewModel.isContainsOperation()) {
-            binding.buttonDone.text = "="
-        } else {
-            binding.buttonDone.text = getString(R.string.finish)
-        }
+//        //刷新右下角按键
+//        if (viewModel.isContainsOperation()) {
+//            binding.buttonDone.text = "="
+//        } else {
+//            binding.buttonDone.text = getString(R.string.finish)
+//        }
     }
 
     override fun againCallback(isZero: Boolean) {
@@ -256,12 +273,12 @@ class TransactionActivity : AppCompatActivity(),
                 numEight -> viewModel.appendMoneyEnd('8')
                 numNine -> viewModel.appendMoneyEnd('9')
                 numZero -> viewModel.appendMoneyEnd('0')
-                numDot -> viewModel.modifyOther(TransactionViewModel.DOT)
-                buttonPlus -> viewModel.modifyOther(TransactionViewModel.PLUS)
-                buttonSub -> viewModel.modifyOther(TransactionViewModel.SUB)
-                buttonBackspace -> viewModel.modifyOther(TransactionViewModel.BACKSPACE)
-                buttonDone -> viewModel.modifyOther(TransactionViewModel.DONE)
-                buttonAgain -> viewModel.modifyOther(TransactionViewModel.AGAIN)
+                numDot -> viewModel.modifyOther(MoneyCalculatorLogic.DOT)
+                buttonPlus -> viewModel.modifyOther(MoneyCalculatorLogic.Operator.PLUS)
+                buttonSub -> viewModel.modifyOther(MoneyCalculatorLogic.Operator.SUB)
+                buttonBackspace -> viewModel.modifyOther(MoneyCalculatorLogic.BACKSPACE)
+                buttonDone -> viewModel.done()
+                buttonAgain -> viewModel.again()
             }
         }
     }

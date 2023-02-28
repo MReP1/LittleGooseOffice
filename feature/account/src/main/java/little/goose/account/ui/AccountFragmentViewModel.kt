@@ -130,19 +130,19 @@ class AccountFragmentViewModel @Inject constructor(
     }
 
     fun addTransaction(transaction: Transaction) {
-        viewModelScope.launch(Dispatchers.IO + NonCancellable) {
-            accountRepository.addTransaction(transaction)
+        viewModelScope.launch(NonCancellable) {
+            accountRepository.insertTransaction(transaction)
         }
     }
 
     fun addTransactions(transactions: List<Transaction>) {
-        viewModelScope.launch(Dispatchers.IO + NonCancellable) {
+        viewModelScope.launch(NonCancellable) {
             accountRepository.addTransactions(transactions)
         }
     }
 
     fun deleteTransactions(transactions: List<Transaction>) {
-        viewModelScope.launch(Dispatchers.IO + NonCancellable) {
+        viewModelScope.launch(NonCancellable) {
             accountRepository.deleteTransactions(transactions)
         }
     }

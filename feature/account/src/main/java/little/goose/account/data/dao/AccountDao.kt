@@ -33,10 +33,10 @@ interface AccountDao {
     ): Flow<List<Transaction>>
 
     @Insert
-    suspend fun addTransaction(transaction: Transaction)
+    suspend fun insertTransaction(transaction: Transaction): Long
 
     @Insert
-    suspend fun addTransactions(transactionList: List<Transaction>)
+    suspend fun insertTransactions(transactionList: List<Transaction>)
 
     @Update
     suspend fun updateTransaction(transaction: Transaction)

@@ -27,11 +27,11 @@ class AccountRepository(
     //跑全库方法，不要乱用哦
     fun getAllTransactionFlow() = accountDao.getAllTransactionFlow()
 
-    suspend fun addTransaction(transaction: Transaction) =
-        accountDao.addTransaction(transaction)
+    suspend fun insertTransaction(transaction: Transaction) =
+        accountDao.insertTransaction(transaction)
 
     suspend fun addTransactions(transactions: List<Transaction>) =
-        accountDao.addTransactions(transactions)
+        accountDao.insertTransactions(transactions)
 
 
     suspend fun updateTransaction(transaction: Transaction) =

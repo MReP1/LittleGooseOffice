@@ -1,8 +1,10 @@
 package little.goose.account.data.models
 
+import androidx.annotation.DrawableRes
+
 data class TransactionIcon(
     val id: Int,
     val type: Int,
     val name: String,
-    val path: Int
+    @DrawableRes val path: Int
 )
