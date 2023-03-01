@@ -1,31 +1,31 @@
 package little.goose.design.system.component.dialog
 
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.Stable
-import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.Saver
 import androidx.compose.runtime.saveable.rememberSaveable
 
 @Composable
 fun rememberDialogState() = rememberSaveable(
     saver = Saver(
-        save = { it.isShow.value },
-        restore = { DialogState(mutableStateOf(it)) }
+        save = { it.isShow },
+        restore = { DialogState(it) }
     )
-) { DialogState() }
+) { DialogState(false) }
 
 @Stable
 class DialogState(
-    internal val isShow: MutableState<Boolean> = mutableStateOf(false)
+    _isShow: Boolean
 ) {
 
+    var isShow by mutableStateOf(_isShow)
+        private set
+
     fun show() {
-        isShow.value = true
+        isShow = true
     }
 
     fun dismiss() {
-        isShow.value = false
+        isShow = false
     }
 
 }

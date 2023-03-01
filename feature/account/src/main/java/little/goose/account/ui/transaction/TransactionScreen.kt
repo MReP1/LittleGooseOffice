@@ -22,7 +22,7 @@ fun TransactionScreen(
     modifier: Modifier = Modifier,
     onFinished: () -> Unit
 ) {
-    val viewModel: TransactionScreenViewModel = viewModel()
+    val viewModel: TransactionViewModel = viewModel()
     val scope = rememberCoroutineScope()
     val pagerState = rememberPagerState(0)
 

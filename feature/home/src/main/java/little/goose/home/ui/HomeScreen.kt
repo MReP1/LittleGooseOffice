@@ -17,7 +17,8 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import little.goose.account.ui.AccountRoute
 import little.goose.account.ui.transaction.TransactionActivity
-import little.goose.account.ui.transaction.TransactionDialogFragment
+import little.goose.account.ui.transaction.TransactionDialog
+import little.goose.account.ui.transaction.rememberTransactionDialogState
 import little.goose.common.constants.KEY_SCHEDULE
 import little.goose.design.system.component.MovableActionButton
 import little.goose.design.system.component.MovableActionButtonState
@@ -44,6 +45,8 @@ fun HomeScreen(
     val currentHomePage = remember(pagerState.currentPage) {
         HomePage.fromPageIndex(pagerState.currentPage)
     }
+
+    val transactionDialogState = rememberTransactionDialogState()
 
     Scaffold(
         modifier = modifier,
@@ -84,7 +87,7 @@ fun HomeScreen(
                             AccountRoute(
                                 modifier = Modifier.fillMaxSize(),
                                 onTransactionClick = {
-                                    TransactionDialogFragment.showNow(it, fragmentManager)
+                                    transactionDialogState.show(it)
                                 }
                             )
                         }
@@ -175,6 +178,15 @@ fun HomeScreen(
                     }
                 }
             )
+        }
+    )
+
+    TransactionDialog(
+        state = transactionDialogState,
+        onEditClick = {
+            TransactionActivity.openEdit(context, it)
+        }, onDeleteClick = {
+            // TODO
         }
     )
 
