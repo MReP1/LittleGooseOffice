@@ -71,7 +71,8 @@ class TransactionActivity : AppCompatActivity(),
         setContent {
             AccountTheme {
                 TransactionScreen(
-                    modifier = Modifier.fillMaxSize()
+                    modifier = Modifier.fillMaxSize(),
+                    onFinished = ::finish
                 )
             }
         }
@@ -135,7 +136,7 @@ class TransactionActivity : AppCompatActivity(),
             if (time > 0L) {
                 val date = Date(time)
                 viewModel.listTransaction.forEach {
-                    it.time = date
+//                    it.time = date
                 }
             }
         }
@@ -191,8 +192,8 @@ class TransactionActivity : AppCompatActivity(),
                     .setInputText(viewModel.listTransaction[0].description)
                     .setConfirmCallback {
                         text = it
-                        viewModel.listTransaction[0].description = it
-                        viewModel.listTransaction[1].description = it
+//                        viewModel.listTransaction[0].description = it
+//                        viewModel.listTransaction[1].description = it
                     }
                     .showNow(supportFragmentManager)
             }
@@ -287,8 +288,8 @@ class TransactionActivity : AppCompatActivity(),
         DateTimePickerBottomDialog.Builder()
             .setTime(viewModel.listTransaction[0].time)
             .setConfirmAction {
-                viewModel.listTransaction[0].time = it
-                viewModel.listTransaction[1].time = it
+//                viewModel.listTransaction[0].time = it
+//                viewModel.listTransaction[1].time = it
                 updateDate()
             }
             .showNow(supportFragmentManager)
@@ -332,8 +333,8 @@ class TransactionActivity : AppCompatActivity(),
                 adapter = IconRcvAdapter(iconList, object : OnIconClickListener {
                     override fun onIconClick(icon: little.goose.account.data.models.TransactionIcon) {
                         viewModel.listTransaction[pos].apply {
-                            icon_id = icon.id
-                            content = icon.name
+//                            icon_id = icon.id
+//                            content = icon.name
                         }
                         binding.itemTransaction.setIcon(icon)
                         viewModel.setIconSelectedId(icon.id, icon.type)
@@ -352,7 +353,7 @@ class TransactionActivity : AppCompatActivity(),
                     viewModel.moneyStateFlow.collect {
                         if (!it.contains('+') && it.lastIndexOf('-') <= 0 && it.last() != '.') {
                             val money = viewModel.filtrateZero(it)
-                            viewModel.listTransaction[pos].money = BigDecimal(money)
+//                            viewModel.listTransaction[pos].money = BigDecimal(money)
                         }
                         binding.itemTransaction.setMoney(it)
                     }

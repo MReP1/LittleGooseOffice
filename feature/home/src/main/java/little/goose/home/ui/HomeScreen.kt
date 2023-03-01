@@ -17,6 +17,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import little.goose.account.ui.AccountRoute
 import little.goose.account.ui.transaction.TransactionActivity
+import little.goose.account.ui.transaction.TransactionDialogFragment
 import little.goose.common.constants.KEY_SCHEDULE
 import little.goose.design.system.component.MovableActionButton
 import little.goose.design.system.component.MovableActionButtonState
@@ -83,7 +84,7 @@ fun HomeScreen(
                             AccountRoute(
                                 modifier = Modifier.fillMaxSize(),
                                 onTransactionClick = {
-                                    TransactionActivity.openEdit(context, it)
+                                    TransactionDialogFragment.showNow(it, fragmentManager)
                                 }
                             )
                         }

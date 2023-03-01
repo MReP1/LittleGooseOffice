@@ -11,14 +11,13 @@ private val calendar by lazy { Calendar.getInstance() }
 fun Transaction.getNegative(): Transaction {
     val signal = this.money.signum()
     if (signal >= 0) {
-        this.money = this.money.negate()
+        return this.copy(money = this.money.negate())
     }
     return this
 }
 
 fun Transaction.getAbs(): Transaction {
-    this.money = this.money.abs()
-    return this
+    return this.copy(money = this.money.abs())
 }
 
 fun List<Transaction>.getMapDayMoney(): HashMap<Int, BigDecimal> {

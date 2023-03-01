@@ -14,22 +14,6 @@ object TransactionIconHelper {
     val incomeIconList = ArrayList<TransactionIcon>()
 
     init {
-        expenseIconList.add(
-            TransactionIcon(
-                0,
-                EXPENSE,
-                "其他",
-                R.drawable.icon_money
-            )
-        )
-        incomeIconList.add(
-            TransactionIcon(
-                0,
-                INCOME,
-                "其他",
-                R.drawable.icon_money
-            )
-        )
         for (id in 1..iconCount) {
             when (val type = getIconType(id)) {
                 EXPENSE -> expenseIconList.add(

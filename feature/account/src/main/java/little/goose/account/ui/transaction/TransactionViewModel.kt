@@ -24,7 +24,7 @@ class TransactionViewModel @Inject constructor(
     private val accountRepository: AccountRepository
 ) : ViewModel() {
 
-    private val moneyCalculator = MoneyCalculator()
+    private val moneyCalculator = MoneyCalculator(BigDecimal(0))
 
     private val _moneyStateFlow = MutableStateFlow("0")
     val moneyStateFlow: StateFlow<String> = _moneyStateFlow

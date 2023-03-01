@@ -14,7 +14,8 @@ fun Calculator(
     onNumClick: (num: Int) -> Unit,
     onAgainClick: () -> Unit,
     onDoneClick: () -> Unit,
-    onOperatorClick: (MoneyCalculatorLogic) -> Unit
+    onOperatorClick: (MoneyCalculatorLogic) -> Unit,
+    isContainOperator: Boolean
 ) {
     Column(modifier = modifier) {
         Row(
@@ -133,8 +134,20 @@ fun Calculator(
             Cell(modifier = Modifier.weight(1F), onAgainClick) {
                 Text(text = "下一笔", style = MaterialTheme.typography.titleMedium)
             }
-            Cell(modifier = Modifier.weight(1F), onDoneClick) {
-                Text(text = "完成", style = MaterialTheme.typography.titleMedium)
+            Cell(
+                modifier = Modifier.weight(1F),
+                onClick = {
+                    if (isContainOperator) {
+                        onOperatorClick(MoneyCalculatorLogic.Operator.RESULT)
+                    } else {
+                        onDoneClick()
+                    }
+                }
+            ) {
+                Text(
+                    text = if (isContainOperator) "=" else "完成",
+                    style = MaterialTheme.typography.titleMedium
+                )
             }
         }
     }

@@ -1,10 +1,7 @@
 package little.goose.account.ui.transaction
 
-import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asSharedFlow
-import little.goose.common.utils.log
+import androidx.compose.runtime.Stable
+import kotlinx.coroutines.flow.*
 import java.math.BigDecimal
 
 sealed class MoneyCalculatorLogic {
@@ -14,25 +11,23 @@ sealed class MoneyCalculatorLogic {
     sealed class Operator : MoneyCalculatorLogic() {
         object PLUS : Operator()
         object SUB : Operator()
+        object RESULT : Operator()
     }
 }
 
-class MoneyCalculator {
+class MoneyCalculator(
+    initMoney: BigDecimal
+) {
 
-    sealed class MoneyCalculatorEvent {
-        data class ClickEvent(val hadOperation: Boolean) : MoneyCalculatorEvent()
-    }
+    private val moneySb = StringBuilder(initMoney.toPlainString())
 
-    private val _money = MutableStateFlow("0")
+    private val _money = MutableStateFlow(initMoney.toPlainString())
     val money: StateFlow<String> = _money
 
-    private val moneySb = StringBuilder("0")
-
-    private val _operateEvent = MutableSharedFlow<MoneyCalculatorEvent>()
-    val operateEvent = _operateEvent.asSharedFlow()
+    private val _isContainOperator = MutableStateFlow(false)
+    val isContainOperator = _isContainOperator.asStateFlow()
 
     fun appendMoneyEnd(num: Char) {
-        log(num)
         if (moneySb.toString() != "0") {
             //如果不为0
             if (moneySb.contains('.')) {
@@ -68,14 +63,14 @@ class MoneyCalculator {
             }
         }
         updateData()
-        _operateEvent.tryEmit(MoneyCalculatorEvent.ClickEvent(moneySb.containsOperation()))
+        _isContainOperator.value = moneySb.containsOperation()
     }
 
     fun modifyOther(logic: MoneyCalculatorLogic) {
         when (logic) {
             MoneyCalculatorLogic.BACKSPACE -> {
                 backSpace()
-                _operateEvent.tryEmit(MoneyCalculatorEvent.ClickEvent(moneySb.containsOperation()))
+                _isContainOperator.value = moneySb.containsOperation()
             }
             MoneyCalculatorLogic.DOT -> {
                 if (moneySb.contains('.')) {
@@ -96,6 +91,10 @@ class MoneyCalculator {
             MoneyCalculatorLogic.Operator.SUB -> {
                 preOperate(MoneyCalculatorLogic.Operator.SUB)
             }
+            MoneyCalculatorLogic.Operator.RESULT -> {
+                operate()
+                _isContainOperator.value = moneySb.containsOperation()
+            }
         }
     }
 
@@ -111,6 +110,7 @@ class MoneyCalculator {
             when (operate) {
                 MoneyCalculatorLogic.Operator.PLUS -> appendMoneyEnd('+')
                 MoneyCalculatorLogic.Operator.SUB -> appendMoneyEnd('-')
+                MoneyCalculatorLogic.Operator.RESULT -> operate()
             }
         }
     }
@@ -160,13 +160,16 @@ class MoneyCalculator {
             MoneyCalculatorLogic.Operator.SUB -> {
                 operate('-')
             }
+            MoneyCalculatorLogic.Operator.RESULT -> {
+                operate()
+            }
         }
     }
 
     private fun operate(append: Char) {
         operate()
         appendMoneyEnd(append)
-        _operateEvent.tryEmit(MoneyCalculatorEvent.ClickEvent(moneySb.containsOperation()))
+        _isContainOperator.value = moneySb.containsOperation()
     }
 
     private fun moneyCleanAndSet(text: BigDecimal) {

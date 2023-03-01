@@ -16,7 +16,6 @@ import little.goose.account.data.entities.Transaction
 import little.goose.account.ui.transaction.MoneyCalculator
 import little.goose.account.ui.transaction.icon.TransactionIconHelper
 import little.goose.common.utils.toChineseYearMonDayWeek
-import little.goose.common.utils.toSignString
 import java.math.BigDecimal
 
 @Composable
@@ -29,8 +28,11 @@ internal fun TransactionEditSurface(
 ) {
     val context = LocalContext.current
 
-    val moneyCalculator = remember { MoneyCalculator() }
+    val moneyCalculator = remember { MoneyCalculator(transaction.money) }
     val currentTransaction by rememberUpdatedState(newValue = transaction)
+    val isContainOperator by moneyCalculator.isContainOperator.collectAsState()
+    val money by moneyCalculator.money.collectAsState()
+
     LaunchedEffect(moneyCalculator) {
         moneyCalculator.money.collect { moneyStr ->
             runCatching {
@@ -54,13 +56,15 @@ internal fun TransactionEditSurface(
             ) {
                 Icon(
                     modifier = Modifier.size(32.dp),
-                    painter = painterResource(id = TransactionIconHelper.getIconPath(transaction.icon_id)),
+                    painter = painterResource(
+                        id = TransactionIconHelper.getIconPath(transaction.icon_id)
+                    ),
                     contentDescription = transaction.content
                 )
                 Spacer(modifier = Modifier.width(12.dp))
                 Text(text = transaction.content, modifier = Modifier.weight(1F))
                 Spacer(modifier = Modifier.weight(1f))
-                Text(text = transaction.money.toSignString())
+                Text(text = money)
             }
         }
         Row(
@@ -92,7 +96,9 @@ internal fun TransactionEditSurface(
 
         Calculator(
             modifier = Modifier.fillMaxWidth(),
-            onNumClick = { moneyCalculator.appendMoneyEnd(it.digitToChar()) },
+            onNumClick = {
+                moneyCalculator.appendMoneyEnd(it.digitToChar())
+            },
             onAgainClick = {
                 moneyCalculator.operate()
                 onAgainClick(transaction.copy(money = BigDecimal(moneyCalculator.money.value)))
@@ -101,7 +107,8 @@ internal fun TransactionEditSurface(
                 moneyCalculator.operate()
                 onDoneClick(transaction.copy(money = BigDecimal(moneyCalculator.money.value)))
             },
-            onOperatorClick = moneyCalculator::modifyOther
+            onOperatorClick = moneyCalculator::modifyOther,
+            isContainOperator = isContainOperator
         )
     }
 }

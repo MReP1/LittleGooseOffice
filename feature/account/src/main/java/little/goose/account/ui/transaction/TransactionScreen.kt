@@ -10,6 +10,8 @@ import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.rememberPagerState
 import kotlinx.coroutines.launch
+import little.goose.account.data.constants.AccountConstant.EXPENSE
+import little.goose.account.data.constants.AccountConstant.INCOME
 import little.goose.account.ui.component.IconsBoard
 import little.goose.account.ui.component.TransactionEditSurface
 import little.goose.account.ui.transaction.icon.TransactionIconHelper
@@ -17,13 +19,50 @@ import little.goose.account.ui.transaction.icon.TransactionIconHelper
 @OptIn(ExperimentalPagerApi::class)
 @Composable
 fun TransactionScreen(
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    onFinished: () -> Unit
 ) {
     val viewModel: TransactionScreenViewModel = viewModel()
     val scope = rememberCoroutineScope()
     val pagerState = rememberPagerState(0)
 
     val transaction by viewModel.transaction.collectAsState()
+
+    var expenseSelectedIcon by remember {
+        mutableStateOf(
+            if (transaction.type == EXPENSE)
+                TransactionIconHelper.expenseIconList.find { it.id == transaction.icon_id }!!
+            else TransactionIconHelper.expenseIconList.first()
+        )
+    }
+    var incomeSelectedIcon by remember {
+        mutableStateOf(
+            if (transaction.type == INCOME)
+                TransactionIconHelper.incomeIconList.find { it.id == transaction.icon_id }!!
+            else TransactionIconHelper.incomeIconList.first()
+        )
+    }
+
+    LaunchedEffect(pagerState) {
+        snapshotFlow { pagerState.currentPage }.collect {
+            if (it == 0) {
+                viewModel.setTransaction(
+                    transaction.copy(
+                        content = expenseSelectedIcon.name,
+                        icon_id = expenseSelectedIcon.id
+                    )
+                )
+            } else {
+                viewModel.setTransaction(
+                    transaction.copy(
+                        content = incomeSelectedIcon.name,
+                        icon_id = incomeSelectedIcon.id
+                    )
+                )
+            }
+        }
+    }
+
     Scaffold(
         modifier = modifier,
         topBar = {
@@ -68,34 +107,28 @@ fun TransactionScreen(
                 state = pagerState
             ) { page ->
                 if (page == 0) {
-                    var selectedIcon by remember {
-                        mutableStateOf(TransactionIconHelper.expenseIconList.first())
-                    }
                     IconsBoard(
                         modifier = Modifier.fillMaxSize(),
                         icons = TransactionIconHelper.expenseIconList,
                         onIconClick = { icon ->
-                            selectedIcon = icon
+                            expenseSelectedIcon = icon
                             viewModel.setTransaction(
                                 transaction.copy(icon_id = icon.id, content = icon.name)
                             )
                         },
-                        selectedIcon = selectedIcon
+                        selectedIcon = expenseSelectedIcon
                     )
                 } else {
-                    var selectedIcon by remember {
-                        mutableStateOf(TransactionIconHelper.incomeIconList.first())
-                    }
                     IconsBoard(
                         modifier = Modifier.fillMaxSize(),
                         icons = TransactionIconHelper.incomeIconList,
                         onIconClick = { icon ->
-                            selectedIcon = icon
+                            incomeSelectedIcon = icon
                             viewModel.setTransaction(
                                 transaction.copy(icon_id = icon.id, content = icon.name)
                             )
                         },
-                        selectedIcon = selectedIcon
+                        selectedIcon = incomeSelectedIcon
                     )
                 }
             }
@@ -110,6 +143,7 @@ fun TransactionScreen(
                 },
                 onDoneClick = {
                     viewModel.writeDatabase(it)
+                    onFinished()
                 }
             )
         }
