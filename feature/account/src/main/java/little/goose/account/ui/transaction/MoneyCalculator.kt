@@ -1,7 +1,8 @@
 package little.goose.account.ui.transaction
 
-import androidx.compose.runtime.Stable
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import java.math.BigDecimal
 
 sealed class MoneyCalculatorLogic {
