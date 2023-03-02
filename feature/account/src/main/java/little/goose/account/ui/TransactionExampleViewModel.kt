@@ -15,9 +15,7 @@ import little.goose.common.constants.KEY_MONEY_TYPE
 import little.goose.common.constants.KEY_TIME
 import little.goose.common.constants.KEY_TIME_TYPE
 import little.goose.common.dialog.time.TimeType
-import little.goose.common.utils.getDate
-import little.goose.common.utils.getMonth
-import little.goose.common.utils.getYear
+import little.goose.common.utils.*
 import java.util.*
 import javax.inject.Inject
 
@@ -37,6 +35,13 @@ class TransactionExampleViewModel @Inject constructor(
     private val content: String? = savedStateHandle[KEY_CONTENT]
     private val timeType: TimeType = savedStateHandle[KEY_TIME_TYPE]!!
     private val moneyType: MoneyType = savedStateHandle[KEY_MONEY_TYPE]!!
+
+    val title = when (timeType) {
+        TimeType.DATE -> time.toChineseYearMonthDay()
+        TimeType.YEAR_MONTH -> time.toChineseYearMonth()
+        TimeType.YEAR -> time.toChineseYear()
+        else -> throw IllegalArgumentException()
+    }
 
     private val _event = MutableSharedFlow<Event>()
     val event = _event.asSharedFlow()

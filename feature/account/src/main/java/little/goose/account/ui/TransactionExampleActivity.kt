@@ -29,7 +29,6 @@ import little.goose.common.constants.KEY_MONEY_TYPE
 import little.goose.common.constants.KEY_TIME
 import little.goose.common.constants.KEY_TIME_TYPE
 import little.goose.common.dialog.time.TimeType
-import little.goose.common.utils.*
 import little.goose.design.system.component.dialog.DeleteDialog
 import little.goose.design.system.component.dialog.rememberDialogState
 import little.goose.design.system.theme.AccountTheme
@@ -43,15 +42,6 @@ class TransactionExampleActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-            val title = remember {
-                val time = intent.serializable<Date>(KEY_TIME)!!
-                when (intent.parcelable<TimeType>(KEY_TIME_TYPE)!!) {
-                    TimeType.DATE -> time.toChineseYearMonthDay()
-                    TimeType.YEAR_MONTH -> time.toChineseYearMonth()
-                    TimeType.YEAR -> time.toChineseYear()
-                    else -> throw IllegalArgumentException()
-                }
-            }
             AccountTheme {
                 val viewModel = hiltViewModel<TransactionExampleViewModel>()
                 val transactions by viewModel.transactions.collectAsState()
@@ -62,10 +52,8 @@ class TransactionExampleActivity : AppCompatActivity() {
 
                 TransactionTimeScreen(
                     modifier = Modifier.fillMaxSize(),
-                    title = title,
-                    onTransactionClick = { transaction ->
-                        transactionDialogState.show(transaction)
-                    },
+                    title = viewModel.title,
+                    onTransactionClick = transactionDialogState::show,
                     snackbarHostState = snackbarHostState,
                     snackbarAction = {
                         deletingTransaction?.let {
@@ -89,7 +77,10 @@ class TransactionExampleActivity : AppCompatActivity() {
 
                 DeleteDialog(
                     state = deleteDialogState,
-                    onCancel = deleteDialogState::dismiss,
+                    onCancel = {
+                        deleteDialogState.dismiss()
+                        deletingTransaction = null
+                    },
                     onConfirm = {
                         deletingTransaction?.let {
                             viewModel.deleteTransaction(it)
