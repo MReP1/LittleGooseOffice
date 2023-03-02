@@ -3,10 +3,12 @@ package little.goose.account.ui.analysis
 import android.os.Bundle
 import android.view.View
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayoutMediator
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import little.goose.account.R
@@ -22,6 +24,7 @@ import little.goose.account.ui.widget.YearSelectorCardView
 import little.goose.common.utils.launchAndRepeatWithViewLifeCycle
 import little.goose.common.utils.viewBinding
 
+@AndroidEntryPoint
 class AccountAnalysisFragment : Fragment(R.layout.fragment_account_analysis) {
 
     private val binding by viewBinding(FragmentAccountAnalysisBinding::bind)
@@ -33,9 +36,7 @@ class AccountAnalysisFragment : Fragment(R.layout.fragment_account_analysis) {
     private lateinit var expenseTabView: ItemTabTransactionTypeView
     private lateinit var balanceTabView: ItemTabTransactionTypeView
 
-    private val viewModel by lazy(LazyThreadSafetyMode.NONE) {
-        ViewModelProvider(this)[AnalysisFragmentViewModel::class.java]
-    }
+    private val viewModel: AnalysisFragmentViewModel by viewModels()
 
     private var connector: TabLayoutMediator? = null
 

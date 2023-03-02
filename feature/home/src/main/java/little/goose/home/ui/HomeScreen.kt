@@ -16,6 +16,7 @@ import com.google.accompanist.pager.rememberPagerState
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import little.goose.account.ui.AccountRoute
+import little.goose.account.ui.analysis.AccountAnalysisActivity
 import little.goose.account.ui.transaction.TransactionActivity
 import little.goose.account.ui.transaction.TransactionDialog
 import little.goose.account.ui.transaction.rememberTransactionDialogState
@@ -139,13 +140,23 @@ fun HomeScreen(
                                 }
                                 else -> {}
                             }
-
                         },
                         topSubButtonContent = {
 
                         },
                         onTopSubButtonClick = {
-
+                            when (currentHomePage) {
+                                HomePage.Notebook -> {
+                                }
+                                HomePage.ACCOUNT -> {
+                                    AccountAnalysisActivity.open(context)
+                                }
+                                HomePage.Schedule -> {
+                                }
+                                HomePage.Memorial -> {
+                                }
+                                else -> {}
+                            }
                         },
                         bottomSubButtonContent = {
 

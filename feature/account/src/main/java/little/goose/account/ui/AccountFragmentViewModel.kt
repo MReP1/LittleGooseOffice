@@ -12,7 +12,7 @@ import little.goose.account.data.entities.Transaction
 import little.goose.account.logic.AccountRepository
 import little.goose.account.ui.component.AccountTitleState
 import little.goose.account.ui.component.MonthSelectorState
-import little.goose.account.ui.transaction.insertTime
+import little.goose.account.utils.insertTime
 import little.goose.common.receiver.DeleteItemBroadcastReceiver
 import little.goose.common.utils.getMonth
 import little.goose.common.utils.getYear
@@ -97,12 +97,6 @@ class AccountFragmentViewModel @Inject constructor(
         SharingStarted.WhileSubscribed(5000),
         emptyList()
     )
-
-    val deleteReceiver = DeleteItemBroadcastReceiver<Transaction>()
-
-    suspend fun getTransactionByYearAndMonthFlow(year: Int, month: Int) =
-        accountRepository.getTransactionByYearMonthFlow(year, month).stateIn(viewModelScope)
-
 
     val accountTitleState = combine(
         curMonthExpenseSum, curMonthIncomeSum, curMonthBalance,
