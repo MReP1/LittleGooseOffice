@@ -77,7 +77,7 @@ class HomeWidgetRcvAdapter(
             )
         )
         holder.itemView.setOnClickListener {
-            little.goose.account.ui.transaction.TransactionDialogFragment.showNow(transaction, fragmentManager)
+            // TODO
         }
     }
 

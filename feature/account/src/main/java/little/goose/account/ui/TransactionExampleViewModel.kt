@@ -3,15 +3,18 @@ package little.goose.account.ui
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.SavedStateHandle
+import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.launch
 import little.goose.account.data.constants.MoneyType
+import little.goose.account.data.entities.Transaction
 import little.goose.account.logic.AccountRepository
-import little.goose.common.constants.*
+import little.goose.common.constants.KEY_CONTENT
+import little.goose.common.constants.KEY_MONEY_TYPE
+import little.goose.common.constants.KEY_TIME
+import little.goose.common.constants.KEY_TIME_TYPE
 import little.goose.common.dialog.time.TimeType
-import little.goose.common.receiver.DeleteItemBroadcastReceiver
 import little.goose.common.utils.getDate
 import little.goose.common.utils.getMonth
 import little.goose.common.utils.getYear
@@ -25,15 +28,29 @@ class TransactionExampleViewModel @Inject constructor(
     private val accountRepository: AccountRepository
 ) : AndroidViewModel(application) {
 
+    sealed class Event {
+        data class DeleteTransaction(val transaction: Transaction) : Event()
+        data class InsertTransaction(val transaction: Transaction) : Event()
+    }
+
     private val time: Date = savedStateHandle[KEY_TIME]!!
     private val content: String? = savedStateHandle[KEY_CONTENT]
     private val timeType: TimeType = savedStateHandle[KEY_TIME_TYPE]!!
     private val moneyType: MoneyType = savedStateHandle[KEY_MONEY_TYPE]!!
 
-    val transactions: Flow<List<little.goose.account.data.entities.Transaction>> = run {
+    private val _event = MutableSharedFlow<Event>()
+    val event = _event.asSharedFlow()
+
+    val transactions = getTransactionFlow().stateIn(
+        viewModelScope,
+        SharingStarted.WhileSubscribed(5000),
+        emptyList()
+    )
+
+    private fun getTransactionFlow(): Flow<List<Transaction>> {
         val calendar = Calendar.getInstance()
         calendar.time = time
-        if (content == null) {
+        return if (content == null) {
             when (timeType) {
                 TimeType.DATE -> accountRepository.getTransactionByDateFlow(
                     calendar.getYear(), calendar.getMonth(), calendar.getDate(), moneyType
@@ -64,22 +81,17 @@ class TransactionExampleViewModel @Inject constructor(
         }
     }
 
-    private val _deleteTransaction = MutableStateFlow<little.goose.account.data.entities.Transaction?>(null)
-    val deleteTransaction = _deleteTransaction.asStateFlow()
-
-    private val deleteReceiver = DeleteItemBroadcastReceiver<little.goose.account.data.entities.Transaction>().apply {
-        registerForever(application, NOTIFY_DELETE_TRANSACTION) { _, transaction ->
-            _deleteTransaction.value = transaction
+    fun deleteTransaction(transaction: Transaction) {
+        viewModelScope.launch {
+            accountRepository.deleteTransaction(transaction)
+            _event.emit(Event.DeleteTransaction(transaction))
         }
     }
 
-    suspend fun undo() {
-        deleteTransaction.value?.let { accountRepository.insertTransaction(it) }
-        _deleteTransaction.value = null
-    }
-
-    override fun onCleared() {
-        super.onCleared()
-        deleteReceiver.unregisterReceiver(getApplication())
+    fun insertTransaction(transaction: Transaction) {
+        viewModelScope.launch {
+            accountRepository.insertTransaction(transaction)
+            _event.emit(Event.InsertTransaction(transaction))
+        }
     }
 }

@@ -6,7 +6,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import little.goose.account.ui.transaction.MoneyCalculatorLogic
+import little.goose.account.logic.MoneyCalculatorLogic
 
 @Composable
 fun Calculator(

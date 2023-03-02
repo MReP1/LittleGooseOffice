@@ -1,4 +1,4 @@
-package little.goose.account.ui.transaction
+package little.goose.account.logic
 
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow

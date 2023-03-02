@@ -6,39 +6,36 @@ import android.os.Bundle
 import android.os.Parcelable
 import androidx.activity.compose.setContent
 import androidx.appcompat.app.AppCompatActivity
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import little.goose.account.data.constants.MoneyType
-import little.goose.common.dialog.time.TimeType
-import little.goose.account.ui.transaction.TransactionDialogFragment
-import little.goose.account.ui.component.TransactionCard
+import little.goose.account.data.entities.Transaction
+import little.goose.account.ui.component.TransactionColumn
+import little.goose.account.ui.transaction.TransactionActivity
+import little.goose.account.ui.transaction.TransactionDialog
+import little.goose.account.ui.transaction.rememberTransactionDialogState
 import little.goose.common.constants.KEY_CONTENT
 import little.goose.common.constants.KEY_MONEY_TYPE
 import little.goose.common.constants.KEY_TIME
 import little.goose.common.constants.KEY_TIME_TYPE
+import little.goose.common.dialog.time.TimeType
+import little.goose.common.utils.*
+import little.goose.design.system.component.dialog.DeleteDialog
+import little.goose.design.system.component.dialog.rememberDialogState
 import little.goose.design.system.theme.AccountTheme
 import little.goose.design.system.theme.Red200
-import little.goose.common.utils.*
 import java.io.Serializable
 import java.util.*
-import little.goose.account.data.entities.Transaction
-import little.goose.account.ui.component.TransactionColumn
 
 @AndroidEntryPoint
 class TransactionExampleActivity : AppCompatActivity() {
@@ -56,16 +53,75 @@ class TransactionExampleActivity : AppCompatActivity() {
                 }
             }
             AccountTheme {
+                val viewModel = hiltViewModel<TransactionExampleViewModel>()
+                val transactions by viewModel.transactions.collectAsState()
+                val transactionDialogState = rememberTransactionDialogState()
+                val deleteDialogState = rememberDialogState()
+                val snackbarHostState = remember { SnackbarHostState() }
+                var deletingTransaction: Transaction? by remember { mutableStateOf(null) }
+
                 TransactionTimeScreen(
                     modifier = Modifier.fillMaxSize(),
                     title = title,
                     onTransactionClick = { transaction ->
-                        TransactionDialogFragment.showNow(transaction, supportFragmentManager)
+                        transactionDialogState.show(transaction)
                     },
-                    onBack = {
-                        finish()
+                    snackbarHostState = snackbarHostState,
+                    snackbarAction = {
+                        deletingTransaction?.let {
+                            viewModel.insertTransaction(it)
+                        }
+                    },
+                    transactions = transactions,
+                    onBack = ::finish
+                )
+
+                TransactionDialog(
+                    state = transactionDialogState,
+                    onEditClick = {
+                        TransactionActivity.openEdit(this, it)
+                    },
+                    onDeleteClick = {
+                        deletingTransaction = it
+                        deleteDialogState.show()
                     }
                 )
+
+                DeleteDialog(
+                    state = deleteDialogState,
+                    onCancel = deleteDialogState::dismiss,
+                    onConfirm = {
+                        deletingTransaction?.let {
+                            viewModel.deleteTransaction(it)
+                        }
+                    }
+                )
+
+                LaunchedEffect(viewModel.event) {
+                    viewModel.event.collect { event ->
+                        when (event) {
+                            is TransactionExampleViewModel.Event.DeleteTransaction -> {
+                                launch {
+                                    snackbarHostState.showSnackbar(
+                                        message = getString(little.goose.common.R.string.deleted),
+                                        actionLabel = getString(little.goose.common.R.string.undo),
+                                        withDismissAction = true,
+                                        duration = SnackbarDuration.Indefinite
+                                    )
+                                }
+                                launch {
+                                    delay(2000L)
+                                    snackbarHostState.currentSnackbarData?.dismiss()
+                                    deletingTransaction = null
+                                }
+                            }
+                            is TransactionExampleViewModel.Event.InsertTransaction -> {
+                                snackbarHostState.currentSnackbarData?.dismiss()
+                                deletingTransaction = null
+                            }
+                        }
+                    }
+                }
             }
         }
     }
@@ -93,19 +149,12 @@ class TransactionExampleActivity : AppCompatActivity() {
 private fun TransactionTimeScreen(
     modifier: Modifier = Modifier,
     title: String,
+    transactions: List<Transaction>,
+    snackbarHostState: SnackbarHostState,
+    snackbarAction: () -> Unit,
     onTransactionClick: (Transaction) -> Unit,
     onBack: () -> Unit
 ) {
-    val scope = rememberCoroutineScope()
-    val context = LocalContext.current
-
-    val viewModel = hiltViewModel<TransactionExampleViewModel>()
-
-    val transactions by viewModel.transactions.collectAsState(initial = emptyList())
-    val deleteTransaction by viewModel.deleteTransaction.collectAsState()
-
-    val snackbarHostState = remember { SnackbarHostState() }
-
     Scaffold(
         modifier = modifier,
         topBar = {
@@ -124,12 +173,7 @@ private fun TransactionTimeScreen(
         },
         snackbarHost = {
             DeleteSnackbarHost(
-                action = {
-                    scope.launch {
-                        viewModel.undo()
-                        snackbarHostState.currentSnackbarData?.dismiss()
-                    }
-                },
+                action = snackbarAction,
                 snackbarHostState = snackbarHostState
             )
         }
@@ -139,27 +183,6 @@ private fun TransactionTimeScreen(
             transactions = transactions,
             onTransactionClick = onTransactionClick
         )
-    }
-
-    LaunchedEffect(deleteTransaction) {
-        if (deleteTransaction != null) {
-            coroutineScope {
-                launch {
-                    val withDismissAction =
-                        context.getString(little.goose.common.R.string.undo).isNotEmpty()
-                    snackbarHostState.showSnackbar(
-                        context.getString(little.goose.common.R.string.deleted),
-                        context.getString(little.goose.common.R.string.undo),
-                        withDismissAction,
-                        SnackbarDuration.Indefinite
-                    )
-                }
-                launch {
-                    delay(2000L)
-                    snackbarHostState.currentSnackbarData?.dismiss()
-                }
-            }
-        }
     }
 }
 
