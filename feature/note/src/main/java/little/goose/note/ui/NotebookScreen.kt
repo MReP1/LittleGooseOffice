@@ -10,20 +10,26 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.lifecycle.viewmodel.compose.viewModel
 import little.goose.note.data.entities.Note
+import little.goose.note.ui.note.NoteActivity
 import middle.goose.richtext.RichTextView
 
 @Composable
 fun NotebookRoute(
-    modifier: Modifier = Modifier,
-    onNoteClick: (Note) -> Unit
+    modifier: Modifier = Modifier
 ) {
+    val context = LocalContext.current
     val viewModel = viewModel<NotebookViewModel>()
     val notes by viewModel.notes.collectAsState()
-    NotebookScreen(modifier = modifier, notes = notes, onNoteClick)
+    NotebookScreen(
+        modifier = modifier,
+        notes = notes,
+        onNoteClick = { NoteActivity.openEdit(context, it) }
+    )
 }
 
 @Composable
@@ -68,8 +74,8 @@ fun NoteItem(
     ) {
         Column(
             modifier = Modifier
-            .fillMaxSize()
-            .padding(12.dp)
+                .fillMaxSize()
+                .padding(12.dp)
         ) {
             Text(text = note.title)
             AndroidView(

@@ -63,6 +63,16 @@ fun TransactionScreen(
         }
     }
 
+    LaunchedEffect(viewModel.event) {
+        viewModel.event.collect { event ->
+            when (event) {
+                TransactionViewModel.Event.WriteSuccess -> {
+                    onFinished()
+                }
+            }
+        }
+    }
+
     Scaffold(
         modifier = modifier,
         topBar = {
@@ -143,7 +153,6 @@ fun TransactionScreen(
                 },
                 onDoneClick = {
                     viewModel.writeDatabase(it)
-                    onFinished()
                 }
             )
         }

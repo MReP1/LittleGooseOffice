@@ -10,11 +10,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.fragment.app.FragmentActivity
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.rememberPagerState
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import little.goose.account.data.entities.Transaction
 import little.goose.account.ui.AccountRoute
 import little.goose.account.ui.analysis.AccountAnalysisActivity
 import little.goose.account.ui.transaction.TransactionActivity
@@ -23,6 +25,8 @@ import little.goose.account.ui.transaction.rememberTransactionDialogState
 import little.goose.common.constants.KEY_SCHEDULE
 import little.goose.design.system.component.MovableActionButton
 import little.goose.design.system.component.MovableActionButtonState
+import little.goose.design.system.component.dialog.DeleteDialog
+import little.goose.design.system.component.dialog.rememberDialogState
 import little.goose.home.data.*
 import little.goose.memorial.data.constants.KEY_MEMORIAL
 import little.goose.memorial.ui.MemorialActivity
@@ -46,8 +50,6 @@ fun HomeScreen(
     val currentHomePage = remember(pagerState.currentPage) {
         HomePage.fromPageIndex(pagerState.currentPage)
     }
-
-    val transactionDialogState = rememberTransactionDialogState()
 
     Scaffold(
         modifier = modifier,
@@ -77,20 +79,10 @@ fun HomeScreen(
                             Box(modifier = Modifier.fillMaxSize())
                         }
                         NOTEBOOK -> {
-                            NotebookRoute(
-                                modifier = Modifier.fillMaxSize(),
-                                onNoteClick = {
-                                    NoteActivity.openEdit(context, it)
-                                }
-                            )
+                            NotebookRoute(modifier = Modifier.fillMaxSize())
                         }
                         ACCOUNT -> {
-                            AccountRoute(
-                                modifier = Modifier.fillMaxSize(),
-                                onTransactionClick = {
-                                    transactionDialogState.show(it)
-                                }
-                            )
+                            AccountRoute(modifier = Modifier.fillMaxSize())
                         }
                         SCHEDULE -> {
                             ScheduleRoute(
@@ -147,13 +139,16 @@ fun HomeScreen(
                         onTopSubButtonClick = {
                             when (currentHomePage) {
                                 HomePage.Notebook -> {
+
                                 }
                                 HomePage.ACCOUNT -> {
                                     AccountAnalysisActivity.open(context)
                                 }
                                 HomePage.Schedule -> {
+
                                 }
                                 HomePage.Memorial -> {
+
                                 }
                                 else -> {}
                             }
@@ -191,14 +186,4 @@ fun HomeScreen(
             )
         }
     )
-
-    TransactionDialog(
-        state = transactionDialogState,
-        onEditClick = {
-            TransactionActivity.openEdit(context, it)
-        }, onDeleteClick = {
-            // TODO
-        }
-    )
-
 }

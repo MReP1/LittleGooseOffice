@@ -7,8 +7,11 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.launch
+import little.goose.account.data.constants.AccountConstant.EXPENSE
+import little.goose.account.data.constants.AccountConstant.INCOME
 import little.goose.account.data.entities.Transaction
 import little.goose.account.logic.AccountRepository
+import little.goose.account.ui.transaction.icon.TransactionIconHelper
 import little.goose.common.constants.KEY_TRANSACTION
 import javax.inject.Inject
 
@@ -22,7 +25,13 @@ class TransactionViewModel @Inject constructor(
         WriteSuccess
     }
 
-    val transaction = savedStateHandle.getStateFlow(KEY_TRANSACTION, Transaction())
+    val transaction = savedStateHandle.getStateFlow(
+        KEY_TRANSACTION,
+        Transaction(
+            icon_id = TransactionIconHelper.expenseIconList.first().id,
+            content = TransactionIconHelper.expenseIconList.first().name
+        )
+    )
 
     private val _event: MutableSharedFlow<Event> = MutableSharedFlow()
     val event = _event.asSharedFlow()
@@ -32,16 +41,21 @@ class TransactionViewModel @Inject constructor(
     }
 
     fun writeDatabase(transaction: Transaction) {
-        if (transaction.id == null) {
-            insertTransaction(transaction)
+        val tra = if (transaction.type == INCOME && transaction.money.signum() == -1) {
+            transaction.copy(money = transaction.money.abs())
+        } else if (transaction.type == EXPENSE && transaction.money.signum() == 1) {
+            transaction.copy(money = transaction.money.negate())
+        } else transaction
+        if (tra.id == null) {
+            insertTransaction(tra)
         } else {
-            updateTransaction(transaction )
+            updateTransaction(tra)
         }
     }
 
     private fun insertTransaction(transaction: Transaction) {
         viewModelScope.launch {
-            val id =  accountRepository.insertTransaction(transaction)
+            val id = accountRepository.insertTransaction(transaction)
             setTransaction(transaction.copy(id = id))
             _event.emit(Event.WriteSuccess)
         }
