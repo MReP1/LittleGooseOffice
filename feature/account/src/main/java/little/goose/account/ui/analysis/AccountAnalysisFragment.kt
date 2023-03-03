@@ -4,7 +4,6 @@ import android.os.Bundle
 import android.view.View
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayoutMediator
@@ -12,8 +11,6 @@ import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import little.goose.account.R
-import little.goose.common.dialog.DateTimePickerBottomDialog
-import little.goose.common.dialog.time.TimeType
 import little.goose.account.databinding.FragmentAccountAnalysisBinding
 import little.goose.account.ui.analysis.adapter.AnalysisVPAdapter
 import little.goose.account.ui.analysis.widget.ItemTabTransactionTypeView
@@ -21,6 +18,8 @@ import little.goose.account.ui.widget.MonthSelector
 import little.goose.account.ui.widget.MonthSelectorCardView
 import little.goose.account.ui.widget.YearSelector
 import little.goose.account.ui.widget.YearSelectorCardView
+import little.goose.common.dialog.DateTimePickerBottomDialog
+import little.goose.common.dialog.time.TimeType
 import little.goose.common.utils.launchAndRepeatWithViewLifeCycle
 import little.goose.common.utils.viewBinding
 
@@ -182,7 +181,6 @@ class AccountAnalysisFragment : Fragment(R.layout.fragment_account_analysis) {
 
     private fun onYearChange(year: Int) {
         setTimeResult(year, -1)
-        viewModel.updateTransactionListYear()
     }
 
     private fun initMonthChangeListener() {
@@ -195,7 +193,6 @@ class AccountAnalysisFragment : Fragment(R.layout.fragment_account_analysis) {
 
     private fun onMonthChange(year: Int = getYear(), month: Int = getMonth()) {
         setTimeResult(year, month)
-        viewModel.updateTransactionListMonth()
     }
 
     /**

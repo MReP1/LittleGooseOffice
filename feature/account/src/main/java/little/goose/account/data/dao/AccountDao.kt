@@ -45,7 +45,7 @@ interface AccountDao {
     suspend fun deleteTransaction(transaction: Transaction)
 
     @Delete
-   suspend fun deleteTransactions(transactionList: List<Transaction>)
+    suspend fun deleteTransactions(transactionList: List<Transaction>)
 
     @Query("SELECT SUM(money) FROM $TABLE_TRANSACTION")
     suspend fun getAllTransactionSum(): Double
@@ -65,8 +65,14 @@ interface AccountDao {
     @Query("SELECT SUM(money) FROM $TABLE_TRANSACTION WHERE time > :startTime and time < :endTime and type = $EXPENSE")
     suspend fun getTransactionExpenseSumByTime(startTime: Long, endTime: Long): Double
 
+    @Query("SELECT SUM(money) FROM $TABLE_TRANSACTION WHERE time > :startTime and time < :endTime and type = $EXPENSE")
+    fun getTransactionExpenseSumByTimeFlow(startTime: Long, endTime: Long): Flow<Double>
+
     @Query("SELECT SUM(money) FROM $TABLE_TRANSACTION WHERE time > :startTime and time < :endTime and type = $INCOME")
     suspend fun getTransactionIncomeSumByTime(startTime: Long, endTime: Long): Double
+
+    @Query("SELECT SUM(money) FROM $TABLE_TRANSACTION WHERE time > :startTime and time < :endTime and type = $INCOME")
+    fun getTransactionIncomeSumByTimeFlow(startTime: Long, endTime: Long): Flow<Double>
 
     @Query("SELECT * FROM $TABLE_TRANSACTION WHERE money LIKE '%'|| :money ||'%' OR description LIKE '%'|| :money ||'%' ")
     suspend fun searchTransactionByMoney(money: String): List<Transaction>

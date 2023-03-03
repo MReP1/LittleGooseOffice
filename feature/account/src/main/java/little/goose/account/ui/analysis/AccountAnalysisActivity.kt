@@ -4,12 +4,16 @@ import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.widget.TextView
+import androidx.activity.compose.setContent
 import androidx.appcompat.app.AppCompatActivity
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.ui.Modifier
 import dagger.hilt.android.AndroidEntryPoint
 import little.goose.account.databinding.ActivityAccountAnalysisBinding
 import little.goose.account.ui.analysis.adapter.AnalysisFragmentPagerAdapter
 import little.goose.account.ui.widget.BottomTimeTypeSelector
 import little.goose.common.utils.viewBinding
+import little.goose.design.system.theme.AccountTheme
 
 @AndroidEntryPoint
 class AccountAnalysisActivity : AppCompatActivity() {
@@ -18,9 +22,14 @@ class AccountAnalysisActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(binding.root)
-        initView()
-        initFragmentListener()
+        setContent {
+            AccountTheme {
+                TransactionAnalysisScreen(modifier = Modifier.fillMaxSize())
+            }
+        }
+//        setContentView(binding.root)
+//        initView()
+//        initFragmentListener()
     }
 
     private fun initView() {

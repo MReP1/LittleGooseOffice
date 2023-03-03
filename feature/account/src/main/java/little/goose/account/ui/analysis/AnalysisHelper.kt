@@ -1,34 +1,59 @@
-@file:Suppress("NOTHING_TO_INLINE")
-
 package little.goose.account.ui.analysis
 
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import little.goose.account.data.constants.AccountConstant.EXPENSE
 import little.goose.account.data.constants.AccountConstant.INCOME
+import little.goose.account.data.entities.Transaction
+import little.goose.account.data.models.TimeMoney
+import little.goose.account.data.models.TransactionBalance
+import little.goose.account.data.models.TransactionPercent
 import little.goose.account.ui.analysis.AnalysisFragmentViewModel.Companion.MONTH
 import little.goose.account.ui.analysis.AnalysisFragmentViewModel.Companion.YEAR
-import little.goose.account.data.models.TransactionPercent
-import little.goose.account.data.models.TimeMoney
-import little.goose.account.data.entities.Transaction
-import little.goose.account.utils.*
 import little.goose.common.utils.*
 import java.math.BigDecimal
 import java.util.*
 import kotlin.math.min
 
 class AnalysisHelper {
-    var mapExpensePercent: HashMap<Int, TransactionPercent> = HashMap()
-    var mapIncomePercent: HashMap<Int, TransactionPercent> = HashMap()
-    var mapBalance: HashMap<Int, little.goose.account.data.models.TransactionBalance> = HashMap()
 
     private val calendar = Calendar.getInstance()
 
-    val timeExpenseList = ArrayList<TimeMoney>()
-    val timeIncomeList = ArrayList<TimeMoney>()
-    val timeBalanceList = ArrayList<TimeMoney>()
+    private val mapExpensePercent: HashMap<Int, TransactionPercent> = HashMap()
+    private val _expensePercentList = MutableStateFlow(listOf<TransactionPercent>())
+    val expensePercents = _expensePercentList.asStateFlow()
 
-    var expenseSum = BigDecimal(0)
-    var incomeSum = BigDecimal(0)
-    var balance = BigDecimal(0)
+    private val mapIncomePercent: HashMap<Int, TransactionPercent> = HashMap()
+    private val _incomePercentList = MutableStateFlow(listOf<TransactionPercent>())
+    val incomePercents = _incomePercentList.asStateFlow()
+
+    private val mapBalance: HashMap<Int, TransactionBalance> = HashMap()
+    private val _balanceList = MutableStateFlow(listOf<TransactionBalance>())
+    val balances = _balanceList.asStateFlow()
+
+    private val cachedTimeExpenseList = ArrayList<TimeMoney>()
+    private val _timeExpenseList = MutableStateFlow<List<TimeMoney>>(emptyList())
+    val timeExpenses = _timeExpenseList.asStateFlow()
+
+    private val cachedTimeIncomeList = ArrayList<TimeMoney>()
+    private val _timeIncomeList = MutableStateFlow<List<TimeMoney>>(emptyList())
+    val timeIncomes = _timeIncomeList.asStateFlow()
+
+    private val cachedTimeBalanceList = ArrayList<TimeMoney>()
+    private val _timeBalanceList = MutableStateFlow<List<TimeMoney>>(emptyList())
+    val timeBalances = _timeBalanceList.asStateFlow()
+
+    private var cachedExpenseSum = BigDecimal(0)
+    private val _expenseSum = MutableStateFlow(BigDecimal(0))
+    val expenseSum = _expenseSum.asStateFlow()
+
+    private var cachedIncomeSum = BigDecimal(0)
+    private val _incomeSum = MutableStateFlow(BigDecimal(0))
+    val incomeSum = _incomeSum.asStateFlow()
+
+    private var cachedBalance = BigDecimal(0)
+    private val _balance = MutableStateFlow(BigDecimal(0))
+    val balance = _balance.asStateFlow()
 
     fun analyseTransactionList(
         list: List<Transaction>,
@@ -41,9 +66,10 @@ class AnalysisHelper {
         mapExpensePercent.clear()
         mapIncomePercent.clear()
         mapBalance.clear()
-        timeExpenseList.clear()
-        timeIncomeList.clear()
-        timeBalanceList.clear()
+
+        cachedTimeExpenseList.clear()
+        cachedTimeIncomeList.clear()
+        cachedTimeBalanceList.clear()
 
         when (type) {
             YEAR -> {
@@ -73,18 +99,26 @@ class AnalysisHelper {
                     transactionBalance.expense + transactionBalance.income
             }
         }
-        this.expenseSum = BigDecimal(expenseSum).getRoundTwo()
-        this.incomeSum = BigDecimal(incomeSum).getRoundTwo()
-        this.balance = this.expenseSum + this.incomeSum
+        this.cachedExpenseSum = BigDecimal(expenseSum).getRoundTwo()
+        this.cachedIncomeSum = BigDecimal(incomeSum).getRoundTwo()
+        this.cachedBalance = this.cachedExpenseSum + this.cachedIncomeSum
 
         //算出balanceTimeList的money
-        for (index in 0 until min(timeExpenseList.size, timeIncomeList.size)) {
-            timeBalanceList[index].money = timeBalanceList[index].money +
-                    timeExpenseList[index].money + timeIncomeList[index].money
+        for (index in 0 until min(cachedTimeExpenseList.size, cachedTimeIncomeList.size)) {
+            cachedTimeBalanceList[index].money = cachedTimeBalanceList[index].money +
+                    cachedTimeExpenseList[index].money + cachedTimeIncomeList[index].money
         }
+
+        _expensePercentList.value = mapExpensePercent.values.toList()
+        _incomePercentList.value = mapIncomePercent.values.toList()
+        _balanceList.value = mapBalance.values.sortedBy { it.time }.toList()
+
+        _timeExpenseList.value = cachedTimeExpenseList.toList()
+        _timeIncomeList.value = cachedTimeIncomeList.toList()
+        _timeBalanceList.value = cachedTimeBalanceList.toList()
     }
 
-    private inline fun initTimeListMonth(year: Int, month: Int) {
+    private fun initTimeListMonth(year: Int, month: Int) {
         calendar.apply {
             clear()
             setYear(year)
@@ -93,28 +127,28 @@ class AnalysisHelper {
             for (day in 1..days) {
                 setDate(day)
                 val time = calendar.time
-                timeExpenseList.add(TimeMoney(time, BigDecimal(0)))
-                timeIncomeList.add(TimeMoney(time, BigDecimal(0)))
-                timeBalanceList.add(TimeMoney(time, BigDecimal(0)))
+                cachedTimeExpenseList.add(TimeMoney(time, BigDecimal(0)))
+                cachedTimeIncomeList.add(TimeMoney(time, BigDecimal(0)))
+                cachedTimeBalanceList.add(TimeMoney(time, BigDecimal(0)))
             }
         }
     }
 
-    private inline fun initTimeListYear(year: Int) {
+    private fun initTimeListYear(year: Int) {
         calendar.apply {
             clear()
             setYear(year)
             for (month in 1..12) {
                 setMonth(month)
                 val time = calendar.time
-                timeExpenseList.add(TimeMoney(time, BigDecimal(0)))
-                timeIncomeList.add(TimeMoney(time, BigDecimal(0)))
-                timeBalanceList.add(TimeMoney(time, BigDecimal(0)))
+                cachedTimeExpenseList.add(TimeMoney(time, BigDecimal(0)))
+                cachedTimeIncomeList.add(TimeMoney(time, BigDecimal(0)))
+                cachedTimeBalanceList.add(TimeMoney(time, BigDecimal(0)))
             }
         }
     }
 
-    private inline fun dealWithListYear(list: List<Transaction>) {
+    private fun dealWithListYear(list: List<Transaction>) {
         for (value in list) {
             when (value.type) {
                 EXPENSE -> {
@@ -133,7 +167,7 @@ class AnalysisHelper {
         }
     }
 
-    private inline fun dealWithListMonth(list: List<Transaction>) {
+    private fun dealWithListMonth(list: List<Transaction>) {
         for (value in list) {
             when (value.type) {
                 EXPENSE -> {
@@ -152,59 +186,59 @@ class AnalysisHelper {
         }
     }
 
-    private inline fun dealWithBalanceOfExpenseMonth(value: Transaction) {
+    private fun dealWithBalanceOfExpenseMonth(value: Transaction) {
         val date = value.time.getRealDate()
         val transactionBalance = mapBalance[date]
         if (transactionBalance != null) {
             transactionBalance.expense += value.money
         } else {
-            mapBalance[date] = little.goose.account.data.models.TransactionBalance(
+            mapBalance[date] = TransactionBalance(
                 value.time, value.money, BigDecimal(0), BigDecimal(0)
             )
         }
-        timeExpenseList[date - 1].money += value.money
+        cachedTimeExpenseList[date - 1].money += value.money
     }
 
-    private inline fun dealWithBalanceOfExpenseYear(value: Transaction) {
+    private fun dealWithBalanceOfExpenseYear(value: Transaction) {
         val month = value.time.getRealMonth()
         val transactionBalance = mapBalance[month]
         if (transactionBalance != null) {
             transactionBalance.expense += value.money
         } else {
-            mapBalance[month] = little.goose.account.data.models.TransactionBalance(
+            mapBalance[month] = TransactionBalance(
                 value.time, value.money, BigDecimal(0), BigDecimal(0)
             )
         }
-        timeExpenseList[month - 1].money += value.money
+        cachedTimeExpenseList[month - 1].money += value.money
     }
 
-    private inline fun dealWithBalanceOfIncomeMonth(value: Transaction) {
+    private fun dealWithBalanceOfIncomeMonth(value: Transaction) {
         val date = value.time.getRealDate()
         val transactionBalance = mapBalance[date]
         if (transactionBalance != null) {
             transactionBalance.income += value.money
         } else {
-            mapBalance[date] = little.goose.account.data.models.TransactionBalance(
+            mapBalance[date] = TransactionBalance(
                 value.time, BigDecimal(0), value.money, BigDecimal(0)
             )
         }
-        timeIncomeList[date - 1].money += value.money
+        cachedTimeIncomeList[date - 1].money += value.money
     }
 
-    private inline fun dealWithBalanceOfIncomeYear(value: Transaction) {
+    private fun dealWithBalanceOfIncomeYear(value: Transaction) {
         val month = value.time.getRealMonth()
         val transactionBalance = mapBalance[month]
         if (transactionBalance != null) {
             transactionBalance.income += value.money
         } else {
-            mapBalance[month] = little.goose.account.data.models.TransactionBalance(
+            mapBalance[month] = TransactionBalance(
                 value.time, BigDecimal(0), value.money, BigDecimal(0)
             )
         }
-        timeIncomeList[month - 1].money += value.money
+        cachedTimeIncomeList[month - 1].money += value.money
     }
 
-    private inline fun dealWithExpense(value: Transaction) {
+    private fun dealWithExpense(value: Transaction) {
         val expensePercent = mapExpensePercent[value.icon_id]
         if (expensePercent != null) {
             expensePercent.money += value.money
@@ -214,7 +248,7 @@ class AnalysisHelper {
         }
     }
 
-    private inline fun dealWithIncome(value: Transaction) {
+    private fun dealWithIncome(value: Transaction) {
         val incomePercent = mapIncomePercent[value.icon_id]
         if (incomePercent != null) {
             incomePercent.money += value.money

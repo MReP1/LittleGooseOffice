@@ -5,6 +5,7 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import java.math.BigDecimal
@@ -76,7 +77,8 @@ fun AccountTitle(
             modifier = Modifier
                 .fillMaxWidth()
                 .height(48.dp),
-            state = monthSelectorState
+            state = monthSelectorState,
+            shape = RectangleShape
         )
     }
 }

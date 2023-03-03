@@ -113,6 +113,18 @@ class AccountRepository(
         return accountDao.getTransactionByTime(startTime, endTime)
     }
 
+    fun getTransactionByYearFlow(year: Int): Flow<List<Transaction>> {
+        val calendar = Calendar.getInstance().apply {
+            clear()
+            setDate(1)
+            setYear(year)
+        }
+        val startTime = calendar.timeInMillis
+        calendar.setYear(year + 1)
+        val endTime = calendar.timeInMillis
+        return accountDao.getTransactionByTimeFlow(startTime, endTime)
+    }
+
     suspend fun getExpenseSumByYear(year: Int): Double {
         val calendar = Calendar.getInstance().apply {
             clear()
@@ -125,6 +137,18 @@ class AccountRepository(
         return accountDao.getTransactionExpenseSumByTime(startTime, endTime)
     }
 
+    fun getExpenseSumByYearFlow(year: Int): Flow<Double> {
+        val calendar = Calendar.getInstance().apply {
+            clear()
+            setDate(1)
+            setYear(year)
+        }
+        val startTime = calendar.timeInMillis
+        calendar.setYear(year + 1)
+        val endTime = calendar.timeInMillis
+        return accountDao.getTransactionExpenseSumByTimeFlow(startTime, endTime)
+    }
+
     suspend fun getIncomeSumByYear(year: Int): Double {
         val calendar = Calendar.getInstance().apply {
             clear()
@@ -135,6 +159,18 @@ class AccountRepository(
         calendar.setYear(year + 1)
         val endTime = calendar.timeInMillis
         return accountDao.getTransactionIncomeSumByTime(startTime, endTime)
+    }
+
+    fun getIncomeSumByYearFlow(year: Int): Flow<Double> {
+        val calendar = Calendar.getInstance().apply {
+            clear()
+            setDate(1)
+            setYear(year)
+        }
+        val startTime = calendar.timeInMillis
+        calendar.setYear(year + 1)
+        val endTime = calendar.timeInMillis
+        return accountDao.getTransactionIncomeSumByTimeFlow(startTime, endTime)
     }
 
     fun getTransactionByDateFlow(

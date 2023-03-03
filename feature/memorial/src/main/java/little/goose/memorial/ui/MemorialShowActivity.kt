@@ -97,7 +97,10 @@ private fun MemorialShowScreen(
                 modifier = Modifier.fillMaxWidth(),
                 navigationIcon = {
                     IconButton(onClick = onBack) {
-                        Icon(imageVector = Icons.Default.ArrowBack, contentDescription = "Back")
+                        Icon(
+                            imageVector = Icons.Default.ArrowBack,
+                            contentDescription = "Back"
+                        )
                     }
                 },
                 title = {

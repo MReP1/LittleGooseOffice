@@ -5,11 +5,12 @@ import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.flow.*
 import little.goose.account.data.entities.Transaction
+import little.goose.account.data.models.TimeMoney
+import little.goose.account.data.models.TransactionPercent
+import little.goose.account.data.models.TransactionBalance
 import little.goose.account.logic.AccountRepository
 import little.goose.common.utils.getMonth
 import little.goose.common.utils.getYear
@@ -24,108 +25,91 @@ class AnalysisFragmentViewModel @Inject constructor(
     private val analysisHelper = AnalysisHelper()
 
     var type = 0
-    private val _monthFlow = MutableStateFlow(-1)
+
+    private val _monthFlow = MutableStateFlow(Calendar.getInstance().getMonth())
     val monthFlow: StateFlow<Int> = _monthFlow.asStateFlow()
 
-    private val _yearFlow = MutableStateFlow(2010)
+    private val _yearFlow = MutableStateFlow(Calendar.getInstance().getYear())
     var yearFlow: StateFlow<Int> = _yearFlow.asStateFlow()
 
-    private val _transactionList = MutableStateFlow(emptyList<Transaction>())
-    val transactionList: StateFlow<List<Transaction>> = _transactionList.asStateFlow()
+    val transactionList = combine(_yearFlow, _monthFlow) { year, month ->
+        when (type) {
+            YEAR -> getTransactionListYear(year, month)
+            MONTH -> getTransactionListMonth(year, month)
+            else -> throw Exception()
+        }
+    }.flowOn(Dispatchers.Default).stateIn(
+        scope = viewModelScope,
+        started = SharingStarted.WhileSubscribed(5000),
+        initialValue = listOf()
+    )
 
     fun setTime(year: Int, month: Int) {
-        _yearFlow.tryEmit(year)
-        _monthFlow.tryEmit(month)
-    }
-
-    fun setMonth(month: Int) {
-        _monthFlow.tryEmit(month)
+        _yearFlow.value = year
+        _monthFlow.value = month
     }
 
     fun setYear(year: Int) {
-        _yearFlow.tryEmit(year)
+        _yearFlow.value = year
     }
 
-    fun getListExpensePercent(): List<little.goose.account.data.models.TransactionPercent> =
-        analysisHelper.mapExpensePercent.map { it.value }
+    fun getListExpensePercent(): List<TransactionPercent> = analysisHelper.expensePercents.value
 
-    fun getListIncomePercent(): List<little.goose.account.data.models.TransactionPercent> =
-        analysisHelper.mapIncomePercent.map { it.value }
+    fun getListIncomePercent(): List<TransactionPercent> = analysisHelper.incomePercents.value
 
-    fun getListTransactionBalance(): List<little.goose.account.data.models.TransactionBalance> =
-        analysisHelper.mapBalance.map { it.value }.sortedBy { it.time }
+    fun getListTransactionBalance(): List<TransactionBalance> = analysisHelper.balances.value
 
-    fun getExpenseSumStr(): String = analysisHelper.expenseSum.toPlainString()
+    fun getExpenseSumStr(): String = analysisHelper.expenseSum.value.toPlainString()
 
-    fun getIncomeSumStr(): String = analysisHelper.incomeSum.toPlainString()
+    fun getIncomeSumStr(): String = analysisHelper.incomeSum.value.toPlainString()
 
-    fun getBalanceStr(): String = analysisHelper.balance.toPlainString()
+    fun getBalanceStr(): String = analysisHelper.balance.value.toPlainString()
 
-    fun getTimeExpenseList(): List<little.goose.account.data.models.TimeMoney> =
-        analysisHelper.timeExpenseList
+    fun getTimeExpenseList(): List<TimeMoney> = analysisHelper.timeExpenses.value
 
-    fun getTimeIncomeList(): List<little.goose.account.data.models.TimeMoney> =
-        analysisHelper.timeIncomeList
+    fun getTimeIncomeList(): List<TimeMoney> = analysisHelper.timeIncomes.value
 
-    fun getTimeBalanceList(): List<little.goose.account.data.models.TimeMoney> =
-        analysisHelper.timeBalanceList
+    fun getTimeBalanceList(): List<TimeMoney> = analysisHelper.timeBalances.value
 
-    fun updateTransactionListYear() {
-        viewModelScope.launch(Dispatchers.Default) {
+    private suspend fun getTransactionListYear(year: Int, month: Int): List<Transaction> {
+        return coroutineScope {
             val listDeferred = async(Dispatchers.IO) {
-                accountRepository.getTransactionByYear(yearFlow.value)
+                accountRepository.getTransactionByYear(year)
             }
             val expenseSumDeferred = async(Dispatchers.IO) {
-                accountRepository.getExpenseSumByYear(yearFlow.value)
+                accountRepository.getExpenseSumByYear(year)
             }
             val incomeSumDeferred = async(Dispatchers.IO) {
-                accountRepository.getIncomeSumByYear(yearFlow.value)
+                accountRepository.getIncomeSumByYear(year)
             }
             val list = listDeferred.await()
             val expenseSum = expenseSumDeferred.await()
             val incomeSum = incomeSumDeferred.await()
             analysisHelper.analyseTransactionList(
-                list,
-                expenseSum,
-                incomeSum,
-                yearFlow.value,
-                monthFlow.value,
-                type
+                list, expenseSum, incomeSum, year, month, type
             )
-            _transactionList.emit(list)
+            list
         }
     }
 
-    fun updateTransactionListMonth() {
-        viewModelScope.launch(Dispatchers.Default) {
+    private suspend fun getTransactionListMonth(year: Int, month: Int): List<Transaction> {
+        return coroutineScope {
             val listDeferred = async(Dispatchers.IO) {
-                accountRepository.getTransactionsByYearAndMonth(yearFlow.value, monthFlow.value)
+                accountRepository.getTransactionsByYearAndMonth(year, month)
             }
             val expenseSumDeferred = async(Dispatchers.IO) {
-                accountRepository.getExpenseSumByYearMonth(yearFlow.value, monthFlow.value)
+                accountRepository.getExpenseSumByYearMonth(year, month)
             }
             val incomeSumDeferred = async(Dispatchers.IO) {
-                accountRepository.getIncomeSumByYearMonth(yearFlow.value, monthFlow.value)
+                accountRepository.getIncomeSumByYearMonth(year, month)
             }
             val list = listDeferred.await()
             val expenseSum = expenseSumDeferred.await()
             val incomeSum = incomeSumDeferred.await()
             analysisHelper.analyseTransactionList(
-                list,
-                expenseSum,
-                incomeSum,
-                yearFlow.value,
-                monthFlow.value,
-                type
+                list, expenseSum, incomeSum, year, month, type
             )
-            _transactionList.emit(list)
-        }
-    }
-
-    init {
-        Calendar.getInstance().apply {
-            _yearFlow.value = getYear()
-            _monthFlow.value = getMonth()
+            list
         }
     }
 

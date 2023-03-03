@@ -1,6 +1,9 @@
 package little.goose.account.ui.component
 
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -11,32 +14,27 @@ import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.unit.dp
 
-data class MonthSelectorState(
+data class YearSelectorState(
     val year: Int,
-    val month: Int,
-    val onTimeChange: (year: Int, month: Int) -> Unit
+    val onYearChange: (year: Int) -> Unit
 )
 
 @Composable
-fun MonthSelector(
+fun YearSelector(
     modifier: Modifier = Modifier,
-    shape: Shape = RectangleShape,
-    state: MonthSelectorState
+    state: YearSelectorState,
+    shape: Shape = RectangleShape
 ) {
     Row(modifier = modifier.clip(shape)) {
         Surface(
             modifier = Modifier
                 .weight(1F)
                 .fillMaxHeight(),
-            onClick = {
-                val year = if (state.month == 1) state.year - 1 else state.year
-                val month = if (state.month == 1) 12 else state.month - 1
-                state.onTimeChange(year, month)
-            },
+            onClick = { state.onYearChange(state.year - 1) },
             tonalElevation = 6.dp
         ) {
             Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                Text(text = if (state.month == 1) "12月" else "${state.month - 1}月")
+                Text(text = "${state.year - 1}年")
             }
         }
         Surface(
@@ -49,7 +47,7 @@ fun MonthSelector(
             tonalElevation = 2.dp
         ) {
             Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                Text(text = "${state.month}月")
+                Text(text = "${state.year}年")
             }
         }
         Surface(
@@ -57,14 +55,12 @@ fun MonthSelector(
                 .weight(1F)
                 .fillMaxHeight(),
             onClick = {
-                val year = if (state.month == 12) state.year + 1 else state.year
-                val month = if (state.month == 12) 1 else state.month + 1
-                state.onTimeChange(year, month)
+                state.onYearChange(state.year + 1)
             },
             tonalElevation = 6.dp
         ) {
             Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                Text(text = if (state.month == 12) "1月" else "${state.month + 1}月")
+                Text(text = "${state.year + 1}年")
             }
         }
     }
