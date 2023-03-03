@@ -25,7 +25,7 @@ fun TransactionColumn(
     ) {
         items(
             items = transactions,
-            key = { it.id ?: it.time }
+            key = { it.id ?: it }
         ) { transaction ->
             if (transaction.type == AccountConstant.TIME) {
                 Text(text = transaction.time.toChineseMonthDay())

@@ -22,7 +22,7 @@ class AnalysisFragmentViewModel @Inject constructor(
     private val accountRepository: AccountRepository
 ) : ViewModel() {
 
-    private val analysisHelper = AnalysisHelper()
+    private val analysisHelper = AnalysisHelper(accountRepository)
 
     var type = 0
 

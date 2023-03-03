@@ -19,6 +19,7 @@ import little.goose.account.data.models.TransactionPercent
 import little.goose.account.ui.transaction.icon.TransactionIconHelper
 import little.goose.common.utils.toSignString
 import java.math.BigDecimal
+import kotlin.math.abs
 
 @Composable
 fun TransactionPercentColumn(
@@ -36,7 +37,7 @@ fun TransactionPercentColumn(
         ) {
             TransactionPercentCard(
                 modifier = Modifier
-                    .padding(horizontal = 16.dp)
+                    .padding(horizontal = 16.dp, vertical = 4.dp)
                     .height(54.dp)
                     .fillMaxWidth(),
                 transactionPercent = it
@@ -59,13 +60,16 @@ fun TransactionPercentCard(
             Row(modifier = Modifier.fillMaxSize()) {
                 Surface(
                     modifier = Modifier
-                        .weight(transactionPercent.percent.toFloat())
+                        .weight(abs(transactionPercent.percent.toFloat()))
                         .fillMaxHeight(),
                     color = MaterialTheme.colorScheme.tertiaryContainer,
                     tonalElevation = 6.dp,
                     shape = RoundedCornerShape(12.dp)
                 ) {}
-                Spacer(modifier = Modifier.weight(1 - transactionPercent.percent.toFloat()))
+                val spaceWeight = abs(1 - transactionPercent.percent.toFloat())
+                if (spaceWeight > 0) {
+                    Spacer(modifier = Modifier.weight(spaceWeight))
+                }
             }
             Row(
                 modifier = Modifier.matchParentSize(),

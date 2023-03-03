@@ -54,8 +54,10 @@ class CircularLinkList<T> {
         size--
     }
 
-    fun next() {
-        _currentNote.value = _currentNote.value?.next
+    fun next(): T {
+        val note = _currentNote.value?.next
+        _currentNote.value = note
+        return note!!.element
     }
 
     class Note<T>(

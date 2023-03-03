@@ -3,8 +3,10 @@ package little.goose.office
 import android.os.Bundle
 import androidx.activity.compose.setContent
 import androidx.appcompat.app.AppCompatActivity
+import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.datastore.preferences.core.edit
 import androidx.lifecycle.lifecycleScope
@@ -31,6 +33,14 @@ class MainActivity : AppCompatActivity() {
         setContent {
             AccountTheme {
                 HomeScreen(modifier = Modifier.fillMaxSize())
+//                Canvas(modifier = Modifier.fillMaxSize(), onDraw = {
+//                    drawArc(
+//                        color = Color.Red,
+//                        useCenter = true,
+//                        startAngle = 0.0f,
+//                        sweepAngle = 30F,
+//                    )
+//                })
             }
         }
 //        initView()

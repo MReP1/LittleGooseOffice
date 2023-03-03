@@ -7,6 +7,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.launch
 import little.goose.account.data.entities.Transaction
 import little.goose.account.logic.AccountRepository
 import little.goose.account.ui.component.MonthSelectorState
@@ -21,7 +22,7 @@ class TransactionAnalysisViewModel @Inject constructor(
     private val accountRepository: AccountRepository
 ) : ViewModel() {
 
-    private val analysisHelper = AnalysisHelper()
+    private val analysisHelper = AnalysisHelper(accountRepository)
 
     enum class Type { MONTH, YEAR }
 
@@ -34,16 +35,18 @@ class TransactionAnalysisViewModel @Inject constructor(
     private val _month = MutableStateFlow(Calendar.getInstance().getMonth())
     val month = _month.asStateFlow()
 
-    private val transactions = combine(type, year, month) { type, year, month ->
-        when (type) {
-            Type.MONTH -> getTransactionListMonth(year, month)
-            Type.YEAR -> getTransactionListYear(year, month)
+    init {
+        viewModelScope.launch(Dispatchers.IO) {
+            combine(type, year, month) { type, year, month ->
+                when (type) {
+                    Type.MONTH -> analysisHelper.updateTransactionListMonth(year, month)
+                    Type.YEAR -> analysisHelper.updateTransactionListYear(year)
+                }
+            }.collect()
         }
-    }.flowOn(Dispatchers.Default).stateIn(
-        viewModelScope, SharingStarted.WhileSubscribed(5000), listOf()
-    )
+    }
 
-    private val expensePercents get() = analysisHelper.expensePercents
+    val expensePercents get() = analysisHelper.expensePercents
 
     private val incomePercents get() = analysisHelper.incomePercents
 
@@ -79,48 +82,5 @@ class TransactionAnalysisViewModel @Inject constructor(
             onTypeChange = { t -> _type.value = t }
         )
     )
-
-
-    private suspend fun getTransactionListYear(
-        year: Int, month: Int
-    ): List<Transaction> {
-        return coroutineScope {
-            val listDeferred = async(Dispatchers.IO) {
-                accountRepository.getTransactionByYear(year)
-            }
-            val expenseSumDeferred = async(Dispatchers.IO) {
-                accountRepository.getExpenseSumByYear(year)
-            }
-            val incomeSumDeferred = async(Dispatchers.IO) {
-                accountRepository.getIncomeSumByYear(year)
-            }
-            val list = listDeferred.await()
-            val expenseSum = expenseSumDeferred.await()
-            val incomeSum = incomeSumDeferred.await()
-            analysisHelper.analyseTransactionList(list, expenseSum, incomeSum, year, month, 0)
-            list
-        }
-    }
-
-    private suspend fun getTransactionListMonth(
-        year: Int, month: Int
-    ): List<Transaction> {
-        return coroutineScope {
-            val listDeferred = async(Dispatchers.IO) {
-                accountRepository.getTransactionsByYearAndMonth(year, month)
-            }
-            val expenseSumDeferred = async(Dispatchers.IO) {
-                accountRepository.getExpenseSumByYearMonth(year, month)
-            }
-            val incomeSumDeferred = async(Dispatchers.IO) {
-                accountRepository.getIncomeSumByYearMonth(year, month)
-            }
-            val list = listDeferred.await()
-            val expenseSum = expenseSumDeferred.await()
-            val incomeSum = incomeSumDeferred.await()
-            analysisHelper.analyseTransactionList(list, expenseSum, incomeSum, year, month, 1)
-            list
-        }
-    }
 
 }

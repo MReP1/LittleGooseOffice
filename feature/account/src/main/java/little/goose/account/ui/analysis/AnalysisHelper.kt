@@ -1,13 +1,18 @@
 package little.goose.account.ui.analysis
 
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.withContext
 import little.goose.account.data.constants.AccountConstant.EXPENSE
 import little.goose.account.data.constants.AccountConstant.INCOME
 import little.goose.account.data.entities.Transaction
 import little.goose.account.data.models.TimeMoney
 import little.goose.account.data.models.TransactionBalance
 import little.goose.account.data.models.TransactionPercent
+import little.goose.account.logic.AccountRepository
 import little.goose.account.ui.analysis.AnalysisFragmentViewModel.Companion.MONTH
 import little.goose.account.ui.analysis.AnalysisFragmentViewModel.Companion.YEAR
 import little.goose.common.utils.*
@@ -15,7 +20,9 @@ import java.math.BigDecimal
 import java.util.*
 import kotlin.math.min
 
-class AnalysisHelper {
+class AnalysisHelper(
+    private val accountRepository: AccountRepository
+) {
 
     private val calendar = Calendar.getInstance()
 
@@ -54,6 +61,30 @@ class AnalysisHelper {
     private var cachedBalance = BigDecimal(0)
     private val _balance = MutableStateFlow(BigDecimal(0))
     val balance = _balance.asStateFlow()
+
+    suspend fun updateTransactionListYear(
+        year: Int
+    ) = withContext(Dispatchers.IO) {
+        val listDeferred = async { accountRepository.getTransactionByYear(year) }
+        val expenseSumDeferred = async { accountRepository.getExpenseSumByYear(year) }
+        val incomeSumDeferred = async { accountRepository.getIncomeSumByYear(year) }
+        val list = listDeferred.await()
+        val expenseSum = expenseSumDeferred.await()
+        val incomeSum = incomeSumDeferred.await()
+        analyseTransactionList(list, expenseSum, incomeSum, year, -1, 0)
+    }
+
+    suspend fun updateTransactionListMonth(
+        year: Int, month: Int
+    ) = withContext(Dispatchers.IO) {
+        val listDeferred = async { accountRepository.getTransactionsByYearAndMonth(year, month) }
+        val expenseSumDeferred = async { accountRepository.getExpenseSumByYearMonth(year, month) }
+        val incomeSumDeferred = async { accountRepository.getIncomeSumByYearMonth(year, month) }
+        val list = listDeferred.await()
+        val expenseSum = expenseSumDeferred.await()
+        val incomeSum = incomeSumDeferred.await()
+        analyseTransactionList(list, expenseSum, incomeSum, year, month, 1)
+    }
 
     fun analyseTransactionList(
         list: List<Transaction>,
