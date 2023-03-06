@@ -3,7 +3,10 @@ package little.goose.account.ui
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.wrapContentHeight
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -15,7 +18,6 @@ import little.goose.account.ui.component.TransactionColumn
 import little.goose.account.ui.transaction.TransactionActivity
 import little.goose.account.ui.transaction.TransactionDialog
 import little.goose.account.ui.transaction.rememberTransactionDialogState
-import little.goose.common.utils.log
 import little.goose.design.system.component.dialog.DeleteDialog
 import little.goose.design.system.component.dialog.rememberDialogState
 
@@ -46,7 +48,6 @@ fun AccountRoute(
     )
 
     LaunchedEffect(viewModel.deletingTransactions) {
-        log(viewModel.deletingTransactions.isNotEmpty())
         if (viewModel.deletingTransactions.isNotEmpty()) {
             deleteDialogState.show()
         } else {

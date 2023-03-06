@@ -1,5 +1,5 @@
 [versions]
-androidGradlePlugin = "7.4.1"
+androidGradlePlugin = "7.4.2"
 androidxActivityCompose = "1.6.1"
 androidxAppcompat = "1.5.1"
 androidxActivityKtx = "1.6.1"
