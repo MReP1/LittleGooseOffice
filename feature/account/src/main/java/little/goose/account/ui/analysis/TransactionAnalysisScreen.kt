@@ -19,7 +19,8 @@ import little.goose.common.collections.CircularLinkList
 
 @Composable
 fun TransactionAnalysisScreen(
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    onBack: () -> Unit
 ) {
     val viewModel = hiltViewModel<TransactionAnalysisViewModel>()
     val bottomBarState by viewModel.bottomBarState.collectAsState()
@@ -32,10 +33,12 @@ fun TransactionAnalysisScreen(
                 modifier = Modifier.fillMaxWidth(),
                 title = { Text(text = "统计") },
                 navigationIcon = {
-                    Icon(
-                        imageVector = Icons.Default.ArrowBack,
-                        contentDescription = "back"
-                    )
+                    IconButton(onClick = onBack) {
+                        Icon(
+                            imageVector = Icons.Default.ArrowBack,
+                            contentDescription = "back"
+                        )
+                    }
                 }
             )
         },

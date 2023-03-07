@@ -24,7 +24,10 @@ class AccountAnalysisActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContent {
             AccountTheme {
-                TransactionAnalysisScreen(modifier = Modifier.fillMaxSize())
+                TransactionAnalysisScreen(
+                    modifier = Modifier.fillMaxSize(),
+                    onBack = ::finish
+                )
             }
         }
 //        setContentView(binding.root)
