@@ -7,12 +7,15 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import little.goose.account.ui.component.TransactionPercentCircleChart
 import little.goose.account.ui.component.TransactionPercentColumn
+import little.goose.common.collections.CircularLinkList
 
 @Composable
 fun TransactionAnalysisScreen(
@@ -52,13 +55,36 @@ fun TransactionAnalysisScreen(
                     modifier = Modifier.fillMaxSize(),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
+                    val colorScheme = MaterialTheme.colorScheme
+                    val colors = remember {
+                        CircularLinkList<Color>().apply {
+                            add(colorScheme.primaryContainer)
+                            add(colorScheme.errorContainer)
+                            add(colorScheme.secondaryContainer)
+                            add(colorScheme.tertiaryContainer)
+                        }
+                    }
+                    val trColors = remember(moneyPercent, colors) {
+                        List(moneyPercent.size) { index ->
+                            var backgroundColor = colors.next()
+                            if (index == moneyPercent.lastIndex
+                                && backgroundColor == colorScheme.errorContainer
+                            ) {
+                                colors.next()
+                                backgroundColor = colors.next()
+                            }
+                            backgroundColor to colorScheme.contentColorFor(backgroundColor)
+                        }
+                    }
                     TransactionPercentCircleChart(
                         modifier = Modifier.size(200.dp),
-                        transactionPercents = moneyPercent
+                        transactionPercents = moneyPercent,
+                        colors = trColors
                     )
                     TransactionPercentColumn(
                         modifier = Modifier.weight(1F),
-                        transactionPercents = moneyPercent
+                        transactionPercents = moneyPercent,
+                        colors = trColors
                     )
                 }
             }

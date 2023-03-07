@@ -6,8 +6,6 @@ import androidx.compose.foundation.gestures.draggable
 import androidx.compose.foundation.gestures.rememberDraggableState
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.contentColorFor
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
@@ -23,7 +21,6 @@ import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.drawText
 import androidx.compose.ui.text.rememberTextMeasurer
 import little.goose.account.data.models.TransactionPercent
-import little.goose.common.collections.CircularLinkList
 import kotlin.math.cos
 import kotlin.math.sin
 
@@ -31,24 +28,9 @@ import kotlin.math.sin
 @Composable
 fun TransactionPercentCircleChart(
     modifier: Modifier = Modifier,
-    transactionPercents: List<TransactionPercent>
+    transactionPercents: List<TransactionPercent>,
+    colors: List<Pair<Color, Color>>
 ) {
-    val colorScheme = MaterialTheme.colorScheme
-    val colors = remember {
-        CircularLinkList<Color>().apply {
-            add(colorScheme.primaryContainer)
-            add(colorScheme.errorContainer)
-            add(colorScheme.secondaryContainer)
-            add(colorScheme.tertiaryContainer)
-        }
-    }
-    val trColors = remember(transactionPercents, colors) {
-        transactionPercents.map {
-            val backgroundColor = colors.next()
-            Pair(backgroundColor, colorScheme.contentColorFor(backgroundColor))
-        }
-    }
-
     var rotate by remember { mutableStateOf(0F) }
     val draggableState = rememberDraggableState(onDelta = { rotate += it })
 
@@ -94,7 +76,7 @@ fun TransactionPercentCircleChart(
                             val transactionPercent = transactionPercents[index]
                             val sweepAngle = transactionPercent.percent.toFloat() * 360F
                             drawArc(
-                                color = trColors[index].first,
+                                color = colors[index].first,
                                 startAngle = startAngle,
                                 sweepAngle = sweepAngle,
                                 useCenter = true
@@ -124,7 +106,7 @@ fun TransactionPercentCircleChart(
                 val y = center.y + textRadius * sin(radian) - textureResult[index].size.height / 2
                 drawText(
                     textLayoutResult = textureResult[index],
-                    color = trColors[index].second,
+                    color = colors[index].second,
                     topLeft = Offset(x.toFloat(), y.toFloat())
                 )
                 startAngle += sweepAngle

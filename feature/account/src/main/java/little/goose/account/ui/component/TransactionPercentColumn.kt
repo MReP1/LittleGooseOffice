@@ -12,6 +12,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -24,7 +25,8 @@ import kotlin.math.abs
 @Composable
 fun TransactionPercentColumn(
     modifier: Modifier = Modifier,
-    transactionPercents: List<TransactionPercent>
+    transactionPercents: List<TransactionPercent>,
+    colors: List<Pair<Color, Color>>
 ) {
     val lazyListState = rememberLazyListState()
     LazyColumn(
@@ -32,24 +34,27 @@ fun TransactionPercentColumn(
         state = lazyListState
     ) {
         items(
-            items = transactionPercents,
-            key = { it.icon_id }
-        ) {
-            TransactionPercentCard(
-                modifier = Modifier
-                    .padding(horizontal = 16.dp, vertical = 4.dp)
-                    .height(54.dp)
-                    .fillMaxWidth(),
-                transactionPercent = it
-            )
-        }
+            count = transactionPercents.size,
+            key = { transactionPercents[it].icon_id },
+            itemContent = { index ->
+                TransactionPercentCard(
+                    modifier = Modifier
+                        .padding(horizontal = 16.dp, vertical = 4.dp)
+                        .height(54.dp)
+                        .fillMaxWidth(),
+                    transactionPercent = transactionPercents[index],
+                    colors = colors[index]
+                )
+            }
+        )
     }
 }
 
 @Composable
 fun TransactionPercentCard(
     modifier: Modifier,
-    transactionPercent: TransactionPercent
+    transactionPercent: TransactionPercent,
+    colors: Pair<Color, Color>
 ) {
     Surface(
         modifier = modifier,
@@ -62,7 +67,7 @@ fun TransactionPercentCard(
                     modifier = Modifier
                         .weight(abs(transactionPercent.percent.toFloat()))
                         .fillMaxHeight(),
-                    color = MaterialTheme.colorScheme.tertiaryContainer,
+                    color = colors.first,
                     tonalElevation = 6.dp,
                     shape = RoundedCornerShape(12.dp)
                 ) {}
@@ -83,12 +88,13 @@ fun TransactionPercentCard(
                             transactionPercent.icon_id
                         )
                     ),
+                    tint = colors.second,
                     contentDescription = transactionPercent.content
                 )
                 Spacer(modifier = Modifier.width(8.dp))
-                Text(text = transactionPercent.content)
+                Text(text = transactionPercent.content, color = colors.second)
                 Spacer(modifier = Modifier.weight(1F))
-                Text(text = transactionPercent.money.toSignString())
+                Text(text = transactionPercent.money.toSignString(), color = colors.second)
                 Spacer(modifier = Modifier.width(16.dp))
             }
         }
@@ -103,6 +109,7 @@ fun PreviewTransactionPercentCard(
         modifier = Modifier.fillMaxSize(),
         transactionPercent = TransactionPercent(
             1, "饮食", BigDecimal(24), 0.34
-        )
+        ),
+        colors = MaterialTheme.colorScheme.tertiaryContainer to MaterialTheme.colorScheme.onTertiaryContainer
     )
 }
