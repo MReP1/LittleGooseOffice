@@ -8,6 +8,7 @@ import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.*
 import androidx.compose.material3.TabRowDefaults.tabIndicatorOffset
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -29,6 +30,7 @@ fun TransactionAnalysisTopBar(
     onTabClick: (index: Int) -> Unit,
     onBack: () -> Unit
 ) {
+    val shape = remember { RoundedCornerShape(24.dp) }
     CenterAlignedTopAppBar(
         modifier = modifier.fillMaxWidth(),
         title = {
@@ -46,7 +48,7 @@ fun TransactionAnalysisTopBar(
                         Box(
                             modifier = Modifier
                                 .tabIndicatorOffset(it[selectedTabIndex])
-                                .clip(RoundedCornerShape(24.dp))
+                                .clip(shape)
                                 .background(MaterialTheme.colorScheme.primaryContainer)
                                 .width(12.dp)
                                 .height(58.dp)
@@ -55,6 +57,7 @@ fun TransactionAnalysisTopBar(
                 }
             ) {
                 Tab(
+                    modifier = Modifier.clip(shape),
                     selected = selectedTabIndex == 0,
                     onClick = { onTabClick(0) }
                 ) {
@@ -65,6 +68,7 @@ fun TransactionAnalysisTopBar(
                     )
                 }
                 Tab(
+                    modifier = Modifier.clip(shape),
                     selected = selectedTabIndex == 1,
                     onClick = { onTabClick(1) }
                 ) {
@@ -75,6 +79,7 @@ fun TransactionAnalysisTopBar(
                     )
                 }
                 Tab(
+                    modifier = Modifier.clip(shape),
                     selected = selectedTabIndex == 2,
                     onClick = { onTabClick(2) }
                 ) {
