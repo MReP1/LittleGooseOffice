@@ -1,0 +1,98 @@
+package little.goose.account.ui.analysis
+
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material3.*
+import androidx.compose.material3.TabRowDefaults.tabIndicatorOffset
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.zIndex
+import java.math.BigDecimal
+
+data class TransactionAnalysisTopBarState(
+    val expenseSum: BigDecimal = BigDecimal(0),
+    val incomeSum: BigDecimal = BigDecimal(0),
+    val balance: BigDecimal = BigDecimal(0)
+)
+
+@Composable
+fun TransactionAnalysisTopBar(
+    modifier: Modifier = Modifier,
+    state: TransactionAnalysisTopBarState,
+    selectedTabIndex: Int,
+    onTabClick: (index: Int) -> Unit,
+    onBack: () -> Unit
+) {
+    CenterAlignedTopAppBar(
+        modifier = modifier.fillMaxWidth(),
+        title = {
+            TabRow(
+                modifier = Modifier.padding(horizontal = 36.dp),
+                selectedTabIndex = selectedTabIndex,
+                divider = {},
+                indicator = {
+                    Box(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .zIndex(-1F),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Box(
+                            modifier = Modifier
+                                .tabIndicatorOffset(it[selectedTabIndex])
+                                .clip(RoundedCornerShape(24.dp))
+                                .background(MaterialTheme.colorScheme.primaryContainer)
+                                .width(12.dp)
+                                .height(58.dp)
+                        )
+                    }
+                }
+            ) {
+                Tab(
+                    selected = selectedTabIndex == 0,
+                    onClick = { onTabClick(0) }
+                ) {
+                    Text(text = "支出", style = MaterialTheme.typography.titleMedium)
+                    Text(
+                        text = state.expenseSum.toPlainString(),
+                        style = MaterialTheme.typography.bodySmall
+                    )
+                }
+                Tab(
+                    selected = selectedTabIndex == 1,
+                    onClick = { onTabClick(1) }
+                ) {
+                    Text(text = "收入", style = MaterialTheme.typography.titleMedium)
+                    Text(
+                        text = state.incomeSum.toPlainString(),
+                        style = MaterialTheme.typography.bodySmall
+                    )
+                }
+                Tab(
+                    selected = selectedTabIndex == 2,
+                    onClick = { onTabClick(2) }
+                ) {
+                    Text(text = "结余", style = MaterialTheme.typography.titleMedium)
+                    Text(
+                        text = state.balance.toPlainString(),
+                        style = MaterialTheme.typography.bodySmall
+                    )
+                }
+            }
+        },
+        navigationIcon = {
+            IconButton(onClick = onBack) {
+                Icon(
+                    imageVector = Icons.Default.ArrowBack,
+                    contentDescription = "back"
+                )
+            }
+        }
+    )
+}

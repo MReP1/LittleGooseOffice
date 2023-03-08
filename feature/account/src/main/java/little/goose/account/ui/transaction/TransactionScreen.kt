@@ -48,6 +48,7 @@ fun TransactionScreen(
             if (it == 0) {
                 viewModel.setTransaction(
                     transaction.copy(
+                        type = EXPENSE,
                         content = expenseSelectedIcon.name,
                         icon_id = expenseSelectedIcon.id
                     )
@@ -55,6 +56,7 @@ fun TransactionScreen(
             } else {
                 viewModel.setTransaction(
                     transaction.copy(
+                        type = INCOME,
                         content = incomeSelectedIcon.name,
                         icon_id = incomeSelectedIcon.id
                     )

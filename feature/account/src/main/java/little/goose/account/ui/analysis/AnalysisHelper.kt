@@ -2,7 +2,6 @@ package little.goose.account.ui.analysis
 
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
-import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.withContext
@@ -35,8 +34,8 @@ class AnalysisHelper(
     val incomePercents = _incomePercentList.asStateFlow()
 
     private val mapBalance: HashMap<Int, TransactionBalance> = HashMap()
-    private val _balanceList = MutableStateFlow(listOf<TransactionBalance>())
-    val balances = _balanceList.asStateFlow()
+    private val _balances = MutableStateFlow(listOf<TransactionBalance>())
+    val balances = _balances.asStateFlow()
 
     private val cachedTimeExpenseList = ArrayList<TimeMoney>()
     private val _timeExpenseList = MutableStateFlow<List<TimeMoney>>(emptyList())
@@ -142,7 +141,11 @@ class AnalysisHelper(
 
         _expensePercentList.value = mapExpensePercent.values.toList()
         _incomePercentList.value = mapIncomePercent.values.toList()
-        _balanceList.value = mapBalance.values.sortedBy { it.time }.toList()
+        _balances.value = mapBalance.values.sortedBy { it.time }.toList()
+
+        _incomeSum.value = cachedIncomeSum
+        _expenseSum.value = cachedExpenseSum
+        _balance.value = cachedBalance
 
         _timeExpenseList.value = cachedTimeExpenseList.toList()
         _timeIncomeList.value = cachedTimeIncomeList.toList()

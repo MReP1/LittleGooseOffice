@@ -4,11 +4,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.async
-import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
-import little.goose.account.data.entities.Transaction
 import little.goose.account.logic.AccountRepository
 import little.goose.account.ui.component.MonthSelectorState
 import little.goose.account.ui.component.YearSelectorState
@@ -19,7 +16,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class TransactionAnalysisViewModel @Inject constructor(
-    private val accountRepository: AccountRepository
+    accountRepository: AccountRepository
 ) : ViewModel() {
 
     private val analysisHelper = AnalysisHelper(accountRepository)
@@ -46,7 +43,7 @@ class TransactionAnalysisViewModel @Inject constructor(
         }
     }
 
-    val expensePercents get() = analysisHelper.expensePercents
+    private val expensePercents get() = analysisHelper.expensePercents
 
     private val incomePercents get() = analysisHelper.incomePercents
 
@@ -63,6 +60,24 @@ class TransactionAnalysisViewModel @Inject constructor(
     private val timeIncomes get() = analysisHelper.timeIncomes
 
     private val timeBalances get() = analysisHelper.timeBalances
+
+    val contentState = combine(
+        expensePercents, incomePercents, balances
+    ) { expensePercents, incomePercents, balancePercents ->
+        TransactionAnalysisContentState(expensePercents, incomePercents, balancePercents)
+    }.stateIn(
+        scope = viewModelScope,
+        started = SharingStarted.WhileSubscribed(5000L),
+        initialValue = TransactionAnalysisContentState()
+    )
+
+    val topBarState = combine(expenseSum, incomeSum, balance) { expenseSum, incomeSum, balance ->
+        TransactionAnalysisTopBarState(expenseSum, incomeSum, balance)
+    }.stateIn(
+        scope = viewModelScope,
+        started = SharingStarted.WhileSubscribed(5000),
+        initialValue = TransactionAnalysisTopBarState()
+    )
 
     val bottomBarState = combine(type, year, month) { type, year, month ->
         TransactionAnalysisBottomBarState(
