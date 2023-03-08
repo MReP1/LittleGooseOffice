@@ -86,7 +86,13 @@ fun TransactionAnalysisBottomBar(
                 NavigationBarItem(
                     selected = state.type == TransactionAnalysisViewModel.Type.MONTH,
                     onClick = { state.onTypeChange(TransactionAnalysisViewModel.Type.MONTH) },
-                    icon = { Text(text = "${state.month}月", Modifier.padding(6.dp)) }
+                    icon = {
+                        Text(
+                            text = if (state.type == TransactionAnalysisViewModel.Type.MONTH)
+                                "${state.month}月" else "月",
+                            Modifier.padding(6.dp)
+                        )
+                    }
                 )
             }
             Spacer(modifier = Modifier.height(8.dp))
