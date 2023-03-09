@@ -14,6 +14,8 @@ class TransactionAnalysisLineChartView @JvmOverloads constructor(
 ) : LineChart(context, attrs) {
 
     private val entries = ArrayList<Entry>()
+    private val lineData = LineData()
+    private lateinit var lineDataSet: LineDataSet
 
     init {
         description = null
@@ -28,11 +30,12 @@ class TransactionAnalysisLineChartView @JvmOverloads constructor(
     }
 
     fun bindData(
-        list: List<TimeMoney>, type: Type,
+        list: List<TimeMoney>,
+        type: Type,
         @ColorInt lineColor: Int,
         @ColorInt circleColor: Int
     ) {
-        if (list.isEmpty()) return
+        entries.clear()
         when (type) {
             Type.Common -> {
                 axisLeft.axisMinimum = 0F
@@ -49,9 +52,7 @@ class TransactionAnalysisLineChartView @JvmOverloads constructor(
                 entries.add(Entry(index.toFloat(), list[index].money.toFloat(), list[index]))
             }
         }
-        val lineDataSet = LineDataSet(
-            entries, null
-        ).apply {
+        lineDataSet = LineDataSet(entries, null).apply {
             lineWidth = 1.6f
             circleRadius = 3f
             color = lineColor
@@ -59,7 +60,9 @@ class TransactionAnalysisLineChartView @JvmOverloads constructor(
             valueTextSize = 0f
             setDrawCircleHole(false)
         }
-        val lineData = LineData(lineDataSet)
+        lineData.removeDataSet(0)
+        lineData.addDataSet(lineDataSet)
         data = lineData
+        highlightValue(null)
     }
 }

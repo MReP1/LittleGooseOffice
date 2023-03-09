@@ -104,24 +104,21 @@ fun TransactionAnalysisBalanceContent(
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             val colorScheme = MaterialTheme.colorScheme
-            if (timeMoneys.isNotEmpty()) {
-                val context = LocalContext.current
-                val lineChartView = remember { TransactionAnalysisLineChartView(context) }
-                AndroidView(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(200.dp)
-                        .padding(horizontal = 16.dp, vertical = 6.dp),
-                    factory = { lineChartView }
+            val context = LocalContext.current
+            val lineChartView = remember { TransactionAnalysisLineChartView(context) }
+            AndroidView(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(200.dp)
+                    .padding(horizontal = 16.dp, vertical = 6.dp),
+                factory = { lineChartView }
+            )
+            Spacer(modifier = Modifier.height(12.dp))
+            LaunchedEffect(timeMoneys) {
+                lineChartView.bindData(
+                    timeMoneys, TransactionAnalysisLineChartView.Type.Common,
+                    colorScheme.primary.toArgb(), colorScheme.tertiary.toArgb()
                 )
-                Spacer(modifier = Modifier.height(12.dp))
-                DisposableEffect(timeMoneys) {
-                    lineChartView.bindData(
-                        timeMoneys, TransactionAnalysisLineChartView.Type.Common,
-                        colorScheme.primary.toArgb(), colorScheme.tertiary.toArgb()
-                    )
-                    onDispose { }
-                }
             }
             // FIXME ThreadLocal
             val calendar = remember { Calendar.getInstance() }
@@ -238,23 +235,20 @@ fun TransactionAnalysisCommonContent(
                 }
             }
 
-            if (timeMoneys.isNotEmpty()) {
-                val context = LocalContext.current
-                val lineChartView = remember { TransactionAnalysisLineChartView(context) }
-                AndroidView(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(200.dp)
-                        .padding(horizontal = 16.dp, vertical = 6.dp),
-                    factory = { lineChartView }
+            val context = LocalContext.current
+            val lineChartView = remember { TransactionAnalysisLineChartView(context) }
+            AndroidView(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(200.dp)
+                    .padding(horizontal = 16.dp, vertical = 6.dp),
+                factory = { lineChartView }
+            )
+            LaunchedEffect(timeMoneys) {
+                lineChartView.bindData(
+                    timeMoneys, TransactionAnalysisLineChartView.Type.Common,
+                    colorScheme.primary.toArgb(), colorScheme.tertiary.toArgb()
                 )
-                DisposableEffect(timeMoneys) {
-                    lineChartView.bindData(
-                        timeMoneys, TransactionAnalysisLineChartView.Type.Common,
-                        colorScheme.primary.toArgb(), colorScheme.tertiary.toArgb()
-                    )
-                    onDispose { }
-                }
             }
 
             Spacer(modifier = Modifier.height(16.dp))
