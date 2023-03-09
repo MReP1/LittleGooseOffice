@@ -1,15 +1,13 @@
 package little.goose.account.ui.component
 
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.key
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -28,15 +26,9 @@ fun TransactionPercentColumn(
     transactionPercents: List<TransactionPercent>,
     colors: List<Pair<Color, Color>>
 ) {
-    val lazyListState = rememberLazyListState()
-    LazyColumn(
-        modifier = modifier,
-        state = lazyListState
-    ) {
-        items(
-            count = transactionPercents.size,
-            key = { transactionPercents[it].icon_id },
-            itemContent = { index ->
+    Column(modifier = modifier) {
+        for (index in transactionPercents.indices) {
+            key(transactionPercents[index].icon_id) {
                 TransactionPercentCard(
                     modifier = Modifier
                         .padding(horizontal = 16.dp, vertical = 4.dp)
@@ -46,7 +38,7 @@ fun TransactionPercentColumn(
                     colors = colors[index]
                 )
             }
-        )
+        }
     }
 }
 

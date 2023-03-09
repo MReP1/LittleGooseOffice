@@ -43,35 +43,35 @@ class TransactionAnalysisViewModel @Inject constructor(
         }
     }
 
-    private val expensePercents get() = analysisHelper.expensePercents
-
-    private val incomePercents get() = analysisHelper.incomePercents
-
-    private val balances get() = analysisHelper.balances
-
-    private val expenseSum get() = analysisHelper.expenseSum
-
-    private val incomeSum get() = analysisHelper.incomeSum
-
-    private val balance get() = analysisHelper.balance
-
-    private val timeExpenses get() = analysisHelper.timeExpenses
-
-    private val timeIncomes get() = analysisHelper.timeIncomes
-
-    private val timeBalances get() = analysisHelper.timeBalances
-
     val contentState = combine(
-        expensePercents, incomePercents, balances
-    ) { expensePercents, incomePercents, balancePercents ->
-        TransactionAnalysisContentState(expensePercents, incomePercents, balancePercents)
+        combine(
+            analysisHelper.expensePercents,
+            analysisHelper.incomePercents,
+            analysisHelper.balances
+        ) { expensePercents, incomePercents, balancePercents ->
+            TransactionAnalysisPercentsState(expensePercents, incomePercents, balancePercents)
+        },
+        combine(
+            type,
+            analysisHelper.timeExpenses,
+            analysisHelper.timeIncomes,
+            analysisHelper.timeBalances
+        ) { type, timeExpenses, timeIncomes, timeBalances ->
+            TransactionAnalysisTimeState(type, timeExpenses, timeIncomes, timeBalances)
+        }
+    ) { percentsState, timeState ->
+        TransactionAnalysisContentState(percentsState, timeState)
     }.stateIn(
         scope = viewModelScope,
         started = SharingStarted.WhileSubscribed(5000L),
         initialValue = TransactionAnalysisContentState()
     )
 
-    val topBarState = combine(expenseSum, incomeSum, balance) { expenseSum, incomeSum, balance ->
+    val topBarState = combine(
+        analysisHelper.expenseSum,
+        analysisHelper.incomeSum,
+        analysisHelper.balance
+    ) { expenseSum, incomeSum, balance ->
         TransactionAnalysisTopBarState(expenseSum, incomeSum, balance)
     }.stateIn(
         scope = viewModelScope,
