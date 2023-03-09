@@ -15,12 +15,13 @@ fun TransactionAnalysisScreen(
     modifier: Modifier = Modifier,
     onBack: () -> Unit
 ) {
+    // FIXME 删除刷新
     val viewModel = hiltViewModel<TransactionAnalysisViewModel>()
     val bottomBarState by viewModel.bottomBarState.collectAsState()
     val topBarState by viewModel.topBarState.collectAsState()
     val contentState by viewModel.contentState.collectAsState()
-    val scope = rememberCoroutineScope()
 
+    val scope = rememberCoroutineScope()
     val pagerState = rememberPagerState(initialPage = 0)
 
     Scaffold(

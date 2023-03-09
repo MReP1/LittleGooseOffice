@@ -1,5 +1,6 @@
 package little.goose.account.ui.analysis
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.rememberScrollState
@@ -14,21 +15,31 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
+import com.github.mikephil.charting.data.Entry
+import com.github.mikephil.charting.highlight.Highlight
+import com.github.mikephil.charting.listener.OnChartValueSelectedListener
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.PagerState
+import little.goose.account.data.constants.MoneyType
 import little.goose.account.data.models.TimeMoney
 import little.goose.account.data.models.TransactionBalance
 import little.goose.account.data.models.TransactionPercent
+import little.goose.account.ui.TransactionExampleActivity
 import little.goose.account.ui.analysis.widget.TransactionAnalysisLineChartView
 import little.goose.account.ui.component.TransactionPercentCircleChart
 import little.goose.account.ui.component.TransactionPercentColumn
 import little.goose.common.collections.CircularLinkList
+import little.goose.common.dialog.time.TimeType
 import little.goose.common.utils.getDate
 import little.goose.common.utils.getMonth
+import little.goose.common.utils.toChineseMonth
+import little.goose.common.utils.toChineseMonthDay
+import java.math.BigDecimal
 import java.util.*
 
 data class TransactionAnalysisContentState(
+    val timeType: TransactionAnalysisViewModel.TimeType = TransactionAnalysisViewModel.TimeType.MONTH,
     val percentsState: TransactionAnalysisPercentsState = TransactionAnalysisPercentsState(),
     val timeState: TransactionAnalysisTimeState = TransactionAnalysisTimeState()
 )
@@ -40,7 +51,6 @@ data class TransactionAnalysisPercentsState(
 )
 
 data class TransactionAnalysisTimeState(
-    val type: TransactionAnalysisViewModel.Type = TransactionAnalysisViewModel.Type.MONTH,
     val timeExpenses: List<TimeMoney> = listOf(),
     val timeIncomes: List<TimeMoney> = listOf(),
     val balances: List<TimeMoney> = listOf()
@@ -63,6 +73,8 @@ fun TransactionAnalysisContent(
             0 -> {
                 TransactionAnalysisCommonContent(
                     modifier = Modifier.fillMaxSize(),
+                    timeType = state.timeType,
+                    moneyType = MoneyType.EXPENSE,
                     timeMoneys = state.timeState.timeExpenses,
                     transactionPercents = state.percentsState.expensePercents
                 )
@@ -70,6 +82,8 @@ fun TransactionAnalysisContent(
             1 -> {
                 TransactionAnalysisCommonContent(
                     modifier = Modifier.fillMaxSize(),
+                    timeType = state.timeType,
+                    moneyType = MoneyType.INCOME,
                     timeMoneys = state.timeState.timeIncomes,
                     transactionPercents = state.percentsState.incomePercents
                 )
@@ -77,7 +91,7 @@ fun TransactionAnalysisContent(
             2 -> {
                 TransactionAnalysisBalanceContent(
                     modifier = Modifier.fillMaxSize(),
-                    type = state.timeState.type,
+                    timeType = state.timeType,
                     timeMoneys = state.timeState.balances,
                     transactionBalances = state.percentsState.balancePercents
                 )
@@ -89,7 +103,7 @@ fun TransactionAnalysisContent(
 @Composable
 fun TransactionAnalysisBalanceContent(
     modifier: Modifier,
-    type: TransactionAnalysisViewModel.Type,
+    timeType: TransactionAnalysisViewModel.TimeType,
     timeMoneys: List<TimeMoney>,
     transactionBalances: List<TransactionBalance>
 ) {
@@ -103,23 +117,14 @@ fun TransactionAnalysisBalanceContent(
                 .verticalScroll(scrollState),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            val colorScheme = MaterialTheme.colorScheme
-            val context = LocalContext.current
-            val lineChartView = remember { TransactionAnalysisLineChartView(context) }
-            AndroidView(
+            TransactionAnalysisLineChart(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(200.dp)
-                    .padding(horizontal = 16.dp, vertical = 6.dp),
-                factory = { lineChartView }
+                    .height(200.dp),
+                timeType = timeType,
+                moneyType = MoneyType.BALANCE,
+                timeMoneys = timeMoneys
             )
-            Spacer(modifier = Modifier.height(12.dp))
-            LaunchedEffect(timeMoneys) {
-                lineChartView.bindData(
-                    timeMoneys, TransactionAnalysisLineChartView.Type.Common,
-                    colorScheme.primary.toArgb(), colorScheme.tertiary.toArgb()
-                )
-            }
             // FIXME ThreadLocal
             val calendar = remember { Calendar.getInstance() }
             LazyColumn(modifier = Modifier.weight(1F)) {
@@ -161,12 +166,12 @@ fun TransactionAnalysisBalanceContent(
                                 .padding(horizontal = 16.dp, vertical = 8.dp)
                         ) {
                             Text(
-                                text = when (type) {
-                                    TransactionAnalysisViewModel.Type.MONTH -> {
+                                text = when (timeType) {
+                                    TransactionAnalysisViewModel.TimeType.MONTH -> {
                                         calendar.time = transactionBalance.time
                                         calendar.getDate().toString()
                                     }
-                                    TransactionAnalysisViewModel.Type.YEAR -> {
+                                    TransactionAnalysisViewModel.TimeType.YEAR -> {
                                         calendar.time = transactionBalance.time
                                         calendar.getMonth().toString()
                                     }
@@ -200,6 +205,8 @@ fun TransactionAnalysisBalanceContent(
 @Composable
 fun TransactionAnalysisCommonContent(
     modifier: Modifier,
+    timeType: TransactionAnalysisViewModel.TimeType,
+    moneyType: MoneyType,
     timeMoneys: List<TimeMoney>,
     transactionPercents: List<TransactionPercent>
 ) {
@@ -235,21 +242,14 @@ fun TransactionAnalysisCommonContent(
                 }
             }
 
-            val context = LocalContext.current
-            val lineChartView = remember { TransactionAnalysisLineChartView(context) }
-            AndroidView(
+            TransactionAnalysisLineChart(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(200.dp)
-                    .padding(horizontal = 16.dp, vertical = 6.dp),
-                factory = { lineChartView }
+                    .height(200.dp),
+                timeType = timeType,
+                moneyType = moneyType,
+                timeMoneys = timeMoneys
             )
-            LaunchedEffect(timeMoneys) {
-                lineChartView.bindData(
-                    timeMoneys, TransactionAnalysisLineChartView.Type.Common,
-                    colorScheme.primary.toArgb(), colorScheme.tertiary.toArgb()
-                )
-            }
 
             Spacer(modifier = Modifier.height(16.dp))
 
@@ -267,5 +267,75 @@ fun TransactionAnalysisCommonContent(
                 colors = trColors
             )
         }
+    }
+}
+
+@Composable
+fun TransactionAnalysisLineChart(
+    modifier: Modifier,
+    timeType: TransactionAnalysisViewModel.TimeType,
+    moneyType: MoneyType,
+    timeMoneys: List<TimeMoney>
+) {
+    val context = LocalContext.current
+    val colorScheme = MaterialTheme.colorScheme
+    Column(
+        modifier = modifier,
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        var currentTimeMoney: TimeMoney? by remember { mutableStateOf(null) }
+        val lineChartView = remember { TransactionAnalysisLineChartView(context) }
+        Spacer(modifier = Modifier.height(6.dp))
+        AndroidView(
+            modifier = Modifier
+                .fillMaxWidth()
+                .weight(1F)
+                .padding(horizontal = 16.dp),
+            factory = { lineChartView }
+        ) {
+            lineChartView.setOnChartValueSelectedListener(object : OnChartValueSelectedListener {
+                override fun onValueSelected(entry: Entry?, highlight: Highlight?) {
+                    if (entry == null || highlight == null) return
+                    currentTimeMoney = entry.data as TimeMoney
+                }
+
+                override fun onNothingSelected() {
+                    currentTimeMoney = null
+                }
+            })
+        }
+        LaunchedEffect(timeMoneys) {
+            lineChartView.bindData(
+                timeMoneys, TransactionAnalysisLineChartView.Type.Common,
+                colorScheme.primary.toArgb(), colorScheme.tertiary.toArgb()
+            )
+        }
+        Text(
+            text = currentTimeMoney?.let { timeMoney ->
+                val timeText = when (timeType) {
+                    TransactionAnalysisViewModel.TimeType.MONTH -> timeMoney.time.toChineseMonthDay()
+                    TransactionAnalysisViewModel.TimeType.YEAR -> timeMoney.time.toChineseMonth()
+                }
+                val typeText = if (timeMoney.money.signum() < 0) "消费" else "收入"
+                val moneyText = timeMoney.money.abs().toPlainString()
+                val noTransactionText = "没有记账"
+                if (timeMoney.money == BigDecimal(0)) noTransactionText else {
+                    "$timeText ${typeText}了${moneyText}元"
+                }
+            } ?: "",
+            modifier = Modifier
+                .height(26.dp)
+                .clickable {
+                    currentTimeMoney?.let { timeMoney ->
+                        val timeTypeTmp = when (timeType) {
+                            TransactionAnalysisViewModel.TimeType.MONTH -> TimeType.DATE
+                            TransactionAnalysisViewModel.TimeType.YEAR -> TimeType.YEAR_MONTH
+                        }
+                        TransactionExampleActivity.open(
+                            context, timeMoney.time, timeTypeTmp, moneyType
+                        )
+                    }
+                }
+        )
     }
 }

@@ -21,10 +21,10 @@ class TransactionAnalysisViewModel @Inject constructor(
 
     private val analysisHelper = AnalysisHelper(accountRepository)
 
-    enum class Type { MONTH, YEAR }
+    enum class TimeType { MONTH, YEAR }
 
-    private val _type = MutableStateFlow(Type.MONTH)
-    val type = _type.asStateFlow()
+    private val _timeType = MutableStateFlow(TimeType.MONTH)
+    val timeType = _timeType.asStateFlow()
 
     private val _year = MutableStateFlow(Calendar.getInstance().getYear())
     val year = _year.asStateFlow()
@@ -34,16 +34,17 @@ class TransactionAnalysisViewModel @Inject constructor(
 
     init {
         viewModelScope.launch(Dispatchers.IO) {
-            combine(type, year, month) { type, year, month ->
+            combine(timeType, year, month) { type, year, month ->
                 when (type) {
-                    Type.MONTH -> analysisHelper.updateTransactionListMonth(year, month)
-                    Type.YEAR -> analysisHelper.updateTransactionListYear(year)
+                    TimeType.MONTH -> analysisHelper.updateTransactionListMonth(year, month)
+                    TimeType.YEAR -> analysisHelper.updateTransactionListYear(year)
                 }
             }.collect()
         }
     }
 
     val contentState = combine(
+        timeType,
         combine(
             analysisHelper.expensePercents,
             analysisHelper.incomePercents,
@@ -52,15 +53,14 @@ class TransactionAnalysisViewModel @Inject constructor(
             TransactionAnalysisPercentsState(expensePercents, incomePercents, balancePercents)
         },
         combine(
-            type,
             analysisHelper.timeExpenses,
             analysisHelper.timeIncomes,
             analysisHelper.timeBalances
-        ) { type, timeExpenses, timeIncomes, timeBalances ->
-            TransactionAnalysisTimeState(type, timeExpenses, timeIncomes, timeBalances)
+        ) { timeExpenses, timeIncomes, timeBalances ->
+            TransactionAnalysisTimeState(timeExpenses, timeIncomes, timeBalances)
         }
-    ) { percentsState, timeState ->
-        TransactionAnalysisContentState(percentsState, timeState)
+    ) { timeType, percentsState, timeState ->
+        TransactionAnalysisContentState(timeType, percentsState, timeState)
     }.stateIn(
         scope = viewModelScope,
         started = SharingStarted.WhileSubscribed(5000L),
@@ -79,22 +79,22 @@ class TransactionAnalysisViewModel @Inject constructor(
         initialValue = TransactionAnalysisTopBarState()
     )
 
-    val bottomBarState = combine(type, year, month) { type, year, month ->
+    val bottomBarState = combine(timeType, year, month) { type, year, month ->
         TransactionAnalysisBottomBarState(
             type, year, month,
             MonthSelectorState(year, month) { y, m -> _year.value = y; _month.value = m },
             YearSelectorState(year) { y -> _year.value = y },
-            onTypeChange = { t -> _type.value = t }
+            onTypeChange = { t -> _timeType.value = t }
         )
     }.stateIn(
         scope = viewModelScope, started = SharingStarted.WhileSubscribed(5000),
         initialValue = TransactionAnalysisBottomBarState(
-            type.value, year.value, month.value,
+            timeType.value, year.value, month.value,
             MonthSelectorState(year.value, month.value) { y, m ->
                 _year.value = y; _month.value = m
             },
             YearSelectorState(year.value) { y -> _year.value = y },
-            onTypeChange = { t -> _type.value = t }
+            onTypeChange = { t -> _timeType.value = t }
         )
     )
 
