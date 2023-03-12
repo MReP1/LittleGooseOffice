@@ -283,7 +283,9 @@ fun TransactionAnalysisLineChart(
         modifier = modifier,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        var currentTimeMoney: TimeMoney? by remember { mutableStateOf(null) }
+        var currentTimeMoney: TimeMoney? by remember(timeMoneys, moneyType, timeType) {
+            mutableStateOf(null)
+        }
         val lineChartView = remember { TransactionAnalysisLineChartView(context) }
         Spacer(modifier = Modifier.height(6.dp))
         AndroidView(

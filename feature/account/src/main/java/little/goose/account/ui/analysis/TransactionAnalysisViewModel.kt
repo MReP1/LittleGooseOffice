@@ -35,11 +35,19 @@ class TransactionAnalysisViewModel @Inject constructor(
     init {
         viewModelScope.launch(Dispatchers.IO) {
             combine(timeType, year, month) { type, year, month ->
-                when (type) {
-                    TimeType.MONTH -> analysisHelper.updateTransactionListMonth(year, month)
-                    TimeType.YEAR -> analysisHelper.updateTransactionListYear(year)
-                }
+                updateData(type, year, month)
             }.collect()
+        }
+    }
+
+    fun updateData() {
+        viewModelScope.launch { updateData(timeType.value, year.value, month.value) }
+    }
+
+    suspend fun updateData(type: TimeType, year: Int, month: Int) {
+        when (type) {
+            TimeType.MONTH -> analysisHelper.updateTransactionListMonth(year, month)
+            TimeType.YEAR -> analysisHelper.updateTransactionListYear(year)
         }
     }
 
