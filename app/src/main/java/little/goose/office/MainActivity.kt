@@ -16,6 +16,7 @@ import little.goose.common.utils.viewBinding
 import little.goose.design.system.theme.AccountTheme
 import little.goose.home.data.*
 import little.goose.home.ui.HomeScreen
+import little.goose.home.ui.IndexScreen
 import little.goose.home.utils.KEY_PREF_PAGER
 import little.goose.home.utils.homeDataStore
 import little.goose.home.utils.withData
@@ -32,7 +33,8 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContent {
             AccountTheme {
-                HomeScreen(modifier = Modifier.fillMaxSize())
+                IndexScreen(modifier = Modifier.fillMaxSize())
+//                HomeScreen(modifier = Modifier.fillMaxSize())
 //                Canvas(modifier = Modifier.fillMaxSize(), onDraw = {
 //                    drawArc(
 //                        color = Color.Red,

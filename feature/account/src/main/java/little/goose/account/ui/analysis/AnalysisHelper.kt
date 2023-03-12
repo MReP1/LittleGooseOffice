@@ -12,8 +12,6 @@ import little.goose.account.data.models.TimeMoney
 import little.goose.account.data.models.TransactionBalance
 import little.goose.account.data.models.TransactionPercent
 import little.goose.account.logic.AccountRepository
-import little.goose.account.ui.analysis.AnalysisFragmentViewModel.Companion.MONTH
-import little.goose.account.ui.analysis.AnalysisFragmentViewModel.Companion.YEAR
 import little.goose.common.utils.*
 import java.math.BigDecimal
 import java.util.*
@@ -70,7 +68,9 @@ class AnalysisHelper(
         val list = listDeferred.await()
         val expenseSum = expenseSumDeferred.await()
         val incomeSum = incomeSumDeferred.await()
-        analyseTransactionList(list, expenseSum, incomeSum, year, -1, 0)
+        analyseTransactionList(
+            list, expenseSum, incomeSum, year, -1, TransactionAnalysisViewModel.TimeType.YEAR
+        )
     }
 
     suspend fun updateTransactionListMonth(
@@ -82,16 +82,18 @@ class AnalysisHelper(
         val list = listDeferred.await()
         val expenseSum = expenseSumDeferred.await()
         val incomeSum = incomeSumDeferred.await()
-        analyseTransactionList(list, expenseSum, incomeSum, year, month, 1)
+        analyseTransactionList(
+            list, expenseSum, incomeSum, year, month, TransactionAnalysisViewModel.TimeType.MONTH
+        )
     }
 
-    fun analyseTransactionList(
+    private fun analyseTransactionList(
         list: List<Transaction>,
         expenseSum: Double,
         incomeSum: Double,
         year: Int,
         month: Int,
-        type: Int
+        type: TransactionAnalysisViewModel.TimeType
     ) {
         mapExpensePercent.clear()
         mapIncomePercent.clear()
@@ -102,11 +104,11 @@ class AnalysisHelper(
         cachedTimeBalanceList.clear()
 
         when (type) {
-            YEAR -> {
+            TransactionAnalysisViewModel.TimeType.YEAR -> {
                 initTimeListYear(year)
                 dealWithListYear(list)
             }
-            MONTH -> {
+            TransactionAnalysisViewModel.TimeType.MONTH -> {
                 initTimeListMonth(year, month)
                 dealWithListMonth(list)
             }

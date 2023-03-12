@@ -47,6 +47,11 @@ fun HomeScreen(
     val fragmentManager = (context as FragmentActivity).supportFragmentManager
     val scope = rememberCoroutineScope()
     val pagerState = rememberPagerState()
+    var scrollable by remember { mutableStateOf(true) }
+    DisposableEffect(pagerState.currentPage) {
+        scrollable = pagerState.currentPage != HOME
+        onDispose { }
+    }
     val currentHomePage = remember(pagerState.currentPage) {
         HomePage.fromPageIndex(pagerState.currentPage)
     }
@@ -72,11 +77,12 @@ fun HomeScreen(
                 HorizontalPager(
                     count = 5,
                     modifier = Modifier.fillMaxSize(),
-                    state = pagerState
+                    state = pagerState,
+                    userScrollEnabled = scrollable
                 ) { index ->
                     when (index) {
                         HOME -> {
-                            Box(modifier = Modifier.fillMaxSize())
+                            IndexScreen(modifier = Modifier.fillMaxSize())
                         }
                         NOTEBOOK -> {
                             NotebookRoute(modifier = Modifier.fillMaxSize())

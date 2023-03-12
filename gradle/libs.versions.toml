@@ -18,6 +18,7 @@ accompanistVersion = "0.28.0"
 androidxHiltNavigationCompose = "1.0.0"
 androidxConstraintLayoutCompose = "1.0.1"
 androidLifecycle = "2.5.1"
+composeCalendar = "2.2.0"
 junit4 = "4.13.2"
 kotlin = "1.7.20"
 
@@ -57,6 +58,7 @@ androidx-dataStore-preferences = { group = "androidx.datastore", name = "datasto
 androidx-test-ext = { group = "androidx.test.ext", name = "junit-ktx", version.ref = "androidxTestExt" }
 androidx-test-espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "androidxEspresso" }
 androidx-localbroadcastManager = { group = "androidx.localbroadcastmanager", name = "localbroadcastmanager", version.ref = "androidxLocalbroadcastManager" }
+compose-calendar = { group = "com.kizitonwose.calendar", name= "compose", version.ref = "composeCalendar"}
 google-android-material = { group = "com.google.android.material", name = "material", version.ref = "androidMaterial" }
 hilt-android = { group = "com.google.dagger", name = "hilt-android", version.ref = "hilt" }
 hilt-compiler = { group = "com.google.dagger", name = "hilt-android-compiler", version.ref = "hilt" }

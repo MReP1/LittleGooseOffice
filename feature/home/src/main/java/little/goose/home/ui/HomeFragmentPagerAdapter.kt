@@ -12,7 +12,7 @@ class HomeFragmentPagerAdapter(fragmentActivity: FragmentActivity) :
 
     override fun createFragment(position: Int): Fragment {
         return when (position) {
-            0 -> HomeFragment.newInstance()
+//            0 -> HomeFragment.newInstance()
 //            1 -> NotebookFragment.newInstance()
 //            2 -> AccountFragment.newInstance()
 //            3 -> ScheduleFragment.newInstance()
