@@ -42,6 +42,11 @@ class MemorialRepository(context: Context) {
         return memorialDao.getMemorialByTime(monthRange.startTime, monthRange.endTime)
     }
 
+    fun getMemorialsByYearMonthFlow(year: Int, month: Int): Flow<List<Memorial>> {
+        val monthRange = getOneMonthRange(year, month)
+        return memorialDao.getMemorialByTimeFlow(monthRange.startTime, monthRange.endTime)
+    }
+
     fun getMemorialsByDateFlow(year: Int, month: Int, day: Int): Flow<List<Memorial>> {
         val dayRange = getOneDayRange(year, month, day)
         return memorialDao.getMemorialByTimeFlow(dayRange.startTime, dayRange.endTime)

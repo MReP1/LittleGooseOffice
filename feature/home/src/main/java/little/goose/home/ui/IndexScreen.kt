@@ -1,6 +1,7 @@
 package little.goose.home.ui
 
 import androidx.compose.animation.animateContentSize
+import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -9,13 +10,16 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.kizitonwose.calendar.compose.CalendarState
 import com.kizitonwose.calendar.compose.HorizontalCalendar
 import com.kizitonwose.calendar.compose.rememberCalendarState
-import com.kizitonwose.calendar.core.*
+import com.kizitonwose.calendar.core.CalendarDay
+import com.kizitonwose.calendar.core.DayPosition
+import com.kizitonwose.calendar.core.OutDateStyle
+import com.kizitonwose.calendar.core.daysOfWeek
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.launch
+import little.goose.home.data.CalendarModel
 import java.time.LocalDate
 import java.time.YearMonth
 import java.time.format.TextStyle
@@ -46,10 +50,12 @@ fun IndexScreen(
                 .collect { visibleMonth = state.firstVisibleMonth }
         }
         launch(Dispatchers.Default) {
-            snapshotFlow { state.firstVisibleMonth }
-                .collect {
-
-                }
+            snapshotFlow { state.firstVisibleMonth }.collect {
+                viewModel.updateTime(
+                    firstVisibleMonth = state.firstVisibleMonth.yearMonth,
+                    lastVisibleMonth = state.lastVisibleMonth.yearMonth
+                )
+            }
         }
     }
     val contentHeight = remember { 58.dp }
@@ -74,10 +80,12 @@ fun IndexScreen(
                 state = state,
                 userScrollEnabled = true,
                 dayContent = { day ->
+                    val model by viewModel.getCalendarModelState(day.date)
                     MonthDay(
                         modifier = Modifier.height(contentHeight),
                         day = day,
-                        isToday = day.date.isEqual(currentDay)
+                        isToday = day.date.isEqual(currentDay),
+                        model = model
                     )
                 }
             )
@@ -89,13 +97,15 @@ fun IndexScreen(
 private fun MonthDay(
     modifier: Modifier,
     day: CalendarDay,
-    isToday: Boolean
+    isToday: Boolean,
+    model: CalendarModel
 ) {
     DayContent(
         modifier = modifier,
         date = day.date,
         isCurrent = day.position == DayPosition.MonthDate,
-        isToday = isToday
+        isToday = isToday,
+        model = model
     )
 }
 
@@ -104,15 +114,25 @@ private fun DayContent(
     modifier: Modifier,
     date: LocalDate,
     isCurrent: Boolean,
-    isToday: Boolean
+    isToday: Boolean,
+    model: CalendarModel
 ) {
-    Box(
+    Column(
         modifier = modifier.fillMaxWidth(),
-        contentAlignment = Alignment.Center
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally
     ) {
+        val colorScheme = MaterialTheme.colorScheme
+        if (model.containSomething) {
+            Canvas(modifier = Modifier.size(14.dp)) {
+                drawCircle(color = colorScheme.primaryContainer, radius = size.width / 4)
+            }
+        } else {
+            Spacer(modifier = Modifier.height(14.dp))
+        }
         Text(
             text = date.dayOfMonth.toString(),
-            modifier = Modifier.align(Alignment.Center),
+            modifier = Modifier,
             color = if (isToday) {
                 MaterialTheme.colorScheme.tertiary
             } else if (isCurrent) {
@@ -121,5 +141,14 @@ private fun DayContent(
                 MaterialTheme.colorScheme.outlineVariant
             }
         )
+        if (model.balance.signum() != 0) {
+            Text(
+                text = model.balance.toPlainString() ?: "",
+                modifier = Modifier.height(14.dp),
+                style = MaterialTheme.typography.bodySmall
+            )
+        } else {
+            Spacer(modifier = Modifier.height(14.dp))
+        }
     }
 }

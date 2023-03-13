@@ -49,7 +49,7 @@ fun MemorialText(
             }
         }
     }
-    val currentTime by times.currentNote.collectAsState("")
+    val currentTime by times.currentNode.collectAsState("")
 
     Box(
         modifier = modifier
