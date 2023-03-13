@@ -8,61 +8,61 @@ class CircularLinkList<T> {
     var size = 0
         private set
 
-    private var headNote: Note<T>? = null
-    private var tailNote: Note<T>? = null
+    private var headNode: Node<T>? = null
+    private var tailNode: Node<T>? = null
 
-    private val _currentNote: MutableStateFlow<Note<T>?> = MutableStateFlow(null)
-    val currentNote = _currentNote.map { it?.element }
+    private val _currentNode: MutableStateFlow<Node<T>?> = MutableStateFlow(null)
+    val currentNode = _currentNode.map { it?.element }
 
     fun add(element: T) {
-        val note = Note(element)
-        val headNote = headNote
-        val tailNote = tailNote
-        if (headNote == null || tailNote == null) {
-            this.headNote = note
-            this.tailNote = note
-            _currentNote.value = note
+        val node = Node(element)
+        val headNode = headNode
+        val tailNode = tailNode
+        if (headNode == null || tailNode == null) {
+            this.headNode = node
+            this.tailNode = node
+            _currentNode.value = node
         } else {
-            tailNote._next = note
-            note._next = headNote
-            this.tailNote = note
+            tailNode._next = node
+            node._next = headNode
+            this.tailNode = node
         }
         size++
     }
 
     fun remove(element: T) {
-        var note: Note<T>? = headNote
-        if (note == element) {
-            headNote?._next = null
-            headNote = null
+        var node: Node<T>? = headNode
+        if (node == element) {
+            headNode?._next = null
+            headNode = null
         } else {
-            while (note != tailNote || note != null) {
-                if (note?._next == element) {
-                    note?._next = element?._next
-                    if (element == tailNote) {
-                        tailNote = note
+            while (node != tailNode || node != null) {
+                if (node?._next == element) {
+                    node?._next = element?._next
+                    if (element == tailNode) {
+                        tailNode = node
                     }
                     element?._next = null
                     break
                 }
-                note = note?._next
+                node = node?._next
             }
         }
-        if (note?._next == note) {
-            note?._next = null
+        if (node?._next == node) {
+            node?._next = null
         }
         size--
     }
 
     fun next(): T {
-        val note = _currentNote.value?.next
-        _currentNote.value = note
-        return note!!.element
+        val node = _currentNode.value?.next
+        _currentNode.value = node
+        return node!!.element
     }
 
-    class Note<T>(
+    class Node<T>(
         val element: T,
-        internal var _next: Note<T>? = null,
+        internal var _next: Node<T>? = null,
     ) {
         val next get() = _next ?: this
     }
