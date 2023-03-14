@@ -2,6 +2,7 @@ package little.goose.home.ui
 
 import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -30,18 +31,18 @@ fun IndexScreen(
     modifier: Modifier = Modifier
 ) {
     val viewModel = viewModel<IndexViewModel>()
-    val currentMonth = remember { YearMonth.now() }
-    val currentDay = remember { LocalDate.now() }
-    val startMonth = remember { currentMonth.minusMonths(120) }
-    val endMonth = remember { currentMonth.plusMonths(120) }
+    val initMonth = remember { YearMonth.now() }
+    val startMonth = remember { initMonth.minusMonths(120) }
+    val endMonth = remember { initMonth.plusMonths(120) }
     val dayOfWeek = remember { daysOfWeek() }
     val state = rememberCalendarState(
         startMonth = startMonth,
         endMonth = endMonth,
-        firstVisibleMonth = currentMonth,
+        firstVisibleMonth = initMonth,
         firstDayOfWeek = dayOfWeek.first(),
         outDateStyle = OutDateStyle.EndOfRow
     )
+
     var visibleMonth by remember(state) { mutableStateOf(state.firstVisibleMonth) }
     LaunchedEffect(state) {
         launch(Dispatchers.Default) {
@@ -59,6 +60,9 @@ fun IndexScreen(
         }
     }
     val contentHeight = remember { 58.dp }
+    val currentDay by viewModel.currentDay.collectAsState()
+    val currentCalendarModel by viewModel.currentCalendarModel.collectAsState()
+
     Column(modifier = modifier) {
         Row(modifier = Modifier.fillMaxWidth()) {
             for (day in dayOfWeek) {
@@ -85,11 +89,13 @@ fun IndexScreen(
                         modifier = Modifier.height(contentHeight),
                         day = day,
                         isToday = day.date.isEqual(currentDay),
-                        model = model
+                        model = model,
+                        onClick = viewModel::updateCurrentDay
                     )
                 }
             )
         }
+        Text(text = currentCalendarModel.toString())
     }
 }
 
@@ -98,14 +104,16 @@ private fun MonthDay(
     modifier: Modifier,
     day: CalendarDay,
     isToday: Boolean,
-    model: CalendarModel
+    model: CalendarModel,
+    onClick: (LocalDate) -> Unit
 ) {
     DayContent(
         modifier = modifier,
         date = day.date,
         isCurrent = day.position == DayPosition.MonthDate,
         isToday = isToday,
-        model = model
+        model = model,
+        onClick = onClick
     )
 }
 
@@ -115,10 +123,13 @@ private fun DayContent(
     date: LocalDate,
     isCurrent: Boolean,
     isToday: Boolean,
-    model: CalendarModel
+    model: CalendarModel,
+    onClick: (LocalDate) -> Unit
 ) {
     Column(
-        modifier = modifier.fillMaxWidth(),
+        modifier = modifier
+            .fillMaxWidth()
+            .clickable { onClick(date) },
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {

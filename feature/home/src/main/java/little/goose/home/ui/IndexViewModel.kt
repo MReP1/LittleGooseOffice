@@ -5,9 +5,8 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.asCoroutineDispatcher
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import little.goose.account.data.constants.AccountConstant.EXPENSE
 import little.goose.account.data.constants.AccountConstant.INCOME
@@ -24,6 +23,7 @@ import java.math.BigDecimal
 import java.time.LocalDate
 import java.time.YearMonth
 import java.time.ZoneId
+import java.util.concurrent.Executors
 import javax.inject.Inject
 
 @HiltViewModel
@@ -34,22 +34,30 @@ class IndexViewModel @Inject constructor(
     private val memorialRepository: MemorialRepository
 ) : ViewModel() {
 
+    private val dispatcher = Executors.newSingleThreadExecutor().asCoroutineDispatcher()
+    private val zoneId by lazy { ZoneId.systemDefault() }
+
+    private val calendarModelMap = mutableMapOf<LocalDate, MutableState<CalendarModel>>()
+    fun getCalendarModelState(time: LocalDate): MutableState<CalendarModel> {
+        return calendarModelMap.getOrPut(time) { mutableStateOf(CalendarModel()) }
+    }
+
     private val firstVisibleMonth: MutableStateFlow<YearMonth> = MutableStateFlow(YearMonth.now())
     private val lastVisibleMonth: MutableStateFlow<YearMonth> =
         MutableStateFlow(firstVisibleMonth.value.plusMonths(1))
 
-    private val zoneId by lazy { ZoneId.systemDefault() }
+    private val _currentDay: MutableStateFlow<LocalDate> = MutableStateFlow(LocalDate.now())
+    val currentDay = _currentDay.asStateFlow()
 
-    private val calendarModelMap = mutableMapOf<LocalDate, MutableState<CalendarModel>>()
-
-    fun getCalendarModelState(time: LocalDate): MutableState<CalendarModel> {
-        return calendarModelMap[time] ?: mutableStateOf(CalendarModel()).also {
-            calendarModelMap[time] = it
-        }
-    }
+    val currentCalendarModel = currentDay.map {
+        getCalendarModelState(it)
+    }.stateIn(
+        viewModelScope, SharingStarted.WhileSubscribed(5000), CalendarModel()
+    )
 
     init {
-        viewModelScope.launch(Dispatchers.Default) {
+        // FIXME 优化性能
+        viewModelScope.launch(dispatcher) {
             launch {
                 firstVisibleMonth.flatMapLatest {
                     accountRepository.getTransactionByYearMonthFlow(it.year, it.month.value)
@@ -179,6 +187,10 @@ class IndexViewModel @Inject constructor(
     ) {
         this.firstVisibleMonth.value = firstVisibleMonth
         this.lastVisibleMonth.value = lastVisibleMonth
+    }
+
+    fun updateCurrentDay(day: LocalDate) {
+        _currentDay.value = day
     }
 
 }
