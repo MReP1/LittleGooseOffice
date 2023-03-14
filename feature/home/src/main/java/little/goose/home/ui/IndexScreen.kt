@@ -25,6 +25,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.launch
 import little.goose.home.data.CalendarModel
+import little.goose.home.ui.component.IndexMemorialCard
 import little.goose.home.ui.component.IndexScheduleCard
 import little.goose.home.ui.component.IndexTransactionCard
 import java.time.LocalDate
@@ -165,6 +166,12 @@ fun IndexScreen(
                 .verticalScroll(rememberScrollState()),
             verticalArrangement = Arrangement.Top
         ) {
+            if (currentCalendarModel.value.memorials.isNotEmpty()) {
+                IndexMemorialCard(
+                    modifier = Modifier.padding(horizontal = 16.dp, vertical = 6.dp),
+                    memorial = currentCalendarModel.value.memorials.first()
+                )
+            }
             IndexTransactionCard(
                 modifier = Modifier
                     .padding(horizontal = 16.dp, vertical = 6.dp)
