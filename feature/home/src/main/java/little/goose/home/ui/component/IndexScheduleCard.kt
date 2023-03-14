@@ -33,7 +33,10 @@ private fun IndexScheduleColumn(
     schedules: List<Schedule>,
     onCheckChange: (Schedule, Boolean) -> Unit
 ) {
-    LazyColumn(modifier = modifier) {
+    LazyColumn(
+        modifier = modifier,
+        contentPadding = PaddingValues(vertical = 6.dp)
+    ) {
         items(schedules) { schedule ->
             IndexScheduleItem(
                 schedule = schedule,
