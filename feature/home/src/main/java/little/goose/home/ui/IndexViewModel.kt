@@ -5,7 +5,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.asCoroutineDispatcher
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import little.goose.account.data.constants.AccountConstant.EXPENSE
@@ -23,7 +22,6 @@ import java.math.BigDecimal
 import java.time.LocalDate
 import java.time.YearMonth
 import java.time.ZoneId
-import java.util.concurrent.Executors
 import javax.inject.Inject
 
 @HiltViewModel
@@ -34,7 +32,6 @@ class IndexViewModel @Inject constructor(
     private val memorialRepository: MemorialRepository
 ) : ViewModel() {
 
-    private val dispatcher = Executors.newSingleThreadExecutor().asCoroutineDispatcher()
     private val zoneId by lazy { ZoneId.systemDefault() }
 
     private val calendarModelMap = mutableMapOf<LocalDate, MutableState<CalendarModel>>()
@@ -49,15 +46,15 @@ class IndexViewModel @Inject constructor(
     private val _currentDay: MutableStateFlow<LocalDate> = MutableStateFlow(LocalDate.now())
     val currentDay = _currentDay.asStateFlow()
 
-    val currentCalendarModel = currentDay.map {
+    val currentCalendarModel: StateFlow<MutableState<CalendarModel>> = currentDay.map {
         getCalendarModelState(it)
     }.stateIn(
-        viewModelScope, SharingStarted.WhileSubscribed(5000), CalendarModel()
+        viewModelScope, SharingStarted.WhileSubscribed(5000), mutableStateOf(CalendarModel())
     )
 
     init {
         // FIXME 优化性能
-        viewModelScope.launch(dispatcher) {
+        viewModelScope.launch {
             launch {
                 firstVisibleMonth.flatMapLatest {
                     accountRepository.getTransactionByYearMonthFlow(it.year, it.month.value)
@@ -191,6 +188,12 @@ class IndexViewModel @Inject constructor(
 
     fun updateCurrentDay(day: LocalDate) {
         _currentDay.value = day
+    }
+
+    fun checkSchedule(schedule: Schedule, checked: Boolean) {
+        viewModelScope.launch {
+            scheduleRepository.updateSchedule(schedule.copy(isfinish = checked))
+        }
     }
 
 }

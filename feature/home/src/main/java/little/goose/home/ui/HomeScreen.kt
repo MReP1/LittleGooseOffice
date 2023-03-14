@@ -10,23 +10,17 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.fragment.app.FragmentActivity
-import androidx.lifecycle.viewmodel.compose.viewModel
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.rememberPagerState
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import little.goose.account.data.entities.Transaction
 import little.goose.account.ui.AccountRoute
 import little.goose.account.ui.analysis.AccountAnalysisActivity
 import little.goose.account.ui.transaction.TransactionActivity
-import little.goose.account.ui.transaction.TransactionDialog
-import little.goose.account.ui.transaction.rememberTransactionDialogState
 import little.goose.common.constants.KEY_SCHEDULE
 import little.goose.design.system.component.MovableActionButton
 import little.goose.design.system.component.MovableActionButtonState
-import little.goose.design.system.component.dialog.DeleteDialog
-import little.goose.design.system.component.dialog.rememberDialogState
 import little.goose.home.data.*
 import little.goose.memorial.data.constants.KEY_MEMORIAL
 import little.goose.memorial.ui.MemorialActivity
@@ -59,14 +53,16 @@ fun HomeScreen(
     Scaffold(
         modifier = modifier,
         topBar = {
-            CenterAlignedTopAppBar(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .wrapContentHeight(),
-                title = {
-                    Text(text = stringResource(id = currentHomePage.labelRes))
-                }
-            )
+            if (currentHomePage != HomePage.Home) {
+                CenterAlignedTopAppBar(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .wrapContentHeight(),
+                    title = {
+                        Text(text = stringResource(id = currentHomePage.labelRes))
+                    }
+                )
+            }
         },
         content = { paddingValues ->
             Box(

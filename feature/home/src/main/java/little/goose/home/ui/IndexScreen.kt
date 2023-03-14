@@ -4,12 +4,16 @@ import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.CalendarToday
+import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.kizitonwose.calendar.compose.HorizontalCalendar
 import com.kizitonwose.calendar.compose.rememberCalendarState
@@ -21,6 +25,8 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.launch
 import little.goose.home.data.CalendarModel
+import little.goose.home.ui.component.IndexScheduleCard
+import little.goose.home.ui.component.IndexTransactionCard
 import java.time.LocalDate
 import java.time.YearMonth
 import java.time.format.TextStyle
@@ -32,6 +38,7 @@ fun IndexScreen(
 ) {
     val viewModel = viewModel<IndexViewModel>()
     val initMonth = remember { YearMonth.now() }
+    val initDay = remember { LocalDate.now() }
     val startMonth = remember { initMonth.minusMonths(120) }
     val endMonth = remember { initMonth.plusMonths(120) }
     val dayOfWeek = remember { daysOfWeek() }
@@ -64,6 +71,55 @@ fun IndexScreen(
     val currentCalendarModel by viewModel.currentCalendarModel.collectAsState()
 
     Column(modifier = modifier) {
+
+        // 日期
+        TopAppBar(
+            modifier = Modifier.fillMaxWidth(),
+            title = {
+                Row(modifier = Modifier, verticalAlignment = Alignment.CenterVertically) {
+                    Text(
+                        text = currentDay.month.getDisplayName(
+                            TextStyle.SHORT, Locale.CHINA
+                        ) + currentDay.dayOfMonth + "日",
+                        style = MaterialTheme.typography.headlineMedium
+                    )
+                    Column {
+                        Text(
+                            text = currentDay.year.toString(),
+                            style = MaterialTheme.typography.bodySmall,
+                            fontSize = 11.sp
+                        )
+                        Text(
+                            text = currentDay.dayOfWeek.getDisplayName(
+                                TextStyle.SHORT, Locale.CHINA
+                            ),
+                            style = MaterialTheme.typography.bodySmall,
+                            fontSize = 10.sp
+                        )
+                    }
+                }
+            },
+            actions = {
+                IconButton(
+                    onClick = {
+                    }
+                ) {
+                    Box(modifier = Modifier.wrapContentSize()) {
+                        Icon(
+                            imageVector = Icons.Default.CalendarToday,
+                            contentDescription = "Today"
+                        )
+                        Text(
+                            text = initDay.dayOfMonth.toString(),
+                            style = MaterialTheme.typography.bodySmall,
+                            modifier = Modifier.padding(top = 6.dp, start = 4.dp)
+                        )
+                    }
+                }
+            }
+        )
+
+        // 星期
         Row(modifier = Modifier.fillMaxWidth()) {
             for (day in dayOfWeek) {
                 Box(
@@ -76,7 +132,11 @@ fun IndexScreen(
                 }
             }
         }
-        Box(modifier = Modifier.animateContentSize()) {
+
+        // 日历
+        Box(
+            modifier = Modifier.animateContentSize()
+        ) {
             HorizontalCalendar(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -88,14 +148,41 @@ fun IndexScreen(
                     MonthDay(
                         modifier = Modifier.height(contentHeight),
                         day = day,
-                        isToday = day.date.isEqual(currentDay),
+                        isToday = day.date.isEqual(initDay),
                         model = model,
                         onClick = viewModel::updateCurrentDay
                     )
                 }
             )
         }
-        Text(text = currentCalendarModel.toString())
+
+        Spacer(modifier = Modifier.height(10.dp))
+
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .wrapContentHeight()
+                .verticalScroll(rememberScrollState()),
+            verticalArrangement = Arrangement.Top
+        ) {
+            IndexTransactionCard(
+                modifier = Modifier
+                    .padding(horizontal = 16.dp, vertical = 6.dp)
+                    .fillMaxWidth()
+                    .heightIn(0.dp, 160.dp),
+                transactions = currentCalendarModel.value.transactions,
+                income = currentCalendarModel.value.income,
+                expense = currentCalendarModel.value.expense
+            )
+            IndexScheduleCard(
+                modifier = Modifier
+                    .padding(horizontal = 16.dp, vertical = 6.dp)
+                    .fillMaxWidth()
+                    .heightIn(0.dp, 120.dp),
+                schedules = currentCalendarModel.value.schedules,
+                onCheckChange = viewModel::checkSchedule
+            )
+        }
     }
 }
 
