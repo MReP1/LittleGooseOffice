@@ -186,7 +186,10 @@ private fun ScheduleDialogScreen(
                 onValueChange = state.onTitleChange,
                 modifier = Modifier
                     .padding(horizontal = 24.dp)
-                    .fillMaxWidth()
+                    .fillMaxWidth(),
+                label = {
+                    Text(text = stringResource(id = R.string.schedule_title_tag))
+                }
             )
 
             Spacer(modifier = Modifier.height(20.dp))
@@ -196,7 +199,10 @@ private fun ScheduleDialogScreen(
                 onValueChange = state.onContentChange,
                 modifier = Modifier
                     .padding(horizontal = 24.dp)
-                    .fillMaxWidth()
+                    .fillMaxWidth(),
+                label = {
+                    Text(text = stringResource(id = R.string.schedule_content_tag))
+                }
             )
 
             Spacer(modifier = Modifier.height(30.dp))

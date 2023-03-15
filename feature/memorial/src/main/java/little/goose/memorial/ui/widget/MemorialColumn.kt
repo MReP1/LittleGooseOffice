@@ -1,5 +1,6 @@
 package little.goose.memorial.ui.widget
 
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -14,13 +15,16 @@ fun MemorialColumn(
     memorials: List<Memorial>,
     onMemorialClick: (Memorial) -> Unit
 ) {
-    LazyColumn(modifier = modifier) {
+    LazyColumn(
+        modifier = modifier,
+        contentPadding = PaddingValues(horizontal = 16.dp, vertical = 4.dp)
+    ) {
         items(
             items = memorials,
             key = { it.id ?: -1 }
         ) { memorial ->
             MemorialItem(
-                modifier = Modifier.padding(16.dp),
+                modifier = Modifier.padding(vertical = 4.dp),
                 memorial = memorial,
                 onMemorialClick = onMemorialClick
             )

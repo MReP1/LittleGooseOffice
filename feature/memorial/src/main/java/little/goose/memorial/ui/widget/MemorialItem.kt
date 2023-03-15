@@ -55,8 +55,10 @@ fun MemorialItem(
             Box(
                 modifier = Modifier
                     .fillMaxHeight()
+                    .width(64.dp)
                     .background(MaterialTheme.colorScheme.primary)
-                    .padding(vertical = 16.dp, horizontal = 24.dp)
+                    .padding(vertical = 16.dp, horizontal = 8.dp),
+                contentAlignment = Alignment.Center
             ) {
                 Text(
                     text = DateTimeUtils.getBetweenDay(curCalendar, memCalendar)
@@ -67,9 +69,11 @@ fun MemorialItem(
 
             Box(
                 modifier = Modifier
+                    .width(64.dp)
                     .fillMaxHeight()
                     .background(MaterialTheme.colorScheme.secondary)
-                    .padding(16.dp)
+                    .padding(vertical = 16.dp, horizontal = 8.dp),
+                contentAlignment = Alignment.Center
             ) {
                 Text(
                     text = stringResource(id = little.goose.memorial.R.string.sky),
