@@ -16,10 +16,8 @@ import little.goose.account.logic.AccountRepository
 import little.goose.account.ui.component.AccountTitleState
 import little.goose.account.ui.component.MonthSelectorState
 import little.goose.account.utils.insertTime
-import little.goose.common.receiver.DeleteItemBroadcastReceiver
 import little.goose.common.utils.getMonth
 import little.goose.common.utils.getYear
-import little.goose.common.utils.log
 import java.math.BigDecimal
 import java.util.*
 import javax.inject.Inject
@@ -116,7 +114,6 @@ class AccountFragmentViewModel @Inject constructor(
     )
 
     val monthSelectorState = combine(year, month) { year, month ->
-        log("monthSelectorState")
         MonthSelectorState(year, month, ::changeTime)
     }.stateIn(
         viewModelScope,
@@ -130,7 +127,6 @@ class AccountFragmentViewModel @Inject constructor(
     }
 
     fun showDeleteDialog(transaction: Transaction) {
-        log(transaction)
         showDeleteDialog(listOf(transaction))
     }
 

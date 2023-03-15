@@ -35,7 +35,7 @@ class IndexViewModel @Inject constructor(
     private val zoneId by lazy { ZoneId.systemDefault() }
 
     private val calendarModelMap = mutableMapOf<LocalDate, MutableState<CalendarModel>>()
-    fun getCalendarModelState(time: LocalDate): MutableState<CalendarModel> {
+    private fun getCalendarModelState(time: LocalDate): MutableState<CalendarModel> {
         return calendarModelMap.getOrPut(time) { mutableStateOf(CalendarModel()) }
     }
 
@@ -43,13 +43,31 @@ class IndexViewModel @Inject constructor(
     private val lastVisibleMonth: MutableStateFlow<YearMonth> =
         MutableStateFlow(firstVisibleMonth.value.plusMonths(1))
 
-    private val _currentDay: MutableStateFlow<LocalDate> = MutableStateFlow(LocalDate.now())
-    val currentDay = _currentDay.asStateFlow()
-
-    val currentCalendarModel: StateFlow<MutableState<CalendarModel>> = currentDay.map {
+    private val currentDay: MutableStateFlow<LocalDate> = MutableStateFlow(LocalDate.now())
+    private val currentCalendarModel: StateFlow<MutableState<CalendarModel>> = currentDay.map {
         getCalendarModelState(it)
     }.stateIn(
         viewModelScope, SharingStarted.WhileSubscribed(5000), mutableStateOf(CalendarModel())
+    )
+
+    val indexScreenState = combine(
+        currentDay, currentCalendarModel
+    ) { currentDay, currentCalendarModelState ->
+        IndexScreenState(
+            today = LocalDate.now(),
+            currentDay = currentDay,
+            currentCalendarModel = currentCalendarModelState,
+            updateMonth = ::updateMonth,
+            updateCurrentDay = ::updateCurrentDay,
+            checkSchedule = ::checkSchedule,
+            getCalendarModelState = ::getCalendarModelState
+        )
+    }.stateIn(
+        viewModelScope, SharingStarted.WhileSubscribed(5000),
+        initialValue = IndexScreenState(
+            today = LocalDate.now(), currentDay.value, currentCalendarModel.value,
+            ::updateMonth, ::updateCurrentDay, ::checkSchedule, ::getCalendarModelState
+        )
     )
 
     init {
@@ -178,7 +196,7 @@ class IndexViewModel @Inject constructor(
         }
     }
 
-    fun updateTime(
+    private fun updateMonth(
         firstVisibleMonth: YearMonth,
         lastVisibleMonth: YearMonth
     ) {
@@ -186,11 +204,11 @@ class IndexViewModel @Inject constructor(
         this.lastVisibleMonth.value = lastVisibleMonth
     }
 
-    fun updateCurrentDay(day: LocalDate) {
-        _currentDay.value = day
+    private fun updateCurrentDay(day: LocalDate) {
+        currentDay.value = day
     }
 
-    fun checkSchedule(schedule: Schedule, checked: Boolean) {
+    private fun checkSchedule(schedule: Schedule, checked: Boolean) {
         viewModelScope.launch {
             scheduleRepository.updateSchedule(schedule.copy(isfinish = checked))
         }

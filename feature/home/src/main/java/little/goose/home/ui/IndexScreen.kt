@@ -1,20 +1,16 @@
 package little.goose.home.ui
 
 import androidx.compose.animation.animateContentSize
-import androidx.compose.foundation.Canvas
-import androidx.compose.foundation.clickable
+import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.CalendarToday
-import androidx.compose.material3.*
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
-import androidx.lifecycle.viewmodel.compose.viewModel
 import com.kizitonwose.calendar.compose.HorizontalCalendar
 import com.kizitonwose.calendar.compose.rememberCalendarState
 import com.kizitonwose.calendar.core.CalendarDay
@@ -24,26 +20,38 @@ import com.kizitonwose.calendar.core.daysOfWeek
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.launch
+import little.goose.design.system.theme.RoundedCorner16
 import little.goose.home.data.CalendarModel
 import little.goose.home.ui.component.IndexMemorialCard
 import little.goose.home.ui.component.IndexScheduleCard
 import little.goose.home.ui.component.IndexTransactionCard
+import little.goose.schedule.data.entities.Schedule
 import java.time.LocalDate
 import java.time.YearMonth
 import java.time.format.TextStyle
 import java.util.*
 
+@Stable
+data class IndexScreenState(
+    val today: LocalDate,
+    val currentDay: LocalDate,
+    val currentCalendarModel: State<CalendarModel>,
+    val updateMonth: (YearMonth, YearMonth) -> Unit,
+    val updateCurrentDay: (LocalDate) -> Unit,
+    val checkSchedule: (Schedule, Boolean) -> Unit,
+    val getCalendarModelState: (LocalDate) -> State<CalendarModel>
+)
+
 @Composable
 fun IndexScreen(
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    state: IndexScreenState
 ) {
-    val viewModel = viewModel<IndexViewModel>()
     val initMonth = remember { YearMonth.now() }
-    val initDay = remember { LocalDate.now() }
     val startMonth = remember { initMonth.minusMonths(120) }
     val endMonth = remember { initMonth.plusMonths(120) }
     val dayOfWeek = remember { daysOfWeek() }
-    val state = rememberCalendarState(
+    val calendarState = rememberCalendarState(
         startMonth = startMonth,
         endMonth = endMonth,
         firstVisibleMonth = initMonth,
@@ -51,74 +59,25 @@ fun IndexScreen(
         outDateStyle = OutDateStyle.EndOfRow
     )
 
-    var visibleMonth by remember(state) { mutableStateOf(state.firstVisibleMonth) }
-    LaunchedEffect(state) {
+    var visibleMonth by remember(calendarState) { mutableStateOf(calendarState.firstVisibleMonth) }
+    LaunchedEffect(calendarState) {
         launch(Dispatchers.Default) {
-            snapshotFlow { state.isScrollInProgress }
+            snapshotFlow { calendarState.isScrollInProgress }
                 .filter { scrolling -> !scrolling }
-                .collect { visibleMonth = state.firstVisibleMonth }
+                .collect { visibleMonth = calendarState.firstVisibleMonth }
         }
         launch(Dispatchers.Default) {
-            snapshotFlow { state.firstVisibleMonth }.collect {
-                viewModel.updateTime(
-                    firstVisibleMonth = state.firstVisibleMonth.yearMonth,
-                    lastVisibleMonth = state.lastVisibleMonth.yearMonth
+            snapshotFlow { calendarState.firstVisibleMonth }.collect {
+                state.updateMonth(
+                    calendarState.firstVisibleMonth.yearMonth,
+                    calendarState.lastVisibleMonth.yearMonth
                 )
             }
         }
     }
     val contentHeight = remember { 58.dp }
-    val currentDay by viewModel.currentDay.collectAsState()
-    val currentCalendarModel by viewModel.currentCalendarModel.collectAsState()
 
     Column(modifier = modifier) {
-
-        // 日期
-        TopAppBar(
-            modifier = Modifier.fillMaxWidth(),
-            title = {
-                Row(modifier = Modifier, verticalAlignment = Alignment.CenterVertically) {
-                    Text(
-                        text = currentDay.month.getDisplayName(
-                            TextStyle.SHORT, Locale.CHINA
-                        ) + currentDay.dayOfMonth + "日",
-                        style = MaterialTheme.typography.headlineMedium
-                    )
-                    Column {
-                        Text(
-                            text = currentDay.year.toString(),
-                            style = MaterialTheme.typography.bodySmall,
-                            fontSize = 11.sp
-                        )
-                        Text(
-                            text = currentDay.dayOfWeek.getDisplayName(
-                                TextStyle.SHORT, Locale.CHINA
-                            ),
-                            style = MaterialTheme.typography.bodySmall,
-                            fontSize = 10.sp
-                        )
-                    }
-                }
-            },
-            actions = {
-                IconButton(
-                    onClick = {
-                    }
-                ) {
-                    Box(modifier = Modifier.wrapContentSize()) {
-                        Icon(
-                            imageVector = Icons.Default.CalendarToday,
-                            contentDescription = "Today"
-                        )
-                        Text(
-                            text = initDay.dayOfMonth.toString(),
-                            style = MaterialTheme.typography.bodySmall,
-                            modifier = Modifier.padding(top = 6.dp, start = 4.dp)
-                        )
-                    }
-                }
-            }
-        )
 
         // 星期
         Row(modifier = Modifier.fillMaxWidth()) {
@@ -142,16 +101,17 @@ fun IndexScreen(
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(contentHeight * visibleMonth.weekDays.size),
-                state = state,
+                state = calendarState,
                 userScrollEnabled = true,
                 dayContent = { day ->
-                    val model by viewModel.getCalendarModelState(day.date)
+                    val model by state.getCalendarModelState(day.date)
                     MonthDay(
                         modifier = Modifier.height(contentHeight),
                         day = day,
-                        isToday = day.date.isEqual(initDay),
+                        isCurrentDay = day.date == state.currentDay,
+                        isToday = day.date.isEqual(state.today),
                         model = model,
-                        onClick = viewModel::updateCurrentDay
+                        onClick = state.updateCurrentDay
                     )
                 }
             )
@@ -166,10 +126,10 @@ fun IndexScreen(
                 .verticalScroll(rememberScrollState()),
             verticalArrangement = Arrangement.Top
         ) {
-            if (currentCalendarModel.value.memorials.isNotEmpty()) {
+            if (state.currentCalendarModel.value.memorials.isNotEmpty()) {
                 IndexMemorialCard(
                     modifier = Modifier.padding(horizontal = 16.dp, vertical = 6.dp),
-                    memorial = currentCalendarModel.value.memorials.first()
+                    memorial = state.currentCalendarModel.value.memorials.first()
                 )
             }
             IndexTransactionCard(
@@ -177,18 +137,20 @@ fun IndexScreen(
                     .padding(horizontal = 16.dp, vertical = 6.dp)
                     .fillMaxWidth()
                     .heightIn(0.dp, 160.dp),
-                transactions = currentCalendarModel.value.transactions,
-                income = currentCalendarModel.value.income,
-                expense = currentCalendarModel.value.expense
+                transactions = state.currentCalendarModel.value.transactions,
+                income = state.currentCalendarModel.value.income,
+                expense = state.currentCalendarModel.value.expense
             )
-            IndexScheduleCard(
-                modifier = Modifier
-                    .padding(horizontal = 16.dp, vertical = 6.dp)
-                    .fillMaxWidth()
-                    .heightIn(0.dp, 120.dp),
-                schedules = currentCalendarModel.value.schedules,
-                onCheckChange = viewModel::checkSchedule
-            )
+            if (state.currentCalendarModel.value.transactions.isNotEmpty()) {
+                IndexScheduleCard(
+                    modifier = Modifier
+                        .padding(horizontal = 16.dp, vertical = 6.dp)
+                        .fillMaxWidth()
+                        .heightIn(0.dp, 120.dp),
+                    schedules = state.currentCalendarModel.value.schedules,
+                    onCheckChange = state.checkSchedule
+                )
+            }
         }
     }
 }
@@ -198,13 +160,15 @@ private fun MonthDay(
     modifier: Modifier,
     day: CalendarDay,
     isToday: Boolean,
+    isCurrentDay: Boolean,
     model: CalendarModel,
     onClick: (LocalDate) -> Unit
 ) {
     DayContent(
         modifier = modifier,
         date = day.date,
-        isCurrent = day.position == DayPosition.MonthDate,
+        isCurrentMonth = day.position == DayPosition.MonthDate,
+        isCurrentDay = isCurrentDay,
         isToday = isToday,
         model = model,
         onClick = onClick
@@ -215,14 +179,20 @@ private fun MonthDay(
 private fun DayContent(
     modifier: Modifier,
     date: LocalDate,
-    isCurrent: Boolean,
+    isCurrentMonth: Boolean,
+    isCurrentDay: Boolean,
     isToday: Boolean,
     model: CalendarModel,
     onClick: (LocalDate) -> Unit
 ) {
     Column(
         modifier = modifier
+            .padding(1.dp)
             .fillMaxWidth()
+            .clip(RoundedCorner16)
+            .run {
+                if (isCurrentDay) background(MaterialTheme.colorScheme.primary) else this
+            }
             .clickable { onClick(date) },
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
@@ -238,9 +208,11 @@ private fun DayContent(
         Text(
             text = date.dayOfMonth.toString(),
             modifier = Modifier,
-            color = if (isToday) {
+            color = if (isCurrentDay) {
+                MaterialTheme.colorScheme.onPrimary
+            } else if (isToday) {
                 MaterialTheme.colorScheme.tertiary
-            } else if (isCurrent) {
+            } else if (isCurrentMonth) {
                 MaterialTheme.colorScheme.onSurface
             } else {
                 MaterialTheme.colorScheme.outlineVariant
@@ -250,7 +222,14 @@ private fun DayContent(
             Text(
                 text = model.balance.toPlainString() ?: "",
                 modifier = Modifier.height(14.dp),
-                style = MaterialTheme.typography.bodySmall
+                style = MaterialTheme.typography.bodySmall,
+                color = if (isCurrentDay) {
+                    MaterialTheme.colorScheme.onPrimary
+                } else {
+                    MaterialTheme.colorScheme.onSurface
+                },
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis
             )
         } else {
             Spacer(modifier = Modifier.height(14.dp))

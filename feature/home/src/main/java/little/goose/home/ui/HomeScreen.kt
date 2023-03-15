@@ -10,6 +10,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.fragment.app.FragmentActivity
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.rememberPagerState
@@ -22,6 +23,7 @@ import little.goose.common.constants.KEY_SCHEDULE
 import little.goose.design.system.component.MovableActionButton
 import little.goose.design.system.component.MovableActionButtonState
 import little.goose.home.data.*
+import little.goose.home.ui.component.IndexTopBar
 import little.goose.memorial.data.constants.KEY_MEMORIAL
 import little.goose.memorial.ui.MemorialActivity
 import little.goose.memorial.ui.MemorialDialogFragment
@@ -30,6 +32,7 @@ import little.goose.note.ui.NotebookRoute
 import little.goose.note.ui.note.NoteActivity
 import little.goose.schedule.ui.ScheduleDialogFragment
 import little.goose.schedule.ui.ScheduleRoute
+import java.time.LocalDate
 import java.util.*
 
 @OptIn(ExperimentalPagerApi::class)
@@ -50,6 +53,17 @@ fun HomeScreen(
         HomePage.fromPageIndex(pagerState.currentPage)
     }
 
+    var today by remember { mutableStateOf(LocalDate.now()) }
+    SideEffect {
+        val realToday = LocalDate.now()
+        if (today != realToday) {
+            today = realToday
+        }
+    }
+
+    val indexViewModel = viewModel<IndexViewModel>()
+    val indexScreenState by indexViewModel.indexScreenState.collectAsState()
+
     Scaffold(
         modifier = modifier,
         topBar = {
@@ -61,6 +75,12 @@ fun HomeScreen(
                     title = {
                         Text(text = stringResource(id = currentHomePage.labelRes))
                     }
+                )
+            } else {
+                IndexTopBar(
+                    modifier = Modifier.fillMaxWidth(),
+                    currentDay = indexScreenState.currentDay,
+                    today = today
                 )
             }
         },
@@ -78,7 +98,10 @@ fun HomeScreen(
                 ) { index ->
                     when (index) {
                         HOME -> {
-                            IndexScreen(modifier = Modifier.fillMaxSize())
+                            IndexScreen(
+                                modifier = Modifier.fillMaxSize(),
+                                state = indexScreenState
+                            )
                         }
                         NOTEBOOK -> {
                             NotebookRoute(modifier = Modifier.fillMaxSize())
