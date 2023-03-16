@@ -13,10 +13,10 @@ import androidx.compose.animation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material.icons.filled.Edit
-import androidx.compose.material.icons.filled.Image
+import androidx.compose.material.icons.rounded.Add
+import androidx.compose.material.icons.rounded.ArrowBack
+import androidx.compose.material.icons.rounded.Edit
+import androidx.compose.material.icons.rounded.Image
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -98,7 +98,7 @@ private fun MemorialShowScreen(
                 navigationIcon = {
                     IconButton(onClick = onBack) {
                         Icon(
-                            imageVector = Icons.Default.ArrowBack,
+                            imageVector = Icons.Rounded.ArrowBack,
                             contentDescription = "Back"
                         )
                     }
@@ -137,7 +137,7 @@ private fun MemorialShowScreen(
                             fadeIn() + expandIn() with shrinkOut() + fadeOut()
                         }
                     ) { currentExpended ->
-                        val icon = if (!currentExpended) Icons.Default.Add else Icons.Default.Edit
+                        val icon = if (!currentExpended) Icons.Rounded.Add else Icons.Rounded.Edit
                         Icon(
                             imageVector = icon,
                             contentDescription = if (!currentExpended) "expand" else "edit"
@@ -151,7 +151,7 @@ private fun MemorialShowScreen(
                     }
                 },
                 topSubButtonContent = {
-                    Icon(imageVector = Icons.Default.Image, contentDescription = "image")
+                    Icon(imageVector = Icons.Rounded.Image, contentDescription = "image")
                 },
                 onTopSubButtonClick = {
                     Toast.makeText(context, "//TODO: 修改背景", Toast.LENGTH_SHORT).show()

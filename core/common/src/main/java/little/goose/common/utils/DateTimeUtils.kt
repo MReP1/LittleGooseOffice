@@ -6,11 +6,13 @@ import android.content.Context
 import little.goose.common.R
 import little.goose.common.utils.DateTimeUtils.getWeekFormYearMonthDate
 import java.util.*
+import kotlin.concurrent.getOrSet
 import kotlin.math.roundToLong
 
-object DateTimeUtils {
+private val threadLocalCalendar = ThreadLocal<Calendar>()
+val calendar = threadLocalCalendar.getOrSet { Calendar.getInstance() }
 
-    lateinit var appContext: Context
+object DateTimeUtils {
 
     private val hours = listOf(
         "0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14",
@@ -45,16 +47,17 @@ object DateTimeUtils {
     fun getMinuteList() = minutes
     fun getDaysList(year: Int, month: Int) = (1..getDaysByYearMonth(year, month)).toList()
 
-    fun getDaysByYearMonth(year: Int, month: Int, calendar: Calendar = Calendar.getInstance()) =
-        calendar.run {
-            setYear(year)
-            setMonth(month)
-            setDate(1)
-            roll(Calendar.DATE, -1)
-            getDate()
-        }
+    fun getDaysByYearMonth(
+        year: Int, month: Int, calendar: Calendar = Calendar.getInstance()
+    ) = calendar.run {
+        setYear(year)
+        setMonth(month)
+        setDate(1)
+        roll(Calendar.DATE, -1)
+        getDate()
+    }
 
-    fun getDaysByCalendar(calendar: Calendar = Calendar.getInstance()) = calendar.run {
+    fun getDaysByCalendar(calendar: Calendar) = calendar.run {
         setDate(1)
         roll(Calendar.DATE, -1)
         getDate()
@@ -62,19 +65,7 @@ object DateTimeUtils {
 
     fun getCurrentYear() = Calendar.getInstance().run { getYear() }
 
-    fun getCurrentMonth() = Calendar.getInstance().run { getMonth() }
-
-    fun getCurrentDate() = Calendar.getInstance().run { getDate() }
-
-    fun getSelectDateOfThisTime(year: Int, month: Int, day: Int): Date =
-        Calendar.getInstance().run {
-            setYear(year)
-            setMonth(month)
-            setDate(day)
-            time
-        }
-
-    fun getWeekDay(weekDay: Int, context: Context = appContext): String {
+    private fun getWeekDay(weekDay: Int, context: Context): String {
         return when (weekDay) {
             1 -> context.getString(R.string.sunday)
             2 -> context.getString(R.string.monday)
@@ -87,58 +78,35 @@ object DateTimeUtils {
         }
     }
 
-    fun getWeekDayZ(weekDay: Int): String {
-        return when (weekDay) {
-            1 -> appContext.getString(R.string.sunday_z)
-            2 -> appContext.getString(R.string.monday_z)
-            3 -> appContext.getString(R.string.tuesday_z)
-            4 -> appContext.getString(R.string.wednesday_z)
-            5 -> appContext.getString(R.string.thursday_z)
-            6 -> appContext.getString(R.string.friday_z)
-            7 -> appContext.getString(R.string.saturday_z)
-            else -> "unknown"
-        }
-    }
-
     fun getWeekFormYearMonthDate(
         year: Int,
         month: Int,
         date: Int,
-        context: Context = appContext
-    ): String {
-        return Calendar.getInstance().run {
-            setYear(year)
-            setMonth(month)
-            setDate(date)
-            getWeekDay(get(Calendar.DAY_OF_WEEK), context)
-        }
-    }
-
-    fun getWeekFormYearMonthDateZ(year: Int, month: Int, date: Int): String {
-        return Calendar.getInstance().run {
-            setYear(year)
-            setMonth(month)
-            setDate(date)
-            getWeekDayZ(get(Calendar.DAY_OF_WEEK))
-        }
+        context: Context
+    ): String = calendar.run {
+        setYear(year)
+        setMonth(month)
+        setDate(date)
+        getWeekDay(get(Calendar.DAY_OF_WEEK), context)
     }
 
     fun getTimeFormatTen(time: Int): String {
-        return if (time >= 10) {
-            time.toString()
-        } else {
-            "0$time"
-        }
+        return if (time >= 10) time.toString() else "0$time"
     }
 
-    fun getBetweenDay(calendar1: Calendar, calendar2: Calendar) =
-        if (calendar1.timeInMillis > calendar2.timeInMillis) {
+    fun getBetweenDay(calendar1: Calendar, calendar2: Calendar): Long {
+        calendar1.clearTime()
+        calendar2.clearTime()
+        return if (calendar1.timeInMillis > calendar2.timeInMillis) {
             ((calendar1.timeInMillis - calendar2.timeInMillis).toDouble() / 3600000 / 24).roundToLong()
         } else {
             ((calendar2.timeInMillis - calendar1.timeInMillis).toDouble() / 3600000 / 24).roundToLong()
         }
+    }
 
     fun getBetweenMonthDay(calendar1: Calendar, calendar2: Calendar): MonthDay {
+        calendar1.clearTime()
+        calendar2.clearTime()
         val cal1: Calendar
         val cal2: Calendar
         if (calendar1.timeInMillis > calendar2.timeInMillis) {
@@ -161,68 +129,68 @@ object DateTimeUtils {
 }
 
 fun Date.toChineseStringWithYear(): String {
-    Calendar.getInstance().apply {
+    return calendar.run {
         time = this@toChineseStringWithYear
         val year = getYear()
         val month = getMonth()
         val day = get(Calendar.DATE)
         val hour = DateTimeUtils.getTimeFormatTen(get(Calendar.HOUR_OF_DAY))
         val minute = DateTimeUtils.getTimeFormatTen(get(Calendar.MINUTE))
-        return "${year}年${month}月${day}日 $hour : $minute"
+        "${year}年${month}月${day}日 $hour : $minute"
     }
 }
 
-fun Date.toChineseYearMonDayWeek(context: Context = DateTimeUtils.appContext): String {
-    Calendar.getInstance().apply {
+fun Date.toChineseYearMonDayWeek(context: Context): String {
+    return calendar.run {
         time = this@toChineseYearMonDayWeek
         val year = getYear()
         val month = getMonth()
         val day = getDate()
-        return "${year}年${month}月${day}日 ${getWeekFormYearMonthDate(year, month, day, context)}"
+        "${year}年${month}月${day}日 ${getWeekFormYearMonthDate(year, month, day, context)}"
     }
 }
 
 fun Date.toChineseMonthDayTime(): String {
-    Calendar.getInstance().apply {
+    return calendar.run {
         time = this@toChineseMonthDayTime
         val month = getMonth()
         val day = getDate()
         val hour = DateTimeUtils.getTimeFormatTen(get(Calendar.HOUR_OF_DAY))
         val minute = DateTimeUtils.getTimeFormatTen(get(Calendar.MINUTE))
-        return "${month}月${day}日 $hour : $minute"
+        "${month}月${day}日 $hour : $minute"
     }
 }
 
 fun Date.toChineseMonthDay(): String {
-    Calendar.getInstance().apply {
+    return calendar.run {
         time = this@toChineseMonthDay
         val month = getMonth()
         val day = getDate()
-        return "${month}月${day}日"
+        "${month}月${day}日"
     }
 }
 
 fun Date.toChineseYearMonthDay(): String {
-    Calendar.getInstance().apply {
+    return calendar.run {
         time = this@toChineseYearMonthDay
         val year = getYear()
         val month = getMonth()
         val day = getDate()
-        return "${year}年${month}月${day}日"
+        "${year}年${month}月${day}日"
     }
 }
 
 fun Date.toChineseYearMonth(): String {
-    Calendar.getInstance().apply {
+    return calendar.run {
         time = this@toChineseYearMonth
         val year = getYear()
         val month = getMonth()
-        return "${year}年${month}月"
+        "${year}年${month}月"
     }
 }
 
 fun Date.toChineseYear(): String {
-    return Calendar.getInstance().run {
+    return calendar.run {
         time = this@toChineseYear
         val year = getYear()
         "${year}年"
@@ -230,14 +198,13 @@ fun Date.toChineseYear(): String {
 }
 
 fun Date.toChineseMonth(): String {
-    Calendar.getInstance().apply {
+    return calendar.run {
         time = this@toChineseMonth
-        return "${getMonth()}月"
+        "${getMonth()}月"
     }
 }
 
 fun getOneDayRange(year: Int, month: Int, date: Int): TimeRange {
-    val calendar = Calendar.getInstance()
     calendar.apply {
         clear()
         setDate(date)
@@ -250,7 +217,6 @@ fun getOneDayRange(year: Int, month: Int, date: Int): TimeRange {
 }
 
 fun getOneMonthRange(year: Int, month: Int): TimeRange {
-    val calendar = Calendar.getInstance()
     calendar.apply {
         clear()
         setDate(1)
@@ -263,22 +229,17 @@ fun getOneMonthRange(year: Int, month: Int): TimeRange {
     return TimeRange(startTime, endTime)
 }
 
-inline fun Date.getRealYear(calendar: Calendar = Calendar.getInstance()) = calendar.run {
-    time = this@getRealYear
-    getYear()
-}
-
-inline fun Date.getRealMonth(calendar: Calendar = Calendar.getInstance()) = calendar.run {
+inline fun Date.getRealMonth() = calendar.run {
     time = this@getRealMonth
     getMonth()
 }
 
-inline fun Date.getRealDate(calendar: Calendar = Calendar.getInstance()) = calendar.run {
+inline fun Date.getRealDate() = calendar.run {
     time = this@getRealDate
     getDate()
 }
 
-inline fun Date.getRealTime(calendar: Calendar = Calendar.getInstance()) = calendar.run {
+inline fun Date.getRealTime() = calendar.run {
     time = this@getRealTime
     val hour = DateTimeUtils.getTimeFormatTen(get(Calendar.HOUR_OF_DAY))
     val minute = DateTimeUtils.getTimeFormatTen(get(Calendar.MINUTE))
@@ -286,7 +247,13 @@ inline fun Date.getRealTime(calendar: Calendar = Calendar.getInstance()) = calen
 }
 
 inline fun Date.isFuture() = this.time > System.currentTimeMillis()
-inline fun Date.isPast() = this.time < System.currentTimeMillis()
+
+private fun Calendar.clearTime() {
+    clear(Calendar.MINUTE)
+    clear(Calendar.HOUR)
+    clear(Calendar.SECOND)
+    clear(Calendar.MILLISECOND)
+}
 
 /** ---------------Calendar获取年月日----------------*/
 inline fun Calendar.getDate() = this.get(Calendar.DATE)

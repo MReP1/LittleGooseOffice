@@ -29,5 +29,4 @@ dependencies {
     implementation(project(":feature:schedule"))
     implementation(project(":feature:note"))
     implementation(project(":feature:account"))
-    implementation(project(":calendarview"))
 }

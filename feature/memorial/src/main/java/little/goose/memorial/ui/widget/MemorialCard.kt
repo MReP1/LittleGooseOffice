@@ -58,7 +58,7 @@ fun MemorialCard(
             )
 
             Text(
-                text = memorial.time.toChineseYearMonDayWeek()
+                text = memorial.time.toChineseYearMonDayWeek(context)
                     .appendTimePrefix(memorial.time, context)
             )
 

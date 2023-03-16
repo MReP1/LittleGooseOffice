@@ -2,7 +2,7 @@ package little.goose.home.ui.component
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.CalendarToday
+import androidx.compose.material.icons.rounded.CalendarToday
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -53,7 +53,7 @@ fun IndexTopBar(
             ) {
                 Box(modifier = Modifier.wrapContentSize()) {
                     Icon(
-                        imageVector = Icons.Default.CalendarToday,
+                        imageVector = Icons.Rounded.CalendarToday,
                         contentDescription = "Today"
                     )
                     Text(

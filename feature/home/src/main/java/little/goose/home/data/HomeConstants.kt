@@ -2,7 +2,7 @@ package little.goose.home.data
 
 import androidx.annotation.StringRes
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.*
+import androidx.compose.material.icons.rounded.*
 import androidx.compose.ui.graphics.vector.ImageVector
 
 /**
@@ -22,27 +22,27 @@ enum class HomePage(
 ) {
     Home(
         index = 0,
-        icon = Icons.Default.Home,
+        icon = Icons.Rounded.Home,
         labelRes = little.goose.home.R.string.home
     ),
     Notebook(
         index = 1,
-        icon = Icons.Default.EditNote,
+        icon = Icons.Rounded.EditNote,
         labelRes = little.goose.note.R.string.notebook
     ),
     ACCOUNT(
         index = 2,
-        icon = Icons.Default.AccountBalance,
+        icon = Icons.Rounded.AccountBalance,
         labelRes = little.goose.account.R.string.account
     ),
     Schedule(
         index = 3,
-        icon = Icons.Default.Schedule,
+        icon = Icons.Rounded.Schedule,
         labelRes = little.goose.schedule.R.string.schedule
     ),
     Memorial(
         index = 4,
-        icon = Icons.Default.Memory,
+        icon = Icons.Rounded.Memory,
         labelRes = little.goose.memorial.R.string.memorial
     );
 

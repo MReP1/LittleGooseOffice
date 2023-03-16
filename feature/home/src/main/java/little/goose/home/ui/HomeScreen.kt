@@ -1,14 +1,20 @@
 package little.goose.home.ui
 
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
+import androidx.compose.material.icons.outlined.DonutSmall
+import androidx.compose.material.icons.rounded.Add
+import androidx.compose.material.icons.rounded.Search
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.zIndex
 import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.google.accompanist.pager.ExperimentalPagerApi
@@ -64,6 +70,8 @@ fun HomeScreen(
     val indexViewModel = viewModel<IndexViewModel>()
     val indexScreenState by indexViewModel.indexScreenState.collectAsState()
 
+    val buttonState = remember { MovableActionButtonState() }
+
     Scaffold(
         modifier = modifier,
         topBar = {
@@ -92,7 +100,9 @@ fun HomeScreen(
             ) {
                 HorizontalPager(
                     count = 5,
-                    modifier = Modifier.fillMaxSize(),
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .zIndex(-1F),
                     state = pagerState,
                     userScrollEnabled = scrollable
                 ) { index ->
@@ -129,14 +139,13 @@ fun HomeScreen(
                         }
                     }
                 }
-                val buttonState = remember { MovableActionButtonState() }
                 if (currentHomePage != HomePage.Home) {
                     MovableActionButton(
                         modifier = Modifier.align(Alignment.BottomEnd),
                         state = buttonState,
                         mainButtonContent = {
                             Icon(
-                                imageVector = Icons.Default.Add,
+                                imageVector = Icons.Rounded.Add,
                                 contentDescription = "More"
                             )
                         },
@@ -159,7 +168,24 @@ fun HomeScreen(
                             }
                         },
                         topSubButtonContent = {
+                            when (currentHomePage) {
+                                HomePage.Notebook -> {
 
+                                }
+                                HomePage.ACCOUNT -> {
+                                    Icon(
+                                        imageVector = Icons.Outlined.DonutSmall,
+                                        contentDescription = "Analysis"
+                                    )
+                                }
+                                HomePage.Schedule -> {
+
+                                }
+                                HomePage.Memorial -> {
+
+                                }
+                                else -> {}
+                            }
                         },
                         onTopSubButtonClick = {
                             when (currentHomePage) {
@@ -179,36 +205,53 @@ fun HomeScreen(
                             }
                         },
                         bottomSubButtonContent = {
-
+                            Icon(imageVector = Icons.Rounded.Search, contentDescription = "search")
                         },
                         onBottomSubButtonClick = {
 
                         }
                     )
+
+                    Box(modifier = Modifier.fillMaxSize().zIndex(-0.5F).run {
+                        if (buttonState.isExpended.value) {
+                            clickable(indication = null,
+                                interactionSource = remember { MutableInteractionSource() }
+                            ) { scope.launch { buttonState.fold() } }
+                        } else this
+                    })
                 }
             }
         },
         bottomBar = {
-            BottomAppBar(
-                actions = {
-                    for (homePage in HomePage.values()) {
-                        NavigationBarItem(
-                            selected = homePage == currentHomePage,
-                            onClick = {
-                                scope.launch(Dispatchers.Main.immediate) {
-                                    pagerState.scrollToPage(homePage.index)
+            Box {
+                BottomAppBar(
+                    actions = {
+                        for (homePage in HomePage.values()) {
+                            NavigationBarItem(
+                                selected = homePage == currentHomePage,
+                                onClick = {
+                                    scope.launch(Dispatchers.Main.immediate) {
+                                        pagerState.scrollToPage(homePage.index)
+                                    }
+                                },
+                                icon = {
+                                    Icon(
+                                        imageVector = homePage.icon,
+                                        contentDescription = stringResource(id = homePage.labelRes)
+                                    )
                                 }
-                            },
-                            icon = {
-                                Icon(
-                                    imageVector = homePage.icon,
-                                    contentDescription = stringResource(id = homePage.labelRes)
-                                )
-                            }
-                        )
+                            )
+                        }
                     }
-                }
-            )
+                )
+                Box(modifier = Modifier.matchParentSize().zIndex(1F).run {
+                    if (buttonState.isExpended.value) {
+                        clickable(indication = null,
+                            interactionSource = remember { MutableInteractionSource() }
+                        ) { scope.launch { buttonState.fold() } }
+                    } else this
+                })
+            }
         }
     )
 }

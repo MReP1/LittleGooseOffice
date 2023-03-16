@@ -28,7 +28,6 @@ import kotlinx.coroutines.launch
 import little.goose.common.constants.KEY_DELETE_ITEM
 import little.goose.common.constants.NOTIFY_DELETE_MEMORIAL
 import little.goose.common.localBroadcastManager
-import little.goose.common.utils.UIUtils
 import little.goose.common.utils.parcelable
 import little.goose.design.system.component.dialog.DeleteDialog
 import little.goose.design.system.component.dialog.rememberDialogState
@@ -99,7 +98,7 @@ class MemorialDialogFragment : DialogFragment() {
     private fun initWindow() {
         dialog?.window?.setBackgroundDrawable(null)
         dialog?.window?.attributes?.apply {
-            width = UIUtils.getWidthPercentPixel(0.78F)
+            width = (resources.displayMetrics.widthPixels * 0.78F).toInt()
             height = ViewGroup.LayoutParams.WRAP_CONTENT
             gravity = Gravity.CENTER
         }

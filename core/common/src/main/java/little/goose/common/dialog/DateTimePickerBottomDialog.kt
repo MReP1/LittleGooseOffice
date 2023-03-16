@@ -12,7 +12,6 @@ import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import little.goose.common.databinding.LayoutDialogBottomTimePickerBinding
 import little.goose.common.dialog.time.TimeType
-import little.goose.common.utils.UIUtils
 import little.goose.common.utils.getDate
 import little.goose.common.utils.getMonth
 import little.goose.common.utils.getYear
@@ -78,7 +77,7 @@ class DateTimePickerBottomDialog : BottomSheetDialogFragment() {
                 }
             } else if (it == TimeType.YEAR_MONTH) {
                 (bottomBinding.timePicker.layoutParams as ConstraintLayout.LayoutParams).apply {
-                    width = UIUtils.getWidthPercentPixel(0.52F)
+                    width = (resources.displayMetrics.widthPixels * 0.52F).toInt()
                     rightMargin = 0
                 }
             }

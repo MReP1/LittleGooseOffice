@@ -19,22 +19,3 @@
 # If you keep the line number information, uncomment this to
 # hide the original source file name.
 #-renamesourcefileattribute SourceFile
-
--keep class com.haibin.calendarview.MonthView {
-    public <init>(android.content.Context);
-}
--keep class com.haibin.calendarview.WeekBar {
-    public <init>(android.content.Context);
-}
--keep class com.haibin.calendarview.WeekView {
-    public <init>(android.content.Context);
-}
--keep class com.haibin.calendarview.YearView {
-    public <init>(android.content.Context);
-}
--keep class little.goose.home.ui.widget.AccountMonthView {
-    public <init>(android.content.Context);
-}
--keep class little.goose.home.ui.widget.AccountWeekView {
-    public <init>(android.content.Context);
-}

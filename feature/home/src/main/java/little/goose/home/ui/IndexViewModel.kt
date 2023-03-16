@@ -134,25 +134,31 @@ class IndexViewModel @Inject constructor(
 
     private fun updateTransactions(transactions: List<Transaction>) {
         val map = mutableMapOf<LocalDate, MutableList<Transaction>>()
-        var expense = BigDecimal(0)
-        var income = BigDecimal(0)
+        val expenseMap = mutableMapOf<LocalDate, BigDecimal>()
+        val incomeMap = mutableMapOf<LocalDate, BigDecimal>()
         transactions.forEach { transaction ->
             val time = transaction.time.toInstant().atZone(zoneId).toLocalDate()
             val list = map.getOrPut(time) { mutableListOf() }
             list.add(transaction)
             if (transaction.type == EXPENSE) {
+                var expense = expenseMap.getOrDefault(time, BigDecimal(0))
                 expense -= transaction.money
+                expenseMap[time] = expense
             } else if (transaction.type == INCOME) {
+                var income = incomeMap.getOrDefault(time, BigDecimal(0))
                 income += transaction.money
+                incomeMap[time] = income
             }
         }
         map.forEach { (time, transactions) ->
             val calendarModelState = getCalendarModelState(time)
+            val expense = expenseMap.getOrDefault(time, BigDecimal(0))
+            val income = incomeMap.getOrDefault(time, BigDecimal(0))
             calendarModelState.value = calendarModelState.value.copy(
                 transactions = transactions,
                 expense = expense,
                 income = income,
-                balance = expense + income
+                balance = income - expense
             )
         }
     }

@@ -69,9 +69,6 @@ dependencies {
     implementation(libs.androidx.lifecycle.rumtime.ktx)
     implementation(libs.androidx.lifecycle.viewModel.ktx)
 
-    //自定义Calendar
-    implementation(project(":calendarview"))
-
     implementation(project(":core:common"))
 
 }

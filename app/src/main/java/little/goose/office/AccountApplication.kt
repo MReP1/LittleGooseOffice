@@ -4,8 +4,6 @@ import android.app.Application
 import android.content.Context
 import dagger.hilt.android.HiltAndroidApp
 import kotlinx.coroutines.*
-import little.goose.common.utils.DateTimeUtils
-import little.goose.common.utils.UIUtils
 import little.goose.home.utils.DataStoreHelper
 
 @HiltAndroidApp
@@ -14,10 +12,6 @@ class AccountApplication : Application() {
     override fun onCreate() {
         super.onCreate()
         appContext = applicationContext
-
-        DateTimeUtils.appContext = this
-        UIUtils.appContext = this
-
         initData()
     }
 

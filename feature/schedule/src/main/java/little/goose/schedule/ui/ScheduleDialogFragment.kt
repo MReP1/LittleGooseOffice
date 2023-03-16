@@ -116,7 +116,7 @@ private constructor() : DialogFragment() {
     private fun initWindow() {
         dialog?.window?.setBackgroundDrawable(null)
         dialog?.window?.attributes?.apply {
-            width = UIUtils.getWidthPercentPixel(0.76F)
+            width = (resources.displayMetrics.widthPixels * 0.78F).toInt()
             height = ViewGroup.LayoutParams.WRAP_CONTENT
             gravity = Gravity.CENTER
         }

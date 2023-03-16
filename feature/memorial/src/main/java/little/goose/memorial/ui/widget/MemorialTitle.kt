@@ -1,7 +1,9 @@
 package little.goose.memorial.ui.widget
 
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
@@ -26,71 +28,71 @@ fun MemorialTitle(
     modifier: Modifier = Modifier,
     memorial: Memorial
 ) {
-    ConstraintLayout(
-        modifier = modifier
-    ) {
-        val context = LocalContext.current
-        val (content, oriTime, verSpace, time, day) = createRefs()
-        val barrier = createEndBarrier(content, oriTime)
-        createVerticalChain(
-            content, verSpace, oriTime,
-            chainStyle = ChainStyle.Packed
-        )
+    Surface(modifier = modifier) {
+        ConstraintLayout(modifier = Modifier.fillMaxSize()) {
+            val context = LocalContext.current
+            val (content, oriTime, verSpace, time, day) = createRefs()
+            val barrier = createEndBarrier(content, oriTime)
+            createVerticalChain(
+                content, verSpace, oriTime,
+                chainStyle = ChainStyle.Packed
+            )
 
-        Text(
-            text = memorial.content
-                .appendTimeSuffix(memorial.time, context),
-            modifier = Modifier.constrainAs(content) {
-                top.linkTo(parent.top)
-                start.linkTo(parent.start, 24.dp)
-                width = Dimension.fillToConstraints
+            Text(
+                text = memorial.content
+                    .appendTimeSuffix(memorial.time, context),
+                modifier = Modifier.constrainAs(content) {
+                    top.linkTo(parent.top)
+                    start.linkTo(parent.start, 24.dp)
+                    width = Dimension.fillToConstraints
+                }
+            )
+
+            Spacer(
+                modifier = Modifier.constrainAs(verSpace) {
+                    height = Dimension.value(16.dp)
+                }
+            )
+
+            Text(
+                text = memorial.time
+                    .toChineseYearMonDayWeek(context)
+                    .appendTimePrefix(memorial.time, context),
+                modifier = Modifier.constrainAs(oriTime) {
+                    bottom.linkTo(parent.bottom)
+                    start.linkTo(parent.start, 24.dp)
+                    width = Dimension.fillToConstraints
+                }
+            )
+
+            val curCalendar = remember(memorial) { Calendar.getInstance() }
+            val memCalendar = remember(memorial) {
+                Calendar.getInstance().apply { setTime(memorial.time) }
             }
-        )
 
-        Spacer(
-            modifier = Modifier.constrainAs(verSpace) {
-                height = Dimension.value(16.dp)
-            }
-        )
+            Text(
+                text = DateTimeUtils.getBetweenDay(curCalendar, memCalendar).toString(),
+                style = MaterialTheme.typography.displayLarge,
+                modifier = Modifier.constrainAs(time) {
+                    top.linkTo(parent.top)
+                    bottom.linkTo(parent.bottom)
+                    end.linkTo(day.start)
+                    start.linkTo(barrier, margin = 16.dp)
+                }
+            )
 
-        Text(
-            text = memorial.time
-                .toChineseYearMonDayWeek(context)
-                .appendTimePrefix(memorial.time, context),
-            modifier = Modifier.constrainAs(oriTime) {
-                bottom.linkTo(parent.bottom)
-                start.linkTo(parent.start, 24.dp)
-                width = Dimension.fillToConstraints
-            }
-        )
-
-        val curCalendar = remember(memorial) { Calendar.getInstance() }
-        val memCalendar = remember(memorial) {
-            Calendar.getInstance().apply { setTime(memorial.time) }
+            Text(
+                text = stringResource(id = R.string.sky),
+                modifier = Modifier.constrainAs(day) {
+                    end.linkTo(parent.end, margin = 24.dp)
+                    bottom.linkTo(parent.bottom, margin = 24.dp)
+                }
+            )
         }
-
-        Text(
-            text = DateTimeUtils.getBetweenDay(curCalendar, memCalendar).toString(),
-            style = MaterialTheme.typography.displayLarge,
-            modifier = Modifier.constrainAs(time) {
-                top.linkTo(parent.top)
-                bottom.linkTo(parent.bottom)
-                end.linkTo(day.start)
-                start.linkTo(barrier, margin = 16.dp)
-            }
-        )
-
-        Text(
-            text = stringResource(id = R.string.sky),
-            modifier = Modifier.constrainAs(day) {
-                end.linkTo(parent.end, margin = 24.dp)
-                bottom.linkTo(parent.bottom, margin = 24.dp)
-            }
-        )
     }
 }
 
-@Preview(widthDp = 375, heightDp = 200, showBackground = true)
+@Preview(widthDp = 375, heightDp = 200, showBackground = false)
 @Composable
 private fun PreviewMemorialTitle() {
     MemorialTitle(

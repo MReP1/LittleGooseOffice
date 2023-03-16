@@ -10,7 +10,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import little.goose.account.data.constants.AccountConstant
 import little.goose.account.data.entities.Transaction
-import little.goose.common.utils.toChineseMonthDay
 
 @Composable
 fun TransactionColumn(
@@ -28,7 +27,7 @@ fun TransactionColumn(
             key = { it.id ?: it }
         ) { transaction ->
             if (transaction.type == AccountConstant.TIME) {
-                Text(text = transaction.time.toChineseMonthDay())
+                Text(text = transaction.description)
             } else {
                 TransactionCard(
                     transaction = transaction,

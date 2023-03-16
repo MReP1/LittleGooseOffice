@@ -24,7 +24,7 @@ class DateTimePickerCenterDialog : DialogFragment(R.layout.layout_dialog_center_
 
     private var type: TimeType? = null
 
-    private var width = UIUtils.getWidthPercentPixel(0.80F)
+    private var width: Int = (resources.displayMetrics.widthPixels * 0.80F).toInt()
     private var height = ViewGroup.LayoutParams.WRAP_CONTENT
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {

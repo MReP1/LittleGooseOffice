@@ -141,7 +141,7 @@ fun IndexScreen(
                 income = state.currentCalendarModel.value.income,
                 expense = state.currentCalendarModel.value.expense
             )
-            if (state.currentCalendarModel.value.transactions.isNotEmpty()) {
+            if (state.currentCalendarModel.value.schedules.isNotEmpty()) {
                 IndexScheduleCard(
                     modifier = Modifier
                         .padding(horizontal = 16.dp, vertical = 6.dp)
@@ -187,7 +187,6 @@ private fun DayContent(
 ) {
     Column(
         modifier = modifier
-            .padding(1.dp)
             .fillMaxWidth()
             .clip(RoundedCorner16)
             .run {

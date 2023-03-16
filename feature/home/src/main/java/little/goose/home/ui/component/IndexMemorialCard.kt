@@ -8,13 +8,15 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
-import little.goose.common.utils.getRealDate
+import little.goose.common.utils.DateTimeUtils
 import little.goose.memorial.data.entities.Memorial
 import little.goose.memorial.utils.appendTimeSuffix
+import java.util.*
 
 @Composable
 fun IndexMemorialCard(
@@ -22,6 +24,12 @@ fun IndexMemorialCard(
     memorial: Memorial
 ) {
     val context = LocalContext.current
+
+    val currentCalendar = remember { Calendar.getInstance() }
+    val memorialCalendar = remember(memorial) {
+        Calendar.getInstance().apply { time = memorial.time }
+    }
+
     Card(
         modifier = modifier,
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primary)
@@ -35,7 +43,7 @@ fun IndexMemorialCard(
             Text(
                 text = memorial.content.appendTimeSuffix(
                     memorial.time, context
-                ) + memorial.time.getRealDate() + "天"
+                ) + DateTimeUtils.getBetweenDay(currentCalendar, memorialCalendar) + "天"
             )
         }
     }
