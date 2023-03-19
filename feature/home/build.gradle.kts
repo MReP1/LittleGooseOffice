@@ -14,12 +14,9 @@ android {
 
 dependencies {
     implementation(libs.androidx.appcompat)
-    implementation(libs.androidx.constraintLayout)
     implementation(libs.accompanist.pager)
-    implementation(libs.androidx.recyclerView)
     implementation(libs.google.android.material)
     implementation(libs.androidx.activity.ktx)
-    implementation(libs.androidx.fragment.ktx)
     implementation(libs.androidx.hilt.navigation.compose)
     implementation(libs.androidx.dataStore.preferences)
     implementation(libs.compose.calendar)

@@ -20,7 +20,7 @@ fun MemorialRoute(
     modifier: Modifier,
     onMemorialClick: (Memorial) -> Unit
 ) {
-    val viewModel: MemorialFragmentViewModel = hiltViewModel()
+    val viewModel: MemorialViewModel = hiltViewModel()
     val memorials by viewModel.memorials.collectAsState()
     val topMemorial by viewModel.topMemorial.collectAsState()
     MemorialScreen(

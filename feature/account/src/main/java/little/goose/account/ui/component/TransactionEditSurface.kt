@@ -1,5 +1,6 @@
 package little.goose.account.ui.component
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
@@ -12,10 +13,16 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import little.goose.account.data.entities.Transaction
 import little.goose.account.logic.MoneyCalculator
 import little.goose.account.ui.transaction.icon.TransactionIconHelper
 import little.goose.common.utils.toChineseYearMonDayWeek
+import little.goose.design.system.component.dialog.BottomSelectorDialog
+import little.goose.design.system.component.dialog.TimeSelectorDialog
+import little.goose.design.system.component.dialog.rememberBottomSheetDialogState
+import little.goose.design.system.component.dialog.rememberDialogState
 import java.math.BigDecimal
 
 @Composable
@@ -27,11 +34,19 @@ internal fun TransactionEditSurface(
     onDoneClick: (Transaction) -> Unit
 ) {
     val context = LocalContext.current
+    val scope = rememberCoroutineScope()
 
     val moneyCalculator = remember { MoneyCalculator(transaction.money) }
     val currentTransaction by rememberUpdatedState(newValue = transaction)
     val isContainOperator by moneyCalculator.isContainOperator.collectAsState()
     val money by moneyCalculator.money.collectAsState()
+
+    val timeSelectorDialogState = rememberBottomSheetDialogState()
+    BottomSelectorDialog(
+        state = timeSelectorDialogState,
+        initTime = transaction.time,
+        onConfirm = { onTransactionChange(transaction.copy(time = it)) }
+    )
 
     LaunchedEffect(moneyCalculator) {
         moneyCalculator.money.collect { moneyStr ->
@@ -76,7 +91,16 @@ internal fun TransactionEditSurface(
                 Row(
                     modifier = Modifier
                         .fillMaxSize()
-                        .padding(8.dp),
+                        .padding(8.dp)
+                        .clickable {
+                            scope.launch(Dispatchers.Main.immediate) {
+                                if (timeSelectorDialogState.isClosed) {
+                                    timeSelectorDialogState.open()
+                                } else {
+                                    timeSelectorDialogState.close()
+                                }
+                            }
+                        },
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Text(text = transaction.time.toChineseYearMonDayWeek(context))

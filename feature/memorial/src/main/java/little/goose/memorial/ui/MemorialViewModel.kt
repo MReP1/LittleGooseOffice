@@ -13,7 +13,7 @@ import little.goose.memorial.logic.MemorialRepository
 import javax.inject.Inject
 
 @HiltViewModel
-class MemorialFragmentViewModel @Inject constructor(
+class MemorialViewModel @Inject constructor(
     memorialRepository: MemorialRepository
 ) : ViewModel() {
 
