@@ -74,17 +74,23 @@ fun ScrollSelector(
                 if (!isScroll && needReset) {
                     needReset = false
                     scope.launch(Dispatchers.Main.immediate) {
-                        val selectedIndex = firstVisibleItemIndex + 1
-                        if (selectedIndex < items.size) {
-                            onItemSelected(
-                                firstVisibleItemIndex + 1,
-                                items[firstVisibleItemIndex + 1]
-                            )
-                        }
                         val halfHeight = contentSize.height / 2
                         if (lastFirstVisibleItemScrollOffset < halfHeight) {
+                            if (firstVisibleItemIndex < items.size) {
+                                onItemSelected(
+                                    firstVisibleItemIndex,
+                                    items[firstVisibleItemIndex]
+                                )
+                            }
                             state.animateScrollToItem(firstVisibleItemIndex)
                         } else {
+                            val selectedIndex = firstVisibleItemIndex + 1
+                            if (selectedIndex < items.size) {
+                                onItemSelected(
+                                    firstVisibleItemIndex + 1,
+                                    items[firstVisibleItemIndex + 1]
+                                )
+                            }
                             state.animateScrollToItem(firstVisibleItemIndex + 1)
                         }
                     }
@@ -98,9 +104,24 @@ fun ScrollSelector(
     ) {
         LazyColumn(
             modifier = Modifier.height(with(density) { (contentSize.height * 3).toDp() }),
-            state = state,
-            contentPadding = PaddingValues(vertical = with(density) { contentSize.height.toDp() })
+            state = state
         ) {
+            item {
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .onSizeChanged { size ->
+                            if (contentSize == IntSize.Zero) {
+                                contentSize = size
+                            }
+                        },
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    Spacer(modifier = Modifier.height(14.dp))
+                    Text(text = "", style = textStyle, modifier = Modifier)
+                    Spacer(modifier = Modifier.height(14.dp))
+                }
+            }
             items(
                 count = items.size,
                 key = { items[it] }
@@ -109,7 +130,7 @@ fun ScrollSelector(
                     modifier = Modifier
                         .fillMaxWidth()
                         .onSizeChanged { size ->
-                            if (contentSize != size) {
+                            if (contentSize == IntSize.Zero) {
                                 contentSize = size
                             }
                         },
@@ -127,6 +148,22 @@ fun ScrollSelector(
                             }
                         )
                     )
+                    Spacer(modifier = Modifier.height(14.dp))
+                }
+            }
+            item {
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .onSizeChanged { size ->
+                            if (contentSize == IntSize.Zero) {
+                                contentSize = size
+                            }
+                        },
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    Spacer(modifier = Modifier.height(14.dp))
+                    Text(text = "", style = textStyle, modifier = Modifier)
                     Spacer(modifier = Modifier.height(14.dp))
                 }
             }

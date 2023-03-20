@@ -1,9 +1,9 @@
 package little.goose.design.system.component
 
-import android.util.Log
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.Button
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -25,9 +25,7 @@ class TimeSelectorState(
     var minute by mutableStateOf(calendar.get(Calendar.MINUTE))
     val yearList = DateTimeUtils.getYearsList()
     val monthList = DateTimeUtils.getMonthsList()
-    val dayList by derivedStateOf {
-        DateTimeUtils.getDaysList(year, month).map { it.toString() }
-    }
+    val dayList by derivedStateOf { DateTimeUtils.getDaysList(year, month).map { it.toString() } }
     val hourList = DateTimeUtils.getHoursList()
     val minuteList = DateTimeUtils.getMinuteList()
 
@@ -44,11 +42,11 @@ fun TimeSelector(
 ) {
     Column(modifier = modifier) {
         Button(
-            onClick = {
-                onConfirm(state.time)
-            },
+            onClick = { onConfirm(state.time) },
             shape = RectangleShape,
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(48.dp)
         ) {
             Text(text = "确定")
         }
@@ -67,7 +65,7 @@ fun TimeSelector(
                 state = yearSelectorState,
                 onItemSelected = { _, y -> state.year = y.toInt() }
             )
-            Text(text = "年")
+            Text(text = "年", style = MaterialTheme.typography.bodySmall)
             val monthSelectorState = rememberLazyListState(
                 initialFirstVisibleItemIndex = state.monthList.indexOf(state.month.toString())
             )
@@ -79,7 +77,7 @@ fun TimeSelector(
                 state = monthSelectorState,
                 onItemSelected = { _, m -> state.month = m.toInt() }
             )
-            Text(text = "月")
+            Text(text = "月", style = MaterialTheme.typography.bodySmall)
             val daySelectorState = rememberLazyListState(
                 initialFirstVisibleItemIndex = state.dayList.indexOf(state.day.toString())
             )
@@ -91,7 +89,7 @@ fun TimeSelector(
                 state = daySelectorState,
                 onItemSelected = { _, d -> state.day = d.toInt() }
             )
-            Text(text = "日")
+            Text(text = "日", style = MaterialTheme.typography.bodySmall)
             val hourSelectorStable = rememberLazyListState(
                 initialFirstVisibleItemIndex = state.hourList.indexOf(state.hour.toString())
             )
@@ -103,7 +101,7 @@ fun TimeSelector(
                 state = hourSelectorStable,
                 onItemSelected = { _, h -> state.hour = h.toInt() }
             )
-            Text(text = "时")
+            Text(text = "时", style = MaterialTheme.typography.bodySmall)
             val minuteSelectorState = rememberLazyListState(
                 initialFirstVisibleItemIndex = state.minuteList.indexOf(state.minute.toString())
             )
@@ -115,7 +113,7 @@ fun TimeSelector(
                 state = minuteSelectorState,
                 onItemSelected = { _, m -> state.minute = m.toInt() }
             )
-            Text(text = "分")
+            Text(text = "分", style = MaterialTheme.typography.bodySmall)
         }
     }
 }

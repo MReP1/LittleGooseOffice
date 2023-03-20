@@ -21,7 +21,9 @@ import java.util.Date
 fun TimeSelectorDialog(
     state: DialogState = rememberDialogState(),
     initTime: Date,
+    onConfirm: (Date) -> Unit
 ) {
+    val scope = rememberCoroutineScope()
     val properties = remember { DialogProperties() }
     val selectorState = remember { TimeSelectorState(initTime) }
     NormalDialog(state = state, properties = properties) {
@@ -31,8 +33,11 @@ fun TimeSelectorDialog(
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(240.dp),
-                onConfirm = {
-
+                onConfirm = { time ->
+                    scope.launch(Dispatchers.Main.immediate) {
+                        onConfirm(time)
+                        state.dismiss()
+                    }
                 }
             )
         }

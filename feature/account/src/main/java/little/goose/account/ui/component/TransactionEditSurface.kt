@@ -87,33 +87,40 @@ internal fun TransactionEditSurface(
                 .fillMaxWidth()
                 .height(42.dp)
         ) {
-            Surface(modifier = Modifier.weight(1F)) {
-                Row(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(8.dp)
-                        .clickable {
-                            scope.launch(Dispatchers.Main.immediate) {
-                                if (timeSelectorDialogState.isClosed) {
-                                    timeSelectorDialogState.open()
-                                } else {
-                                    timeSelectorDialogState.close()
-                                }
-                            }
-                        },
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Text(text = transaction.time.toChineseYearMonDayWeek(context))
+            Surface(
+                modifier = Modifier.weight(1F),
+                onClick = {
+                    scope.launch(Dispatchers.Main.immediate) {
+                        if (timeSelectorDialogState.isClosed) {
+                            timeSelectorDialogState.open()
+                        } else {
+                            timeSelectorDialogState.close()
+                        }
+                    }
                 }
-            }
-            Surface(modifier = Modifier.weight(1F)) {
+            ) {
                 Row(
                     modifier = Modifier
                         .fillMaxSize()
                         .padding(8.dp),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Text(text = transaction.description)
+                    Text(text = transaction.time.toChineseYearMonDayWeek(context))
+                }
+            }
+            Surface(
+                modifier = Modifier.weight(1F),
+                onClick = {
+
+                }
+            ) {
+                Row(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(8.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(text = transaction.description.ifBlank { "Description..." })
                 }
             }
         }
