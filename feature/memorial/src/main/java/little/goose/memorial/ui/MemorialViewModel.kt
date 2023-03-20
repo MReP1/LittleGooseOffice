@@ -31,5 +31,4 @@ class MemorialViewModel @Inject constructor(
             initialValue = null
         )
 
-    val deleteReceiver = DeleteItemBroadcastReceiver<Memorial>()
 }

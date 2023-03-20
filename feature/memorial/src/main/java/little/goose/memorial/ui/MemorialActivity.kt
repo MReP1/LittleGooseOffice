@@ -24,13 +24,11 @@ import androidx.compose.ui.unit.dp
 import androidx.fragment.app.FragmentActivity
 import androidx.hilt.navigation.compose.hiltViewModel
 import dagger.hilt.android.AndroidEntryPoint
-import little.goose.common.utils.toChineseYearMonDayWeek
 import little.goose.common.constants.KEY_TYPE
 import little.goose.common.constants.TYPE_ADD
 import little.goose.common.constants.TYPE_MODIFY
-import little.goose.common.dialog.DateTimePickerBottomDialog
 import little.goose.common.dialog.InputTextDialogFragment
-import little.goose.common.dialog.time.TimeType
+import little.goose.common.utils.toChineseYearMonDayWeek
 import little.goose.design.system.theme.AccountTheme
 import little.goose.memorial.R
 import little.goose.memorial.data.constants.KEY_MEMORIAL
@@ -85,13 +83,14 @@ private fun MemorialRoute(
         modifier = modifier,
         memorial = memorial,
         onChangeTimeClick = {
-            DateTimePickerBottomDialog.Builder()
-                .setDimVisibility(true)
-                .setTime(viewModel.memorial.value.time)
-                .setType(TimeType.DATE)
-                .setConfirmAction {
-                    viewModel.updateMemorial(memorial.copy(time = it))
-                }.showNow(context.supportFragmentManager)
+//             FIXME
+//            DateTimePickerBottomDialog.Builder()
+//                .setDimVisibility(true)
+//                .setTime(viewModel.memorial.value.time)
+//                .setType(TimeType.DATE)
+//                .setConfirmAction {
+//                    viewModel.updateMemorial(memorial.copy(time = it))
+//                }.showNow(context.supportFragmentManager)
         },
         onContentClick = {
             InputTextDialogFragment.Builder()

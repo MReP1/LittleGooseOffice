@@ -28,7 +28,6 @@ import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.viewModels
 import dagger.hilt.android.AndroidEntryPoint
 import little.goose.common.constants.*
-import little.goose.common.dialog.DateTimePickerBottomDialog
 import little.goose.common.utils.*
 import little.goose.design.system.component.dialog.DeleteDialog
 import little.goose.design.system.component.dialog.rememberDialogState
@@ -101,11 +100,12 @@ private constructor() : DialogFragment() {
     }
 
     private fun changeTime() {
-        DateTimePickerBottomDialog.Builder()
-            .setTime(viewModel.scheduleDialogState.value.schedule.time)
-            .setConfirmAction(viewModel::changeTime)
-            .setDimVisibility(false)
-            .showNow(parentFragmentManager)
+        // FIXME
+//        DateTimePickerBottomDialog.Builder()
+//            .setTime(viewModel.scheduleDialogState.value.schedule.time)
+//            .setConfirmAction(viewModel::changeTime)
+//            .setDimVisibility(false)
+//            .showNow(parentFragmentManager)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
