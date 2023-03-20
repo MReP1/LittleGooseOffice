@@ -1,9 +1,11 @@
 package little.goose.account.ui.component
 
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.CalendarToday
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.*
@@ -13,16 +15,16 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.fragment.app.FragmentActivity
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import little.goose.account.data.entities.Transaction
 import little.goose.account.logic.MoneyCalculator
 import little.goose.account.ui.transaction.icon.TransactionIconHelper
-import little.goose.common.utils.toChineseYearMonDayWeek
+import little.goose.common.dialog.InputTextDialogFragment
+import little.goose.common.utils.toChineseMonthDayTime
 import little.goose.design.system.component.dialog.BottomSelectorDialog
-import little.goose.design.system.component.dialog.TimeSelectorDialog
 import little.goose.design.system.component.dialog.rememberBottomSheetDialogState
-import little.goose.design.system.component.dialog.rememberDialogState
 import java.math.BigDecimal
 
 @Composable
@@ -60,12 +62,13 @@ internal fun TransactionEditSurface(
 
     Column(modifier = modifier) {
         Surface(
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier
+                .fillMaxWidth(),
             shape = RoundedCornerShape(topStart = 24.dp, topEnd = 24.dp)
         ) {
             Row(
                 modifier = Modifier
-                    .padding(horizontal = 16.dp, vertical = 12.dp)
+                    .padding(start = 16.dp, end = 24.dp, top = 12.dp, bottom = 12.dp)
                     .fillMaxWidth(),
                 verticalAlignment = Alignment.CenterVertically
             ) {
@@ -79,7 +82,7 @@ internal fun TransactionEditSurface(
                 Spacer(modifier = Modifier.width(12.dp))
                 Text(text = transaction.content, modifier = Modifier.weight(1F))
                 Spacer(modifier = Modifier.weight(1f))
-                Text(text = money)
+                Text(text = money, style = MaterialTheme.typography.titleLarge)
             }
         }
         Row(
@@ -102,25 +105,39 @@ internal fun TransactionEditSurface(
                 Row(
                     modifier = Modifier
                         .fillMaxSize()
-                        .padding(8.dp),
+                        .padding(top = 8.dp, bottom = 8.dp, start = 20.dp, end = 4.dp),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Text(text = transaction.time.toChineseYearMonDayWeek(context))
+                    Icon(imageVector = Icons.Rounded.CalendarToday, contentDescription = "Calendar")
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Text(
+                        text = transaction.time.toChineseMonthDayTime(),
+                        style = MaterialTheme.typography.bodySmall
+                    )
                 }
             }
             Surface(
                 modifier = Modifier.weight(1F),
                 onClick = {
-
+                    scope.launch(Dispatchers.Main.immediate) {
+                        InputTextDialogFragment.Builder()
+                            .setInputText(transaction.description)
+                            .setConfirmCallback {
+                                onTransactionChange(transaction.copy(description = it))
+                            }.showNow((context as FragmentActivity).supportFragmentManager)
+                    }
                 }
             ) {
                 Row(
                     modifier = Modifier
                         .fillMaxSize()
-                        .padding(8.dp),
+                        .padding(top = 8.dp, bottom = 8.dp, start = 16.dp, end = 4.dp),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Text(text = transaction.description.ifBlank { "Description..." })
+                    Text(
+                        text = transaction.description.ifBlank { "Description..." },
+                        style = MaterialTheme.typography.bodySmall
+                    )
                 }
             }
         }

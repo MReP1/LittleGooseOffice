@@ -1,6 +1,8 @@
 package little.goose.account.ui.component
 
 import androidx.compose.foundation.layout.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.Backspace
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -46,7 +48,7 @@ fun Calculator(
                 modifier = Modifier.weight(1F),
                 onClick = { onOperatorClick(MoneyCalculatorLogic.BACKSPACE) }
             ) {
-                Text(text = "<-")
+                Icon(imageVector = Icons.Rounded.Backspace, contentDescription = "BackSpace")
             }
         }
 

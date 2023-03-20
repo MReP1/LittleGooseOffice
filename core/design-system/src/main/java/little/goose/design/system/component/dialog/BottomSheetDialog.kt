@@ -158,7 +158,7 @@ fun BottomSheetDialog(
     content: @Composable (BoxScope.() -> Unit)
 ) {
     val scope = rememberCoroutineScope()
-    if (state.isShowing || state.isClosing) {
+    if (!state.isClosed) {
         Dialog(
             onDismissRequest = {
                 scope.launch(Dispatchers.Main.immediate) {
@@ -186,9 +186,7 @@ fun BottomSheetDialog(
             // content
             Layout(
                 content = {
-                    Box(modifier = modifier.fillMaxWidth()) {
-                        content()
-                    }
+                    Box(modifier = modifier.fillMaxWidth(), content = content)
                 },
                 modifier = if (!dialogProperties.isDraggable) {
                     Modifier
