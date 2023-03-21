@@ -11,19 +11,17 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.fragment.app.FragmentActivity
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import little.goose.account.data.entities.Transaction
 import little.goose.account.logic.MoneyCalculator
 import little.goose.account.ui.transaction.icon.TransactionIconHelper
-import little.goose.common.dialog.InputTextDialogFragment
 import little.goose.common.utils.toChineseMonthDayTime
 import little.goose.design.system.component.dialog.BottomSelectorDialog
+import little.goose.design.system.component.dialog.InputDialog
 import little.goose.design.system.component.dialog.rememberBottomSheetDialogState
 import java.math.BigDecimal
 
@@ -35,7 +33,6 @@ internal fun TransactionEditSurface(
     onAgainClick: (Transaction) -> Unit,
     onDoneClick: (Transaction) -> Unit
 ) {
-    val context = LocalContext.current
     val scope = rememberCoroutineScope()
 
     val moneyCalculator = remember { MoneyCalculator(transaction.money) }
@@ -48,6 +45,15 @@ internal fun TransactionEditSurface(
         state = timeSelectorDialogState,
         initTime = transaction.time,
         onConfirm = { onTransactionChange(transaction.copy(time = it)) }
+    )
+
+    val inputDialogState = rememberBottomSheetDialogState()
+    InputDialog(
+        state = inputDialogState,
+        text = transaction.description,
+        onConfirm = {
+            onTransactionChange(transaction.copy(description = it))
+        }
     )
 
     LaunchedEffect(moneyCalculator) {
@@ -120,11 +126,7 @@ internal fun TransactionEditSurface(
                 modifier = Modifier.weight(1F),
                 onClick = {
                     scope.launch(Dispatchers.Main.immediate) {
-                        InputTextDialogFragment.Builder()
-                            .setInputText(transaction.description)
-                            .setConfirmCallback {
-                                onTransactionChange(transaction.copy(description = it))
-                            }.showNow((context as FragmentActivity).supportFragmentManager)
+                        inputDialogState.open()
                     }
                 }
             ) {
@@ -143,7 +145,9 @@ internal fun TransactionEditSurface(
         }
 
         Calculator(
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(288.dp),
             onNumClick = {
                 moneyCalculator.appendMoneyEnd(it.digitToChar())
             },

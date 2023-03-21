@@ -155,15 +155,15 @@ fun BottomSheetDialog(
     modifier: Modifier = Modifier,
     dialogProperties: BottomSheetDialogProperties = remember { BottomSheetDialogProperties() },
     state: BottomSheetDialogState = rememberBottomSheetDialogState(),
+    onDismissRequest: (() -> Unit)? = null,
     content: @Composable (BoxScope.() -> Unit)
 ) {
     val scope = rememberCoroutineScope()
     if (!state.isClosed) {
         Dialog(
-            onDismissRequest = {
-                scope.launch(Dispatchers.Main.immediate) {
-                    state.close()
-                }
+            onDismissRequest = onDismissRequest ?: {
+                scope.launch(Dispatchers.Main.immediate) { state.close() }
+                Unit
             },
             properties = remember {
                 DialogProperties(

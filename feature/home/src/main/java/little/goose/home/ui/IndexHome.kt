@@ -43,7 +43,7 @@ data class IndexScreenState(
 )
 
 @Composable
-fun IndexScreen(
+fun IndexHome(
     modifier: Modifier = Modifier,
     state: IndexScreenState
 ) {

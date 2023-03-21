@@ -19,7 +19,7 @@ import little.goose.note.ui.note.NoteActivity
 import middle.goose.richtext.RichTextView
 
 @Composable
-fun NotebookRoute(
+fun NotebookHome(
     modifier: Modifier = Modifier
 ) {
     val context = LocalContext.current

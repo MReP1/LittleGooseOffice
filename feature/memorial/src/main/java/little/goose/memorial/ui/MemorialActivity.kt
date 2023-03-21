@@ -79,7 +79,7 @@ private fun MemorialRoute(
     val viewModel: MemorialActivityViewModel = hiltViewModel()
     val memorial by viewModel.memorial.collectAsState()
     val context = LocalContext.current as FragmentActivity
-    MemorialRoute(
+    MemorialScreen(
         modifier = modifier,
         memorial = memorial,
         onChangeTimeClick = {
@@ -116,7 +116,7 @@ private fun MemorialRoute(
 }
 
 @Composable
-private fun MemorialRoute(
+private fun MemorialScreen(
     modifier: Modifier = Modifier,
     memorial: Memorial,
     onChangeTimeClick: () -> Unit,
@@ -224,7 +224,7 @@ private fun MemorialRoute(
 @Preview
 @Composable
 private fun PreviewMemorialScreen() {
-    MemorialRoute(
+    MemorialScreen(
         memorial = Memorial(null, "纪念日", true, Date()),
         onChangeTimeClick = {},
         onContentClick = {},

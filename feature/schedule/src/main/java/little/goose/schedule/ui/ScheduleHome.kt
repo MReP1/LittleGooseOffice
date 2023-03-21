@@ -15,7 +15,7 @@ import little.goose.common.utils.*
 import little.goose.schedule.data.entities.Schedule
 
 @Composable
-fun ScheduleRoute(
+fun ScheduleHome(
     modifier: Modifier,
     onScheduleClick: (Schedule) -> Unit
 ) {

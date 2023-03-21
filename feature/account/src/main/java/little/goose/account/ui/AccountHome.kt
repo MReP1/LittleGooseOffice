@@ -22,7 +22,7 @@ import little.goose.design.system.component.dialog.DeleteDialog
 import little.goose.design.system.component.dialog.rememberDialogState
 
 @Composable
-fun AccountRoute(
+fun AccountHome(
     modifier: Modifier = Modifier,
 ) {
     val viewModel = viewModel<AccountFragmentViewModel>()

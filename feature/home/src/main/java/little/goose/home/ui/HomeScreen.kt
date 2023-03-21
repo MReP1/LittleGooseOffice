@@ -22,7 +22,7 @@ import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.rememberPagerState
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import little.goose.account.ui.AccountRoute
+import little.goose.account.ui.AccountHome
 import little.goose.account.ui.analysis.AccountAnalysisActivity
 import little.goose.account.ui.transaction.TransactionActivity
 import little.goose.common.constants.KEY_SCHEDULE
@@ -33,11 +33,11 @@ import little.goose.home.ui.component.IndexTopBar
 import little.goose.memorial.data.constants.KEY_MEMORIAL
 import little.goose.memorial.ui.MemorialActivity
 import little.goose.memorial.ui.MemorialDialogFragment
-import little.goose.memorial.ui.MemorialRoute
-import little.goose.note.ui.NotebookRoute
+import little.goose.memorial.ui.MemorialHome
+import little.goose.note.ui.NotebookHome
 import little.goose.note.ui.note.NoteActivity
 import little.goose.schedule.ui.ScheduleDialogFragment
-import little.goose.schedule.ui.ScheduleRoute
+import little.goose.schedule.ui.ScheduleHome
 import java.time.LocalDate
 import java.util.*
 
@@ -108,19 +108,23 @@ fun HomeScreen(
                 ) { index ->
                     when (index) {
                         HOME -> {
-                            IndexScreen(
+                            IndexHome(
                                 modifier = Modifier.fillMaxSize(),
                                 state = indexScreenState
                             )
                         }
                         NOTEBOOK -> {
-                            NotebookRoute(modifier = Modifier.fillMaxSize())
+                            NotebookHome(
+                                modifier = Modifier.fillMaxSize()
+                            )
                         }
                         ACCOUNT -> {
-                            AccountRoute(modifier = Modifier.fillMaxSize())
+                            AccountHome(
+                                modifier = Modifier.fillMaxSize()
+                            )
                         }
                         SCHEDULE -> {
-                            ScheduleRoute(
+                            ScheduleHome(
                                 modifier = Modifier.fillMaxSize(),
                                 onScheduleClick = {
                                     ScheduleDialogFragment.newInstance(it)
@@ -129,7 +133,7 @@ fun HomeScreen(
                             )
                         }
                         MEMORIAL -> {
-                            MemorialRoute(
+                            MemorialHome(
                                 modifier = Modifier.fillMaxSize(),
                                 onMemorialClick = {
                                     MemorialDialogFragment.newInstance(it)

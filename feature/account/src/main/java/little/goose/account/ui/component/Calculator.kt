@@ -7,7 +7,6 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.dp
 import little.goose.account.logic.MoneyCalculatorLogic
 
 @Composable
@@ -23,7 +22,7 @@ fun Calculator(
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .height(54.dp),
+                .weight(1F),
             verticalAlignment = Alignment.CenterVertically
         ) {
             Cell(
@@ -55,7 +54,7 @@ fun Calculator(
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .height(54.dp),
+                .weight(1F),
             verticalAlignment = Alignment.CenterVertically
         ) {
             Cell(
@@ -87,7 +86,7 @@ fun Calculator(
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .height(54.dp),
+                .weight(1F),
             verticalAlignment = Alignment.CenterVertically
         ) {
             Cell(
@@ -119,7 +118,8 @@ fun Calculator(
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .height(54.dp)
+                .weight(1F),
+            verticalAlignment = Alignment.CenterVertically
         ) {
             Cell(
                 modifier = Modifier.weight(1F),

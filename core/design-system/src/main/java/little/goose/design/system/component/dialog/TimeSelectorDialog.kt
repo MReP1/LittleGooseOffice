@@ -51,9 +51,9 @@ fun BottomSelectorDialog(
     onConfirm: (Date) -> Unit
 ) {
     val scope = rememberCoroutineScope()
-    val selectorState = remember { TimeSelectorState(initTime) }
     BottomSheetDialog(state = state) {
         Surface(shape = TopRoundedCorner24) {
+            val selectorState = remember(initTime) { TimeSelectorState(initTime) }
             TimeSelector(
                 state = selectorState,
                 modifier = Modifier

@@ -16,7 +16,7 @@ import little.goose.memorial.ui.widget.MemorialColumn
 import little.goose.memorial.ui.widget.MemorialTitle
 
 @Composable
-fun MemorialRoute(
+fun MemorialHome(
     modifier: Modifier,
     onMemorialClick: (Memorial) -> Unit
 ) {
