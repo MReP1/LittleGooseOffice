@@ -75,8 +75,8 @@ interface AccountDao {
     fun getTransactionIncomeSumByTimeFlow(startTime: Long, endTime: Long): Flow<Double>
 
     @Query("SELECT * FROM $TABLE_TRANSACTION WHERE money LIKE '%'|| :money ||'%' OR description LIKE '%'|| :money ||'%' ")
-    suspend fun searchTransactionByMoney(money: String): List<Transaction>
+    fun searchTransactionByMoneyFlow(money: String): Flow<List<Transaction>>
 
     @Query("SELECT * FROM $TABLE_TRANSACTION WHERE description LIKE '%'|| :text ||'%' OR content LIKE '%'|| :text ||'%'")
-    suspend fun searchTransactionByText(text: String): List<Transaction>
+    fun searchTransactionByTextFlow(text: String): Flow<List<Transaction>>
 }

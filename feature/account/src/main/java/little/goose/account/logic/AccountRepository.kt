@@ -226,7 +226,7 @@ class AccountRepository(
         }
     }
 
-    suspend fun searchTransactionByMoney(money: String) = accountDao.searchTransactionByMoney(money)
+    fun searchTransactionByMoneyFlow(money: String) = accountDao.searchTransactionByMoneyFlow(money)
 
-    suspend fun searchTransactionByText(text: String) = accountDao.searchTransactionByText(text)
+    fun searchTransactionByTextFlow(text: String) = accountDao.searchTransactionByTextFlow(text)
 }

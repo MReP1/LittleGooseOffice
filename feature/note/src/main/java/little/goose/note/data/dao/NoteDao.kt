@@ -32,5 +32,5 @@ interface NoteDao {
     suspend fun deleteNoteList(noteList: List<Note>)
 
     @Query("SELECT * FROM $TABLE_NOTE WHERE title LIKE '%'|| :text ||'%' OR content LIKE '%'|| :text ||'%'")
-    suspend fun searchNoteByText(text: String): List<Note>
+    fun searchNoteByTextFlow(text: String): Flow<List<Note>>
 }

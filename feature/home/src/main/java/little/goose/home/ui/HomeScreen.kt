@@ -38,6 +38,8 @@ import little.goose.note.ui.NotebookHome
 import little.goose.note.ui.note.NoteActivity
 import little.goose.schedule.ui.ScheduleDialogFragment
 import little.goose.schedule.ui.ScheduleHome
+import little.goose.search.SearchActivity
+import little.goose.search.SearchType
 import java.time.LocalDate
 import java.util.*
 
@@ -212,7 +214,21 @@ fun HomeScreen(
                             Icon(imageVector = Icons.Rounded.Search, contentDescription = "search")
                         },
                         onBottomSubButtonClick = {
-
+                            when (currentHomePage) {
+                                HomePage.Notebook -> {
+                                    SearchActivity.open(context, SearchType.Note)
+                                }
+                                HomePage.ACCOUNT -> {
+                                    SearchActivity.open(context, SearchType.Transaction)
+                                }
+                                HomePage.Schedule -> {
+                                    SearchActivity.open(context, SearchType.Schedule)
+                                }
+                                HomePage.Memorial -> {
+                                    SearchActivity.open(context, SearchType.Memorial)
+                                }
+                                else -> {}
+                            }
                         }
                     )
 

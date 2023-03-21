@@ -23,7 +23,7 @@ interface MemorialDao {
     suspend fun getAllMemorial(): List<Memorial>
 
     @Query("SELECT * FROM $TABLE_MEMORIAL WHERE content LIKE '%'|| :keyword ||'%' ORDER BY time DESC")
-    suspend fun searchMemorialByText(keyword: String): List<Memorial>
+    fun searchMemorialByTextFlow(keyword: String): Flow<List<Memorial>>
 
     @Query("SELECT * FROM $TABLE_MEMORIAL WHERE isTop = 1 ORDER BY time DESC")
     fun getMemorialAtTop(): Flow<List<Memorial>>

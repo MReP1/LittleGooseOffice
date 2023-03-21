@@ -39,6 +39,7 @@ dependencies {
     implementation(project(":feature:note"))
     implementation(project(":feature:memorial"))
     implementation(project(":feature:schedule"))
+    implementation(project(":feature:search"))
 
     // Compose
     implementation(libs.androidx.activity.compose)

@@ -31,7 +31,7 @@ class MemorialRepository(context: Context) {
 
     suspend fun updateMemorial(memorial: Memorial) = memorialDao.updateMemorial(memorial)
 
-    suspend fun searchMemorialByText(keyword: String) = memorialDao.searchMemorialByText(keyword)
+    suspend fun searchMemorialByTextFlow(keyword: String) = memorialDao.searchMemorialByTextFlow(keyword)
 
     fun getMemorialAtTopFlow() = memorialDao.getMemorialAtTop()
 

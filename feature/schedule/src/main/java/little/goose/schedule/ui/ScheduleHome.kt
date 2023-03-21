@@ -42,68 +42,11 @@ private fun ScheduleScreen(
         modifier = modifier,
         color = MaterialTheme.colorScheme.background
     ) {
-        LazyColumn(
+        ScheduleColumn(
             modifier = Modifier.fillMaxSize(),
-            contentPadding = PaddingValues(vertical = 8.dp, horizontal = 16.dp)
-        ) {
-            items(
-                items = schedules,
-                key = { it.id ?: -1 }
-            ) { schedule ->
-                ScheduleItem(
-                    modifier = Modifier.fillMaxWidth(),
-                    schedule = schedule,
-                    onCheckedChange = {
-                        onCheckedChange(schedule, it)
-                    },
-                    onScheduleClick = onScheduleClick
-                )
-                Spacer(modifier = Modifier.height(12.dp))
-            }
-        }
-    }
-}
-
-@Composable
-private fun ScheduleItem(
-    modifier: Modifier,
-    schedule: Schedule,
-    onScheduleClick: (Schedule) -> Unit,
-    onCheckedChange: (Boolean) -> Unit
-) {
-    Card(
-        onClick = {
-            onScheduleClick(schedule)
-        },
-        modifier = modifier
-    ) {
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Spacer(modifier = Modifier.width(12.dp))
-            Column(modifier = Modifier.weight(1F)) {
-                Spacer(modifier = Modifier.height(8.dp))
-                Text(
-                    text = schedule.title,
-                    style = MaterialTheme.typography.titleMedium
-                )
-                Spacer(modifier = Modifier.height(8.dp))
-                if (schedule.content.isNotBlank()) {
-                    Text(
-                        text = schedule.content,
-                        style = MaterialTheme.typography.bodyMedium
-                    )
-                    Spacer(modifier = Modifier.height(8.dp))
-                }
-                Text(
-                    text = schedule.time.toChineseMonthDayTime(),
-                    style = MaterialTheme.typography.bodyMedium
-                )
-                Spacer(modifier = Modifier.height(8.dp))
-            }
-            Checkbox(checked = schedule.isfinish, onCheckedChange = onCheckedChange)
-            Spacer(modifier = Modifier.width(8.dp))
-        }
+            schedules = schedules,
+            onScheduleClick = onScheduleClick,
+            onCheckedChange = onCheckedChange
+        )
     }
 }

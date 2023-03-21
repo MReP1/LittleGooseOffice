@@ -29,9 +29,12 @@
             android:name="little.goose.note.ui.note.NoteActivity"
             android:exported="false" />
         <activity
+            android:name="little.goose.search.SearchActivity"
+            android:exported="false" />
+        <activity
             android:name="little.goose.office.MainActivity"
-            android:theme="@style/Theme.AppSplashScreen"
-            android:exported="true">
+            android:exported="true"
+            android:theme="@style/Theme.AppSplashScreen">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

@@ -43,7 +43,7 @@ class ScheduleRepository(context: Context) {
         return scheduleDao.getScheduleByTimeFlow(monthRange.startTime, monthRange.endTime)
     }
 
-    suspend fun searchScheduleByText(keyWord: String) = scheduleDao.searchScheduleByText(keyWord)
+    fun searchScheduleByTextFlow(keyWord: String) = scheduleDao.searchScheduleByTextFlow(keyWord)
 
     fun getScheduleByDateFlow(year: Int, month: Int, date: Int): Flow<List<Schedule>> {
         val dayRange = getOneDayRange(year, month, date)

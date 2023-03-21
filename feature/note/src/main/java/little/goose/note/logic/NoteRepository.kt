@@ -36,6 +36,6 @@ class NoteRepository(context: Context) {
 
     suspend fun deleteNoteList(noteList: List<Note>) = noteDao.deleteNoteList(noteList)
 
-    suspend fun searchNoteByText(text: String) = noteDao.searchNoteByText(text)
+    fun searchNoteByTextFlow(text: String) = noteDao.searchNoteByTextFlow(text)
 
 }
