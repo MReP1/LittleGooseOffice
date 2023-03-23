@@ -7,14 +7,14 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
-import little.goose.common.receiver.DeleteItemBroadcastReceiver
+import kotlinx.coroutines.launch
 import little.goose.memorial.data.entities.Memorial
 import little.goose.memorial.logic.MemorialRepository
 import javax.inject.Inject
 
 @HiltViewModel
 class MemorialViewModel @Inject constructor(
-    memorialRepository: MemorialRepository
+    private val memorialRepository: MemorialRepository
 ) : ViewModel() {
 
     val memorials = memorialRepository.getAllMemorialFlow().stateIn(
@@ -30,5 +30,11 @@ class MemorialViewModel @Inject constructor(
             started = SharingStarted.Eagerly,
             initialValue = null
         )
+
+    fun deleteMemorial(memorial: Memorial) {
+        viewModelScope.launch {
+            memorialRepository.deleteMemorial(memorial)
+        }
+    }
 
 }

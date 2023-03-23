@@ -36,6 +36,8 @@ class TransactionExampleViewModel @Inject constructor(
     private val timeType: TimeType = savedStateHandle[KEY_TIME_TYPE]!!
     private val moneyType: MoneyType = savedStateHandle[KEY_MONEY_TYPE]!!
 
+    var deletingTransaction: Transaction? = null
+
     val title = when (timeType) {
         TimeType.DATE -> time.toChineseYearMonthDay()
         TimeType.YEAR_MONTH -> time.toChineseYearMonth()
@@ -89,6 +91,7 @@ class TransactionExampleViewModel @Inject constructor(
     fun deleteTransaction(transaction: Transaction) {
         viewModelScope.launch {
             accountRepository.deleteTransaction(transaction)
+            deletingTransaction = transaction
             _event.emit(Event.DeleteTransaction(transaction))
         }
     }

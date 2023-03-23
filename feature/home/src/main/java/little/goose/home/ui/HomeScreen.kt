@@ -30,13 +30,9 @@ import little.goose.design.system.component.MovableActionButton
 import little.goose.design.system.component.MovableActionButtonState
 import little.goose.home.data.*
 import little.goose.home.ui.component.IndexTopBar
-import little.goose.memorial.data.constants.KEY_MEMORIAL
-import little.goose.memorial.ui.MemorialActivity
-import little.goose.memorial.ui.MemorialDialogFragment
-import little.goose.memorial.ui.MemorialHome
+import little.goose.memorial.ui.*
 import little.goose.note.ui.NotebookHome
 import little.goose.note.ui.note.NoteActivity
-import little.goose.schedule.ui.ScheduleDialogFragment
 import little.goose.schedule.ui.ScheduleHome
 import little.goose.search.SearchActivity
 import little.goose.search.SearchType
@@ -49,7 +45,6 @@ fun HomeScreen(
     modifier: Modifier,
 ) {
     val context = LocalContext.current
-    val fragmentManager = (context as FragmentActivity).supportFragmentManager
     val scope = rememberCoroutineScope()
     val pagerState = rememberPagerState()
     var scrollable by remember { mutableStateOf(true) }
@@ -127,20 +122,12 @@ fun HomeScreen(
                         }
                         SCHEDULE -> {
                             ScheduleHome(
-                                modifier = Modifier.fillMaxSize(),
-                                onScheduleClick = {
-                                    ScheduleDialogFragment.newInstance(it)
-                                        .showNow(fragmentManager, KEY_SCHEDULE)
-                                }
+                                modifier = Modifier.fillMaxSize()
                             )
                         }
                         MEMORIAL -> {
                             MemorialHome(
-                                modifier = Modifier.fillMaxSize(),
-                                onMemorialClick = {
-                                    MemorialDialogFragment.newInstance(it)
-                                        .showNow(fragmentManager, KEY_MEMORIAL)
-                                }
+                                modifier = Modifier.fillMaxSize()
                             )
                         }
                     }
@@ -164,8 +151,7 @@ fun HomeScreen(
                                     TransactionActivity.openAdd(context)
                                 }
                                 HomePage.Schedule -> {
-                                    ScheduleDialogFragment.newInstance(null, Date())
-                                        .showNow(fragmentManager, KEY_SCHEDULE)
+
                                 }
                                 HomePage.Memorial -> {
                                     MemorialActivity.openAdd(context)

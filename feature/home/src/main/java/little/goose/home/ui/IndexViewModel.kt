@@ -220,4 +220,10 @@ class IndexViewModel @Inject constructor(
         }
     }
 
+    fun deleteMemorial(memorial: Memorial) {
+        viewModelScope.launch {
+            memorialRepository.deleteMemorial(memorial)
+        }
+    }
+
 }

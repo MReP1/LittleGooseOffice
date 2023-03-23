@@ -21,7 +21,6 @@ import kotlinx.coroutines.launch
 import little.goose.account.data.constants.MoneyType
 import little.goose.account.data.entities.Transaction
 import little.goose.account.ui.component.TransactionColumn
-import little.goose.account.ui.transaction.TransactionActivity
 import little.goose.account.ui.transaction.TransactionDialog
 import little.goose.account.ui.transaction.rememberTransactionDialogState
 import little.goose.common.constants.KEY_CONTENT
@@ -29,8 +28,6 @@ import little.goose.common.constants.KEY_MONEY_TYPE
 import little.goose.common.constants.KEY_TIME
 import little.goose.common.constants.KEY_TIME_TYPE
 import little.goose.common.dialog.time.TimeType
-import little.goose.design.system.component.dialog.DeleteDialog
-import little.goose.design.system.component.dialog.rememberDialogState
 import little.goose.design.system.theme.AccountTheme
 import little.goose.design.system.theme.Red200
 import java.io.Serializable
@@ -46,9 +43,7 @@ class TransactionExampleActivity : AppCompatActivity() {
                 val viewModel = hiltViewModel<TransactionExampleViewModel>()
                 val transactions by viewModel.transactions.collectAsState()
                 val transactionDialogState = rememberTransactionDialogState()
-                val deleteDialogState = rememberDialogState()
                 val snackbarHostState = remember { SnackbarHostState() }
-                var deletingTransaction: Transaction? by remember { mutableStateOf(null) }
 
                 TransactionTimeScreen(
                     modifier = Modifier.fillMaxSize(),
@@ -56,9 +51,10 @@ class TransactionExampleActivity : AppCompatActivity() {
                     onTransactionClick = transactionDialogState::show,
                     snackbarHostState = snackbarHostState,
                     snackbarAction = {
-                        deletingTransaction?.let {
-                            viewModel.insertTransaction(it)
-                        }
+                        viewModel.insertTransaction(
+                            transaction = viewModel.deletingTransaction
+                                ?: return@TransactionTimeScreen
+                        )
                     },
                     transactions = transactions,
                     onBack = ::finish
@@ -66,26 +62,7 @@ class TransactionExampleActivity : AppCompatActivity() {
 
                 TransactionDialog(
                     state = transactionDialogState,
-                    onEditClick = {
-                        TransactionActivity.openEdit(this, it)
-                    },
-                    onDeleteClick = {
-                        deletingTransaction = it
-                        deleteDialogState.show()
-                    }
-                )
-
-                DeleteDialog(
-                    state = deleteDialogState,
-                    onCancel = {
-                        deleteDialogState.dismiss()
-                        deletingTransaction = null
-                    },
-                    onConfirm = {
-                        deletingTransaction?.let {
-                            viewModel.deleteTransaction(it)
-                        }
-                    }
+                    onDelete = viewModel::deleteTransaction
                 )
 
                 LaunchedEffect(viewModel.event) {
@@ -103,12 +80,10 @@ class TransactionExampleActivity : AppCompatActivity() {
                                 launch {
                                     delay(2000L)
                                     snackbarHostState.currentSnackbarData?.dismiss()
-                                    deletingTransaction = null
                                 }
                             }
                             is TransactionExampleViewModel.Event.InsertTransaction -> {
                                 snackbarHostState.currentSnackbarData?.dismiss()
-                                deletingTransaction = null
                             }
                         }
                     }

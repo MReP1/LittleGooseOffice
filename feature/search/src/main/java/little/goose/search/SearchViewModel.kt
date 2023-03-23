@@ -101,4 +101,16 @@ class SearchViewModel @Inject constructor(
         }
     }
 
+    fun deleteTransaction(transaction: Transaction) {
+        viewModelScope.launch {
+            accountRepository.deleteTransaction(transaction)
+        }
+    }
+
+    fun deleteMemorial(memorial: Memorial) {
+        viewModelScope.launch {
+            memorialRepository.deleteMemorial(memorial)
+        }
+    }
+
 }

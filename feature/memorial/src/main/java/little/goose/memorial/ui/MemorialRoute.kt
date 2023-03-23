@@ -12,22 +12,30 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import little.goose.memorial.data.entities.Memorial
-import little.goose.memorial.ui.widget.MemorialColumn
-import little.goose.memorial.ui.widget.MemorialTitle
+import little.goose.memorial.ui.component.MemorialColumn
+import little.goose.memorial.ui.component.MemorialTitle
 
 @Composable
 fun MemorialHome(
-    modifier: Modifier,
-    onMemorialClick: (Memorial) -> Unit
+    modifier: Modifier
 ) {
     val viewModel: MemorialViewModel = hiltViewModel()
     val memorials by viewModel.memorials.collectAsState()
     val topMemorial by viewModel.topMemorial.collectAsState()
+    val memorialDialogState = rememberMemorialDialogState()
+
+    MemorialDialog(
+        state = memorialDialogState,
+        onDelete = viewModel::deleteMemorial
+    )
+
     MemorialScreen(
         modifier = modifier,
         memorials = memorials,
         topMemorial = topMemorial,
-        onMemorialClick = onMemorialClick
+        onMemorialClick = {
+            memorialDialogState.show(it)
+        }
     )
 }
 

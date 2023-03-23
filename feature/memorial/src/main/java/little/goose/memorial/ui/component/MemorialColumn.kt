@@ -1,4 +1,4 @@
-package little.goose.memorial.ui.widget
+package little.goose.memorial.ui.component
 
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.padding

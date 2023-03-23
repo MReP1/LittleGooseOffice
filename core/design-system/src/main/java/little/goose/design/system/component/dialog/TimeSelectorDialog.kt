@@ -18,15 +18,15 @@ import little.goose.design.system.theme.TopRoundedCorner24
 import java.util.Date
 
 @Composable
-fun TimeSelectorDialog(
+fun TimeSelectorCenterDialog(
     state: DialogState = rememberDialogState(),
     initTime: Date,
     onConfirm: (Date) -> Unit
 ) {
     val scope = rememberCoroutineScope()
     val properties = remember { DialogProperties() }
-    val selectorState = remember { TimeSelectorState(initTime) }
     NormalDialog(state = state, properties = properties) {
+        val selectorState = remember(initTime) { TimeSelectorState(initTime) }
         Surface(shape = RoundedCorner24) {
             TimeSelector(
                 state = selectorState,
@@ -45,7 +45,7 @@ fun TimeSelectorDialog(
 }
 
 @Composable
-fun BottomSelectorDialog(
+fun TimeSelectorBottomDialog(
     state: BottomSheetDialogState = rememberBottomSheetDialogState(),
     initTime: Date,
     onConfirm: (Date) -> Unit

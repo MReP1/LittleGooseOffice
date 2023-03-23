@@ -20,7 +20,7 @@ import little.goose.account.data.entities.Transaction
 import little.goose.account.logic.MoneyCalculator
 import little.goose.account.ui.transaction.icon.TransactionIconHelper
 import little.goose.common.utils.toChineseMonthDayTime
-import little.goose.design.system.component.dialog.BottomSelectorDialog
+import little.goose.design.system.component.dialog.TimeSelectorBottomDialog
 import little.goose.design.system.component.dialog.InputDialog
 import little.goose.design.system.component.dialog.rememberBottomSheetDialogState
 import java.math.BigDecimal
@@ -41,7 +41,7 @@ internal fun TransactionEditSurface(
     val money by moneyCalculator.money.collectAsState()
 
     val timeSelectorDialogState = rememberBottomSheetDialogState()
-    BottomSelectorDialog(
+    TimeSelectorBottomDialog(
         state = timeSelectorDialogState,
         initTime = transaction.time,
         onConfirm = { onTransactionChange(transaction.copy(time = it)) }

@@ -1,16 +1,16 @@
 package little.goose.schedule.ui
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
-import little.goose.common.receiver.DeleteItemBroadcastReceiver
-import little.goose.common.receiver.NormalBroadcastReceiver
-import little.goose.schedule.logic.ScheduleRepository
 import little.goose.schedule.data.entities.Schedule
+import little.goose.schedule.logic.ScheduleRepository
 import javax.inject.Inject
 
 @HiltViewModel
@@ -30,6 +30,12 @@ class ScheduleViewModel @Inject constructor(
     fun addSchedules(schedules: List<Schedule>) {
         viewModelScope.launch(Dispatchers.IO) {
             scheduleRepository.addSchedules(schedules)
+        }
+    }
+
+    fun deleteSchedule(schedule: Schedule) {
+        viewModelScope.launch {
+            scheduleRepository.deleteSchedule(schedule)
         }
     }
 

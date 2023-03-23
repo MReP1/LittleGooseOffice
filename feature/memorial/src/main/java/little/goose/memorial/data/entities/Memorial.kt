@@ -12,7 +12,7 @@ import java.util.*
 data class Memorial(
     @PrimaryKey(autoGenerate = true)
     val id: Long? = null,
-    val content: String,
+    val content: String = "",
     val isTop: Boolean = false,
     val time: Date = Date()
 ) : Parcelable

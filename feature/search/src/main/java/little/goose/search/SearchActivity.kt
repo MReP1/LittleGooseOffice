@@ -23,11 +23,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import dagger.hilt.android.AndroidEntryPoint
-import little.goose.account.ui.component.TransactionColumn
 import little.goose.design.system.theme.AccountTheme
-import little.goose.memorial.ui.widget.MemorialColumn
-import little.goose.note.ui.NoteGrid
-import little.goose.schedule.ui.ScheduleColumn
 
 @AndroidEntryPoint
 class SearchActivity : ComponentActivity() {
@@ -110,15 +106,11 @@ private fun SearchScreen(
                     SearchType.Transaction -> when (val state = viewModel.transactionState) {
                         is SearchViewModel.State.Data -> {
                             val transactions by state.items.collectAsState()
-                            if (transactions.isNotEmpty()) {
-                                TransactionColumn(
-                                    modifier = Modifier.fillMaxSize(),
-                                    transactions = transactions,
-                                    onTransactionClick = {
-
-                                    }
-                                )
-                            }
+                            SearchTransactionScreen(
+                                modifier = Modifier.fillMaxSize(),
+                                transactions = transactions,
+                                onDeleteTransaction = viewModel::deleteTransaction
+                            )
                         }
                         SearchViewModel.State.Empty -> {
                         }
@@ -126,15 +118,10 @@ private fun SearchScreen(
                     SearchType.Note -> when (val state = viewModel.noteState) {
                         is SearchViewModel.State.Data -> {
                             val notes by state.items.collectAsState()
-                            if (notes.isNotEmpty()) {
-                                NoteGrid(
-                                    modifier = Modifier.fillMaxSize(),
-                                    notes = notes,
-                                    onNoteClick = {
-
-                                    }
-                                )
-                            }
+                            SearchNoteScreen(
+                                modifier = Modifier.fillMaxSize(),
+                                notes = notes
+                            )
                         }
                         SearchViewModel.State.Empty -> {
                         }
@@ -142,15 +129,11 @@ private fun SearchScreen(
                     SearchType.Memorial -> when (val state = viewModel.memorialState) {
                         is SearchViewModel.State.Data -> {
                             val memorials by state.items.collectAsState()
-                            if (memorials.isNotEmpty()) {
-                                MemorialColumn(
-                                    modifier = Modifier.fillMaxSize(),
-                                    memorials = memorials,
-                                    onMemorialClick = {
-
-                                    }
-                                )
-                            }
+                            SearchMemorialScreen(
+                                modifier = Modifier.fillMaxSize(),
+                                memorials = memorials,
+                                onDeleteMemorial = viewModel::deleteMemorial
+                            )
                         }
                         SearchViewModel.State.Empty -> {
                         }
@@ -158,18 +141,10 @@ private fun SearchScreen(
                     SearchType.Schedule -> when (val state = viewModel.scheduleState) {
                         is SearchViewModel.State.Data -> {
                             val schedules by state.items.collectAsState()
-                            if (schedules.isNotEmpty()) {
-                                ScheduleColumn(
-                                    modifier = Modifier.fillMaxSize(),
-                                    schedules = schedules,
-                                    onScheduleClick = {
-
-                                    },
-                                    onCheckedChange = { schedule, checked ->
-
-                                    }
-                                )
-                            }
+                            SearchScheduleScreen(
+                                modifier = Modifier.fillMaxSize(),
+                                schedules = schedules
+                            )
                         }
                         SearchViewModel.State.Empty -> {
                         }

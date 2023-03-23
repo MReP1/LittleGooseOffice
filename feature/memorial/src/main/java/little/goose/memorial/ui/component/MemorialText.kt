@@ -1,4 +1,4 @@
-package little.goose.memorial.ui.widget
+package little.goose.memorial.ui.component
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource

@@ -1,8 +1,5 @@
 package little.goose.account.ui
 
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -26,9 +23,6 @@ import javax.inject.Inject
 class AccountFragmentViewModel @Inject constructor(
     private val accountRepository: AccountRepository
 ) : ViewModel() {
-
-    var deletingTransactions: List<Transaction> by mutableStateOf(emptyList())
-        private set
 
     private val _year = MutableStateFlow(Calendar.getInstance().getYear())
     val year = _year.asStateFlow()
@@ -66,16 +60,15 @@ class AccountFragmentViewModel @Inject constructor(
     private val _curMonthIncomeSum = MutableStateFlow(BigDecimal(0))
     val curMonthIncomeSum = _curMonthIncomeSum.asStateFlow()
 
-    val curMonthBalance =
-        combine(curMonthExpenseSum, curMonthIncomeSum) { expenseSum, incomeSum ->
-            expenseSum + incomeSum
-        }.stateIn(
-            viewModelScope,
-            SharingStarted.WhileSubscribed(5000L),
-            BigDecimal(0)
-        )
+    val curMonthBalance = combine(curMonthExpenseSum, curMonthIncomeSum) { expenseSum, incomeSum ->
+        expenseSum + incomeSum
+    }.stateIn(
+        viewModelScope,
+        SharingStarted.WhileSubscribed(5000L),
+        BigDecimal(0)
+    )
 
-    val curMonthTransactionFlow = combine(year, month) { year, month ->
+    private val curMonthTransactionFlow = combine(year, month) { year, month ->
         accountRepository.getTransactionByYearMonthFlow(year, month)
     }.flatMapLatest { it }.onEach { transactions ->
         _curMonthExpenseSum.value = BigDecimal(0)
@@ -126,14 +119,6 @@ class AccountFragmentViewModel @Inject constructor(
         _month.value = month
     }
 
-    fun showDeleteDialog(transaction: Transaction) {
-        showDeleteDialog(listOf(transaction))
-    }
-
-    fun showDeleteDialog(transactions: List<Transaction>) {
-        deletingTransactions = transactions
-    }
-
     fun addTransaction(transaction: Transaction) {
         viewModelScope.launch(NonCancellable) {
             accountRepository.insertTransaction(transaction)
@@ -146,10 +131,9 @@ class AccountFragmentViewModel @Inject constructor(
         }
     }
 
-    fun deleteTransactions() {
-        viewModelScope.launch(NonCancellable) {
-            accountRepository.deleteTransactions(deletingTransactions)
-            deletingTransactions = emptyList()
+    fun deleteTransaction(transaction: Transaction) {
+        viewModelScope.launch {
+            accountRepository.deleteTransaction(transaction)
         }
     }
 }
