@@ -4,6 +4,7 @@ import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.os.Parcelable
+import android.view.ViewTreeObserver.OnWindowFocusChangeListener
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.Box
@@ -19,7 +20,11 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.*
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import dagger.hilt.android.AndroidEntryPoint
@@ -51,6 +56,7 @@ class SearchActivity : ComponentActivity() {
 
 }
 
+@OptIn(ExperimentalComposeUiApi::class)
 @Composable
 private fun SearchScreen(
     modifier: Modifier,
@@ -72,6 +78,7 @@ private fun SearchScreen(
                     }
                 },
                 title = {
+                    val focusRequester = remember { FocusRequester() }
                     BasicTextField(
                         value = keyword,
                         onValueChange = {
@@ -80,9 +87,25 @@ private fun SearchScreen(
                         },
                         modifier = Modifier
                             .padding(16.dp)
-                            .fillMaxWidth(),
+                            .fillMaxWidth()
+                            .focusRequester(focusRequester),
                         maxLines = 1
                     )
+                    val view = LocalView.current
+                    DisposableEffect(focusRequester) {
+                        val listener = object : OnWindowFocusChangeListener {
+                            override fun onWindowFocusChanged(hasFocus: Boolean) {
+                                if (hasFocus) {
+                                    focusRequester.requestFocus()
+                                    view.viewTreeObserver.removeOnWindowFocusChangeListener(this)
+                                }
+                            }
+                        }
+                        view.viewTreeObserver.addOnWindowFocusChangeListener(listener)
+                        onDispose {
+                            view.viewTreeObserver.removeOnWindowFocusChangeListener(listener)
+                        }
+                    }
                 },
                 actions = {
                     if (keyword.isNotEmpty()) {

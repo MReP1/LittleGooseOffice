@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.FloatingActionButtonDefaults
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -32,9 +33,11 @@ class MovableActionButtonState {
     private val _isExpended = mutableStateOf(false)
     val isExpended: State<Boolean> get() = _isExpended
 
-    val offset = Animatable(Offset(0F, 0F), Offset.VectorConverter)
-    val topButtonOffset = Animatable(IntOffset(0, 0), IntOffset.VectorConverter)
-    val bottomButtonOffset = Animatable(IntOffset(0, 0), IntOffset.VectorConverter)
+    internal val elevation = mutableStateOf(0.dp)
+
+    internal val offset = Animatable(Offset(0F, 0F), Offset.VectorConverter)
+    internal val topButtonOffset = Animatable(IntOffset(0, 0), IntOffset.VectorConverter)
+    internal val bottomButtonOffset = Animatable(IntOffset(0, 0), IntOffset.VectorConverter)
 
     private var isPositioned = false
 
@@ -56,17 +59,10 @@ class MovableActionButtonState {
         waitForInit()
         _isExpended.value = true
         coroutineScope {
+            elevation.value = 6.dp
             awaitAll(
-                async {
-                    topButtonOffset.animateTo(
-                        IntOffset(-shortDis, -longDis)
-                    )
-                },
-                async {
-                    bottomButtonOffset.animateTo(
-                        IntOffset(-longDis, -shortDis)
-                    )
-                }
+                async { topButtonOffset.animateTo(IntOffset(-shortDis, -longDis)) },
+                async { bottomButtonOffset.animateTo(IntOffset(-longDis, -shortDis)) }
             )
         }
     }
@@ -76,17 +72,10 @@ class MovableActionButtonState {
         _isExpended.value = false
         coroutineScope {
             awaitAll(
-                async {
-                    topButtonOffset.animateTo(
-                        IntOffset(0, 0)
-                    )
-                },
-                async {
-                    bottomButtonOffset.animateTo(
-                        IntOffset(0, 0)
-                    )
-                }
+                async { topButtonOffset.animateTo(IntOffset(0, 0)) },
+                async { bottomButtonOffset.animateTo(IntOffset(0, 0)) }
             )
+            elevation.value = 0.dp
         }
     }
 
@@ -183,7 +172,10 @@ fun MovableActionButton(
                     .offset { state.topButtonOffset.value },
                 shape = CircleShape,
                 onClick = onTopSubButtonClick,
-                content = topSubButtonContent
+                content = topSubButtonContent,
+                elevation = FloatingActionButtonDefaults.elevation(
+                    defaultElevation = state.elevation.value
+                )
             )
 
             FloatingActionButton(
@@ -192,7 +184,10 @@ fun MovableActionButton(
                     .offset { state.bottomButtonOffset.value },
                 shape = CircleShape,
                 onClick = onBottomSubButtonClick,
-                content = bottomSubButtonContent
+                content = bottomSubButtonContent,
+                elevation = FloatingActionButtonDefaults.elevation(
+                    defaultElevation = state.elevation.value
+                )
             )
 
             FloatingActionButton(

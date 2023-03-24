@@ -65,7 +65,11 @@ fun TimeSelector(
                 state = yearSelectorState,
                 onItemSelected = { _, y -> state.year = y.toInt() }
             )
-            Text(text = "年", style = MaterialTheme.typography.bodySmall)
+            Text(
+                text = "年",
+                style = MaterialTheme.typography.bodySmall,
+                modifier = Modifier.padding(start = 6.dp, end = 8.dp)
+            )
             val monthSelectorState = rememberLazyListState(
                 initialFirstVisibleItemIndex = state.monthList.indexOf(state.month.toString())
             )
@@ -77,7 +81,11 @@ fun TimeSelector(
                 state = monthSelectorState,
                 onItemSelected = { _, m -> state.month = m.toInt() }
             )
-            Text(text = "月", style = MaterialTheme.typography.bodySmall)
+            Text(
+                text = "月",
+                style = MaterialTheme.typography.bodySmall,
+                modifier = Modifier.padding(start = 6.dp, end = 8.dp)
+            )
             val daySelectorState = rememberLazyListState(
                 initialFirstVisibleItemIndex = state.dayList.indexOf(state.day.toString())
             )
@@ -89,7 +97,11 @@ fun TimeSelector(
                 state = daySelectorState,
                 onItemSelected = { _, d -> state.day = d.toInt() }
             )
-            Text(text = "日", style = MaterialTheme.typography.bodySmall)
+            Text(
+                text = "日",
+                style = MaterialTheme.typography.bodySmall,
+                modifier = Modifier.padding(start = 6.dp, end = 8.dp)
+            )
             val hourSelectorStable = rememberLazyListState(
                 initialFirstVisibleItemIndex = state.hourList.indexOf(state.hour.toString())
             )
@@ -101,7 +113,11 @@ fun TimeSelector(
                 state = hourSelectorStable,
                 onItemSelected = { _, h -> state.hour = h.toInt() }
             )
-            Text(text = "时", style = MaterialTheme.typography.bodySmall)
+            Text(
+                text = "时",
+                style = MaterialTheme.typography.bodySmall,
+                modifier = Modifier.padding(start = 6.dp, end = 8.dp)
+            )
             val minuteSelectorState = rememberLazyListState(
                 initialFirstVisibleItemIndex = state.minuteList.indexOf(state.minute.toString())
             )
@@ -113,7 +129,11 @@ fun TimeSelector(
                 state = minuteSelectorState,
                 onItemSelected = { _, m -> state.minute = m.toInt() }
             )
-            Text(text = "分", style = MaterialTheme.typography.bodySmall)
+            Text(
+                text = "分",
+                style = MaterialTheme.typography.bodySmall,
+                modifier = Modifier.padding(start = 6.dp, end = 8.dp)
+            )
         }
     }
 }
