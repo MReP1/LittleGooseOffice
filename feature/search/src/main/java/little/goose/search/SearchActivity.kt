@@ -20,7 +20,6 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.*
-import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
@@ -56,7 +55,6 @@ class SearchActivity : ComponentActivity() {
 
 }
 
-@OptIn(ExperimentalComposeUiApi::class)
 @Composable
 private fun SearchScreen(
     modifier: Modifier,
@@ -64,6 +62,13 @@ private fun SearchScreen(
 ) {
     val viewModel = hiltViewModel<SearchViewModel>()
     var keyword by remember { mutableStateOf("") }
+    LaunchedEffect(Unit) {
+        snapshotFlow {
+            keyword
+        }.collect {
+            viewModel.search(it)
+        }
+    }
     Scaffold(
         modifier = modifier,
         topBar = {
@@ -81,10 +86,7 @@ private fun SearchScreen(
                     val focusRequester = remember { FocusRequester() }
                     BasicTextField(
                         value = keyword,
-                        onValueChange = {
-                            keyword = it
-                            viewModel.search(it)
-                        },
+                        onValueChange = { keyword = it },
                         modifier = Modifier
                             .padding(16.dp)
                             .fillMaxWidth()

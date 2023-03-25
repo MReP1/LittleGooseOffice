@@ -5,6 +5,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.CalendarToday
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.Stable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
@@ -13,11 +14,17 @@ import java.time.LocalDate
 import java.time.format.TextStyle
 import java.util.*
 
+@Stable
+data class IndexTopBarState(
+    val currentDay: LocalDate = LocalDate.now(),
+    val today: LocalDate = LocalDate.now(),
+    val navigateToToday: (LocalDate) -> Unit
+)
+
 @Composable
 fun IndexTopBar(
     modifier: Modifier = Modifier,
-    currentDay: LocalDate,
-    today: LocalDate
+    state: IndexTopBarState
 ) {
     // 日期
     TopAppBar(
@@ -25,19 +32,19 @@ fun IndexTopBar(
         title = {
             Row(modifier = Modifier, verticalAlignment = Alignment.CenterVertically) {
                 Text(
-                    text = currentDay.month.getDisplayName(
+                    text = state.currentDay.month.getDisplayName(
                         TextStyle.SHORT, Locale.CHINA
-                    ) + currentDay.dayOfMonth + "日",
+                    ) + state.currentDay.dayOfMonth + "日",
                     style = MaterialTheme.typography.headlineMedium
                 )
                 Column {
                     Text(
-                        text = currentDay.year.toString(),
+                        text = state.currentDay.year.toString(),
                         style = MaterialTheme.typography.bodySmall,
                         fontSize = 11.sp
                     )
                     Text(
-                        text = currentDay.dayOfWeek.getDisplayName(
+                        text = state.currentDay.dayOfWeek.getDisplayName(
                             TextStyle.SHORT, Locale.CHINA
                         ),
                         style = MaterialTheme.typography.bodySmall,
@@ -48,8 +55,7 @@ fun IndexTopBar(
         },
         actions = {
             IconButton(
-                onClick = {
-                }
+                onClick = { state.navigateToToday(state.today) }
             ) {
                 Box(modifier = Modifier.wrapContentSize()) {
                     Icon(
@@ -57,7 +63,7 @@ fun IndexTopBar(
                         contentDescription = "Today"
                     )
                     Text(
-                        text = today.dayOfMonth.toString(),
+                        text = state.today.dayOfMonth.toString(),
                         style = MaterialTheme.typography.bodySmall,
                         modifier = Modifier.padding(top = 6.dp, start = 4.dp)
                     )

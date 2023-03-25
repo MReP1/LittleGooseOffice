@@ -154,7 +154,7 @@ private fun MemorialShowScreen(
                     Icon(imageVector = Icons.Rounded.Image, contentDescription = "image")
                 },
                 onTopSubButtonClick = {
-                    Toast.makeText(context, "//TODO: 修改背景", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(context, "TODO: 修改背景", Toast.LENGTH_SHORT).show()
                 },
                 bottomSubButtonContent = {
 

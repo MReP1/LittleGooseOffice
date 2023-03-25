@@ -109,7 +109,7 @@ fun ScrollSelector(
             item {
                 Column(
                     modifier = Modifier
-                        .fillMaxWidth()
+                        .defaultMinSize(minWidth = 44.dp)
                         .onSizeChanged { size ->
                             if (contentSize == IntSize.Zero) {
                                 contentSize = size
@@ -128,7 +128,7 @@ fun ScrollSelector(
             ) { index ->
                 Column(
                     modifier = Modifier
-                        .fillMaxWidth()
+                        .defaultMinSize(minWidth = 44.dp)
                         .onSizeChanged { size ->
                             if (contentSize == IntSize.Zero) {
                                 contentSize = size
@@ -154,7 +154,7 @@ fun ScrollSelector(
             item {
                 Column(
                     modifier = Modifier
-                        .fillMaxWidth()
+                        .defaultMinSize(minWidth = 44.dp)
                         .onSizeChanged { size ->
                             if (contentSize == IntSize.Zero) {
                                 contentSize = size

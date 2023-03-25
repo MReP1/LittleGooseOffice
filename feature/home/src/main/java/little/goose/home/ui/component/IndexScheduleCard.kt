@@ -1,5 +1,6 @@
 package little.goose.home.ui.component
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -17,12 +18,14 @@ import little.goose.schedule.data.entities.Schedule
 fun IndexScheduleCard(
     modifier: Modifier,
     schedules: List<Schedule>,
-    onCheckChange: (Schedule, Boolean) -> Unit
+    onCheckChange: (Schedule, Boolean) -> Unit,
+    onScheduleClick: (Schedule) -> Unit
 ) {
     Card(modifier = modifier) {
         IndexScheduleColumn(
             schedules = schedules,
-            onCheckChange = onCheckChange
+            onCheckChange = onCheckChange,
+            onScheduleClick = onScheduleClick
         )
     }
 }
@@ -31,7 +34,8 @@ fun IndexScheduleCard(
 private fun IndexScheduleColumn(
     modifier: Modifier = Modifier,
     schedules: List<Schedule>,
-    onCheckChange: (Schedule, Boolean) -> Unit
+    onCheckChange: (Schedule, Boolean) -> Unit,
+    onScheduleClick: (Schedule) -> Unit
 ) {
     LazyColumn(
         modifier = modifier,
@@ -40,7 +44,8 @@ private fun IndexScheduleColumn(
         items(schedules) { schedule ->
             IndexScheduleItem(
                 schedule = schedule,
-                onCheckChange = onCheckChange
+                onCheckChange = onCheckChange,
+                onScheduleClick = onScheduleClick
             )
         }
     }
@@ -50,10 +55,13 @@ private fun IndexScheduleColumn(
 private fun IndexScheduleItem(
     modifier: Modifier = Modifier,
     schedule: Schedule,
-    onCheckChange: (Schedule, Boolean) -> Unit
+    onCheckChange: (Schedule, Boolean) -> Unit,
+    onScheduleClick: (Schedule) -> Unit
 ) {
     Row(
-        modifier = modifier.padding(horizontal = 12.dp, vertical = 6.dp),
+        modifier = modifier
+            .padding(horizontal = 12.dp, vertical = 6.dp)
+            .clickable { onScheduleClick(schedule) },
         verticalAlignment = Alignment.CenterVertically
     ) {
         Checkbox(

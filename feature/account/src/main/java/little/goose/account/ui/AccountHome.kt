@@ -31,7 +31,7 @@ fun AccountHome(
         transactionsWithTime = transactions,
         accountTitleState = accountTitleState,
         onTransactionClick = transactionDialogState::show,
-        monthSelectorState = monthSelectorState
+        monthSelectorState = monthSelectorState,
     )
 
     TransactionDialog(

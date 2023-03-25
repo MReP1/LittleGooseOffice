@@ -16,6 +16,11 @@ import little.goose.account.ui.component.MonthSelector
 import little.goose.account.ui.component.MonthSelectorState
 import little.goose.account.ui.component.YearSelector
 import little.goose.account.ui.component.YearSelectorState
+import little.goose.common.dialog.time.TimeType
+import little.goose.common.utils.calendar
+import little.goose.common.utils.setMonth
+import little.goose.common.utils.setYear
+import little.goose.design.system.component.dialog.TimeSelectorCenterDialog
 
 data class TransactionAnalysisBottomBarState(
     val timeType: TransactionAnalysisViewModel.TimeType,
@@ -98,6 +103,16 @@ fun TransactionAnalysisBottomBar(
             Spacer(modifier = Modifier.height(8.dp))
         }
     }
+
+    TimeSelectorCenterDialog(
+        initTime = remember(state.year, state.month) {
+            calendar.apply { clear(); setYear(state.year); setMonth(state.month) }.time
+        },
+        type = TimeType.YEAR_MONTH,
+        onConfirm = {
+
+        }
+    )
 }
 
 @Preview(widthDp = 380, heightDp = 200)

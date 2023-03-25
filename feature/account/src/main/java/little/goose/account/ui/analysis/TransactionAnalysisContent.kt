@@ -31,10 +31,7 @@ import little.goose.account.ui.component.TransactionPercentCircleChart
 import little.goose.account.ui.component.TransactionPercentColumn
 import little.goose.common.collections.CircularLinkList
 import little.goose.common.dialog.time.TimeType
-import little.goose.common.utils.getDate
-import little.goose.common.utils.getMonth
-import little.goose.common.utils.toChineseMonth
-import little.goose.common.utils.toChineseMonthDay
+import little.goose.common.utils.*
 import java.math.BigDecimal
 import java.util.*
 
@@ -125,8 +122,6 @@ fun TransactionAnalysisBalanceContent(
                 moneyType = MoneyType.BALANCE,
                 timeMoneys = timeMoneys
             )
-            // FIXME ThreadLocal
-            val calendar = remember { Calendar.getInstance() }
             LazyColumn(modifier = Modifier.weight(1F)) {
                 item {
                     Surface(tonalElevation = 3.dp) {

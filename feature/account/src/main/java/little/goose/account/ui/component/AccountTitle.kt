@@ -24,7 +24,7 @@ data class AccountTitleState(
 fun AccountTitle(
     modifier: Modifier = Modifier,
     accountTitleState: AccountTitleState,
-    monthSelectorState: MonthSelectorState
+    monthSelectorState: MonthSelectorState,
 ) {
     var showTotal by remember { mutableStateOf(false) }
 

@@ -13,6 +13,7 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.RectangleShape
@@ -24,11 +25,16 @@ import androidx.compose.ui.unit.dp
 import androidx.fragment.app.FragmentActivity
 import androidx.hilt.navigation.compose.hiltViewModel
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.launch
 import little.goose.common.constants.KEY_TYPE
 import little.goose.common.constants.TYPE_ADD
 import little.goose.common.constants.TYPE_MODIFY
-import little.goose.common.dialog.InputTextDialogFragment
+import little.goose.common.dialog.time.TimeType
 import little.goose.common.utils.toChineseYearMonDayWeek
+import little.goose.design.system.component.dialog.InputDialog
+import little.goose.design.system.component.dialog.TimeSelectorCenterDialog
+import little.goose.design.system.component.dialog.rememberBottomSheetDialogState
+import little.goose.design.system.component.dialog.rememberDialogState
 import little.goose.design.system.theme.AccountTheme
 import little.goose.memorial.R
 import little.goose.memorial.data.constants.KEY_MEMORIAL
@@ -79,25 +85,16 @@ private fun MemorialRoute(
     val viewModel: MemorialActivityViewModel = hiltViewModel()
     val memorial by viewModel.memorial.collectAsState()
     val context = LocalContext.current as FragmentActivity
+    val timeSelectorDialogState = rememberDialogState()
+    val inputTextDialogState = rememberBottomSheetDialogState()
+    val scope = rememberCoroutineScope()
+
     MemorialScreen(
         modifier = modifier,
         memorial = memorial,
-        onChangeTimeClick = {
-//             FIXME
-//            DateTimePickerBottomDialog.Builder()
-//                .setDimVisibility(true)
-//                .setTime(viewModel.memorial.value.time)
-//                .setType(TimeType.DATE)
-//                .setConfirmAction {
-//                    viewModel.updateMemorial(memorial.copy(time = it))
-//                }.showNow(context.supportFragmentManager)
-        },
+        onChangeTimeClick = timeSelectorDialogState::show,
         onContentClick = {
-            InputTextDialogFragment.Builder()
-                .setInputText(memorial.content)
-                .setConfirmCallback { content ->
-                    viewModel.updateMemorial(memorial.copy(content = content))
-                }.showNow(context.supportFragmentManager)
+            scope.launch { inputTextDialogState.open() }
         },
         onTopCheckedChange = { isTop ->
             viewModel.isChangeTop = true
@@ -112,6 +109,23 @@ private fun MemorialRoute(
             onBack()
         },
         onBack = onBack,
+    )
+
+    TimeSelectorCenterDialog(
+        state = timeSelectorDialogState,
+        initTime = memorial.time,
+        type = TimeType.DATE,
+        onConfirm = {
+            viewModel.updateMemorial(memorial = memorial.copy(time = it))
+        }
+    )
+
+    InputDialog(
+        state = inputTextDialogState,
+        text = memorial.content,
+        onConfirm = {
+            viewModel.updateMemorial(memorial = memorial.copy(content = it))
+        }
     )
 }
 

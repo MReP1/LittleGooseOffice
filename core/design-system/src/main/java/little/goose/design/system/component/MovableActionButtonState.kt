@@ -171,7 +171,12 @@ fun MovableActionButton(
                     .size(44.dp)
                     .offset { state.topButtonOffset.value },
                 shape = CircleShape,
-                onClick = onTopSubButtonClick,
+                onClick = {
+                    scope.launch(Dispatchers.Main.immediate) {
+                        onTopSubButtonClick()
+                        state.fold()
+                    }
+                },
                 content = topSubButtonContent,
                 elevation = FloatingActionButtonDefaults.elevation(
                     defaultElevation = state.elevation.value
@@ -183,7 +188,12 @@ fun MovableActionButton(
                     .size(44.dp)
                     .offset { state.bottomButtonOffset.value },
                 shape = CircleShape,
-                onClick = onBottomSubButtonClick,
+                onClick = {
+                    scope.launch(Dispatchers.Main.immediate) {
+                        onBottomSubButtonClick()
+                        state.fold()
+                    }
+                },
                 content = bottomSubButtonContent,
                 elevation = FloatingActionButtonDefaults.elevation(
                     defaultElevation = state.elevation.value
@@ -196,6 +206,7 @@ fun MovableActionButton(
                     scope.launch(Dispatchers.Main.immediate) {
                         if (state.isExpended.value) {
                             onMainButtonClick()
+                            state.fold()
                         } else {
                             state.expend()
                         }

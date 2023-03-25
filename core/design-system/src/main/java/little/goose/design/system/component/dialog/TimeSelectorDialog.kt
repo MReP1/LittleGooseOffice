@@ -11,6 +11,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.DialogProperties
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import little.goose.common.dialog.time.TimeType
 import little.goose.design.system.component.TimeSelector
 import little.goose.design.system.component.TimeSelectorState
 import little.goose.design.system.theme.RoundedCorner24
@@ -21,12 +22,13 @@ import java.util.Date
 fun TimeSelectorCenterDialog(
     state: DialogState = rememberDialogState(),
     initTime: Date,
+    type: TimeType,
     onConfirm: (Date) -> Unit
 ) {
     val scope = rememberCoroutineScope()
     val properties = remember { DialogProperties() }
     NormalDialog(state = state, properties = properties) {
-        val selectorState = remember(initTime) { TimeSelectorState(initTime) }
+        val selectorState = remember(initTime, type) { TimeSelectorState(initTime, type) }
         Surface(shape = RoundedCorner24) {
             TimeSelector(
                 state = selectorState,
@@ -48,12 +50,13 @@ fun TimeSelectorCenterDialog(
 fun TimeSelectorBottomDialog(
     state: BottomSheetDialogState = rememberBottomSheetDialogState(),
     initTime: Date,
+    type: TimeType,
     onConfirm: (Date) -> Unit
 ) {
     val scope = rememberCoroutineScope()
     BottomSheetDialog(state = state) {
         Surface(shape = TopRoundedCorner24) {
-            val selectorState = remember(initTime) { TimeSelectorState(initTime) }
+            val selectorState = remember(initTime, type) { TimeSelectorState(initTime, type) }
             TimeSelector(
                 state = selectorState,
                 modifier = Modifier

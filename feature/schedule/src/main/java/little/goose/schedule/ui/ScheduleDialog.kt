@@ -13,6 +13,7 @@ import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.launch
+import little.goose.common.dialog.time.TimeType
 import little.goose.common.utils.toChineseStringWithYear
 import little.goose.design.system.component.dialog.*
 import little.goose.schedule.R
@@ -49,7 +50,7 @@ fun ScheduleDialog(
     onModify: (Schedule) -> Unit
 ) {
     val deleteScheduleDialogState = rememberDialogState()
-    val timeSelectorState = rememberBottomSheetDialogState()
+    val timeSelectorDialogState = rememberBottomSheetDialogState()
     val scope = rememberCoroutineScope()
 
     NormalDialog(state = state.dialogState) {
@@ -73,7 +74,7 @@ fun ScheduleDialog(
             onDeleteClick = deleteScheduleDialogState::show,
             onChangeTimeClick = {
                 scope.launch {
-                    timeSelectorState.open()
+                    timeSelectorDialogState.open()
                 }
             }
         )
@@ -88,8 +89,9 @@ fun ScheduleDialog(
     )
 
     TimeSelectorBottomDialog(
-        state = timeSelectorState,
+        state = timeSelectorDialogState,
         initTime = state.schedule.time,
+        type = TimeType.DATE_TIME,
         onConfirm = { state.schedule = state.schedule.copy(time = it) }
     )
 }

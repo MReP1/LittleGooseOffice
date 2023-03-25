@@ -5,6 +5,8 @@ package little.goose.common.utils
 import android.content.Context
 import little.goose.common.R
 import little.goose.common.utils.DateTimeUtils.getWeekFormYearMonthDate
+import java.time.LocalDate
+import java.time.ZoneId
 import java.util.*
 import kotlin.concurrent.getOrSet
 import kotlin.math.roundToLong
@@ -45,11 +47,12 @@ object DateTimeUtils {
     fun getMonthsList() = months
     fun getHoursList() = hours
     fun getMinuteList() = minutes
-    fun getDaysList(year: Int, month: Int) = (1..getDaysByYearMonth(year, month)).toList()
+    fun getDaysList(year: Int, month: Int) = (1..getDaysByYearMonth(year, month, calendar)).toList()
 
     fun getDaysByYearMonth(
         year: Int, month: Int, calendar: Calendar = Calendar.getInstance()
     ) = calendar.run {
+        clear()
         setYear(year)
         setMonth(month)
         setDate(1)
@@ -254,6 +257,8 @@ private fun Calendar.clearTime() {
     clear(Calendar.SECOND)
     clear(Calendar.MILLISECOND)
 }
+
+fun LocalDate.toDate(): Date = Date.from(this.atStartOfDay(ZoneId.systemDefault()).toInstant())
 
 /** ---------------Calendar获取年月日----------------*/
 inline fun Calendar.getDate() = this.get(Calendar.DATE)

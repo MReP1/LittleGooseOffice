@@ -61,41 +61,50 @@ class SearchViewModel @Inject constructor(
         viewModelScope.launch {
             when (type) {
                 SearchType.Transaction -> {
-                    val transactionStateFlow = if (keyword.toLongOrNull() != null) {
-                        accountRepository.searchTransactionByMoneyFlow(money = keyword)
-                    } else {
-                        accountRepository.searchTransactionByTextFlow(text = keyword)
-                    }.stateIn(
-                        viewModelScope,
-                        SharingStarted.WhileSubscribed(5000),
-                        emptyList()
-                    )
-                    transactionState = State.Data(transactionStateFlow)
-                }
-                SearchType.Note -> {
-                    val noteStateFlow = noteRepository.searchNoteByTextFlow(keyword).stateIn(
-                        viewModelScope,
-                        SharingStarted.WhileSubscribed(5000),
-                        emptyList()
-                    )
-                    noteState = State.Data(noteStateFlow)
-                }
-                SearchType.Memorial -> {
-                    val memorialStateFlow = memorialRepository.searchMemorialByTextFlow(keyword)
-                        .stateIn(
+                    transactionState = if (keyword.isBlank()) State.Empty else {
+                        val transactionStateFlow = if (keyword.toLongOrNull() != null) {
+                            accountRepository.searchTransactionByMoneyFlow(money = keyword)
+                        } else {
+                            accountRepository.searchTransactionByTextFlow(text = keyword)
+                        }.stateIn(
                             viewModelScope,
                             SharingStarted.WhileSubscribed(5000),
                             emptyList()
                         )
-                    memorialState = State.Data(memorialStateFlow)
+                        State.Data(transactionStateFlow)
+                    }
+                }
+                SearchType.Note -> {
+                    noteState = if (keyword.isBlank()) State.Empty else {
+                        val noteStateFlow = noteRepository.searchNoteByTextFlow(keyword).stateIn(
+                            viewModelScope,
+                            SharingStarted.WhileSubscribed(5000),
+                            emptyList()
+                        )
+                        State.Data(noteStateFlow)
+                    }
+                }
+                SearchType.Memorial -> {
+                    memorialState = if (keyword.isBlank()) State.Empty else {
+                        val memorialStateFlow = memorialRepository.searchMemorialByTextFlow(keyword)
+                            .stateIn(
+                                viewModelScope,
+                                SharingStarted.WhileSubscribed(5000),
+                                emptyList()
+                            )
+                        State.Data(memorialStateFlow)
+                    }
                 }
                 SearchType.Schedule -> {
-                    val scheduleFlow = scheduleRepository.searchScheduleByTextFlow(keyword).stateIn(
-                        viewModelScope,
-                        SharingStarted.WhileSubscribed(5000),
-                        emptyList()
-                    )
-                    scheduleState = State.Data(scheduleFlow)
+                    scheduleState = if (keyword.isBlank()) State.Empty else {
+                        val scheduleFlow =
+                            scheduleRepository.searchScheduleByTextFlow(keyword).stateIn(
+                                viewModelScope,
+                                SharingStarted.WhileSubscribed(5000),
+                                emptyList()
+                            )
+                        State.Data(scheduleFlow)
+                    }
                 }
             }
         }

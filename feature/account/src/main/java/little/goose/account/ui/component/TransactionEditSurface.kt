@@ -19,9 +19,10 @@ import kotlinx.coroutines.launch
 import little.goose.account.data.entities.Transaction
 import little.goose.account.logic.MoneyCalculator
 import little.goose.account.ui.transaction.icon.TransactionIconHelper
+import little.goose.common.dialog.time.TimeType
 import little.goose.common.utils.toChineseMonthDayTime
-import little.goose.design.system.component.dialog.TimeSelectorBottomDialog
 import little.goose.design.system.component.dialog.InputDialog
+import little.goose.design.system.component.dialog.TimeSelectorBottomDialog
 import little.goose.design.system.component.dialog.rememberBottomSheetDialogState
 import java.math.BigDecimal
 
@@ -44,6 +45,7 @@ internal fun TransactionEditSurface(
     TimeSelectorBottomDialog(
         state = timeSelectorDialogState,
         initTime = transaction.time,
+        type = TimeType.DATE_TIME,
         onConfirm = { onTransactionChange(transaction.copy(time = it)) }
     )
 

@@ -114,7 +114,7 @@ class AccountFragmentViewModel @Inject constructor(
         MonthSelectorState(year.value, month.value, ::changeTime)
     )
 
-    private fun changeTime(year: Int, month: Int) {
+    fun changeTime(year: Int, month: Int) {
         _year.value = year
         _month.value = month
     }

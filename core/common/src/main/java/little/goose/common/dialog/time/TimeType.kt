@@ -3,14 +3,28 @@ package little.goose.common.dialog.time
 import android.os.Parcelable
 import kotlinx.parcelize.Parcelize
 
+@Suppress("NOTHING_TO_INLINE")
 @Parcelize
-enum class TimeType(val type: Int): Parcelable {
-    DATE_TIME(0),   //代表年月日加上时间
-    DATE(1),        //代表年月日
-    TIME(2),        //仅代表时间
-    YEAR(3),        //年
-    MONTH(4),       //月
-    DAY(5),         //日
-    YEAR_MONTH(6),  //年月
-    MONTH_DAY(7)    //月日
+enum class TimeType : Parcelable {
+    DATE_TIME,   //代表年月日加上时间
+    DATE,        //代表年月日
+    TIME,        //仅代表时间
+    YEAR,        //年
+    MONTH,       //月
+    DAY,         //日
+    YEAR_MONTH,  //年月
+    MONTH_DAY;   //月日
+
+    inline fun containYear() =
+        this == DATE_TIME || this == DATE || this == YEAR || this == YEAR_MONTH
+
+    inline fun containMonth() =
+        this == DATE_TIME || this == DATE || this == MONTH || this == YEAR_MONTH
+                || this == MONTH_DAY
+
+    inline fun containDay() =
+        this == DATE_TIME || this == DATE || this == DAY || this == MONTH_DAY
+
+    inline fun containTime() =
+        this == DATE_TIME || this == TIME
 }

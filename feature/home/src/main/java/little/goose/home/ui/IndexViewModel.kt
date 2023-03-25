@@ -12,6 +12,7 @@ import little.goose.account.data.constants.AccountConstant.INCOME
 import little.goose.account.data.entities.Transaction
 import little.goose.account.logic.AccountRepository
 import little.goose.home.data.CalendarModel
+import little.goose.home.ui.component.IndexTopBarState
 import little.goose.memorial.data.entities.Memorial
 import little.goose.memorial.logic.MemorialRepository
 import little.goose.note.data.entities.Note
@@ -68,6 +69,13 @@ class IndexViewModel @Inject constructor(
             today = LocalDate.now(), currentDay.value, currentCalendarModel.value,
             ::updateMonth, ::updateCurrentDay, ::checkSchedule, ::getCalendarModelState
         )
+    )
+
+    val indexTopBarState = currentDay.map {
+        IndexTopBarState(it, LocalDate.now(), ::updateCurrentDay)
+    }.stateIn(
+        viewModelScope, SharingStarted.WhileSubscribed(5000),
+        initialValue = IndexTopBarState(currentDay.value, LocalDate.now(), ::updateCurrentDay)
     )
 
     init {
@@ -217,12 +225,6 @@ class IndexViewModel @Inject constructor(
     private fun checkSchedule(schedule: Schedule, checked: Boolean) {
         viewModelScope.launch {
             scheduleRepository.updateSchedule(schedule.copy(isfinish = checked))
-        }
-    }
-
-    fun deleteMemorial(memorial: Memorial) {
-        viewModelScope.launch {
-            memorialRepository.deleteMemorial(memorial)
         }
     }
 

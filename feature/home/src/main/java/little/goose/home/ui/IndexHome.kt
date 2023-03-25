@@ -25,6 +25,7 @@ import little.goose.home.data.CalendarModel
 import little.goose.home.ui.component.IndexMemorialCard
 import little.goose.home.ui.component.IndexScheduleCard
 import little.goose.home.ui.component.IndexTransactionCard
+import little.goose.home.ui.component.IndexTransactionCardState
 import little.goose.schedule.data.entities.Schedule
 import java.time.LocalDate
 import java.time.YearMonth
@@ -45,7 +46,8 @@ data class IndexScreenState(
 @Composable
 fun IndexHome(
     modifier: Modifier = Modifier,
-    state: IndexScreenState
+    state: IndexScreenState,
+    onScheduleClick: (Schedule) -> Unit
 ) {
     val initMonth = remember { YearMonth.now() }
     val startMonth = remember { initMonth.minusMonths(120) }
@@ -132,14 +134,22 @@ fun IndexHome(
                     memorial = state.currentCalendarModel.value.memorials.first()
                 )
             }
+            val indexTransactionCardState by remember(state.currentDay) {
+                derivedStateOf {
+                    IndexTransactionCardState(
+                        state.currentCalendarModel.value.expense,
+                        state.currentCalendarModel.value.income,
+                        state.currentCalendarModel.value.transactions,
+                        state.currentDay
+                    )
+                }
+            }
             IndexTransactionCard(
                 modifier = Modifier
                     .padding(horizontal = 16.dp, vertical = 6.dp)
                     .fillMaxWidth()
                     .heightIn(0.dp, 160.dp),
-                transactions = state.currentCalendarModel.value.transactions,
-                income = state.currentCalendarModel.value.income,
-                expense = state.currentCalendarModel.value.expense
+                state = indexTransactionCardState
             )
             if (state.currentCalendarModel.value.schedules.isNotEmpty()) {
                 IndexScheduleCard(
@@ -148,7 +158,8 @@ fun IndexHome(
                         .fillMaxWidth()
                         .heightIn(0.dp, 120.dp),
                     schedules = state.currentCalendarModel.value.schedules,
-                    onCheckChange = state.checkSchedule
+                    onCheckChange = state.checkSchedule,
+                    onScheduleClick = onScheduleClick
                 )
             }
         }
