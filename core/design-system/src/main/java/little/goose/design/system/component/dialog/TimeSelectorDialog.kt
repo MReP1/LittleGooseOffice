@@ -11,7 +11,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.DialogProperties
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import little.goose.common.dialog.time.TimeType
+import little.goose.common.utils.TimeType
 import little.goose.design.system.component.TimeSelector
 import little.goose.design.system.component.TimeSelectorState
 import little.goose.design.system.theme.RoundedCorner24

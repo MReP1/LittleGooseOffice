@@ -13,7 +13,7 @@ import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.launch
-import little.goose.common.dialog.time.TimeType
+import little.goose.common.utils.TimeType
 import little.goose.common.utils.toChineseStringWithYear
 import little.goose.design.system.component.dialog.*
 import little.goose.schedule.R

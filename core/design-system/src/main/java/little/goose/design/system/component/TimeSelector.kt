@@ -10,7 +10,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.unit.dp
-import little.goose.common.dialog.time.TimeType
+import little.goose.common.utils.TimeType
 import little.goose.common.utils.DateTimeUtils
 import java.util.*
 

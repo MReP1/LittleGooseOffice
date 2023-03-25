@@ -14,7 +14,7 @@ import little.goose.common.constants.KEY_CONTENT
 import little.goose.common.constants.KEY_MONEY_TYPE
 import little.goose.common.constants.KEY_TIME
 import little.goose.common.constants.KEY_TIME_TYPE
-import little.goose.common.dialog.time.TimeType
+import little.goose.common.utils.TimeType
 import little.goose.common.utils.*
 import java.util.*
 import javax.inject.Inject

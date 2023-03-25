@@ -30,7 +30,7 @@ import little.goose.account.ui.analysis.widget.TransactionAnalysisLineChartView
 import little.goose.account.ui.component.TransactionPercentCircleChart
 import little.goose.account.ui.component.TransactionPercentColumn
 import little.goose.common.collections.CircularLinkList
-import little.goose.common.dialog.time.TimeType
+import little.goose.common.utils.TimeType
 import little.goose.common.utils.*
 import java.math.BigDecimal
 import java.util.*

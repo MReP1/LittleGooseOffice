@@ -11,7 +11,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.unit.dp
-import little.goose.common.dialog.time.TimeType
+import little.goose.common.utils.TimeType
 import little.goose.common.utils.*
 import little.goose.design.system.component.dialog.TimeSelectorCenterDialog
 import little.goose.design.system.component.dialog.rememberDialogState

@@ -19,7 +19,7 @@ import kotlinx.coroutines.launch
 import little.goose.account.data.entities.Transaction
 import little.goose.account.logic.MoneyCalculator
 import little.goose.account.ui.transaction.icon.TransactionIconHelper
-import little.goose.common.dialog.time.TimeType
+import little.goose.common.utils.TimeType
 import little.goose.common.utils.toChineseMonthDayTime
 import little.goose.design.system.component.dialog.InputDialog
 import little.goose.design.system.component.dialog.TimeSelectorBottomDialog

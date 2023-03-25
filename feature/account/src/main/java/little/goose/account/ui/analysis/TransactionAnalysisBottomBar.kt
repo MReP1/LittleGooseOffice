@@ -16,7 +16,7 @@ import little.goose.account.ui.component.MonthSelector
 import little.goose.account.ui.component.MonthSelectorState
 import little.goose.account.ui.component.YearSelector
 import little.goose.account.ui.component.YearSelectorState
-import little.goose.common.dialog.time.TimeType
+import little.goose.common.utils.TimeType
 import little.goose.common.utils.calendar
 import little.goose.common.utils.setMonth
 import little.goose.common.utils.setYear

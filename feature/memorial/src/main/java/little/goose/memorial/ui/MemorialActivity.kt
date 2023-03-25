@@ -29,7 +29,7 @@ import kotlinx.coroutines.launch
 import little.goose.common.constants.KEY_TYPE
 import little.goose.common.constants.TYPE_ADD
 import little.goose.common.constants.TYPE_MODIFY
-import little.goose.common.dialog.time.TimeType
+import little.goose.common.utils.TimeType
 import little.goose.common.utils.toChineseYearMonDayWeek
 import little.goose.design.system.component.dialog.InputDialog
 import little.goose.design.system.component.dialog.TimeSelectorCenterDialog

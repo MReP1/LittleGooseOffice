@@ -27,7 +27,7 @@ import little.goose.common.constants.KEY_CONTENT
 import little.goose.common.constants.KEY_MONEY_TYPE
 import little.goose.common.constants.KEY_TIME
 import little.goose.common.constants.KEY_TIME_TYPE
-import little.goose.common.dialog.time.TimeType
+import little.goose.common.utils.TimeType
 import little.goose.design.system.theme.AccountTheme
 import little.goose.design.system.theme.Red200
 import java.io.Serializable

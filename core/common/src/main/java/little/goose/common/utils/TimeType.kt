@@ -1,4 +1,4 @@
-package little.goose.common.dialog.time
+package little.goose.common.utils
 
 import android.os.Parcelable
 import kotlinx.parcelize.Parcelize
