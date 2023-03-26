@@ -189,7 +189,7 @@ fun HomeScreen(
                         topSubButtonContent = {
                             Icon(
                                 imageVector = if (isMultiSelecting) {
-                                    Icons.Rounded.SelectAll
+                                    Icons.Rounded.DoneAll
                                 } else {
                                     Icons.Rounded.Search
                                 }, contentDescription = "search"
