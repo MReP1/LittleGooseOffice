@@ -12,8 +12,8 @@ import androidx.compose.ui.unit.dp
 @Composable
 fun SelectorDialog(
     state: DialogState,
-    onCancel: (() -> Unit)? = null,
-    onConfirm: (() -> Unit)? = null,
+    onCancel: () -> Unit,
+    onConfirm: () -> Unit,
     content: @Composable ColumnScope.() -> Unit
 ) {
     NormalDialog(
@@ -32,20 +32,10 @@ fun SelectorDialog(
                 Spacer(modifier = Modifier.height(16.dp))
 
                 DialogButtonGroup(
-                    startButtonContent = {
-                        Text(text = "取消")
-                    },
-                    onStartButtonClick = {
-                        onCancel?.invoke()
-                        state.dismiss()
-                    },
-                    endButtonContent = {
-                        Text(text = "确认")
-                    },
-                    onEndButtonClick = {
-                        onConfirm?.invoke()
-                        state.dismiss()
-                    }
+                    startButtonContent = { Text(text = "取消") },
+                    onStartButtonClick = onCancel,
+                    endButtonContent = { Text(text = "确认") },
+                    onEndButtonClick = onConfirm
                 )
             }
         }
