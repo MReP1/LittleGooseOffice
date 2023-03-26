@@ -1,6 +1,9 @@
 package little.goose.account.ui.component
 
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Check
 import androidx.compose.material3.Card
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -23,36 +26,63 @@ import java.util.*
 
 @Composable
 fun TransactionCard(
+    modifier: Modifier = Modifier,
     transaction: Transaction,
-    onTransactionClick: (Transaction) -> Unit
+    isMultiSelecting: Boolean = false,
+    selected: Boolean = false,
+    onTransactionClick: (Transaction) -> Unit,
+    onSelectTransaction: (transaction: Transaction, selected: Boolean) -> Unit
 ) {
     Card(
-        onClick = { onTransactionClick(transaction) },
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
             .height(66.dp)
     ) {
-        Row(
-            Modifier.fillMaxSize(),
-            verticalAlignment = Alignment.CenterVertically
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .combinedClickable(
+                    onClick = {
+                        if (isMultiSelecting) {
+                            onSelectTransaction(transaction, !selected)
+                        } else {
+                            onTransactionClick(transaction)
+                        }
+                    },
+                    onLongClick = { onSelectTransaction(transaction, !selected) }
+                ),
+            contentAlignment = Alignment.Center
         ) {
-            Icon(
-                modifier = Modifier.padding(18.dp, 0.dp, 12.dp, 0.dp),
-                painter = painterResource(id = TransactionIconHelper.getIconPath(transaction.icon_id)),
-                tint = MaterialTheme.colorScheme.primary,
-                contentDescription = null
-            )
-            Text(
-                text = transaction.content,
-                style = MaterialTheme.typography.bodyMedium,
-                fontWeight = FontWeight.Medium
-            )
-            Spacer(modifier = Modifier.weight(1F))
-            Text(
-                modifier = Modifier.padding(20.dp, 0.dp),
-                text = transaction.money.toSignString(),
-                style = MaterialTheme.typography.bodyLarge
-            )
+            Row(
+                Modifier.fillMaxSize(),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Icon(
+                    modifier = Modifier.padding(18.dp, 0.dp, 12.dp, 0.dp),
+                    painter = painterResource(id = TransactionIconHelper.getIconPath(transaction.icon_id)),
+                    tint = MaterialTheme.colorScheme.primary,
+                    contentDescription = null
+                )
+                Text(
+                    text = transaction.content,
+                    style = MaterialTheme.typography.bodyMedium,
+                    fontWeight = FontWeight.Medium
+                )
+                Spacer(modifier = Modifier.weight(1F))
+                Text(
+                    modifier = Modifier.padding(20.dp, 0.dp),
+                    text = transaction.money.toSignString(),
+                    style = MaterialTheme.typography.bodyLarge
+                )
+            }
+            if (selected) {
+                Icon(
+                    imageVector = Icons.Default.Check,
+                    tint = MaterialTheme.colorScheme.tertiary,
+                    contentDescription = "check",
+                    modifier = Modifier.fillMaxSize()
+                )
+            }
         }
     }
 }
@@ -65,8 +95,10 @@ private fun DefaultPreview() {
             transaction = Transaction(
                 null, EXPENSE, BigDecimal(71),
                 "消费", "null", Date(), R.drawable.icon_book
-            ), onTransactionClick = {
-            }
+            ),
+            selected = true,
+            onTransactionClick = {},
+            onSelectTransaction = { _, _ -> }
         )
     }
 }

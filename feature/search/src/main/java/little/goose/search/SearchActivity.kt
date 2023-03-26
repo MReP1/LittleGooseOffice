@@ -128,12 +128,13 @@ private fun SearchScreen(
                     .padding(it)
             ) {
                 when (viewModel.type) {
-                    SearchType.Transaction -> when (val state = viewModel.transactionState) {
+                    SearchType.Transaction -> when (viewModel.transactionState) {
                         is SearchViewModel.State.Data -> {
-                            val transactions by state.items.collectAsState()
+                            val transactionColumnState by viewModel.transactionColumnState
+                                .collectAsState()
                             SearchTransactionScreen(
                                 modifier = Modifier.fillMaxSize(),
-                                transactions = transactions,
+                                transactionColumnState = transactionColumnState,
                                 onDeleteTransaction = viewModel::deleteTransaction
                             )
                         }

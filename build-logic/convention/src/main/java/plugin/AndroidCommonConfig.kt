@@ -17,7 +17,8 @@ fun CommonExtension<*, *, *, *>.configureKotlin() {
                 listOf(
                     "-opt-in=kotlinx.coroutines.ExperimentalCoroutinesApi",
                     "-opt-in=androidx.compose.animation.ExperimentalAnimationApi",
-                    "-opt-in=androidx.compose.material3.ExperimentalMaterial3Api"
+                    "-opt-in=androidx.compose.material3.ExperimentalMaterial3Api",
+                    "-opt-in=androidx.compose.foundation.ExperimentalFoundationApi"
                 )
             )
             // open Kotlin context feature

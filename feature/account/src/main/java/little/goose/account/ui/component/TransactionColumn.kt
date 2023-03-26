@@ -11,10 +11,20 @@ import androidx.compose.ui.unit.dp
 import little.goose.account.data.constants.AccountConstant
 import little.goose.account.data.entities.Transaction
 
+data class TransactionColumnState(
+    val transactions: List<Transaction>,
+    val isMultiSelecting: Boolean,
+    val multiSelectedTransactions: Set<Transaction>,
+    val onTransactionSelected: (item: Transaction, selected: Boolean) -> Unit,
+    val selectAllTransactions: () -> Unit,
+    val cancelMultiSelecting: () -> Unit,
+    val deleteTransactions: (List<Transaction>) -> Unit
+)
+
 @Composable
 fun TransactionColumn(
     modifier: Modifier,
-    transactions: List<Transaction>,
+    state: TransactionColumnState,
     onTransactionClick: (Transaction) -> Unit
 ) {
     LazyColumn(
@@ -23,7 +33,7 @@ fun TransactionColumn(
         verticalArrangement = Arrangement.spacedBy(12.dp)
     ) {
         items(
-            items = transactions,
+            items = state.transactions,
             key = { it.id ?: it }
         ) { transaction ->
             if (transaction.type == AccountConstant.TIME) {
@@ -31,7 +41,10 @@ fun TransactionColumn(
             } else {
                 TransactionCard(
                     transaction = transaction,
-                    onTransactionClick = onTransactionClick
+                    isMultiSelecting = state.isMultiSelecting,
+                    selected = state.multiSelectedTransactions.contains(transaction),
+                    onTransactionClick = onTransactionClick,
+                    onSelectTransaction = state.onTransactionSelected
                 )
             }
         }

@@ -49,7 +49,7 @@ fun ScheduleDialog(
     onAdd: (Schedule) -> Unit,
     onModify: (Schedule) -> Unit
 ) {
-    val deleteScheduleDialogState = rememberDialogState()
+    val deleteScheduleDialogState = remember { DeleteDialogState() }
     val timeSelectorDialogState = rememberBottomSheetDialogState()
     val scope = rememberCoroutineScope()
 
@@ -71,7 +71,12 @@ fun ScheduleDialog(
                 }
                 state.dismiss()
             },
-            onDeleteClick = deleteScheduleDialogState::show,
+            onDeleteClick = {
+                deleteScheduleDialogState.show(onConfirm = {
+                    onDelete(state.schedule)
+                    state.dismiss()
+                })
+            },
             onChangeTimeClick = {
                 scope.launch {
                     timeSelectorDialogState.open()
@@ -80,13 +85,7 @@ fun ScheduleDialog(
         )
     }
 
-    DeleteDialog(
-        state = deleteScheduleDialogState,
-        onConfirm = {
-            onDelete(state.schedule)
-            state.dismiss()
-        }
-    )
+    DeleteDialog(state = deleteScheduleDialogState)
 
     TimeSelectorBottomDialog(
         state = timeSelectorDialogState,

@@ -174,7 +174,6 @@ fun MovableActionButton(
                 onClick = {
                     scope.launch(Dispatchers.Main.immediate) {
                         onTopSubButtonClick()
-                        state.fold()
                     }
                 },
                 content = topSubButtonContent,
@@ -191,7 +190,6 @@ fun MovableActionButton(
                 onClick = {
                     scope.launch(Dispatchers.Main.immediate) {
                         onBottomSubButtonClick()
-                        state.fold()
                     }
                 },
                 content = bottomSubButtonContent,
@@ -206,7 +204,6 @@ fun MovableActionButton(
                     scope.launch(Dispatchers.Main.immediate) {
                         if (state.isExpended.value) {
                             onMainButtonClick()
-                            state.fold()
                         } else {
                             state.expend()
                         }

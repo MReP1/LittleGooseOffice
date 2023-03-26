@@ -11,10 +11,7 @@ import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import little.goose.design.system.component.dialog.DeleteDialog
-import little.goose.design.system.component.dialog.DialogState
-import little.goose.design.system.component.dialog.NormalDialog
-import little.goose.design.system.component.dialog.rememberDialogState
+import little.goose.design.system.component.dialog.*
 import little.goose.memorial.R
 import little.goose.memorial.data.entities.Memorial
 import little.goose.memorial.ui.component.MemorialCard
@@ -48,25 +45,24 @@ fun MemorialDialog(
     onDelete: (Memorial) -> Unit
 ) {
     val context = LocalContext.current
-    val deleteMemorialDialogState = rememberDialogState()
+    val deleteMemorialDialogState = remember { DeleteDialogState() }
     NormalDialog(state = state.dialogState) {
         MaterialDialogScreen(
             modifier = Modifier.wrapContentSize(),
             memorial = state.memorial,
-            onDelete = deleteMemorialDialogState::show,
+            onDelete = {
+                deleteMemorialDialogState.show(onConfirm = {
+                    onDelete(state.memorial)
+                    state.dismiss()
+                })
+            },
             onEdit = {
                 MemorialShowActivity.open(context, state.memorial)
                 state.dismiss()
             }
         )
     }
-    DeleteDialog(
-        state = deleteMemorialDialogState,
-        onConfirm = {
-            onDelete(state.memorial)
-            state.dismiss()
-        }
-    )
+    DeleteDialog(state = deleteMemorialDialogState)
 }
 
 @Composable

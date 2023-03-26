@@ -5,13 +5,14 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import little.goose.account.data.entities.Transaction
 import little.goose.account.ui.component.TransactionColumn
+import little.goose.account.ui.component.TransactionColumnState
 import little.goose.account.ui.transaction.TransactionDialog
 import little.goose.account.ui.transaction.rememberTransactionDialogState
 
 @Composable
 internal fun SearchTransactionScreen(
     modifier: Modifier = Modifier,
-    transactions: List<Transaction>,
+    transactionColumnState: TransactionColumnState,
     onDeleteTransaction: (Transaction) -> Unit
 ) {
     val transactionDialogState = rememberTransactionDialogState()
@@ -21,10 +22,10 @@ internal fun SearchTransactionScreen(
         onDelete = onDeleteTransaction
     )
 
-    if (transactions.isNotEmpty()) {
+    if (transactionColumnState.transactions.isNotEmpty()) {
         TransactionColumn(
             modifier = modifier.fillMaxSize(),
-            transactions = transactions,
+            state = transactionColumnState,
             onTransactionClick = {
                 transactionDialogState.show(it)
             }

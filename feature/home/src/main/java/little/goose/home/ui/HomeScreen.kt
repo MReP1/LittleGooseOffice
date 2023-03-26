@@ -5,10 +5,7 @@ import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
-import androidx.compose.material.icons.outlined.DonutSmall
-import androidx.compose.material.icons.rounded.Add
-import androidx.compose.material.icons.rounded.Search
-import androidx.compose.material.icons.rounded.SubdirectoryArrowRight
+import androidx.compose.material.icons.rounded.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -23,10 +20,13 @@ import com.google.accompanist.pager.rememberPagerState
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import little.goose.account.ui.AccountHome
+import little.goose.account.ui.AccountHomeViewModel
 import little.goose.account.ui.analysis.AccountAnalysisActivity
 import little.goose.account.ui.transaction.TransactionActivity
 import little.goose.design.system.component.MovableActionButton
 import little.goose.design.system.component.MovableActionButtonState
+import little.goose.design.system.component.dialog.DeleteDialog
+import little.goose.design.system.component.dialog.DeleteDialogState
 import little.goose.home.data.*
 import little.goose.home.ui.component.IndexTopBar
 import little.goose.memorial.ui.*
@@ -56,10 +56,32 @@ fun HomeScreen(
 
     val scheduleViewModel = viewModel<ScheduleViewModel>()
     val indexViewModel = viewModel<IndexViewModel>()
+    val accountViewModel = viewModel<AccountHomeViewModel>()
+
     val indexScreenState by indexViewModel.indexScreenState.collectAsState()
     val indexTopBarState by indexViewModel.indexTopBarState.collectAsState()
     val buttonState = remember { MovableActionButtonState() }
     val scheduleDialogState = rememberScheduleDialogState()
+    val deleteDialogState = remember { DeleteDialogState() }
+
+    val isMultiSelecting = when (currentHomePage) {
+        HomePage.Notebook -> false
+        HomePage.ACCOUNT -> {
+            accountViewModel.isMultiSelecting.collectAsState().value
+        }
+        HomePage.Schedule -> false
+        HomePage.Memorial -> false
+        else -> false
+    }
+
+    LaunchedEffect(isMultiSelecting) {
+        if (isMultiSelecting) {
+            buttonState.expend()
+        } else {
+            buttonState.fold()
+        }
+    }
+
     Scaffold(
         modifier = modifier,
         topBar = {
@@ -128,7 +150,14 @@ fun HomeScreen(
                         modifier = Modifier.align(Alignment.BottomEnd),
                         state = buttonState,
                         mainButtonContent = {
-                            Icon(imageVector = Icons.Rounded.Add, contentDescription = "More")
+                            Icon(
+                                imageVector = if (isMultiSelecting) {
+                                    Icons.Rounded.Delete
+                                } else {
+                                    Icons.Rounded.Add
+                                },
+                                contentDescription = "More"
+                            )
                         },
                         onMainButtonClick = {
                             when (currentHomePage) {
@@ -136,7 +165,17 @@ fun HomeScreen(
                                     NoteActivity.openAdd(context)
                                 }
                                 HomePage.ACCOUNT -> {
-                                    TransactionActivity.openAdd(context)
+                                    if (isMultiSelecting) {
+                                        deleteDialogState.show(onConfirm = {
+                                            accountViewModel.transactionColumnState.value
+                                                .deleteTransactions(
+                                                    accountViewModel.transactionColumnState
+                                                        .value.multiSelectedTransactions.toList()
+                                                )
+                                        })
+                                    } else {
+                                        TransactionActivity.openAdd(context)
+                                    }
                                 }
                                 HomePage.Schedule -> {
                                     scheduleDialogState.show(Schedule())
@@ -148,7 +187,13 @@ fun HomeScreen(
                             }
                         },
                         topSubButtonContent = {
-                            Icon(imageVector = Icons.Rounded.Search, contentDescription = "search")
+                            Icon(
+                                imageVector = if (isMultiSelecting) {
+                                    Icons.Rounded.SelectAll
+                                } else {
+                                    Icons.Rounded.Search
+                                }, contentDescription = "search"
+                            )
                         },
                         onTopSubButtonClick = {
                             when (currentHomePage) {
@@ -156,7 +201,12 @@ fun HomeScreen(
                                     SearchActivity.open(context, SearchType.Note)
                                 }
                                 HomePage.ACCOUNT -> {
-                                    SearchActivity.open(context, SearchType.Transaction)
+                                    if (isMultiSelecting) {
+                                        accountViewModel.transactionColumnState
+                                            .value.selectAllTransactions()
+                                    } else {
+                                        SearchActivity.open(context, SearchType.Transaction)
+                                    }
                                 }
                                 HomePage.Schedule -> {
                                     SearchActivity.open(context, SearchType.Schedule)
@@ -168,10 +218,15 @@ fun HomeScreen(
                             }
                         },
                         bottomSubButtonContent = {
-                            when (currentHomePage) {
+                            if (isMultiSelecting) {
+                                Icon(
+                                    imageVector = Icons.Rounded.RemoveDone,
+                                    contentDescription = "Remove done"
+                                )
+                            } else when (currentHomePage) {
                                 HomePage.ACCOUNT -> {
                                     Icon(
-                                        imageVector = Icons.Outlined.DonutSmall,
+                                        imageVector = Icons.Rounded.DonutSmall,
                                         contentDescription = "Analysis"
                                     )
                                 }
@@ -186,7 +241,12 @@ fun HomeScreen(
                         onBottomSubButtonClick = {
                             when (currentHomePage) {
                                 HomePage.ACCOUNT -> {
-                                    AccountAnalysisActivity.open(context)
+                                    if (isMultiSelecting) {
+                                        accountViewModel.transactionColumnState
+                                            .value.cancelMultiSelecting()
+                                    } else {
+                                        AccountAnalysisActivity.open(context)
+                                    }
                                 }
                                 else -> scope.launch {
                                     buttonState.fold()
@@ -196,7 +256,7 @@ fun HomeScreen(
                     )
 
                     Box(modifier = Modifier.fillMaxSize().zIndex(-0.5F).run {
-                        if (buttonState.isExpended.value) {
+                        if (buttonState.isExpended.value && !isMultiSelecting) {
                             clickable(indication = null,
                                 interactionSource = remember { MutableInteractionSource() }
                             ) { scope.launch { buttonState.fold() } }
@@ -228,7 +288,7 @@ fun HomeScreen(
                     }
                 )
                 Box(modifier = Modifier.matchParentSize().zIndex(1F).run {
-                    if (buttonState.isExpended.value) {
+                    if (buttonState.isExpended.value && !isMultiSelecting) {
                         clickable(indication = null,
                             interactionSource = remember { MutableInteractionSource() }
                         ) { scope.launch { buttonState.fold() } }
@@ -237,6 +297,9 @@ fun HomeScreen(
             }
         }
     )
+
+    DeleteDialog(state = deleteDialogState)
+
     ScheduleDialog(
         state = scheduleDialogState,
         onDelete = scheduleViewModel::deleteSchedule,

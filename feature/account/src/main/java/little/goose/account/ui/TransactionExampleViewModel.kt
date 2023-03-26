@@ -10,6 +10,7 @@ import kotlinx.coroutines.launch
 import little.goose.account.data.constants.MoneyType
 import little.goose.account.data.entities.Transaction
 import little.goose.account.logic.AccountRepository
+import little.goose.account.ui.component.TransactionColumnState
 import little.goose.common.constants.KEY_CONTENT
 import little.goose.common.constants.KEY_MONEY_TYPE
 import little.goose.common.constants.KEY_TIME
@@ -48,11 +49,53 @@ class TransactionExampleViewModel @Inject constructor(
     private val _event = MutableSharedFlow<Event>()
     val event = _event.asSharedFlow()
 
-    val transactions = getTransactionFlow().stateIn(
+    private val _multiSelectedTransactions = MutableStateFlow<Set<Transaction>>(mutableSetOf())
+    val multiSelectedTransactions = _multiSelectedTransactions.asStateFlow()
+
+    private val isMultiSelecting = multiSelectedTransactions.map { it.isNotEmpty() }
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5000),
+            initialValue = false
+        )
+
+    val transactions = getTransactionFlow().onEach {
+        _multiSelectedTransactions.value = emptySet()
+    }.stateIn(
         viewModelScope,
         SharingStarted.WhileSubscribed(5000),
         emptyList()
     )
+
+    val transactionColumnState = combine(
+        transactions,
+        multiSelectedTransactions,
+        isMultiSelecting
+    ) { transactions, multiSelectedTransactions, isMultiSelecting ->
+        TransactionColumnState(
+            transactions = transactions,
+            isMultiSelecting = isMultiSelecting,
+            multiSelectedTransactions = multiSelectedTransactions,
+            onTransactionSelected = ::selectedTransaction,
+            selectAllTransactions = ::selectAllTransaction,
+            cancelMultiSelecting = ::cancelMultiSelecting,
+            deleteTransactions = ::deleteTransactions
+        )
+    }.stateIn(
+        scope = viewModelScope,
+        SharingStarted.WhileSubscribed(5000),
+        TransactionColumnState(
+            transactions.value, isMultiSelecting.value, multiSelectedTransactions.value,
+            ::selectedTransaction, ::selectAllTransaction, ::cancelMultiSelecting,
+            deleteTransactions = ::deleteTransactions
+        )
+    )
+
+    private fun selectedTransaction(transaction: Transaction, selected: Boolean) {
+        _multiSelectedTransactions.value = _multiSelectedTransactions.value.toMutableSet().apply {
+            if (selected) add(transaction) else remove(transaction)
+        }
+    }
 
     private fun getTransactionFlow(): Flow<List<Transaction>> {
         val calendar = Calendar.getInstance()
@@ -102,4 +145,19 @@ class TransactionExampleViewModel @Inject constructor(
             _event.emit(Event.InsertTransaction(transaction))
         }
     }
+
+    private fun deleteTransactions(transactions: List<Transaction>) {
+        viewModelScope.launch {
+            accountRepository.deleteTransactions(transactions)
+        }
+    }
+
+    private fun selectAllTransaction() {
+        _multiSelectedTransactions.value = transactions.value.toSet()
+    }
+
+    private fun cancelMultiSelecting() {
+        _multiSelectedTransactions.value = emptySet()
+    }
+
 }

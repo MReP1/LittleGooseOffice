@@ -53,7 +53,7 @@ fun TransactionDialog(
     state: TransactionDialogState,
     onDelete: (Transaction) -> Unit
 ) {
-    val deleteTransactionDialogState = rememberDialogState()
+    val deleteDialogState = remember { DeleteDialogState() }
     val context = LocalContext.current
 
     NormalDialog(
@@ -61,8 +61,11 @@ fun TransactionDialog(
     ) {
         TransactionDialogScreen(
             transaction = state.transaction,
-            onDeleteClick = {
-                deleteTransactionDialogState.show()
+            onDeleteClick = { transaction ->
+                deleteDialogState.show(onConfirm = {
+                    onDelete(transaction)
+                    state.dismiss()
+                })
             },
             onEditClick = {
                 TransactionActivity.openEdit(context, it)
@@ -71,13 +74,7 @@ fun TransactionDialog(
         )
     }
 
-    DeleteDialog(
-        state = deleteTransactionDialogState,
-        onConfirm = {
-            onDelete(state.transaction)
-            state.dismiss()
-        }
-    )
+    DeleteDialog(state = deleteDialogState)
 }
 
 @Composable

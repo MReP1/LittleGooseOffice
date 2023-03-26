@@ -9,10 +9,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.viewmodel.compose.viewModel
 import little.goose.account.data.entities.Transaction
-import little.goose.account.ui.component.AccountTitle
-import little.goose.account.ui.component.AccountTitleState
-import little.goose.account.ui.component.MonthSelectorState
-import little.goose.account.ui.component.TransactionColumn
+import little.goose.account.ui.component.*
 import little.goose.account.ui.transaction.TransactionDialog
 import little.goose.account.ui.transaction.rememberTransactionDialogState
 
@@ -20,15 +17,15 @@ import little.goose.account.ui.transaction.rememberTransactionDialogState
 fun AccountHome(
     modifier: Modifier = Modifier,
 ) {
-    val viewModel = viewModel<AccountFragmentViewModel>()
-    val transactions by viewModel.curMonthTransactionWithTime.collectAsState()
+    val viewModel = viewModel<AccountHomeViewModel>()
+    val transactionColumnState by viewModel.transactionColumnState.collectAsState()
     val accountTitleState by viewModel.accountTitleState.collectAsState()
     val monthSelectorState by viewModel.monthSelectorState.collectAsState()
     val transactionDialogState = rememberTransactionDialogState()
 
     AccountScreen(
         modifier = modifier,
-        transactionsWithTime = transactions,
+        transactionColumnState = transactionColumnState,
         accountTitleState = accountTitleState,
         onTransactionClick = transactionDialogState::show,
         monthSelectorState = monthSelectorState,
@@ -43,7 +40,7 @@ fun AccountHome(
 @Composable
 fun AccountScreen(
     modifier: Modifier = Modifier,
-    transactionsWithTime: List<Transaction>,
+    transactionColumnState: TransactionColumnState,
     onTransactionClick: (Transaction) -> Unit,
     accountTitleState: AccountTitleState,
     monthSelectorState: MonthSelectorState
@@ -58,7 +55,7 @@ fun AccountScreen(
         )
         TransactionColumn(
             modifier = Modifier.weight(1F),
-            transactions = transactionsWithTime,
+            state = transactionColumnState,
             onTransactionClick = onTransactionClick
         )
     }

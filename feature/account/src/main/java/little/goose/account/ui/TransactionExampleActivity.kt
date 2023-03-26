@@ -21,6 +21,7 @@ import kotlinx.coroutines.launch
 import little.goose.account.data.constants.MoneyType
 import little.goose.account.data.entities.Transaction
 import little.goose.account.ui.component.TransactionColumn
+import little.goose.account.ui.component.TransactionColumnState
 import little.goose.account.ui.transaction.TransactionDialog
 import little.goose.account.ui.transaction.rememberTransactionDialogState
 import little.goose.common.constants.KEY_CONTENT
@@ -41,9 +42,9 @@ class TransactionExampleActivity : AppCompatActivity() {
         setContent {
             AccountTheme {
                 val viewModel = hiltViewModel<TransactionExampleViewModel>()
-                val transactions by viewModel.transactions.collectAsState()
                 val transactionDialogState = rememberTransactionDialogState()
                 val snackbarHostState = remember { SnackbarHostState() }
+                val transactionColumnState by viewModel.transactionColumnState.collectAsState()
 
                 TransactionTimeScreen(
                     modifier = Modifier.fillMaxSize(),
@@ -56,7 +57,7 @@ class TransactionExampleActivity : AppCompatActivity() {
                                 ?: return@TransactionTimeScreen
                         )
                     },
-                    transactions = transactions,
+                    transactionColumnState = transactionColumnState,
                     onBack = ::finish
                 )
 
@@ -115,7 +116,7 @@ class TransactionExampleActivity : AppCompatActivity() {
 private fun TransactionTimeScreen(
     modifier: Modifier = Modifier,
     title: String,
-    transactions: List<Transaction>,
+    transactionColumnState: TransactionColumnState,
     snackbarHostState: SnackbarHostState,
     snackbarAction: () -> Unit,
     onTransactionClick: (Transaction) -> Unit,
@@ -146,7 +147,7 @@ private fun TransactionTimeScreen(
     ) { paddingValues ->
         TransactionColumn(
             modifier = Modifier.padding(paddingValues),
-            transactions = transactions,
+            state = transactionColumnState,
             onTransactionClick = onTransactionClick
         )
     }

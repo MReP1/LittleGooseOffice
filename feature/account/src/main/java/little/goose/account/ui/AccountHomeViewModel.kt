@@ -12,6 +12,7 @@ import little.goose.account.data.entities.Transaction
 import little.goose.account.logic.AccountRepository
 import little.goose.account.ui.component.AccountTitleState
 import little.goose.account.ui.component.MonthSelectorState
+import little.goose.account.ui.component.TransactionColumnState
 import little.goose.account.utils.insertTime
 import little.goose.common.utils.getMonth
 import little.goose.common.utils.getYear
@@ -20,7 +21,7 @@ import java.util.*
 import javax.inject.Inject
 
 @HiltViewModel
-class AccountFragmentViewModel @Inject constructor(
+class AccountHomeViewModel @Inject constructor(
     private val accountRepository: AccountRepository
 ) : ViewModel() {
 
@@ -68,6 +69,16 @@ class AccountFragmentViewModel @Inject constructor(
         BigDecimal(0)
     )
 
+    private val _multiSelectedTransactions = MutableStateFlow<Set<Transaction>>(emptySet())
+    val multiSelectedTransactions = _multiSelectedTransactions.asStateFlow()
+
+    val isMultiSelecting = multiSelectedTransactions.map { it.isNotEmpty() }
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5000),
+            initialValue = false
+        )
+
     private val curMonthTransactionFlow = combine(year, month) { year, month ->
         accountRepository.getTransactionByYearMonthFlow(year, month)
     }.flatMapLatest { it }.onEach { transactions ->
@@ -79,6 +90,7 @@ class AccountFragmentViewModel @Inject constructor(
                 AccountConstant.INCOME -> _curMonthIncomeSum.value += transaction.money
             }
         }
+        _multiSelectedTransactions.value = emptySet()
     }.flowOn(
         Dispatchers.Default
     ).stateIn(
@@ -94,6 +106,39 @@ class AccountFragmentViewModel @Inject constructor(
         SharingStarted.WhileSubscribed(5000),
         emptyList()
     )
+
+    val transactionColumnState = combine(
+        curMonthTransactionWithTime,
+        multiSelectedTransactions,
+        isMultiSelecting
+    ) { transactions, multiSelectedTransactions, isMultiSelecting ->
+        TransactionColumnState(
+            transactions = transactions,
+            isMultiSelecting = isMultiSelecting,
+            multiSelectedTransactions = multiSelectedTransactions,
+            onTransactionSelected = ::selectTransaction,
+            selectAllTransactions = ::selectAllTransaction,
+            cancelMultiSelecting = ::cancelMultiSelecting,
+            deleteTransactions = ::deleteTransactions
+        )
+    }.stateIn(
+        viewModelScope, SharingStarted.WhileSubscribed(5000),
+        TransactionColumnState(
+            curMonthTransactionWithTime.value,
+            isMultiSelecting.value,
+            multiSelectedTransactions.value,
+            ::selectTransaction,
+            ::selectAllTransaction,
+            ::cancelMultiSelecting,
+            ::deleteTransactions
+        )
+    )
+
+    private fun selectTransaction(transaction: Transaction, selected: Boolean) {
+        _multiSelectedTransactions.value = _multiSelectedTransactions.value.toMutableSet().apply {
+            if (selected) add(transaction) else remove(transaction)
+        }
+    }
 
     val accountTitleState = combine(
         curMonthExpenseSum, curMonthIncomeSum, curMonthBalance,
@@ -135,5 +180,19 @@ class AccountFragmentViewModel @Inject constructor(
         viewModelScope.launch {
             accountRepository.deleteTransaction(transaction)
         }
+    }
+
+    private fun deleteTransactions(transactions: List<Transaction>) {
+        viewModelScope.launch {
+            accountRepository.deleteTransactions(transactions)
+        }
+    }
+
+    private fun selectAllTransaction() {
+        _multiSelectedTransactions.value = curMonthTransactionFlow.value.toSet()
+    }
+
+    private fun cancelMultiSelecting() {
+        _multiSelectedTransactions.value = emptySet()
     }
 }
