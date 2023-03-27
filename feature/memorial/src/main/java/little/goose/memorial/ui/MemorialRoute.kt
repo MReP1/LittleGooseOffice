@@ -13,6 +13,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import little.goose.memorial.data.entities.Memorial
 import little.goose.memorial.ui.component.MemorialColumn
+import little.goose.memorial.ui.component.MemorialColumnState
 import little.goose.memorial.ui.component.MemorialTitle
 
 @Composable
@@ -20,9 +21,9 @@ fun MemorialHome(
     modifier: Modifier
 ) {
     val viewModel: MemorialViewModel = hiltViewModel()
-    val memorials by viewModel.memorials.collectAsState()
     val topMemorial by viewModel.topMemorial.collectAsState()
     val memorialDialogState = rememberMemorialDialogState()
+    val memorialColumnState by viewModel.memorialColumnState.collectAsState()
 
     MemorialDialog(
         state = memorialDialogState,
@@ -31,18 +32,16 @@ fun MemorialHome(
 
     MemorialScreen(
         modifier = modifier,
-        memorials = memorials,
+        memorialColumnState = memorialColumnState,
         topMemorial = topMemorial,
-        onMemorialClick = {
-            memorialDialogState.show(it)
-        }
+        onMemorialClick = memorialDialogState::show
     )
 }
 
 @Composable
 private fun MemorialScreen(
     modifier: Modifier,
-    memorials: List<Memorial>,
+    memorialColumnState: MemorialColumnState,
     topMemorial: Memorial?,
     onMemorialClick: (Memorial) -> Unit
 ) {
@@ -57,7 +56,10 @@ private fun MemorialScreen(
                 )
             }
             MemorialColumn(
-                memorials = memorials,
+                modifier = Modifier
+                    .weight(1F)
+                    .fillMaxWidth(),
+                state = memorialColumnState,
                 onMemorialClick = onMemorialClick
             )
         }

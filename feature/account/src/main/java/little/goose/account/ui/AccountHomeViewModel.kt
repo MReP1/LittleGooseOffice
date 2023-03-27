@@ -69,10 +69,9 @@ class AccountHomeViewModel @Inject constructor(
         BigDecimal(0)
     )
 
-    private val _multiSelectedTransactions = MutableStateFlow<Set<Transaction>>(emptySet())
-    val multiSelectedTransactions = _multiSelectedTransactions.asStateFlow()
+    private val multiSelectedTransactions = MutableStateFlow<Set<Transaction>>(emptySet())
 
-    val isMultiSelecting = multiSelectedTransactions.map { it.isNotEmpty() }
+    private val isMultiSelecting = multiSelectedTransactions.map { it.isNotEmpty() }
         .stateIn(
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(5000),
@@ -90,7 +89,7 @@ class AccountHomeViewModel @Inject constructor(
                 AccountConstant.INCOME -> _curMonthIncomeSum.value += transaction.money
             }
         }
-        _multiSelectedTransactions.value = emptySet()
+        multiSelectedTransactions.value = emptySet()
     }.flowOn(
         Dispatchers.Default
     ).stateIn(
@@ -135,7 +134,7 @@ class AccountHomeViewModel @Inject constructor(
     )
 
     private fun selectTransaction(transaction: Transaction, selected: Boolean) {
-        _multiSelectedTransactions.value = _multiSelectedTransactions.value.toMutableSet().apply {
+        multiSelectedTransactions.value = multiSelectedTransactions.value.toMutableSet().apply {
             if (selected) add(transaction) else remove(transaction)
         }
     }
@@ -189,10 +188,10 @@ class AccountHomeViewModel @Inject constructor(
     }
 
     private fun selectAllTransaction() {
-        _multiSelectedTransactions.value = curMonthTransactionFlow.value.toSet()
+        multiSelectedTransactions.value = curMonthTransactionFlow.value.toSet()
     }
 
     private fun cancelMultiSelecting() {
-        _multiSelectedTransactions.value = emptySet()
+        multiSelectedTransactions.value = emptySet()
     }
 }

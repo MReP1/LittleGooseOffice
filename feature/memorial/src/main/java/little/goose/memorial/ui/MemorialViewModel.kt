@@ -3,13 +3,11 @@ package little.goose.memorial.ui
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.SharingStarted
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import little.goose.memorial.data.entities.Memorial
 import little.goose.memorial.logic.MemorialRepository
+import little.goose.memorial.ui.component.MemorialColumnState
 import javax.inject.Inject
 
 @HiltViewModel
@@ -17,10 +15,45 @@ class MemorialViewModel @Inject constructor(
     private val memorialRepository: MemorialRepository
 ) : ViewModel() {
 
-    val memorials = memorialRepository.getAllMemorialFlow().stateIn(
+    private val multiSelectedMemorials = MutableStateFlow<Set<Memorial>>(emptySet())
+
+    private val isMemorialsMultiSelecting = multiSelectedMemorials.map { it.isNotEmpty() }
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5000L),
+            initialValue = false
+        )
+
+    private val memorials = memorialRepository.getAllMemorialFlow().stateIn(
         scope = viewModelScope,
         started = SharingStarted.Eagerly,
         initialValue = listOf()
+    )
+
+    val memorialColumnState = combine(
+        multiSelectedMemorials, isMemorialsMultiSelecting, memorials
+    ) { multiSelectedMemorials, isMemorialsMultiSelecting, memorials ->
+        MemorialColumnState(
+            memorials = memorials,
+            isMultiSelecting = isMemorialsMultiSelecting,
+            multiSelectedMemorials = multiSelectedMemorials,
+            deleteMemorials = ::deleteMemorials,
+            onMemorialSelected = ::selectMemorial,
+            selectAllMemorial = ::selectAllMemorials,
+            cancelMultiSelecting = ::cancelMemorialsMultiSelecting
+        )
+    }.stateIn(
+        scope = viewModelScope,
+        started = SharingStarted.WhileSubscribed(5000),
+        initialValue = MemorialColumnState(
+            memorials = memorials.value,
+            isMultiSelecting = isMemorialsMultiSelecting.value,
+            multiSelectedMemorials = multiSelectedMemorials.value,
+            deleteMemorials = ::deleteMemorials,
+            onMemorialSelected = ::selectMemorial,
+            selectAllMemorial = ::selectAllMemorials,
+            cancelMultiSelecting = ::cancelMemorialsMultiSelecting
+        )
     )
 
     val topMemorial: StateFlow<Memorial?> = memorialRepository.getMemorialAtTopFlow()
@@ -35,6 +68,26 @@ class MemorialViewModel @Inject constructor(
         viewModelScope.launch {
             memorialRepository.deleteMemorial(memorial)
         }
+    }
+
+    private fun deleteMemorials(memorials: List<Memorial>) {
+        viewModelScope.launch {
+            memorialRepository.deleteMemorials(memorials)
+        }
+    }
+
+    private fun selectMemorial(memorial: Memorial, selected: Boolean) {
+        multiSelectedMemorials.value = multiSelectedMemorials.value.toMutableSet().apply {
+            if (selected) add(memorial) else remove(memorial)
+        }
+    }
+
+    private fun selectAllMemorials() {
+        multiSelectedMemorials.value = memorials.value.toSet()
+    }
+
+    private fun cancelMemorialsMultiSelecting() {
+        multiSelectedMemorials.value = emptySet()
     }
 
 }

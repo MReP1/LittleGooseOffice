@@ -6,15 +6,16 @@ import androidx.compose.ui.Modifier
 import little.goose.memorial.data.entities.Memorial
 import little.goose.memorial.ui.MemorialDialog
 import little.goose.memorial.ui.component.MemorialColumn
+import little.goose.memorial.ui.component.MemorialColumnState
 import little.goose.memorial.ui.rememberMemorialDialogState
 
 @Composable
 fun SearchMemorialScreen(
     modifier: Modifier = Modifier,
-    memorials: List<Memorial>,
+    memorialColumnState: MemorialColumnState,
     onDeleteMemorial: (Memorial) -> Unit
 ) {
-    if (memorials.isNotEmpty()) {
+    if (memorialColumnState.memorials.isNotEmpty()) {
         val memorialDialogState = rememberMemorialDialogState()
         MemorialDialog(
             state = memorialDialogState,
@@ -22,7 +23,7 @@ fun SearchMemorialScreen(
         )
         MemorialColumn(
             modifier = modifier.fillMaxSize(),
-            memorials = memorials,
+            state = memorialColumnState,
             onMemorialClick = {
                 memorialDialogState.show(it)
             }

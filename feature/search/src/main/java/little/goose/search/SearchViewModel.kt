@@ -20,6 +20,7 @@ import kotlinx.coroutines.launch
 import little.goose.account.data.entities.Transaction
 import little.goose.account.ui.component.TransactionColumnState
 import little.goose.memorial.data.entities.Memorial
+import little.goose.memorial.ui.component.MemorialColumnState
 import little.goose.note.data.entities.Note
 import little.goose.schedule.data.entities.Schedule
 
@@ -48,10 +49,9 @@ class SearchViewModel @Inject constructor(
         object Empty : State<Nothing>()
     }
 
-    private val _multiSelectedTransactions = MutableStateFlow<Set<Transaction>>(emptySet())
-    val multiSelectedTransactions = _multiSelectedTransactions.asStateFlow()
+    private val multiSelectedTransactions = MutableStateFlow<Set<Transaction>>(emptySet())
 
-    private val isMultiSelecting = multiSelectedTransactions.map { it.isNotEmpty() }
+    private val isTransactionsMultiSelecting = multiSelectedTransactions.map { it.isNotEmpty() }
         .stateIn(
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(5000),
@@ -66,7 +66,7 @@ class SearchViewModel @Inject constructor(
             (it as? State.Data)?.items ?: emptyFlow()
         },
         multiSelectedTransactions,
-        isMultiSelecting
+        isTransactionsMultiSelecting
     ) { transactions, multiSelectedTransactions, isMultiSelecting ->
         TransactionColumnState(
             transactions,
@@ -74,7 +74,7 @@ class SearchViewModel @Inject constructor(
             multiSelectedTransactions,
             ::selectTransaction,
             ::selectAllTransaction,
-            ::cancelMultiSelecting,
+            ::cancelTransactionsMultiSelecting,
             ::deleteTransactions
         )
     }.stateIn(
@@ -82,11 +82,11 @@ class SearchViewModel @Inject constructor(
         SharingStarted.WhileSubscribed(5000),
         TransactionColumnState(
             transactions = (transactionState as? State.Data)?.items?.value ?: emptyList(),
-            isMultiSelecting.value,
+            isTransactionsMultiSelecting.value,
             multiSelectedTransactions.value,
             ::selectTransaction,
             ::selectAllTransaction,
-            ::cancelMultiSelecting,
+            ::cancelTransactionsMultiSelecting,
             ::deleteTransactions
         )
     )
@@ -96,8 +96,46 @@ class SearchViewModel @Inject constructor(
         private set
     var scheduleState: State<StateFlow<List<Schedule>>> by mutableStateOf(State.Empty)
         private set
+
+    private val multiSelectedMemorials = MutableStateFlow<Set<Memorial>>(emptySet())
+
+    private val isMemorialsMultiSelecting = multiSelectedMemorials.map { it.isNotEmpty() }
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5000L),
+            initialValue = false
+        )
+
     var memorialState: State<StateFlow<List<Memorial>>> by mutableStateOf(State.Empty)
         private set
+
+    val memorialColumnState = combine(
+        snapshotFlow { memorialState }.flatMapLatest { (it as? State.Data)?.items ?: emptyFlow() },
+        multiSelectedMemorials,
+        isMemorialsMultiSelecting
+    ) { memorials, multiSelectedMemorials, isMemorialsMultiSelecting ->
+        MemorialColumnState(
+            memorials = memorials,
+            isMultiSelecting = isMemorialsMultiSelecting,
+            multiSelectedMemorials = multiSelectedMemorials,
+            onMemorialSelected = ::selectMemorial,
+            selectAllMemorial = ::selectAllMemorial,
+            cancelMultiSelecting = ::cancelMemorialsMultiSelecting,
+            deleteMemorials = ::deleteMemorials
+        )
+    }.stateIn(
+        scope = viewModelScope,
+        started = SharingStarted.WhileSubscribed(5000),
+        MemorialColumnState(
+            memorials = (memorialState as? State.Data)?.items?.value ?: emptyList(),
+            isMultiSelecting = isMemorialsMultiSelecting.value,
+            multiSelectedMemorials = multiSelectedMemorials.value,
+            onMemorialSelected = ::selectMemorial,
+            selectAllMemorial = ::selectAllMemorial,
+            cancelMultiSelecting = ::cancelMemorialsMultiSelecting,
+            deleteMemorials = ::deleteMemorials
+        )
+    )
 
     fun search(keyword: String) {
         viewModelScope.launch {
@@ -109,7 +147,7 @@ class SearchViewModel @Inject constructor(
                         } else {
                             accountRepository.searchTransactionByTextFlow(text = keyword)
                         }.onEach {
-                            _multiSelectedTransactions.value = emptySet()
+                            multiSelectedTransactions.value = emptySet()
                         }.stateIn(
                             viewModelScope,
                             SharingStarted.WhileSubscribed(5000),
@@ -154,21 +192,9 @@ class SearchViewModel @Inject constructor(
         }
     }
 
-    private fun selectTransaction(transaction: Transaction, selected: Boolean) {
-        _multiSelectedTransactions.value = _multiSelectedTransactions.value.toMutableSet().apply {
-            if (selected) add(transaction) else remove(transaction)
-        }
-    }
-
     fun deleteTransaction(transaction: Transaction) {
         viewModelScope.launch {
             accountRepository.deleteTransaction(transaction)
-        }
-    }
-
-    fun deleteMemorial(memorial: Memorial) {
-        viewModelScope.launch {
-            memorialRepository.deleteMemorial(memorial)
         }
     }
 
@@ -178,13 +204,46 @@ class SearchViewModel @Inject constructor(
         }
     }
 
+    private fun selectTransaction(transaction: Transaction, selected: Boolean) {
+        multiSelectedTransactions.value = multiSelectedTransactions.value.toMutableSet().apply {
+            if (selected) add(transaction) else remove(transaction)
+        }
+    }
+
     private fun selectAllTransaction() {
-        _multiSelectedTransactions.value =
+        multiSelectedTransactions.value =
             (transactionState as? State.Data)?.items?.value?.toSet() ?: emptySet()
     }
 
-    private fun cancelMultiSelecting() {
-        _multiSelectedTransactions.value = emptySet()
+    private fun cancelTransactionsMultiSelecting() {
+        multiSelectedTransactions.value = emptySet()
+    }
+
+    private fun selectAllMemorial() {
+        multiSelectedMemorials.value =
+            (memorialState as? State.Data)?.items?.value?.toSet() ?: emptySet()
+    }
+
+    private fun cancelMemorialsMultiSelecting() {
+        multiSelectedMemorials.value = emptySet()
+    }
+
+    private fun selectMemorial(memorial: Memorial, selected: Boolean) {
+        multiSelectedMemorials.value = multiSelectedMemorials.value.toMutableSet().apply {
+            if (selected) add(memorial) else remove(memorial)
+        }
+    }
+
+    fun deleteMemorial(memorial: Memorial) {
+        viewModelScope.launch {
+            memorialRepository.deleteMemorial(memorial)
+        }
+    }
+
+    private fun deleteMemorials(memorials: List<Memorial>) {
+        viewModelScope.launch {
+            memorialRepository.deleteMemorials(memorials)
+        }
     }
 
 }

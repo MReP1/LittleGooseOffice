@@ -152,13 +152,14 @@ private fun SearchScreen(
                         SearchViewModel.State.Empty -> {
                         }
                     }
-                    SearchType.Memorial -> when (val state = viewModel.memorialState) {
+                    SearchType.Memorial -> when (viewModel.memorialState) {
                         is SearchViewModel.State.Data -> {
-                            val memorials by state.items.collectAsState()
+                            val memorialColumnState by viewModel.memorialColumnState
+                                .collectAsState()
                             SearchMemorialScreen(
                                 modifier = Modifier.fillMaxSize(),
-                                memorials = memorials,
-                                onDeleteMemorial = viewModel::deleteMemorial
+                                onDeleteMemorial = viewModel::deleteMemorial,
+                                memorialColumnState = memorialColumnState
                             )
                         }
                         SearchViewModel.State.Empty -> {

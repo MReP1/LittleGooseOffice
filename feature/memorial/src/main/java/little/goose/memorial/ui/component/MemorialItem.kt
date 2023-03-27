@@ -1,8 +1,12 @@
 package little.goose.memorial.ui.component
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Check
 import androidx.compose.material3.Card
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -22,7 +26,10 @@ import java.util.*
 fun MemorialItem(
     modifier: Modifier = Modifier,
     memorial: Memorial,
-    onMemorialClick: (Memorial) -> Unit
+    isMultiSelecting: Boolean = false,
+    selected: Boolean = false,
+    onMemorialClick: (Memorial) -> Unit,
+    onSelectMemorial: (Memorial, Boolean) -> Unit
 ) {
     val context = LocalContext.current
     Card(
@@ -31,53 +38,78 @@ fun MemorialItem(
         },
         modifier = modifier.wrapContentSize()
     ) {
-        Row(
-            Modifier
-                .wrapContentWidth()
-                .height(52.dp),
-            verticalAlignment = Alignment.CenterVertically
+        Box(modifier = Modifier
+            .fillMaxWidth()
+            .combinedClickable(
+                onClick = {
+                    if (isMultiSelecting) {
+                        onSelectMemorial(memorial, !selected)
+                    } else {
+                        onMemorialClick(memorial)
+                    }
+                },
+                onLongClick = {
+                    onSelectMemorial(memorial, !selected)
+                }
+            ),
+            contentAlignment = Alignment.Center
         ) {
-            Spacer(modifier = Modifier.width(16.dp))
-            Text(
-                text = memorial.content.appendTimeSuffix(memorial.time, context),
-                modifier = Modifier.weight(1F)
-            )
-            Spacer(modifier = Modifier.width(16.dp))
-
-            val curCalendar = remember(memorial) {
-                Calendar.getInstance()
-            }
-
-            val memCalendar = remember(memorial) {
-                Calendar.getInstance().apply { time = memorial.time }
-            }
-
-            Box(
-                modifier = Modifier
-                    .fillMaxHeight()
-                    .width(64.dp)
-                    .background(MaterialTheme.colorScheme.primary)
-                    .padding(vertical = 16.dp, horizontal = 8.dp),
-                contentAlignment = Alignment.Center
+            Row(
+                Modifier
+                    .wrapContentWidth()
+                    .height(52.dp),
+                verticalAlignment = Alignment.CenterVertically
             ) {
+                Spacer(modifier = Modifier.width(16.dp))
                 Text(
-                    text = DateTimeUtils.getBetweenDay(curCalendar, memCalendar)
-                        .toString(),
-                    color = MaterialTheme.colorScheme.onPrimary
+                    text = memorial.content.appendTimeSuffix(memorial.time, context),
+                    modifier = Modifier.weight(1F)
                 )
-            }
+                Spacer(modifier = Modifier.width(16.dp))
 
-            Box(
-                modifier = Modifier
-                    .width(64.dp)
-                    .fillMaxHeight()
-                    .background(MaterialTheme.colorScheme.secondary)
-                    .padding(vertical = 16.dp, horizontal = 8.dp),
-                contentAlignment = Alignment.Center
-            ) {
-                Text(
-                    text = stringResource(id = little.goose.memorial.R.string.sky),
-                    color = MaterialTheme.colorScheme.onSecondary
+                val curCalendar = remember(memorial) {
+                    Calendar.getInstance()
+                }
+
+                val memCalendar = remember(memorial) {
+                    Calendar.getInstance().apply { time = memorial.time }
+                }
+
+                Box(
+                    modifier = Modifier
+                        .fillMaxHeight()
+                        .width(64.dp)
+                        .background(MaterialTheme.colorScheme.primary)
+                        .padding(vertical = 16.dp, horizontal = 8.dp),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text(
+                        text = DateTimeUtils.getBetweenDay(curCalendar, memCalendar)
+                            .toString(),
+                        color = MaterialTheme.colorScheme.onPrimary
+                    )
+                }
+
+                Box(
+                    modifier = Modifier
+                        .width(64.dp)
+                        .fillMaxHeight()
+                        .background(MaterialTheme.colorScheme.secondary)
+                        .padding(vertical = 16.dp, horizontal = 8.dp),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text(
+                        text = stringResource(id = little.goose.memorial.R.string.sky),
+                        color = MaterialTheme.colorScheme.onSecondary
+                    )
+                }
+            }
+            if (selected) {
+                Icon(
+                    imageVector = Icons.Default.Check,
+                    tint = MaterialTheme.colorScheme.tertiary,
+                    contentDescription = "check",
+                    modifier = Modifier.matchParentSize()
                 )
             }
         }
@@ -89,6 +121,8 @@ fun MemorialItem(
 fun PreviewMemorialItem() {
     MemorialItem(
         memorial = Memorial(null, "HelloWorld", false, Date()),
-        onMemorialClick = {}
+        selected = true,
+        onMemorialClick = {},
+        onSelectMemorial = { _, _ -> }
     )
 }

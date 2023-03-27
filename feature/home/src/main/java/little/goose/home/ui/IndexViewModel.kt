@@ -35,6 +35,7 @@ class IndexViewModel @Inject constructor(
 
     private val zoneId by lazy { ZoneId.systemDefault() }
 
+    // FIXME 删除某个日期的数据的时候没有执行刷新操作
     private val calendarModelMap = mutableMapOf<LocalDate, MutableState<CalendarModel>>()
     private fun getCalendarModelState(time: LocalDate): MutableState<CalendarModel> {
         return calendarModelMap.getOrPut(time) { mutableStateOf(CalendarModel()) }

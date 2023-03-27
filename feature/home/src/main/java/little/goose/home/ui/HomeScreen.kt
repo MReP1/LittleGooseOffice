@@ -57,6 +57,7 @@ fun HomeScreen(
     val scheduleViewModel = viewModel<ScheduleViewModel>()
     val indexViewModel = viewModel<IndexViewModel>()
     val accountViewModel = viewModel<AccountHomeViewModel>()
+    val memorialViewModel = viewModel<MemorialViewModel>()
 
     val indexScreenState by indexViewModel.indexScreenState.collectAsState()
     val indexTopBarState by indexViewModel.indexTopBarState.collectAsState()
@@ -64,13 +65,14 @@ fun HomeScreen(
     val scheduleDialogState = rememberScheduleDialogState()
     val deleteDialogState = remember { DeleteDialogState() }
 
+    val transactionColumnState by accountViewModel.transactionColumnState.collectAsState()
+    val memorialColumnState by memorialViewModel.memorialColumnState.collectAsState()
+
     val isMultiSelecting = when (currentHomePage) {
         HomePage.Notebook -> false
-        HomePage.ACCOUNT -> {
-            accountViewModel.isMultiSelecting.collectAsState().value
-        }
+        HomePage.ACCOUNT -> transactionColumnState.isMultiSelecting
         HomePage.Schedule -> false
-        HomePage.Memorial -> false
+        HomePage.Memorial -> memorialColumnState.isMultiSelecting
         else -> false
     }
 
@@ -167,11 +169,11 @@ fun HomeScreen(
                                 HomePage.ACCOUNT -> {
                                     if (isMultiSelecting) {
                                         deleteDialogState.show(onConfirm = {
-                                            accountViewModel.transactionColumnState.value
-                                                .deleteTransactions(
-                                                    accountViewModel.transactionColumnState
-                                                        .value.multiSelectedTransactions.toList()
-                                                )
+                                            transactionColumnState.deleteTransactions(
+                                                transactionColumnState
+                                                    .multiSelectedTransactions.toList()
+                                            )
+                                            transactionColumnState.cancelMultiSelecting()
                                         })
                                     } else {
                                         TransactionActivity.openAdd(context)
@@ -181,7 +183,16 @@ fun HomeScreen(
                                     scheduleDialogState.show(Schedule())
                                 }
                                 HomePage.Memorial -> {
-                                    MemorialActivity.openAdd(context)
+                                    if (isMultiSelecting) {
+                                        deleteDialogState.show(onConfirm = {
+                                            memorialColumnState.deleteMemorials(
+                                                memorialColumnState.multiSelectedMemorials.toList()
+                                            )
+                                            memorialColumnState.cancelMultiSelecting()
+                                        })
+                                    } else {
+                                        MemorialActivity.openAdd(context)
+                                    }
                                 }
                                 else -> {}
                             }
@@ -202,8 +213,7 @@ fun HomeScreen(
                                 }
                                 HomePage.ACCOUNT -> {
                                     if (isMultiSelecting) {
-                                        accountViewModel.transactionColumnState
-                                            .value.selectAllTransactions()
+                                        transactionColumnState.selectAllTransactions()
                                     } else {
                                         SearchActivity.open(context, SearchType.Transaction)
                                     }
@@ -212,7 +222,11 @@ fun HomeScreen(
                                     SearchActivity.open(context, SearchType.Schedule)
                                 }
                                 HomePage.Memorial -> {
-                                    SearchActivity.open(context, SearchType.Memorial)
+                                    if (isMultiSelecting) {
+                                        memorialColumnState.selectAllMemorial()
+                                    } else {
+                                        SearchActivity.open(context, SearchType.Memorial)
+                                    }
                                 }
                                 else -> {}
                             }
@@ -242,10 +256,16 @@ fun HomeScreen(
                             when (currentHomePage) {
                                 HomePage.ACCOUNT -> {
                                     if (isMultiSelecting) {
-                                        accountViewModel.transactionColumnState
-                                            .value.cancelMultiSelecting()
+                                        transactionColumnState.cancelMultiSelecting()
                                     } else {
                                         AccountAnalysisActivity.open(context)
+                                    }
+                                }
+                                HomePage.Memorial -> {
+                                    if (isMultiSelecting) {
+                                        memorialColumnState.cancelMultiSelecting()
+                                    } else scope.launch {
+                                        buttonState.fold()
                                     }
                                 }
                                 else -> scope.launch {
