@@ -5,7 +5,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
-import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.hilt.navigation.compose.hiltViewModel
 import little.goose.note.data.entities.Note
 import little.goose.note.ui.note.NoteActivity
 
@@ -14,7 +14,7 @@ fun NotebookHome(
     modifier: Modifier = Modifier
 ) {
     val context = LocalContext.current
-    val viewModel = viewModel<NotebookViewModel>()
+    val viewModel = hiltViewModel<NotebookViewModel>()
     val notes by viewModel.notes.collectAsState()
     NotebookScreen(
         modifier = modifier,

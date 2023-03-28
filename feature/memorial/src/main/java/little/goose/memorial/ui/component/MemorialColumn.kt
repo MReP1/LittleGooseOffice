@@ -13,7 +13,7 @@ data class MemorialColumnState(
     val memorials: List<Memorial>,
     val isMultiSelecting: Boolean,
     val multiSelectedMemorials: Set<Memorial>,
-    val onMemorialSelected: (item: Memorial, selected: Boolean) -> Unit,
+    val onSelectMemorial: (item: Memorial, selected: Boolean) -> Unit,
     val selectAllMemorial: () -> Unit,
     val cancelMultiSelecting: () -> Unit,
     val deleteMemorials: (memorials: List<Memorial>) -> Unit
@@ -39,7 +39,7 @@ fun MemorialColumn(
                 isMultiSelecting = state.isMultiSelecting,
                 selected = state.multiSelectedMemorials.contains(memorial),
                 onMemorialClick = onMemorialClick,
-                onSelectMemorial = state.onMemorialSelected
+                onSelectMemorial = state.onSelectMemorial
             )
         }
     }

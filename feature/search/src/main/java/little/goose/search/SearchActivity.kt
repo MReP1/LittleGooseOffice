@@ -165,12 +165,13 @@ private fun SearchScreen(
                         SearchViewModel.State.Empty -> {
                         }
                     }
-                    SearchType.Schedule -> when (val state = viewModel.scheduleState) {
+                    SearchType.Schedule -> when (viewModel.scheduleState) {
                         is SearchViewModel.State.Data -> {
-                            val schedules by state.items.collectAsState()
+                            val scheduleColumnState by viewModel.scheduleColumnState
+                                .collectAsState()
                             SearchScheduleScreen(
                                 modifier = Modifier.fillMaxSize(),
-                                schedules = schedules
+                                scheduleColumnState = scheduleColumnState
                             )
                         }
                         SearchViewModel.State.Empty -> {

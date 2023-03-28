@@ -13,13 +13,16 @@ android {
 dependencies {
     implementation(libs.androidx.appcompat)
     implementation(libs.google.android.material)
+
     implementation(project(":core:design-system"))
     implementation(project(":core:common"))
+
     // Room database
     implementation(libs.room.runtime)
     implementation(libs.room.ktx)
     ksp(libs.room.compiler)
+
+    // hilt
     implementation(libs.androidx.hilt.navigation.compose)
     implementation(libs.androidx.activity.ktx)
-    implementation(libs.androidx.fragment.ktx)
 }

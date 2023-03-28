@@ -14,17 +14,13 @@ fun ScheduleHome(
     modifier: Modifier
 ) {
     val viewModel: ScheduleViewModel = hiltViewModel()
-    val schedules by viewModel.schedules.collectAsState()
     val scheduleDialogState = rememberScheduleDialogState()
+    val scheduleColumnState by viewModel.scheduleColumnState.collectAsState()
+
     ScheduleScreen(
         modifier = modifier.fillMaxSize(),
-        schedules = schedules,
-        onScheduleClick = {
-            scheduleDialogState.show(it)
-        },
-        onCheckedChange = { schedule, isChecked ->
-            viewModel.updateSchedule(schedule.copy(isfinish = isChecked))
-        }
+        scheduleColumnState = scheduleColumnState,
+        onScheduleClick = scheduleDialogState::show
     )
 
     ScheduleDialog(
@@ -38,9 +34,8 @@ fun ScheduleHome(
 @Composable
 private fun ScheduleScreen(
     modifier: Modifier = Modifier,
-    schedules: List<Schedule>,
-    onScheduleClick: (Schedule) -> Unit,
-    onCheckedChange: (Schedule, Boolean) -> Unit
+    scheduleColumnState: ScheduleColumnState,
+    onScheduleClick: (Schedule) -> Unit
 ) {
     Surface(
         modifier = modifier,
@@ -48,9 +43,8 @@ private fun ScheduleScreen(
     ) {
         ScheduleColumn(
             modifier = Modifier.fillMaxSize(),
-            schedules = schedules,
-            onScheduleClick = onScheduleClick,
-            onCheckedChange = onCheckedChange
+            state = scheduleColumnState,
+            onScheduleClick = onScheduleClick
         )
     }
 }

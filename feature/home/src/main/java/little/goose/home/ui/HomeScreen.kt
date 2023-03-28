@@ -13,7 +13,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.zIndex
-import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.rememberPagerState
@@ -54,10 +54,10 @@ fun HomeScreen(
         HomePage.fromPageIndex(pagerState.currentPage)
     }
 
-    val scheduleViewModel = viewModel<ScheduleViewModel>()
-    val indexViewModel = viewModel<IndexViewModel>()
-    val accountViewModel = viewModel<AccountHomeViewModel>()
-    val memorialViewModel = viewModel<MemorialViewModel>()
+    val scheduleViewModel = hiltViewModel<ScheduleViewModel>()
+    val indexViewModel = hiltViewModel<IndexViewModel>()
+    val accountViewModel = hiltViewModel<AccountHomeViewModel>()
+    val memorialViewModel = hiltViewModel<MemorialViewModel>()
 
     val indexScreenState by indexViewModel.indexScreenState.collectAsState()
     val indexTopBarState by indexViewModel.indexTopBarState.collectAsState()
@@ -67,11 +67,12 @@ fun HomeScreen(
 
     val transactionColumnState by accountViewModel.transactionColumnState.collectAsState()
     val memorialColumnState by memorialViewModel.memorialColumnState.collectAsState()
+    val scheduleColumnState by scheduleViewModel.scheduleColumnState.collectAsState()
 
     val isMultiSelecting = when (currentHomePage) {
         HomePage.Notebook -> false
         HomePage.ACCOUNT -> transactionColumnState.isMultiSelecting
-        HomePage.Schedule -> false
+        HomePage.Schedule -> scheduleColumnState.isMultiSelecting
         HomePage.Memorial -> memorialColumnState.isMultiSelecting
         else -> false
     }
@@ -180,7 +181,16 @@ fun HomeScreen(
                                     }
                                 }
                                 HomePage.Schedule -> {
-                                    scheduleDialogState.show(Schedule())
+                                    if (isMultiSelecting) {
+                                        deleteDialogState.show(onConfirm = {
+                                            scheduleColumnState.deleteSchedules(
+                                                scheduleColumnState.multiSelectedSchedules.toList()
+                                            )
+                                            scheduleColumnState.cancelMultiSelecting()
+                                        })
+                                    } else {
+                                        scheduleDialogState.show(Schedule())
+                                    }
                                 }
                                 HomePage.Memorial -> {
                                     if (isMultiSelecting) {
@@ -203,7 +213,12 @@ fun HomeScreen(
                                     Icons.Rounded.DoneAll
                                 } else {
                                     Icons.Rounded.Search
-                                }, contentDescription = "search"
+                                },
+                                contentDescription = if (isMultiSelecting) {
+                                    "Select all"
+                                } else {
+                                    "Search"
+                                }
                             )
                         },
                         onTopSubButtonClick = {
@@ -219,7 +234,11 @@ fun HomeScreen(
                                     }
                                 }
                                 HomePage.Schedule -> {
-                                    SearchActivity.open(context, SearchType.Schedule)
+                                    if (isMultiSelecting) {
+                                        scheduleColumnState.selectAllSchedules()
+                                    } else {
+                                        SearchActivity.open(context, SearchType.Schedule)
+                                    }
                                 }
                                 HomePage.Memorial -> {
                                     if (isMultiSelecting) {
@@ -264,6 +283,13 @@ fun HomeScreen(
                                 HomePage.Memorial -> {
                                     if (isMultiSelecting) {
                                         memorialColumnState.cancelMultiSelecting()
+                                    } else scope.launch {
+                                        buttonState.fold()
+                                    }
+                                }
+                                HomePage.Schedule -> {
+                                    if (isMultiSelecting) {
+                                        scheduleColumnState.cancelMultiSelecting()
                                     } else scope.launch {
                                         buttonState.fold()
                                     }

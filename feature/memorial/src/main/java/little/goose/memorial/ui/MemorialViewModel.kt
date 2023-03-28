@@ -38,7 +38,7 @@ class MemorialViewModel @Inject constructor(
             isMultiSelecting = isMemorialsMultiSelecting,
             multiSelectedMemorials = multiSelectedMemorials,
             deleteMemorials = ::deleteMemorials,
-            onMemorialSelected = ::selectMemorial,
+            onSelectMemorial = ::selectMemorial,
             selectAllMemorial = ::selectAllMemorials,
             cancelMultiSelecting = ::cancelMemorialsMultiSelecting
         )
@@ -50,7 +50,7 @@ class MemorialViewModel @Inject constructor(
             isMultiSelecting = isMemorialsMultiSelecting.value,
             multiSelectedMemorials = multiSelectedMemorials.value,
             deleteMemorials = ::deleteMemorials,
-            onMemorialSelected = ::selectMemorial,
+            onSelectMemorial = ::selectMemorial,
             selectAllMemorial = ::selectAllMemorials,
             cancelMultiSelecting = ::cancelMemorialsMultiSelecting
         )

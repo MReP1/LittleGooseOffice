@@ -7,7 +7,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
-import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.hilt.navigation.compose.hiltViewModel
 import little.goose.account.data.entities.Transaction
 import little.goose.account.ui.component.*
 import little.goose.account.ui.transaction.TransactionDialog
@@ -17,7 +17,7 @@ import little.goose.account.ui.transaction.rememberTransactionDialogState
 fun AccountHome(
     modifier: Modifier = Modifier,
 ) {
-    val viewModel = viewModel<AccountHomeViewModel>()
+    val viewModel = hiltViewModel<AccountHomeViewModel>()
     val transactionColumnState by viewModel.transactionColumnState.collectAsState()
     val accountTitleState by viewModel.accountTitleState.collectAsState()
     val monthSelectorState by viewModel.monthSelectorState.collectAsState()
