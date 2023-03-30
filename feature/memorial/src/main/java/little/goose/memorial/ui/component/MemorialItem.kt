@@ -13,6 +13,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -108,8 +109,10 @@ fun MemorialItem(
                 Icon(
                     imageVector = Icons.Default.Check,
                     tint = MaterialTheme.colorScheme.tertiary,
-                    contentDescription = "check",
-                    modifier = Modifier.matchParentSize()
+                    contentDescription = "selected",
+                    modifier = Modifier
+                        .matchParentSize()
+                        .alpha(0.5F)
                 )
             }
         }

@@ -11,14 +11,13 @@ import little.goose.note.ui.note.NoteActivity
 
 @Composable
 fun NotebookHome(
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    noteGridState: NoteGridState
 ) {
     val context = LocalContext.current
-    val viewModel = hiltViewModel<NotebookViewModel>()
-    val notes by viewModel.notes.collectAsState()
     NotebookScreen(
         modifier = modifier,
-        notes = notes,
+        noteGridState = noteGridState,
         onNoteClick = { NoteActivity.openEdit(context, it) }
     )
 }
@@ -26,12 +25,12 @@ fun NotebookHome(
 @Composable
 fun NotebookScreen(
     modifier: Modifier = Modifier,
-    notes: List<Note>,
+    noteGridState: NoteGridState,
     onNoteClick: (Note) -> Unit
 ) {
     NoteGrid(
         modifier = modifier,
-        notes = notes,
+        state = noteGridState,
         onNoteClick = onNoteClick
     )
 }

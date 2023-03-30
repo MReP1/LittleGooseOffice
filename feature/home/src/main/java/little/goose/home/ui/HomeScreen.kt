@@ -31,6 +31,7 @@ import little.goose.home.data.*
 import little.goose.home.ui.component.IndexTopBar
 import little.goose.memorial.ui.*
 import little.goose.note.ui.NotebookHome
+import little.goose.note.ui.NotebookViewModel
 import little.goose.note.ui.note.NoteActivity
 import little.goose.schedule.data.entities.Schedule
 import little.goose.schedule.ui.ScheduleDialog
@@ -58,6 +59,7 @@ fun HomeScreen(
     val indexViewModel = hiltViewModel<IndexViewModel>()
     val accountViewModel = hiltViewModel<AccountHomeViewModel>()
     val memorialViewModel = hiltViewModel<MemorialViewModel>()
+    val notebookViewModel = hiltViewModel<NotebookViewModel>()
 
     val indexScreenState by indexViewModel.indexScreenState.collectAsState()
     val indexTopBarState by indexViewModel.indexTopBarState.collectAsState()
@@ -68,9 +70,10 @@ fun HomeScreen(
     val transactionColumnState by accountViewModel.transactionColumnState.collectAsState()
     val memorialColumnState by memorialViewModel.memorialColumnState.collectAsState()
     val scheduleColumnState by scheduleViewModel.scheduleColumnState.collectAsState()
+    val noteGridState by notebookViewModel.noteGridState.collectAsState()
 
     val isMultiSelecting = when (currentHomePage) {
-        HomePage.Notebook -> false
+        HomePage.Notebook -> noteGridState.isMultiSelecting
         HomePage.ACCOUNT -> transactionColumnState.isMultiSelecting
         HomePage.Schedule -> scheduleColumnState.isMultiSelecting
         HomePage.Memorial -> memorialColumnState.isMultiSelecting
@@ -128,22 +131,37 @@ fun HomeScreen(
                         }
                         NOTEBOOK -> {
                             NotebookHome(
-                                modifier = Modifier.fillMaxSize()
+                                modifier = Modifier.fillMaxSize(),
+                                noteGridState = noteGridState,
                             )
                         }
                         ACCOUNT -> {
+                            val accountTitleState by accountViewModel.accountTitleState.collectAsState()
+                            val monthSelectorState by accountViewModel.monthSelectorState.collectAsState()
                             AccountHome(
-                                modifier = Modifier.fillMaxSize()
+                                modifier = Modifier.fillMaxSize(),
+                                transactionColumnState = transactionColumnState,
+                                accountTitleState = accountTitleState,
+                                monthSelectorState = monthSelectorState,
+                                deleteTransaction = accountViewModel::deleteTransaction
                             )
                         }
                         SCHEDULE -> {
                             ScheduleHome(
-                                modifier = Modifier.fillMaxSize()
+                                modifier = Modifier.fillMaxSize(),
+                                scheduleColumnState = scheduleColumnState,
+                                deleteSchedule = scheduleViewModel::deleteSchedule,
+                                addSchedule = scheduleViewModel::addSchedule,
+                                modifySchedule = scheduleViewModel::updateSchedule
                             )
                         }
                         MEMORIAL -> {
+                            val topMemorial by memorialViewModel.topMemorial.collectAsState()
                             MemorialHome(
-                                modifier = Modifier.fillMaxSize()
+                                modifier = Modifier.fillMaxSize(),
+                                topMemorial = topMemorial,
+                                memorialColumnState = memorialColumnState,
+                                deleteMemorial = memorialViewModel::deleteMemorial
                             )
                         }
                     }
@@ -165,7 +183,16 @@ fun HomeScreen(
                         onMainButtonClick = {
                             when (currentHomePage) {
                                 HomePage.Notebook -> {
-                                    NoteActivity.openAdd(context)
+                                    if (isMultiSelecting) {
+                                        deleteDialogState.show(onConfirm = {
+                                            noteGridState.deleteNotes(
+                                                noteGridState.multiSelectedNotes.toList()
+                                            )
+                                            noteGridState.cancelMultiSelecting()
+                                        })
+                                    } else {
+                                        NoteActivity.openAdd(context)
+                                    }
                                 }
                                 HomePage.ACCOUNT -> {
                                     if (isMultiSelecting) {
@@ -224,7 +251,11 @@ fun HomeScreen(
                         onTopSubButtonClick = {
                             when (currentHomePage) {
                                 HomePage.Notebook -> {
-                                    SearchActivity.open(context, SearchType.Note)
+                                    if (isMultiSelecting) {
+                                        noteGridState.selectAllNotes()
+                                    } else {
+                                        SearchActivity.open(context, SearchType.Note)
+                                    }
                                 }
                                 HomePage.ACCOUNT -> {
                                     if (isMultiSelecting) {
@@ -290,6 +321,13 @@ fun HomeScreen(
                                 HomePage.Schedule -> {
                                     if (isMultiSelecting) {
                                         scheduleColumnState.cancelMultiSelecting()
+                                    } else scope.launch {
+                                        buttonState.fold()
+                                    }
+                                }
+                                HomePage.Notebook -> {
+                                    if (isMultiSelecting) {
+                                        noteGridState.cancelMultiSelecting()
                                     } else scope.launch {
                                         buttonState.fold()
                                     }

@@ -17,22 +17,15 @@ class ScheduleViewModel @Inject constructor(
 
     private val multiSelectedSchedules = MutableStateFlow<Set<Schedule>>(emptySet())
 
-    private val isMultiSelecting = multiSelectedSchedules.map { it.isNotEmpty() }
-        .stateIn(
-            scope = viewModelScope,
-            started = SharingStarted.WhileSubscribed(5000),
-            initialValue = false
-        )
-
     private val _schedules = MutableStateFlow<List<Schedule>>(listOf())
     val schedules = _schedules.asStateFlow()
 
     val scheduleColumnState = combine(
-        multiSelectedSchedules, isMultiSelecting, schedules
-    ) { multiSelectedSchedules, isMultiSelecting, schedules ->
+        multiSelectedSchedules, schedules
+    ) { multiSelectedSchedules, schedules ->
         ScheduleColumnState(
             schedules = schedules,
-            isMultiSelecting = isMultiSelecting,
+            isMultiSelecting = multiSelectedSchedules.isNotEmpty(),
             multiSelectedSchedules = multiSelectedSchedules,
             onSelectSchedule = ::selectSchedule,
             selectAllSchedules = ::selectAllSchedules,
@@ -44,7 +37,7 @@ class ScheduleViewModel @Inject constructor(
         scope = viewModelScope, SharingStarted.WhileSubscribed(5000L),
         initialValue = ScheduleColumnState(
             schedules = schedules.value,
-            isMultiSelecting = isMultiSelecting.value,
+            isMultiSelecting = multiSelectedSchedules.value.isNotEmpty(),
             multiSelectedSchedules = multiSelectedSchedules.value,
             onSelectSchedule = ::selectSchedule,
             selectAllSchedules = ::selectAllSchedules,

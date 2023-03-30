@@ -17,13 +17,6 @@ class MemorialViewModel @Inject constructor(
 
     private val multiSelectedMemorials = MutableStateFlow<Set<Memorial>>(emptySet())
 
-    private val isMemorialsMultiSelecting = multiSelectedMemorials.map { it.isNotEmpty() }
-        .stateIn(
-            scope = viewModelScope,
-            started = SharingStarted.WhileSubscribed(5000L),
-            initialValue = false
-        )
-
     private val memorials = memorialRepository.getAllMemorialFlow().stateIn(
         scope = viewModelScope,
         started = SharingStarted.Eagerly,
@@ -31,11 +24,11 @@ class MemorialViewModel @Inject constructor(
     )
 
     val memorialColumnState = combine(
-        multiSelectedMemorials, isMemorialsMultiSelecting, memorials
-    ) { multiSelectedMemorials, isMemorialsMultiSelecting, memorials ->
+        multiSelectedMemorials, memorials
+    ) { multiSelectedMemorials, memorials ->
         MemorialColumnState(
             memorials = memorials,
-            isMultiSelecting = isMemorialsMultiSelecting,
+            isMultiSelecting = multiSelectedMemorials.isNotEmpty(),
             multiSelectedMemorials = multiSelectedMemorials,
             deleteMemorials = ::deleteMemorials,
             onSelectMemorial = ::selectMemorial,
@@ -47,7 +40,7 @@ class MemorialViewModel @Inject constructor(
         started = SharingStarted.WhileSubscribed(5000),
         initialValue = MemorialColumnState(
             memorials = memorials.value,
-            isMultiSelecting = isMemorialsMultiSelecting.value,
+            isMultiSelecting = multiSelectedMemorials.value.isNotEmpty(),
             multiSelectedMemorials = multiSelectedMemorials.value,
             deleteMemorials = ::deleteMemorials,
             onSelectMemorial = ::selectMemorial,

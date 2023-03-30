@@ -11,11 +11,13 @@ import little.goose.schedule.data.entities.Schedule
 
 @Composable
 fun ScheduleHome(
-    modifier: Modifier
+    modifier: Modifier,
+    scheduleColumnState: ScheduleColumnState,
+    deleteSchedule: (Schedule) -> Unit,
+    addSchedule: (Schedule) -> Unit,
+    modifySchedule: (Schedule) -> Unit
 ) {
-    val viewModel: ScheduleViewModel = hiltViewModel()
     val scheduleDialogState = rememberScheduleDialogState()
-    val scheduleColumnState by viewModel.scheduleColumnState.collectAsState()
 
     ScheduleScreen(
         modifier = modifier.fillMaxSize(),
@@ -25,9 +27,9 @@ fun ScheduleHome(
 
     ScheduleDialog(
         state = scheduleDialogState,
-        onDelete = viewModel::deleteSchedule,
-        onAdd = viewModel::addSchedule,
-        onModify = viewModel::updateSchedule
+        onDelete = deleteSchedule,
+        onAdd = addSchedule,
+        onModify = modifySchedule
     )
 }
 

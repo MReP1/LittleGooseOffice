@@ -16,11 +16,11 @@ import little.goose.account.ui.transaction.rememberTransactionDialogState
 @Composable
 fun AccountHome(
     modifier: Modifier = Modifier,
+    accountTitleState: AccountTitleState,
+    monthSelectorState: MonthSelectorState,
+    transactionColumnState: TransactionColumnState,
+    deleteTransaction: (Transaction) -> Unit
 ) {
-    val viewModel = hiltViewModel<AccountHomeViewModel>()
-    val transactionColumnState by viewModel.transactionColumnState.collectAsState()
-    val accountTitleState by viewModel.accountTitleState.collectAsState()
-    val monthSelectorState by viewModel.monthSelectorState.collectAsState()
     val transactionDialogState = rememberTransactionDialogState()
 
     AccountScreen(
@@ -33,7 +33,7 @@ fun AccountHome(
 
     TransactionDialog(
         state = transactionDialogState,
-        onDelete = viewModel::deleteTransaction
+        onDelete = deleteTransaction
     )
 }
 

@@ -22,6 +22,7 @@ import little.goose.account.ui.component.TransactionColumnState
 import little.goose.memorial.data.entities.Memorial
 import little.goose.memorial.ui.component.MemorialColumnState
 import little.goose.note.data.entities.Note
+import little.goose.note.ui.NoteGridState
 import little.goose.schedule.data.entities.Schedule
 import little.goose.schedule.ui.ScheduleColumnState
 
@@ -84,9 +85,37 @@ class SearchViewModel @Inject constructor(
         )
     )
 
+    private val multiSelectedNotes = MutableStateFlow<Set<Note>>(emptySet())
 
     var noteState: State<StateFlow<List<Note>>> by mutableStateOf(State.Empty)
         private set
+
+    val noteGridState = combine(
+        snapshotFlow { noteState }.flatMapLatest { (it as? State.Data)?.items ?: emptyFlow() },
+        multiSelectedNotes
+    ) { notes, multiSelectedNotes ->
+        NoteGridState(
+            notes = notes,
+            isMultiSelecting = multiSelectedNotes.isNotEmpty(),
+            multiSelectedNotes = multiSelectedNotes,
+            ::selectNote,
+            ::selectAllNote,
+            ::cancelNotesMultiSelecting,
+            ::deleteNotes
+        )
+    }.stateIn(
+        scope = viewModelScope,
+        started = SharingStarted.WhileSubscribed(5000L),
+        initialValue = NoteGridState(
+            notes = (noteState as? State.Data)?.items?.value ?: emptyList(),
+            isMultiSelecting = multiSelectedNotes.value.isNotEmpty(),
+            multiSelectedNotes = multiSelectedNotes.value,
+            ::selectNote,
+            ::selectAllNote,
+            ::cancelNotesMultiSelecting,
+            ::deleteNotes
+        )
+    )
 
     private val multiSelectedSchedules = MutableStateFlow<Set<Schedule>>(emptySet())
 
@@ -293,7 +322,19 @@ class SearchViewModel @Inject constructor(
         }
     }
 
-    fun deleteSchedules(schedules: List<Schedule>) {
+    fun addSchedule(schedule: Schedule) {
+        viewModelScope.launch {
+            scheduleRepository.addSchedule(schedule)
+        }
+    }
+
+    fun updateSchedule(schedule: Schedule) {
+        viewModelScope.launch {
+            scheduleRepository.updateSchedule(schedule)
+        }
+    }
+
+    private fun deleteSchedules(schedules: List<Schedule>) {
         viewModelScope.launch {
             scheduleRepository.deleteSchedules(schedules)
         }
@@ -306,6 +347,32 @@ class SearchViewModel @Inject constructor(
 
     private fun cancelSchedulesMultiSelecting() {
         multiSelectedSchedules.value = emptySet()
+    }
+
+    /**
+     * Note start
+     */
+    private fun selectNote(
+        note: Note,
+        selected: Boolean
+    ) {
+        multiSelectedNotes.value = multiSelectedNotes.value.toMutableSet().apply {
+            if (selected) add(note) else remove(note)
+        }
+    }
+
+    private fun selectAllNote() {
+        multiSelectedNotes.value = (noteState as? State.Data)?.items?.value?.toSet() ?: emptySet()
+    }
+
+    private fun cancelNotesMultiSelecting() {
+        multiSelectedNotes.value = emptySet()
+    }
+
+    private fun deleteNotes(notes: List<Note>) {
+        viewModelScope.launch {
+            noteRepository.deleteNotes(notes)
+        }
     }
 
 }

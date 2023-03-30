@@ -11,6 +11,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
@@ -79,8 +80,10 @@ fun TransactionCard(
                 Icon(
                     imageVector = Icons.Default.Check,
                     tint = MaterialTheme.colorScheme.tertiary,
-                    contentDescription = "check",
-                    modifier = Modifier.fillMaxSize()
+                    contentDescription = "selected",
+                    modifier = Modifier
+                        .matchParentSize()
+                        .alpha(0.5F)
                 )
             }
         }

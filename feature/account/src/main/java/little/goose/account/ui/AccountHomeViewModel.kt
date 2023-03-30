@@ -71,13 +71,6 @@ class AccountHomeViewModel @Inject constructor(
 
     private val multiSelectedTransactions = MutableStateFlow<Set<Transaction>>(emptySet())
 
-    private val isMultiSelecting = multiSelectedTransactions.map { it.isNotEmpty() }
-        .stateIn(
-            scope = viewModelScope,
-            started = SharingStarted.WhileSubscribed(5000),
-            initialValue = false
-        )
-
     private val curMonthTransactionFlow = combine(year, month) { year, month ->
         accountRepository.getTransactionByYearMonthFlow(year, month)
     }.flatMapLatest { it }.onEach { transactions ->
@@ -108,12 +101,11 @@ class AccountHomeViewModel @Inject constructor(
 
     val transactionColumnState = combine(
         curMonthTransactionWithTime,
-        multiSelectedTransactions,
-        isMultiSelecting
-    ) { transactions, multiSelectedTransactions, isMultiSelecting ->
+        multiSelectedTransactions
+    ) { transactions, multiSelectedTransactions ->
         TransactionColumnState(
             transactions = transactions,
-            isMultiSelecting = isMultiSelecting,
+            isMultiSelecting = multiSelectedTransactions.isNotEmpty(),
             multiSelectedTransactions = multiSelectedTransactions,
             onTransactionSelected = ::selectTransaction,
             selectAllTransactions = ::selectAllTransaction,
@@ -124,7 +116,7 @@ class AccountHomeViewModel @Inject constructor(
         viewModelScope, SharingStarted.WhileSubscribed(5000),
         TransactionColumnState(
             curMonthTransactionWithTime.value,
-            isMultiSelecting.value,
+            multiSelectedTransactions.value.isNotEmpty(),
             multiSelectedTransactions.value,
             ::selectTransaction,
             ::selectAllTransaction,

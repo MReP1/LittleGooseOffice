@@ -8,6 +8,7 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.unit.dp
 import little.goose.common.utils.toChineseMonthDayTime
 import little.goose.schedule.data.entities.Schedule
@@ -75,7 +76,9 @@ fun ScheduleItem(
                     imageVector = Icons.Default.Check,
                     tint = MaterialTheme.colorScheme.tertiary,
                     contentDescription = "check",
-                    modifier = Modifier.matchParentSize()
+                    modifier = Modifier
+                        .matchParentSize()
+                        .alpha(0.5F)
                 )
             }
         }

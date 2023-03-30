@@ -1,22 +1,38 @@
 package little.goose.note.ui
 
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Check
 import androidx.compose.material3.Card
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import little.goose.note.data.entities.Note
 import middle.goose.richtext.RichTextView
 
+data class NoteGridState(
+    val notes: List<Note>,
+    val isMultiSelecting: Boolean,
+    val multiSelectedNotes: Set<Note>,
+    val onSelectNote: (item: Note, selected: Boolean) -> Unit,
+    val selectAllNotes: () -> Unit,
+    val cancelMultiSelecting: () -> Unit,
+    val deleteNotes: (notes: List<Note>) -> Unit
+)
+
 @Composable
 fun NoteGrid(
     modifier: Modifier = Modifier,
-    notes: List<Note>,
+    state: NoteGridState,
     onNoteClick: (Note) -> Unit
 ) {
     LazyVerticalGrid(
@@ -25,7 +41,7 @@ fun NoteGrid(
         contentPadding = PaddingValues(8.dp),
         content = {
             items(
-                items = notes,
+                items = state.notes,
                 key = { it.id ?: -1 }
             ) { note ->
                 NoteItem(
@@ -34,6 +50,9 @@ fun NoteGrid(
                         .fillMaxWidth()
                         .height(160.dp),
                     note = note,
+                    onNoteSelect = state.onSelectNote,
+                    isMultiSelecting = state.isMultiSelecting,
+                    isSelected = state.multiSelectedNotes.contains(note),
                     onNoteClick = onNoteClick
                 )
             }
@@ -45,25 +64,53 @@ fun NoteGrid(
 fun NoteItem(
     modifier: Modifier = Modifier,
     note: Note,
+    isMultiSelecting: Boolean,
+    onNoteSelect: (Note, Boolean) -> Unit,
+    isSelected: Boolean,
     onNoteClick: (Note) -> Unit
 ) {
     Card(
-        modifier = modifier,
-        onClick = {
-            onNoteClick(note)
-        }
+        modifier = modifier
     ) {
-        Column(
+        Box(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(12.dp)
+                .combinedClickable(
+                    onClick = {
+                        if (isMultiSelecting) {
+                            onNoteSelect(note, !isSelected)
+                        } else {
+                            onNoteClick(note)
+                        }
+                    },
+                    onLongClick = {
+                        onNoteSelect(note, !isSelected)
+                    }
+                )
         ) {
-            Text(text = note.title)
-            AndroidView(
-                factory = { RichTextView(it) },
-                modifier = Modifier.weight(1f)
-            ) { textureView ->
-                textureView.fromHtml(note.content)
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(12.dp)
+
+            ) {
+                Text(text = note.title)
+                AndroidView(
+                    factory = { RichTextView(it) },
+                    modifier = Modifier.weight(1f)
+                ) { textureView ->
+                    textureView.fromHtml(note.content)
+                }
+            }
+            if (isSelected) {
+                Icon(
+                    imageVector = Icons.Default.Check,
+                    tint = MaterialTheme.colorScheme.tertiary,
+                    contentDescription = "selected",
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .alpha(0.5F)
+                )
             }
         }
     }

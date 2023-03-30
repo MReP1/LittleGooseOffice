@@ -18,16 +18,16 @@ import little.goose.memorial.ui.component.MemorialTitle
 
 @Composable
 fun MemorialHome(
-    modifier: Modifier
+    modifier: Modifier,
+    topMemorial: Memorial?,
+    memorialColumnState: MemorialColumnState,
+    deleteMemorial: (Memorial) -> Unit
 ) {
-    val viewModel: MemorialViewModel = hiltViewModel()
-    val topMemorial by viewModel.topMemorial.collectAsState()
     val memorialDialogState = rememberMemorialDialogState()
-    val memorialColumnState by viewModel.memorialColumnState.collectAsState()
 
     MemorialDialog(
         state = memorialDialogState,
-        onDelete = viewModel::deleteMemorial
+        onDelete = deleteMemorial
     )
 
     MemorialScreen(

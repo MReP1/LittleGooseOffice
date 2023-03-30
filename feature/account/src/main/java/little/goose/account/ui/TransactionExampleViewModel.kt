@@ -49,18 +49,10 @@ class TransactionExampleViewModel @Inject constructor(
     private val _event = MutableSharedFlow<Event>()
     val event = _event.asSharedFlow()
 
-    private val _multiSelectedTransactions = MutableStateFlow<Set<Transaction>>(mutableSetOf())
-    val multiSelectedTransactions = _multiSelectedTransactions.asStateFlow()
-
-    private val isMultiSelecting = multiSelectedTransactions.map { it.isNotEmpty() }
-        .stateIn(
-            scope = viewModelScope,
-            started = SharingStarted.WhileSubscribed(5000),
-            initialValue = false
-        )
+    private val multiSelectedTransactions = MutableStateFlow<Set<Transaction>>(mutableSetOf())
 
     val transactions = getTransactionFlow().onEach {
-        _multiSelectedTransactions.value = emptySet()
+        multiSelectedTransactions.value = emptySet()
     }.stateIn(
         viewModelScope,
         SharingStarted.WhileSubscribed(5000),
@@ -69,12 +61,11 @@ class TransactionExampleViewModel @Inject constructor(
 
     val transactionColumnState = combine(
         transactions,
-        multiSelectedTransactions,
-        isMultiSelecting
-    ) { transactions, multiSelectedTransactions, isMultiSelecting ->
+        multiSelectedTransactions
+    ) { transactions, multiSelectedTransactions ->
         TransactionColumnState(
             transactions = transactions,
-            isMultiSelecting = isMultiSelecting,
+            isMultiSelecting = multiSelectedTransactions.isNotEmpty(),
             multiSelectedTransactions = multiSelectedTransactions,
             onTransactionSelected = ::selectedTransaction,
             selectAllTransactions = ::selectAllTransaction,
@@ -85,14 +76,18 @@ class TransactionExampleViewModel @Inject constructor(
         scope = viewModelScope,
         SharingStarted.WhileSubscribed(5000),
         TransactionColumnState(
-            transactions.value, isMultiSelecting.value, multiSelectedTransactions.value,
-            ::selectedTransaction, ::selectAllTransaction, ::cancelMultiSelecting,
+            transactions.value,
+            multiSelectedTransactions.value.isNotEmpty(),
+            multiSelectedTransactions.value,
+            ::selectedTransaction,
+            ::selectAllTransaction,
+            ::cancelMultiSelecting,
             deleteTransactions = ::deleteTransactions
         )
     )
 
     private fun selectedTransaction(transaction: Transaction, selected: Boolean) {
-        _multiSelectedTransactions.value = _multiSelectedTransactions.value.toMutableSet().apply {
+        multiSelectedTransactions.value = multiSelectedTransactions.value.toMutableSet().apply {
             if (selected) add(transaction) else remove(transaction)
         }
     }
@@ -153,11 +148,11 @@ class TransactionExampleViewModel @Inject constructor(
     }
 
     private fun selectAllTransaction() {
-        _multiSelectedTransactions.value = transactions.value.toSet()
+        multiSelectedTransactions.value = transactions.value.toSet()
     }
 
     private fun cancelMultiSelecting() {
-        _multiSelectedTransactions.value = emptySet()
+        multiSelectedTransactions.value = emptySet()
     }
 
 }
