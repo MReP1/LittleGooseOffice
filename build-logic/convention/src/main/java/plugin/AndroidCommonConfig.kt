@@ -18,7 +18,8 @@ fun CommonExtension<*, *, *, *>.configureKotlin() {
                     "-opt-in=kotlinx.coroutines.ExperimentalCoroutinesApi",
                     "-opt-in=androidx.compose.animation.ExperimentalAnimationApi",
                     "-opt-in=androidx.compose.material3.ExperimentalMaterial3Api",
-                    "-opt-in=androidx.compose.foundation.ExperimentalFoundationApi"
+                    "-opt-in=androidx.compose.foundation.ExperimentalFoundationApi",
+                    "-opt-in=com.google.accompanist.pager.ExperimentalPagerApi"
                 )
             )
             // open Kotlin context feature

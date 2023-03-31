@@ -3,8 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:background="@color/primary_color">
+    android:layout_height="match_parent">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/cl_title"
@@ -64,6 +63,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="500dp"
                     android:background="@null"
+                    android:hint="@string/content"
                     android:inputType="textMultiLine"
                     android:padding="16dp"
                     android:textSize="16sp"
@@ -84,10 +84,10 @@
         android:layout_height="54dp"
         android:layout_marginEnd="16dp"
         android:background="?android:attr/selectableItemBackgroundBorderless"
+        android:contentDescription="@string/redo"
         android:src="@drawable/icon_undo"
         app:layout_constraintBottom_toTopOf="@id/ll_tools"
-        app:layout_constraintEnd_toEndOf="parent"
-        tools:ignore="ContentDescription" />
+        app:layout_constraintEnd_toEndOf="parent" />
 
     <ImageButton
         android:id="@+id/iv_redo"
@@ -95,10 +95,10 @@
         android:layout_height="54dp"
         android:layout_marginStart="16dp"
         android:background="?android:attr/selectableItemBackgroundBorderless"
+        android:contentDescription="@string/undo"
         android:src="@drawable/icon_redo"
         app:layout_constraintBottom_toTopOf="@id/ll_tools"
-        app:layout_constraintStart_toStartOf="parent"
-        tools:ignore="ContentDescription" />
+        app:layout_constraintStart_toStartOf="parent" />
 
     <LinearLayout
         android:id="@+id/ll_tools"
@@ -107,23 +107,23 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintTop_toBottomOf="@id/ll_note">
 
-<!--        <ImageButton-->
-<!--            android:id="@+id/iv_quote"-->
-<!--            android:layout_width="0dp"-->
-<!--            android:layout_height="match_parent"-->
-<!--            android:layout_weight="1"-->
-<!--            android:background="?android:attr/selectableItemBackgroundBorderless"-->
-<!--            android:src="@drawable/icon_quote_black"-->
-<!--            tools:ignore="ContentDescription" />-->
+        <!--        <ImageButton-->
+        <!--            android:id="@+id/iv_quote"-->
+        <!--            android:layout_width="0dp"-->
+        <!--            android:layout_height="match_parent"-->
+        <!--            android:layout_weight="1"-->
+        <!--            android:background="?android:attr/selectableItemBackgroundBorderless"-->
+        <!--            android:src="@drawable/icon_quote_black"-->
+        <!--            tools:ignore="ContentDescription" />-->
 
-<!--        <ImageButton-->
-<!--            android:id="@+id/iv_bullet"-->
-<!--            android:layout_width="0dp"-->
-<!--            android:layout_height="match_parent"-->
-<!--            android:layout_weight="1"-->
-<!--            android:background="?android:attr/selectableItemBackgroundBorderless"-->
-<!--            android:src="@drawable/icon_bullet_black"-->
-<!--            tools:ignore="ContentDescription" />-->
+        <!--        <ImageButton-->
+        <!--            android:id="@+id/iv_bullet"-->
+        <!--            android:layout_width="0dp"-->
+        <!--            android:layout_height="match_parent"-->
+        <!--            android:layout_weight="1"-->
+        <!--            android:background="?android:attr/selectableItemBackgroundBorderless"-->
+        <!--            android:src="@drawable/icon_bullet_black"-->
+        <!--            tools:ignore="ContentDescription" />-->
 
         <ImageButton
             android:id="@+id/iv_underline"
@@ -131,8 +131,8 @@
             android:layout_height="match_parent"
             android:layout_weight="1"
             android:background="?android:attr/selectableItemBackgroundBorderless"
-            android:src="@drawable/icon_underline_black"
-            tools:ignore="ContentDescription" />
+            android:contentDescription="@string/underline"
+            android:src="@drawable/icon_underline_black" />
 
         <ImageButton
             android:id="@+id/iv_sweep"
@@ -140,8 +140,8 @@
             android:layout_height="match_parent"
             android:layout_weight="1"
             android:background="?android:attr/selectableItemBackgroundBorderless"
-            android:src="@drawable/icon_sweep_black"
-            tools:ignore="ContentDescription" />
+            android:contentDescription="@string/sweep"
+            android:src="@drawable/icon_sweep_black" />
 
         <ImageButton
             android:id="@+id/iv_italics"
@@ -149,8 +149,8 @@
             android:layout_height="match_parent"
             android:layout_weight="1"
             android:background="?android:attr/selectableItemBackgroundBorderless"
-            android:src="@drawable/icon_italics_black"
-            tools:ignore="ContentDescription" />
+            android:contentDescription="@string/italic"
+            android:src="@drawable/icon_italics_black" />
 
         <ImageButton
             android:id="@+id/iv_bold"
@@ -158,8 +158,8 @@
             android:layout_height="match_parent"
             android:layout_weight="1"
             android:background="?android:attr/selectableItemBackgroundBorderless"
-            android:src="@drawable/icon_bold_black"
-            tools:ignore="ContentDescription" />
+            android:contentDescription="@string/bold"
+            android:src="@drawable/icon_bold_black" />
 
     </LinearLayout>
 

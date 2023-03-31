@@ -57,7 +57,7 @@ fun IndexTopBar(
             IconButton(
                 onClick = { state.navigateToToday(state.today) }
             ) {
-                Box(modifier = Modifier.wrapContentSize()) {
+                Box(modifier = Modifier.wrapContentSize(), contentAlignment = Alignment.Center) {
                     Icon(
                         imageVector = Icons.Rounded.CalendarToday,
                         contentDescription = "Today"
@@ -65,7 +65,7 @@ fun IndexTopBar(
                     Text(
                         text = state.today.dayOfMonth.toString(),
                         style = MaterialTheme.typography.bodySmall,
-                        modifier = Modifier.padding(top = 6.dp, start = 4.dp)
+                        modifier = Modifier.padding(top = 4.dp)
                     )
                 }
             }

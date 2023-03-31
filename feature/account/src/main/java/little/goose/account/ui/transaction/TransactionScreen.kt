@@ -1,12 +1,13 @@
 package little.goose.account.ui.transaction
 
 import androidx.compose.foundation.layout.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.ArrowBack
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewmodel.compose.viewModel
-import com.google.accompanist.pager.ExperimentalPagerApi
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.rememberPagerState
 import kotlinx.coroutines.launch
@@ -16,13 +17,12 @@ import little.goose.account.ui.component.IconsBoard
 import little.goose.account.ui.component.TransactionEditSurface
 import little.goose.account.ui.transaction.icon.TransactionIconHelper
 
-@OptIn(ExperimentalPagerApi::class)
 @Composable
 fun TransactionScreen(
     modifier: Modifier = Modifier,
     onFinished: () -> Unit
 ) {
-    val viewModel: TransactionViewModel = viewModel()
+    val viewModel: TransactionViewModel = hiltViewModel()
     val scope = rememberCoroutineScope()
     val pagerState = rememberPagerState(0)
 
@@ -123,6 +123,14 @@ fun TransactionScreen(
                         ) {
                             Text(text = "收入", style = MaterialTheme.typography.titleMedium)
                         }
+                    }
+                },
+                navigationIcon = {
+                    IconButton(onClick = onFinished) {
+                        Icon(
+                            imageVector = Icons.Rounded.ArrowBack,
+                            contentDescription = "返回"
+                        )
                     }
                 }
             )

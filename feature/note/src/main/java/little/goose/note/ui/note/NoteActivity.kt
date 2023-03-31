@@ -2,9 +2,16 @@ package little.goose.note.ui.note
 
 import android.content.Context
 import android.content.Intent
+import android.graphics.Color
 import android.os.Bundle
+import android.view.View
+import android.view.Window
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowCompat
+import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.doOnAttach
 import dagger.hilt.android.AndroidEntryPoint
 import little.goose.common.constants.TYPE_ADD
 import little.goose.common.constants.TYPE_MODIFY
@@ -15,6 +22,7 @@ import little.goose.note.data.constants.KEY_NOTE
 import little.goose.note.data.entities.Note
 import little.goose.note.databinding.ActivityNoteBinding
 import java.util.*
+import kotlin.math.abs
 
 @AndroidEntryPoint
 class NoteActivity : AppCompatActivity() {
@@ -30,6 +38,7 @@ class NoteActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        setTransparentStyle(binding.root, window)
         setContentView(binding.root)
         initNote()
         initView()
@@ -170,6 +179,42 @@ class NoteActivity : AppCompatActivity() {
             time = Date()
         )
         viewModel.setNote(newNote)
+    }
+
+    private fun setTransparentStyle(
+        view: View,
+        window: Window,
+        isLightTheme: Boolean = true
+    ) {
+        window.statusBarColor = Color.TRANSPARENT
+        window.navigationBarColor = Color.TRANSPARENT
+        WindowCompat.setDecorFitsSystemWindows(window, false)
+        view.doOnAttach {
+            setInsertContentTheme(window, view, isLightTheme)
+            setInsertPadding(window, view)
+        }
+    }
+
+    private fun setInsertContentTheme(
+        window: Window,
+        view: View,
+        isLightTheme: Boolean
+    ) {
+        WindowCompat.getInsetsController(window, view).apply {
+            isAppearanceLightStatusBars = isLightTheme
+            isAppearanceLightNavigationBars = isLightTheme
+        }
+    }
+
+    private fun setInsertPadding(window: Window, view: View) {
+        val rootWindowInsert = ViewCompat.getRootWindowInsets(window.decorView) ?: return
+        val statusInsert = rootWindowInsert.getInsets(WindowInsetsCompat.Type.statusBars())
+        val paddingTop = abs(statusInsert.top - statusInsert.bottom)
+        val navInsert = rootWindowInsert.getInsets(WindowInsetsCompat.Type.navigationBars())
+        val paddingBottom = abs(navInsert.top - navInsert.bottom)
+        if (paddingTop != 0 || paddingBottom != 0) {
+            view.setPadding(0, paddingTop, 0, paddingBottom)
+        }
     }
 
     companion object {

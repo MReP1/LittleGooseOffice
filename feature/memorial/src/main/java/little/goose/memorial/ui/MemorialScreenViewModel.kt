@@ -18,7 +18,7 @@ import java.util.*
 import javax.inject.Inject
 
 @HiltViewModel
-class MemorialActivityViewModel @Inject constructor(
+class MemorialScreenViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     private val memorialRepository: MemorialRepository
 ) : ViewModel() {

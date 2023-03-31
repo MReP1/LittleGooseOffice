@@ -82,7 +82,7 @@ private fun MemorialRoute(
     modifier: Modifier = Modifier,
     onBack: () -> Unit
 ) {
-    val viewModel: MemorialActivityViewModel = hiltViewModel()
+    val viewModel: MemorialScreenViewModel = hiltViewModel()
     val memorial by viewModel.memorial.collectAsState()
     val context = LocalContext.current as FragmentActivity
     val timeSelectorDialogState = rememberDialogState()

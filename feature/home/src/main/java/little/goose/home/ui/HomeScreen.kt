@@ -12,6 +12,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.google.accompanist.pager.ExperimentalPagerApi
@@ -363,6 +364,7 @@ fun HomeScreen(
                                 },
                                 icon = {
                                     Icon(
+                                        modifier = Modifier.size(32.dp),
                                         imageVector = homePage.icon,
                                         contentDescription = stringResource(id = homePage.labelRes)
                                     )

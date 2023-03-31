@@ -35,7 +35,6 @@ class IndexViewModel @Inject constructor(
 
     private val zoneId by lazy { ZoneId.systemDefault() }
 
-    // FIXME 删除某个日期的数据的时候没有执行刷新操作
     private val calendarModelMap = mutableMapOf<LocalDate, MutableState<CalendarModel>>()
     private fun getCalendarModelState(time: LocalDate): MutableState<CalendarModel> {
         return calendarModelMap.getOrPut(time) { mutableStateOf(CalendarModel()) }
@@ -80,7 +79,7 @@ class IndexViewModel @Inject constructor(
     )
 
     init {
-        // FIXME 优化性能
+        // TODO 有优化的空间，但是暂时没想好怎么优化
         viewModelScope.launch {
             launch {
                 firstVisibleMonth.flatMapLatest {
@@ -159,6 +158,9 @@ class IndexViewModel @Inject constructor(
                 incomeMap[time] = income
             }
         }
+        calendarModelMap.asSequence().filter { !map.containsKey(it.key) }.forEach {
+            it.value.value = it.value.value.copy(transactions = emptyList())
+        }
         map.forEach { (time, transactions) ->
             val calendarModelState = getCalendarModelState(time)
             val expense = expenseMap.getOrDefault(time, BigDecimal(0))
@@ -179,6 +181,9 @@ class IndexViewModel @Inject constructor(
             val list = map.getOrPut(time) { mutableListOf() }
             list.add(schedule)
         }
+        calendarModelMap.asSequence().filter { !map.containsKey(it.key) }.forEach {
+            it.value.value = it.value.value.copy(schedules = emptyList())
+        }
         map.forEach { (time, schedules) ->
             val calendarModelState = getCalendarModelState(time)
             calendarModelState.value = calendarModelState.value.copy(schedules = schedules)
@@ -192,6 +197,9 @@ class IndexViewModel @Inject constructor(
             val list = map.getOrPut(time) { mutableListOf() }
             list.add(memorial)
         }
+        calendarModelMap.asSequence().filter { !map.containsKey(it.key) }.forEach {
+            it.value.value = it.value.value.copy(memorials = emptyList())
+        }
         map.forEach { (time, memorials) ->
             val calendarModelState = getCalendarModelState(time)
             calendarModelState.value = calendarModelState.value.copy(memorials = memorials)
@@ -204,6 +212,9 @@ class IndexViewModel @Inject constructor(
             val time = note.time.toInstant().atZone(zoneId).toLocalDate()
             val list = map.getOrPut(time) { mutableListOf() }
             list.add(note)
+        }
+        calendarModelMap.asSequence().filter { !map.containsKey(it.key) }.forEach {
+            it.value.value = it.value.value.copy(notes = emptyList())
         }
         map.forEach { (time, notes) ->
             val calendarModelState = getCalendarModelState(time)
