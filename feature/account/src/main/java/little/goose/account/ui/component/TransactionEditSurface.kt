@@ -37,6 +37,12 @@ internal fun TransactionEditSurface(
     val scope = rememberCoroutineScope()
 
     val moneyCalculator = remember { MoneyCalculator(transaction.money) }
+
+    DisposableEffect(transaction.money) {
+        moneyCalculator.setMoney(transaction.money)
+        onDispose { }
+    }
+
     val currentTransaction by rememberUpdatedState(newValue = transaction)
     val isContainOperator by moneyCalculator.isContainOperator.collectAsState()
     val money by moneyCalculator.money.collectAsState()

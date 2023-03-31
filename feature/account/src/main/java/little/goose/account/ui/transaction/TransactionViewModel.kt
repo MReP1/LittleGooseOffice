@@ -21,50 +21,41 @@ class TransactionViewModel @Inject constructor(
     private val accountRepository: AccountRepository
 ) : ViewModel() {
 
+    private val defaultTransaction get() = Transaction(
+        icon_id = TransactionIconHelper.expenseIconList.first().id,
+        content = TransactionIconHelper.expenseIconList.first().name
+    )
+
     enum class Event {
         WriteSuccess
     }
 
-    val transaction = savedStateHandle.getStateFlow(
-        KEY_TRANSACTION,
-        Transaction(
-            icon_id = TransactionIconHelper.expenseIconList.first().id,
-            content = TransactionIconHelper.expenseIconList.first().name
-        )
-    )
-
     private val _event: MutableSharedFlow<Event> = MutableSharedFlow()
     val event = _event.asSharedFlow()
+
+    val transaction = savedStateHandle.getStateFlow(KEY_TRANSACTION, defaultTransaction)
 
     fun setTransaction(transaction: Transaction) {
         savedStateHandle[KEY_TRANSACTION] = transaction
     }
 
-    fun writeDatabase(transaction: Transaction) {
+    fun writeDatabase(transaction: Transaction, isAgain: Boolean) {
         val tra = if (transaction.type == INCOME && transaction.money.signum() == -1) {
             transaction.copy(money = transaction.money.abs())
         } else if (transaction.type == EXPENSE && transaction.money.signum() == 1) {
             transaction.copy(money = transaction.money.negate())
         } else transaction
-        if (tra.id == null) {
-            insertTransaction(tra)
-        } else {
-            updateTransaction(tra)
-        }
-    }
-
-    private fun insertTransaction(transaction: Transaction) {
         viewModelScope.launch {
-            val id = accountRepository.insertTransaction(transaction)
-            setTransaction(transaction.copy(id = id))
-            _event.emit(Event.WriteSuccess)
-        }
-    }
-
-    private fun updateTransaction(transaction: Transaction) {
-        viewModelScope.launch {
-            accountRepository.updateTransaction(transaction)
-            _event.emit(Event.WriteSuccess)
+            if (tra.id == null) {
+                accountRepository.insertTransaction(tra)
+            } else {
+                accountRepository.updateTransaction(tra)
+            }
+            if (!isAgain) {
+                _event.emit(Event.WriteSuccess)
+            } else {
+                setTransaction(defaultTransaction)
+            }
         }
     }
 

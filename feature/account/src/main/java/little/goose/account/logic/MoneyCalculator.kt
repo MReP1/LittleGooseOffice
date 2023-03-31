@@ -201,4 +201,11 @@ class MoneyCalculator(
     private fun updateData() {
         _money.value = moneySb.toString()
     }
+
+    fun setMoney(money: BigDecimal) {
+        if (BigDecimal(this.money.value) == money) {
+            return
+        }
+        moneyCleanAndSet(money)
+    }
 }

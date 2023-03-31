@@ -43,6 +43,21 @@ fun TransactionScreen(
         )
     }
 
+    LaunchedEffect(transaction) {
+        when (transaction.type) {
+            EXPENSE -> {
+                expenseSelectedIcon =
+                    TransactionIconHelper.expenseIconList.find { it.id == transaction.icon_id }!!
+                pagerState.animateScrollToPage(0)
+            }
+            INCOME -> {
+                incomeSelectedIcon =
+                    TransactionIconHelper.incomeIconList.find { it.id == transaction.icon_id }!!
+                pagerState.animateScrollToPage(1)
+            }
+        }
+    }
+
     LaunchedEffect(pagerState) {
         snapshotFlow { pagerState.currentPage }.collect {
             if (it == 0) {
@@ -147,15 +162,11 @@ fun TransactionScreen(
         },
         bottomBar = {
             TransactionEditSurface(
+                modifier = Modifier.navigationBarsPadding(),
                 transaction = transaction,
                 onTransactionChange = viewModel::setTransaction,
-                onAgainClick = {
-//                               todo
-//                    viewModel.writeDatabase(it)
-                },
-                onDoneClick = {
-                    viewModel.writeDatabase(it)
-                }
+                onAgainClick = { viewModel.writeDatabase(it, isAgain = true) },
+                onDoneClick = { viewModel.writeDatabase(it, isAgain = false) }
             )
         }
     )
