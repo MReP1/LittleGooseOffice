@@ -6,15 +6,20 @@ import android.os.Bundle
 import android.os.Parcelable
 import androidx.activity.compose.setContent
 import androidx.appcompat.app.AppCompatActivity
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.ArrowBack
+import androidx.compose.material.icons.rounded.Delete
+import androidx.compose.material.icons.rounded.DoneAll
+import androidx.compose.material.icons.rounded.RemoveDone
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import dagger.hilt.android.AndroidEntryPoint
@@ -31,6 +36,8 @@ import little.goose.common.constants.KEY_MONEY_TYPE
 import little.goose.common.constants.KEY_TIME
 import little.goose.common.constants.KEY_TIME_TYPE
 import little.goose.common.utils.TimeType
+import little.goose.design.system.component.MovableActionButton
+import little.goose.design.system.component.MovableActionButtonState
 import little.goose.design.system.theme.AccountTheme
 import little.goose.design.system.theme.Red200
 import java.io.Serializable
@@ -54,10 +61,7 @@ class TransactionExampleActivity : AppCompatActivity() {
                     onTransactionClick = transactionDialogState::show,
                     snackbarHostState = snackbarHostState,
                     snackbarAction = {
-                        viewModel.insertTransaction(
-                            transaction = viewModel.deletingTransaction
-                                ?: return@TransactionTimeScreen
-                        )
+                        viewModel.insertTransactions(transaction = viewModel.deletingTransactions)
                     },
                     transactionColumnState = transactionColumnState,
                     onBack = ::finish
@@ -67,6 +71,50 @@ class TransactionExampleActivity : AppCompatActivity() {
                     state = transactionDialogState,
                     onDelete = viewModel::deleteTransaction
                 )
+
+                if (transactionColumnState.isMultiSelecting) {
+                    val buttonState = remember { MovableActionButtonState() }
+                    LaunchedEffect(buttonState) { buttonState.expend() }
+                    Box(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .imePadding()
+                    ) {
+                        MovableActionButton(
+                            modifier = Modifier.align(Alignment.BottomEnd),
+                            state = buttonState,
+                            mainButtonContent = {
+                                Icon(
+                                    imageVector = Icons.Rounded.Delete,
+                                    contentDescription = "Delete"
+                                )
+                            },
+                            onMainButtonClick = {
+                                transactionColumnState.deleteTransactions(
+                                    transactionColumnState.multiSelectedTransactions.toList()
+                                )
+                            },
+                            topSubButtonContent = {
+                                Icon(
+                                    imageVector = Icons.Rounded.DoneAll,
+                                    contentDescription = "SelectAll"
+                                )
+                            },
+                            onTopSubButtonClick = {
+                                transactionColumnState.selectAllTransactions()
+                            },
+                            bottomSubButtonContent = {
+                                Icon(
+                                    imageVector = Icons.Rounded.RemoveDone,
+                                    contentDescription = "RemoveDone"
+                                )
+                            },
+                            onBottomSubButtonClick = {
+                                transactionColumnState.cancelMultiSelecting()
+                            }
+                        )
+                    }
+                }
 
                 LaunchedEffect(viewModel.event) {
                     viewModel.event.collect { event ->

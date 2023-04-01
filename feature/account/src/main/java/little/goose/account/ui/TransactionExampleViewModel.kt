@@ -28,8 +28,8 @@ class TransactionExampleViewModel @Inject constructor(
 ) : AndroidViewModel(application) {
 
     sealed class Event {
-        data class DeleteTransaction(val transaction: Transaction) : Event()
-        data class InsertTransaction(val transaction: Transaction) : Event()
+        data class DeleteTransaction(val transactions: List<Transaction>) : Event()
+        data class InsertTransaction(val transaction: List<Transaction>) : Event()
     }
 
     private val time: Date = savedStateHandle[KEY_TIME]!!
@@ -37,7 +37,7 @@ class TransactionExampleViewModel @Inject constructor(
     private val timeType: TimeType = savedStateHandle[KEY_TIME_TYPE]!!
     private val moneyType: MoneyType = savedStateHandle[KEY_MONEY_TYPE]!!
 
-    var deletingTransaction: Transaction? = null
+    var deletingTransactions: List<Transaction> = emptyList()
 
     val title = when (timeType) {
         TimeType.DATE -> time.toChineseYearMonthDay()
@@ -129,14 +129,16 @@ class TransactionExampleViewModel @Inject constructor(
     fun deleteTransaction(transaction: Transaction) {
         viewModelScope.launch {
             accountRepository.deleteTransaction(transaction)
-            deletingTransaction = transaction
-            _event.emit(Event.DeleteTransaction(transaction))
+            val transactions = listOf(transaction)
+            deletingTransactions = transactions
+            _event.emit(Event.DeleteTransaction(transactions))
         }
     }
 
-    fun insertTransaction(transaction: Transaction) {
+    fun insertTransactions(transaction: List<Transaction>) {
         viewModelScope.launch {
-            accountRepository.insertTransaction(transaction)
+            accountRepository.addTransactions(transaction)
+            deletingTransactions = emptyList()
             _event.emit(Event.InsertTransaction(transaction))
         }
     }
@@ -144,6 +146,8 @@ class TransactionExampleViewModel @Inject constructor(
     private fun deleteTransactions(transactions: List<Transaction>) {
         viewModelScope.launch {
             accountRepository.deleteTransactions(transactions)
+            deletingTransactions = transactions
+            _event.emit(Event.DeleteTransaction(transactions))
         }
     }
 
