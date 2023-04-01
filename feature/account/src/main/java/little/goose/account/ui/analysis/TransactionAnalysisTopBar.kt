@@ -12,8 +12,10 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
+import little.goose.account.R
 import java.math.BigDecimal
 
 data class TransactionAnalysisTopBarState(
@@ -61,7 +63,10 @@ fun TransactionAnalysisTopBar(
                     selected = selectedTabIndex == 0,
                     onClick = { onTabClick(0) }
                 ) {
-                    Text(text = "支出", style = MaterialTheme.typography.titleMedium)
+                    Text(
+                        text = stringResource(id = R.string.expense),
+                        style = MaterialTheme.typography.titleMedium
+                    )
                     Text(
                         text = state.expenseSum.toPlainString(),
                         style = MaterialTheme.typography.bodySmall
@@ -72,7 +77,10 @@ fun TransactionAnalysisTopBar(
                     selected = selectedTabIndex == 1,
                     onClick = { onTabClick(1) }
                 ) {
-                    Text(text = "收入", style = MaterialTheme.typography.titleMedium)
+                    Text(
+                        text = stringResource(id = R.string.income),
+                        style = MaterialTheme.typography.titleMedium
+                    )
                     Text(
                         text = state.incomeSum.toPlainString(),
                         style = MaterialTheme.typography.bodySmall
@@ -83,7 +91,10 @@ fun TransactionAnalysisTopBar(
                     selected = selectedTabIndex == 2,
                     onClick = { onTabClick(2) }
                 ) {
-                    Text(text = "结余", style = MaterialTheme.typography.titleMedium)
+                    Text(
+                        text = stringResource(id = R.string.balance),
+                        style = MaterialTheme.typography.titleMedium
+                    )
                     Text(
                         text = state.balance.toPlainString(),
                         style = MaterialTheme.typography.bodySmall
@@ -95,7 +106,7 @@ fun TransactionAnalysisTopBar(
             IconButton(onClick = onBack) {
                 Icon(
                     imageVector = Icons.Rounded.ArrowBack,
-                    contentDescription = "back"
+                    contentDescription = stringResource(id = R.string.back)
                 )
             }
         }

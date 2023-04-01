@@ -6,11 +6,13 @@ import androidx.compose.material.icons.rounded.ArrowBack
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.rememberPagerState
 import kotlinx.coroutines.launch
+import little.goose.account.R
 import little.goose.account.data.constants.AccountConstant.EXPENSE
 import little.goose.account.data.constants.AccountConstant.INCOME
 import little.goose.account.ui.component.IconsBoard
@@ -110,7 +112,10 @@ fun TransactionScreen(
                             },
                             modifier = Modifier.height(42.dp)
                         ) {
-                            Text(text = "支出", style = MaterialTheme.typography.titleMedium)
+                            Text(
+                                text = stringResource(id = R.string.expense),
+                                style = MaterialTheme.typography.titleMedium
+                            )
                         }
                         Tab(
                             selected = pagerState.currentPage == 1,
@@ -121,7 +126,10 @@ fun TransactionScreen(
                             },
                             modifier = Modifier.height(42.dp)
                         ) {
-                            Text(text = "收入", style = MaterialTheme.typography.titleMedium)
+                            Text(
+                                text = stringResource(id = R.string.income),
+                                style = MaterialTheme.typography.titleMedium
+                            )
                         }
                     }
                 },
@@ -129,7 +137,7 @@ fun TransactionScreen(
                     IconButton(onClick = onFinished) {
                         Icon(
                             imageVector = Icons.Rounded.ArrowBack,
-                            contentDescription = "返回"
+                            contentDescription = stringResource(id = R.string.back)
                         )
                     }
                 }

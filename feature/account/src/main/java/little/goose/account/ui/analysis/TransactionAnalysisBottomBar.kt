@@ -9,9 +9,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import little.goose.account.R
 import little.goose.account.ui.component.MonthSelector
 import little.goose.account.ui.component.MonthSelectorState
 import little.goose.account.ui.component.YearSelector
@@ -86,15 +88,21 @@ fun TransactionAnalysisBottomBar(
                 NavigationBarItem(
                     selected = state.timeType == TransactionAnalysisViewModel.TimeType.YEAR,
                     onClick = { state.onTypeChange(TransactionAnalysisViewModel.TimeType.YEAR) },
-                    icon = { Text(text = "${state.year}年", Modifier.padding(6.dp)) }
+                    icon = {
+                        Text(
+                            text = "${state.year}" + stringResource(id = R.string.year),
+                            Modifier.padding(6.dp)
+                        )
+                    }
                 )
                 NavigationBarItem(
                     selected = state.timeType == TransactionAnalysisViewModel.TimeType.MONTH,
                     onClick = { state.onTypeChange(TransactionAnalysisViewModel.TimeType.MONTH) },
                     icon = {
                         Text(
-                            text = if (state.timeType == TransactionAnalysisViewModel.TimeType.MONTH)
-                                "${state.month}月" else "月",
+                            text = if (state.timeType == TransactionAnalysisViewModel.TimeType.MONTH) {
+                                "${state.month}" + stringResource(id = R.string.month)
+                            } else stringResource(id = R.string.month),
                             Modifier.padding(6.dp)
                         )
                     }

@@ -10,7 +10,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.graphics.Shape
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import little.goose.account.R
 import little.goose.common.utils.TimeType
 import little.goose.common.utils.*
 import little.goose.design.system.component.dialog.TimeSelectorCenterDialog
@@ -42,7 +44,13 @@ fun MonthSelector(
             tonalElevation = 6.dp
         ) {
             Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                Text(text = if (state.month == 1) "12月" else "${state.month - 1}月")
+                Text(
+                    text = if (state.month == 1) {
+                        "12"
+                    } else {
+                        "${state.month - 1}"
+                    } + stringResource(id = R.string.month)
+                )
             }
         }
         Surface(
@@ -53,7 +61,7 @@ fun MonthSelector(
             tonalElevation = 2.dp
         ) {
             Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                Text(text = "${state.month}月")
+                Text(text = "${state.month}" + stringResource(id = R.string.month))
             }
         }
         Surface(
@@ -68,7 +76,13 @@ fun MonthSelector(
             tonalElevation = 6.dp
         ) {
             Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                Text(text = if (state.month == 12) "1月" else "${state.month + 1}月")
+                Text(
+                    text = if (state.month == 12) {
+                        "1"
+                    } else {
+                        "${state.month + 1}"
+                    } + stringResource(id = R.string.month)
+                )
             }
         }
     }

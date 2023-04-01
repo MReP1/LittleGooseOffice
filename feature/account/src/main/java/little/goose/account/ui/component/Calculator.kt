@@ -7,6 +7,8 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
+import little.goose.account.R
 import little.goose.account.logic.MoneyCalculatorLogic
 
 @Composable
@@ -134,7 +136,10 @@ fun Calculator(
                 Text(text = "0")
             }
             Cell(modifier = Modifier.weight(1F), onAgainClick) {
-                Text(text = "下一笔", style = MaterialTheme.typography.titleMedium)
+                Text(
+                    text = stringResource(id = R.string.next_transaction),
+                    style = MaterialTheme.typography.titleMedium
+                )
             }
             Cell(
                 modifier = Modifier.weight(1F),
@@ -147,7 +152,7 @@ fun Calculator(
                 }
             ) {
                 Text(
-                    text = if (isContainOperator) "=" else "完成",
+                    text = if (isContainOperator) "=" else stringResource(id = R.string.done),
                     style = MaterialTheme.typography.titleMedium
                 )
             }

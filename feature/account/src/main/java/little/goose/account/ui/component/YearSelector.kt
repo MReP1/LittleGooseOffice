@@ -12,7 +12,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.graphics.Shape
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import little.goose.account.R
 
 data class YearSelectorState(
     val year: Int,
@@ -34,7 +36,7 @@ fun YearSelector(
             tonalElevation = 6.dp
         ) {
             Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                Text(text = "${state.year - 1}年")
+                Text(text = "${state.year - 1}" + stringResource(id = R.string.year))
             }
         }
         Surface(
@@ -47,7 +49,7 @@ fun YearSelector(
             tonalElevation = 2.dp
         ) {
             Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                Text(text = "${state.year}年")
+                Text(text = "${state.year}" + stringResource(id = R.string.year))
             }
         }
         Surface(
@@ -60,7 +62,7 @@ fun YearSelector(
             tonalElevation = 6.dp
         ) {
             Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                Text(text = "${state.year + 1}年")
+                Text(text = "${state.year + 1}" + stringResource(id = R.string.year))
             }
         }
     }

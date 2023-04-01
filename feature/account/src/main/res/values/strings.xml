@@ -7,5 +7,16 @@
     <string name="edit">编辑</string>
     <string name="deleted">已删除</string>
     <string name="undo">撤回</string>
+    <string name="income">收入</string>
+    <string name="expense">支出</string>
+    <string name="balance">结余</string>
+    <string name="no_transaction">没有记账</string>
+    <string name="date">日期</string>
+    <string name="back">返回</string>
+    <string name="done">完成</string>
+    <string name="next_transaction">下一笔</string>
+    <string name="year">年</string>
+    <string name="month">月</string>
+    <string name="day">日</string>
 
 </resources>

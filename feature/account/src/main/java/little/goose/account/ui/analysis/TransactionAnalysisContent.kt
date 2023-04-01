@@ -12,6 +12,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
@@ -21,6 +22,7 @@ import com.github.mikephil.charting.listener.OnChartValueSelectedListener
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.PagerState
+import little.goose.account.R
 import little.goose.account.data.constants.MoneyType
 import little.goose.account.data.models.TimeMoney
 import little.goose.account.data.models.TransactionBalance
@@ -131,20 +133,23 @@ fun TransactionAnalysisBalanceContent(
                                 .padding(horizontal = 16.dp, vertical = 8.dp)
                         ) {
                             Text(
-                                text = "日期",
+                                text = stringResource(id = R.string.date),
                                 modifier = Modifier.weight(1F),
                                 textAlign = TextAlign.Center
                             )
                             Text(
-                                text = "收入", modifier = Modifier.weight(1F),
+                                text = stringResource(id = R.string.income),
+                                modifier = Modifier.weight(1F),
                                 textAlign = TextAlign.Center
                             )
                             Text(
-                                text = "支出", modifier = Modifier.weight(1F),
+                                text = stringResource(id = R.string.expense),
+                                modifier = Modifier.weight(1F),
                                 textAlign = TextAlign.Center
                             )
                             Text(
-                                text = "结余", modifier = Modifier.weight(1F),
+                                text = stringResource(id = R.string.balance),
+                                modifier = Modifier.weight(1F),
                                 textAlign = TextAlign.Center
                             )
                         }
@@ -313,9 +318,13 @@ fun TransactionAnalysisLineChart(
                     TransactionAnalysisViewModel.TimeType.MONTH -> timeMoney.time.toChineseMonthDay()
                     TransactionAnalysisViewModel.TimeType.YEAR -> timeMoney.time.toChineseMonth()
                 }
-                val typeText = if (timeMoney.money.signum() < 0) "消费" else "收入"
+                val typeText = if (timeMoney.money.signum() < 0) {
+                    stringResource(id = R.string.expense)
+                } else {
+                    stringResource(id = R.string.income)
+                }
                 val moneyText = timeMoney.money.abs().toPlainString()
-                val noTransactionText = "没有记账"
+                val noTransactionText = stringResource(id = R.string.no_transaction)
                 if (timeMoney.money == BigDecimal(0)) noTransactionText else {
                     "$timeText ${typeText}了${moneyText}元"
                 }
