@@ -50,6 +50,9 @@ fun IndexHome(
     val startMonth = remember { initMonth.minusMonths(120) }
     val endMonth = remember { initMonth.plusMonths(120) }
     val dayOfWeek = remember { daysOfWeek() }
+
+    val currentState by rememberUpdatedState(newValue = state)
+
     val calendarState = rememberCalendarState(
         startMonth = startMonth,
         endMonth = endMonth,
@@ -63,7 +66,14 @@ fun IndexHome(
         launch(Dispatchers.Default) {
             snapshotFlow { calendarState.isScrollInProgress }
                 .filter { scrolling -> !scrolling }
-                .collect { visibleMonth = calendarState.firstVisibleMonth }
+                .collect {
+                    visibleMonth = calendarState.firstVisibleMonth
+                    val visibleRange =
+                        calendarState.firstVisibleMonth.yearMonth.atStartOfMonth()..calendarState.firstVisibleMonth.yearMonth.atEndOfMonth()
+                    if (currentState.currentDay !in visibleRange) {
+                        state.updateCurrentDay(calendarState.firstVisibleMonth.yearMonth.atStartOfMonth())
+                    }
+                }
         }
         launch(Dispatchers.Default) {
             snapshotFlow { calendarState.firstVisibleMonth }.collect {
