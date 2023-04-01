@@ -13,10 +13,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.kizitonwose.calendar.compose.HorizontalCalendar
 import com.kizitonwose.calendar.compose.rememberCalendarState
-import com.kizitonwose.calendar.core.CalendarDay
-import com.kizitonwose.calendar.core.DayPosition
-import com.kizitonwose.calendar.core.OutDateStyle
-import com.kizitonwose.calendar.core.daysOfWeek
+import com.kizitonwose.calendar.core.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.launch
@@ -77,6 +74,15 @@ fun IndexHome(
             }
         }
     }
+
+    LaunchedEffect(state.currentDay) {
+        val currentMonth = calendarState.firstVisibleMonth.yearMonth
+        val visibleRange = currentMonth.atStartOfMonth()..currentMonth.atEndOfMonth()
+        if (state.currentDay !in visibleRange) {
+            calendarState.animateScrollToMonth(state.currentDay.yearMonth)
+        }
+    }
+
     val contentHeight = remember { 58.dp }
 
     Column(modifier = modifier) {

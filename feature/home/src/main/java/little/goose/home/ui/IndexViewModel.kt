@@ -4,6 +4,7 @@ import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.kizitonwose.calendar.core.atStartOfMonth
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
@@ -85,62 +86,62 @@ class IndexViewModel @Inject constructor(
                 firstVisibleMonth.flatMapLatest {
                     accountRepository.getTransactionByYearMonthFlow(it.year, it.month.value)
                 }.collect { transactions: List<Transaction> ->
-                    updateTransactions(transactions)
+                    updateTransactions(transactions, firstVisibleMonth.value)
                 }
             }
             launch {
                 lastVisibleMonth.flatMapLatest {
                     accountRepository.getTransactionByYearMonthFlow(it.year, it.month.value)
                 }.collect { transactions: List<Transaction> ->
-                    updateTransactions(transactions)
+                    updateTransactions(transactions, lastVisibleMonth.value)
                 }
             }
             launch {
                 firstVisibleMonth.flatMapLatest {
                     scheduleRepository.getScheduleByYearMonthFlow(it.year, it.month.value)
                 }.collect { schedules ->
-                    updateSchedules(schedules)
+                    updateSchedules(schedules, firstVisibleMonth.value)
                 }
             }
             launch {
                 lastVisibleMonth.flatMapLatest {
                     scheduleRepository.getScheduleByYearMonthFlow(it.year, it.month.value)
                 }.collect { schedules ->
-                    updateSchedules(schedules)
+                    updateSchedules(schedules, lastVisibleMonth.value)
                 }
             }
             launch {
                 firstVisibleMonth.flatMapLatest {
                     memorialRepository.getMemorialsByYearMonthFlow(it.year, it.month.value)
                 }.collect { memorials ->
-                    updateMemorials(memorials)
+                    updateMemorials(memorials, firstVisibleMonth.value)
                 }
             }
             launch {
                 lastVisibleMonth.flatMapLatest {
                     memorialRepository.getMemorialsByYearMonthFlow(it.year, it.month.value)
                 }.collect { memorials ->
-                    updateMemorials(memorials)
+                    updateMemorials(memorials, lastVisibleMonth.value)
                 }
             }
             launch {
                 firstVisibleMonth.flatMapLatest {
                     noteRepository.getNoteByYearMonthFlow(it.year, it.month.value)
                 }.collect { notes ->
-                    updateNotes(notes)
+                    updateNotes(notes, firstVisibleMonth.value)
                 }
             }
             launch {
                 lastVisibleMonth.flatMapLatest {
                     noteRepository.getNoteByYearMonthFlow(it.year, it.month.value)
                 }.collect { notes ->
-                    updateNotes(notes)
+                    updateNotes(notes, lastVisibleMonth.value)
                 }
             }
         }
     }
 
-    private fun updateTransactions(transactions: List<Transaction>) {
+    private fun updateTransactions(transactions: List<Transaction>, month: YearMonth) {
         val map = mutableMapOf<LocalDate, MutableList<Transaction>>()
         val expenseMap = mutableMapOf<LocalDate, BigDecimal>()
         val incomeMap = mutableMapOf<LocalDate, BigDecimal>()
@@ -158,7 +159,10 @@ class IndexViewModel @Inject constructor(
                 incomeMap[time] = income
             }
         }
-        calendarModelMap.asSequence().filter { !map.containsKey(it.key) }.forEach {
+        val range = month.atStartOfMonth()..month.atEndOfMonth()
+        calendarModelMap.asSequence().filter {
+            it.key in range && it.key !in map.keys
+        }.forEach {
             it.value.value = it.value.value.copy(transactions = emptyList())
         }
         map.forEach { (time, transactions) ->
@@ -174,14 +178,17 @@ class IndexViewModel @Inject constructor(
         }
     }
 
-    private fun updateSchedules(schedules: List<Schedule>) {
+    private fun updateSchedules(schedules: List<Schedule>, month: YearMonth) {
         val map = mutableMapOf<LocalDate, MutableList<Schedule>>()
         schedules.forEach { schedule ->
             val time = schedule.time.toInstant().atZone(zoneId).toLocalDate()
             val list = map.getOrPut(time) { mutableListOf() }
             list.add(schedule)
         }
-        calendarModelMap.asSequence().filter { !map.containsKey(it.key) }.forEach {
+        val range = month.atStartOfMonth()..month.atEndOfMonth()
+        calendarModelMap.asSequence().filter {
+            it.key in range && !map.containsKey(it.key)
+        }.forEach {
             it.value.value = it.value.value.copy(schedules = emptyList())
         }
         map.forEach { (time, schedules) ->
@@ -190,14 +197,17 @@ class IndexViewModel @Inject constructor(
         }
     }
 
-    private fun updateMemorials(memorials: List<Memorial>) {
+    private fun updateMemorials(memorials: List<Memorial>, month: YearMonth) {
         val map = mutableMapOf<LocalDate, MutableList<Memorial>>()
         memorials.forEach { memorial ->
             val time = memorial.time.toInstant().atZone(zoneId).toLocalDate()
             val list = map.getOrPut(time) { mutableListOf() }
             list.add(memorial)
         }
-        calendarModelMap.asSequence().filter { !map.containsKey(it.key) }.forEach {
+        val range = month.atStartOfMonth()..month.atEndOfMonth()
+        calendarModelMap.asSequence().filter {
+            it.key in range && !map.containsKey(it.key)
+        }.forEach {
             it.value.value = it.value.value.copy(memorials = emptyList())
         }
         map.forEach { (time, memorials) ->
@@ -206,14 +216,17 @@ class IndexViewModel @Inject constructor(
         }
     }
 
-    private fun updateNotes(notes: List<Note>) {
+    private fun updateNotes(notes: List<Note>, month: YearMonth) {
         val map = mutableMapOf<LocalDate, MutableList<Note>>()
         notes.forEach { note ->
             val time = note.time.toInstant().atZone(zoneId).toLocalDate()
             val list = map.getOrPut(time) { mutableListOf() }
             list.add(note)
         }
-        calendarModelMap.asSequence().filter { !map.containsKey(it.key) }.forEach {
+        val range = month.atStartOfMonth()..month.atEndOfMonth()
+        calendarModelMap.asSequence().filter {
+            it.key in range && !map.containsKey(it.key)
+        }.forEach {
             it.value.value = it.value.value.copy(notes = emptyList())
         }
         map.forEach { (time, notes) ->
