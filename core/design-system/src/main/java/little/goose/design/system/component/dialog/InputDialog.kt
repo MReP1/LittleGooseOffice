@@ -18,6 +18,7 @@ import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.platform.SoftwareKeyboardController
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.input.TextFieldValue
 import kotlinx.coroutines.launch
@@ -79,12 +80,12 @@ private fun InputDialogScreen(
                 horizontalArrangement = Arrangement.End
             ) {
                 TextButton(onClick = onCancel) {
-                    Text(text = "取消")
+                    Text(text = stringResource(id = little.goose.design.system.R.string.cancel))
                 }
                 TextButton(onClick = {
                     onConfirm(content.text)
                 }) {
-                    Text(text = "确定")
+                    Text(text = stringResource(id = little.goose.design.system.R.string.confirm))
                 }
             }
             TextField(

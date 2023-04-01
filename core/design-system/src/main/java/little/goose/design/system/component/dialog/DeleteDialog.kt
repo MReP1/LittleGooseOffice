@@ -3,6 +3,8 @@ package little.goose.design.system.component.dialog
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Stable
+import androidx.compose.ui.res.stringResource
+import little.goose.design.system.R
 
 @Stable
 class DeleteDialogState {
@@ -42,6 +44,6 @@ fun DeleteDialog(
             state.dismiss()
         }
     ) {
-        Text(text = "确认删除吗？")
+        Text(text = stringResource(id = R.string.confirm_delete))
     }
 }

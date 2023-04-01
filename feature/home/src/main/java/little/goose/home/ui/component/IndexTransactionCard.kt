@@ -12,6 +12,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import little.goose.account.data.entities.Transaction
 import little.goose.account.ui.transaction.TransactionActivity
@@ -42,9 +43,9 @@ internal fun IndexTransactionCard(
                     .fillMaxWidth()
                     .padding(start = 12.dp, end = 12.dp, top = 8.dp, bottom = 10.dp)
             ) {
-                Text(text = "收入 ${state.income}")
+                Text(text = stringResource(id = little.goose.home.R.string.income) + " ${state.income}")
                 Spacer(modifier = Modifier.weight(1F))
-                Text(text = "支出 -${state.expense}")
+                Text(text = stringResource(id = little.goose.home.R.string.expense) + " -${state.expense}")
             }
             IndexTransactionColumn(
                 modifier = Modifier
@@ -54,12 +55,12 @@ internal fun IndexTransactionCard(
         } else {
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Spacer(modifier = Modifier.width(16.dp))
-                Text(text = "今天没有记账")
+                Text(text = stringResource(id = little.goose.home.R.string.today_no_transaction))
                 Spacer(modifier = Modifier.weight(1F))
                 TextButton(onClick = {
                     TransactionActivity.openAdd(context, state.currentTime.toDate())
                 }) {
-                    Text(text = "记一笔")
+                    Text(text = stringResource(id = little.goose.home.R.string.take_a_transaction))
                 }
             }
         }

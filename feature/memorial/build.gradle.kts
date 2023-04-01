@@ -18,8 +18,6 @@ dependencies {
     implementation(project(":core:design-system"))
     implementation(project(":core:common"))
 
-    implementation(libs.androidx.fragment.ktx)
-
     // Room database
     implementation(libs.room.runtime)
     implementation(libs.room.ktx)

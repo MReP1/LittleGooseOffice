@@ -176,11 +176,7 @@ private fun ScheduleDialogScreen(
                 ) {
                     Text(
                         text = stringResource(
-                            id = if (isAdd) {
-                                little.goose.common.R.string.cancel
-                            } else {
-                                little.goose.common.R.string.delete
-                            }
+                            id = if (isAdd) R.string.cancel else R.string.delete
                         )
                     )
                 }

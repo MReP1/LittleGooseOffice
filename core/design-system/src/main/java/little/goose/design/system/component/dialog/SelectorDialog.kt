@@ -7,7 +7,9 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import little.goose.design.system.R
 
 @Composable
 fun SelectorDialog(
@@ -32,9 +34,13 @@ fun SelectorDialog(
                 Spacer(modifier = Modifier.height(16.dp))
 
                 DialogButtonGroup(
-                    startButtonContent = { Text(text = "取消") },
+                    startButtonContent = {
+                        Text(text = stringResource(id = R.string.cancel))
+                    },
                     onStartButtonClick = onCancel,
-                    endButtonContent = { Text(text = "确认") },
+                    endButtonContent = {
+                        Text(text = stringResource(id = R.string.confirm))
+                    },
                     onEndButtonClick = onConfirm
                 )
             }

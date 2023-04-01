@@ -9,9 +9,11 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.RectangleShape
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import little.goose.common.utils.TimeType
 import little.goose.common.utils.DateTimeUtils
+import little.goose.design.system.R
 import java.util.*
 
 @Stable
@@ -50,7 +52,7 @@ fun TimeSelector(
                 .fillMaxWidth()
                 .height(48.dp)
         ) {
-            Text(text = "确定")
+            Text(text = stringResource(id = R.string.confirm))
         }
         Row(
             modifier = modifier.padding(horizontal = 24.dp),
@@ -69,7 +71,7 @@ fun TimeSelector(
                     onItemSelected = { _, y -> state.year = y.toInt() }
                 )
                 Text(
-                    text = "年",
+                    text = stringResource(id = R.string.year),
                     style = MaterialTheme.typography.bodySmall,
                     modifier = Modifier.padding(start = 12.dp, end = 10.dp)
                 )
@@ -86,7 +88,7 @@ fun TimeSelector(
                     onItemSelected = { _, m -> state.month = m.toInt() }
                 )
                 Text(
-                    text = "月",
+                    text = stringResource(id = R.string.month),
                     style = MaterialTheme.typography.bodySmall,
                     modifier = Modifier.padding(start = 8.dp, end = 10.dp)
                 )
@@ -103,7 +105,7 @@ fun TimeSelector(
                     onItemSelected = { _, d -> state.day = d.toInt() }
                 )
                 Text(
-                    text = "日",
+                    text = stringResource(id = R.string.day),
                     style = MaterialTheme.typography.bodySmall,
                     modifier = Modifier.padding(start = 8.dp, end = 10.dp)
                 )
@@ -120,7 +122,7 @@ fun TimeSelector(
                     onItemSelected = { _, h -> state.hour = h.toInt() }
                 )
                 Text(
-                    text = "时",
+                    text = stringResource(id = R.string.hour),
                     style = MaterialTheme.typography.bodySmall,
                     modifier = Modifier.padding(start = 8.dp, end = 10.dp)
                 )
@@ -135,7 +137,7 @@ fun TimeSelector(
                     onItemSelected = { _, m -> state.minute = m.toInt() }
                 )
                 Text(
-                    text = "分",
+                    text = stringResource(id = R.string.minute),
                     style = MaterialTheme.typography.bodySmall,
                     modifier = Modifier.padding(start = 8.dp, end = 10.dp)
                 )

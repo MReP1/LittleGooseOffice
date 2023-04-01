@@ -13,25 +13,7 @@ inline fun <reified T> Intent.parcelable(name: String): T? {
     }
 }
 
-inline fun <reified T : java.io.Serializable> Intent.serializable(name: String): T? {
-    return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-        getSerializableExtra(name, T::class.java)
-    } else {
-        @Suppress("DEPRECATION")
-        getSerializableExtra(name) as? T
-    }
-}
-
 inline fun <reified T> Bundle.parcelable(name: String): T? {
-    return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-        getParcelable(name, T::class.java)
-    } else {
-        @Suppress("DEPRECATION")
-        getParcelable(name)
-    }
-}
-
-inline fun <reified T> Bundle.serializable(name: String): T? {
     return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
         getParcelable(name, T::class.java)
     } else {

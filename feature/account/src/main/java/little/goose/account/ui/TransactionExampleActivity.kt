@@ -8,6 +8,8 @@ import androidx.activity.compose.setContent
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.ArrowBack
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
@@ -72,8 +74,8 @@ class TransactionExampleActivity : AppCompatActivity() {
                             is TransactionExampleViewModel.Event.DeleteTransaction -> {
                                 launch {
                                     snackbarHostState.showSnackbar(
-                                        message = getString(little.goose.common.R.string.deleted),
-                                        actionLabel = getString(little.goose.common.R.string.undo),
+                                        message = getString(little.goose.account.R.string.deleted),
+                                        actionLabel = getString(little.goose.account.R.string.undo),
                                         withDismissAction = true,
                                         duration = SnackbarDuration.Indefinite
                                     )
@@ -131,7 +133,7 @@ private fun TransactionTimeScreen(
                 navigationIcon = {
                     IconButton(onClick = onBack) {
                         Icon(
-                            painter = painterResource(id = little.goose.common.R.drawable.icon_back),
+                            imageVector = Icons.Rounded.ArrowBack,
                             contentDescription = ""
                         )
                     }

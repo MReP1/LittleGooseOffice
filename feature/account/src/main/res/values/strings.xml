@@ -3,4 +3,9 @@
     <string name="account">账本</string>
     <string name="some_month">%d月</string>
 
+    <string name="delete">删除</string>
+    <string name="edit">编辑</string>
+    <string name="deleted">已删除</string>
+    <string name="undo">撤回</string>
+
 </resources>

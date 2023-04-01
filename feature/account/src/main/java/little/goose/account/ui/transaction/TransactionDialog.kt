@@ -13,6 +13,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import little.goose.account.data.entities.Transaction
 import little.goose.account.ui.transaction.icon.TransactionIconHelper
@@ -118,13 +119,13 @@ private fun TransactionDialogScreen(
             Spacer(modifier = Modifier.height(12.dp))
             DialogButtonGroup(
                 startButtonContent = {
-                    Text(text = "删除")
+                    Text(text = stringResource(id = little.goose.account.R.string.delete))
                 },
                 onStartButtonClick = {
                     onDeleteClick(transaction)
                 },
                 endButtonContent = {
-                    Text(text = "编辑")
+                    Text(text = stringResource(id = little.goose.account.R.string.edit))
                 },
                 onEndButtonClick = {
                     onEditClick(transaction)

@@ -1,19 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <!--纪念日-->
-    <declare-styleable name="MemorialTextView">
-        <attr name="switchable" format="boolean" />
-    </declare-styleable>
-
-    <!--加粗字体-->
-    <declare-styleable name="BoldTextView">
-        <attr name="weight">
-            <enum name="regular" value="0"/>
-            <enum name="medium" value="1"/>
-            <enum name="bold" value="2"/>
-            <enum name="black" value="3"/>
-        </attr>
-    </declare-styleable>
-
 </resources>

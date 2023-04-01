@@ -1,9 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <!--纪念日-->
-    <declare-styleable name="MemorialTextView">
-        <attr name="switchable" format="boolean" />
-    </declare-styleable>
-
 </resources>

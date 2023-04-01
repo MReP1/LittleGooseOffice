@@ -6,10 +6,6 @@ plugins {
 
 android {
     namespace = "little.goose.home"
-
-    buildFeatures {
-        viewBinding = true
-    }
 }
 
 dependencies {
