@@ -77,10 +77,9 @@ fun AccountTheme(
 ) {
     val context = LocalContext.current
     val view = LocalView.current
-    val density: Density = LocalDensity.current
     val window = (view.context as? Activity)?.window
     val isLightTheme = !themeConfig.isDarkTheme()
-    DisposableEffect(view, density, window) {
+    DisposableEffect(view, window) {
         if (window != null) {
             window.statusBarColor = android.graphics.Color.TRANSPARENT
             window.navigationBarColor = android.graphics.Color.TRANSPARENT

@@ -3,18 +3,17 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:background="@color/primary_color">
+    android:layout_height="wrap_content">
 
     <TextView
         android:id="@+id/tv_cancel"
         android:layout_width="88dp"
         android:layout_height="56dp"
+        android:foreground="?android:attr/selectableItemBackgroundBorderless"
         android:gravity="center"
         android:text="@string/cancel"
-        android:textColor="@color/nor_text_color"
+        android:textColor="@android:color/black"
         android:textSize="18sp"
-        android:foreground="?android:attr/selectableItemBackgroundBorderless"
         app:layout_constraintBottom_toTopOf="@id/et_input"
         app:layout_constraintEnd_toStartOf="@id/tv_confirm" />
 
@@ -22,11 +21,11 @@
         android:id="@+id/tv_confirm"
         android:layout_width="88dp"
         android:layout_height="56dp"
+        android:foreground="?android:attr/selectableItemBackgroundBorderless"
         android:gravity="center"
         android:text="@string/confirm"
-        android:textColor="@color/nor_text_color"
+        android:textColor="@android:color/black"
         android:textSize="18sp"
-        android:foreground="?android:attr/selectableItemBackgroundBorderless"
         app:layout_constraintBottom_toTopOf="@id/et_input"
         app:layout_constraintEnd_toEndOf="parent" />
 
@@ -34,12 +33,12 @@
         android:id="@+id/et_input"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:gravity="center_vertical"
-        android:paddingStart="24dp"
-        android:paddingEnd="24dp"
         android:background="@drawable/bg_radius8"
+        android:gravity="center_vertical"
         android:importantForAutofill="no"
+        android:paddingStart="24dp"
         android:paddingTop="18dp"
+        android:paddingEnd="24dp"
         android:paddingBottom="18dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"

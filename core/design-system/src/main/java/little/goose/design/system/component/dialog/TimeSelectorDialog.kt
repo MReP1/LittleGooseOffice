@@ -16,7 +16,7 @@ import little.goose.design.system.component.TimeSelector
 import little.goose.design.system.component.TimeSelectorState
 import little.goose.design.system.theme.RoundedCorner24
 import little.goose.design.system.theme.TopRoundedCorner24
-import java.util.Date
+import java.util.*
 
 @Composable
 fun TimeSelectorCenterDialog(
@@ -40,7 +40,8 @@ fun TimeSelectorCenterDialog(
                         onConfirm(time)
                         state.dismiss()
                     }
-                }
+                },
+                isConfirmBottom = true
             )
         }
     }
@@ -67,7 +68,8 @@ fun TimeSelectorBottomDialog(
                         onConfirm(time)
                         state.close()
                     }
-                }
+                },
+                isConfirmBottom = false
             )
         }
     }

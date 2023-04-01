@@ -42,7 +42,7 @@
             android:layout_marginEnd="16dp"
             android:hint="@string/title"
             android:maxLines="1"
-            android:textColor="@color/nor_text_color"
+            android:textColor="@android:color/black"
             android:textSize="22sp"
             tools:ignore="Autofill,LabelFor,TextFields" />
 

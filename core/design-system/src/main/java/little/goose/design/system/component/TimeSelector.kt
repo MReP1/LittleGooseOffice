@@ -42,20 +42,25 @@ class TimeSelectorState(
 fun TimeSelector(
     modifier: Modifier = Modifier,
     state: TimeSelectorState,
+    isConfirmBottom: Boolean = true,
     onConfirm: (Date) -> Unit
 ) {
     Column(modifier = modifier) {
-        Button(
-            onClick = { onConfirm(state.time) },
-            shape = RectangleShape,
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(48.dp)
-        ) {
-            Text(text = stringResource(id = R.string.confirm))
+        if (!isConfirmBottom) {
+            Button(
+                onClick = { onConfirm(state.time) },
+                shape = RectangleShape,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(48.dp)
+            ) {
+                Text(text = stringResource(id = R.string.confirm))
+            }
         }
         Row(
-            modifier = modifier.padding(horizontal = 24.dp),
+            modifier = modifier
+                .weight(1F)
+                .padding(horizontal = 24.dp),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.Center
         ) {
@@ -73,7 +78,7 @@ fun TimeSelector(
                 Text(
                     text = stringResource(id = R.string.year),
                     style = MaterialTheme.typography.bodySmall,
-                    modifier = Modifier.padding(start = 12.dp, end = 10.dp)
+                    modifier = Modifier.padding(start = 10.dp, end = 8.dp)
                 )
             }
             if (state.type.containMonth()) {
@@ -90,7 +95,7 @@ fun TimeSelector(
                 Text(
                     text = stringResource(id = R.string.month),
                     style = MaterialTheme.typography.bodySmall,
-                    modifier = Modifier.padding(start = 8.dp, end = 10.dp)
+                    modifier = Modifier.padding(start = 6.dp, end = 8.dp)
                 )
             }
             if (state.type.containDay()) {
@@ -107,7 +112,7 @@ fun TimeSelector(
                 Text(
                     text = stringResource(id = R.string.day),
                     style = MaterialTheme.typography.bodySmall,
-                    modifier = Modifier.padding(start = 8.dp, end = 10.dp)
+                    modifier = Modifier.padding(start = 6.dp, end = 8.dp)
                 )
             }
             if (state.type.containTime()) {
@@ -124,7 +129,7 @@ fun TimeSelector(
                 Text(
                     text = stringResource(id = R.string.hour),
                     style = MaterialTheme.typography.bodySmall,
-                    modifier = Modifier.padding(start = 8.dp, end = 10.dp)
+                    modifier = Modifier.padding(start = 6.dp, end = 8.dp)
                 )
                 val minuteSelectorState = rememberLazyListState(
                     initialFirstVisibleItemIndex = state.minuteList.indexOf(state.minute.toString())
@@ -139,8 +144,19 @@ fun TimeSelector(
                 Text(
                     text = stringResource(id = R.string.minute),
                     style = MaterialTheme.typography.bodySmall,
-                    modifier = Modifier.padding(start = 8.dp, end = 10.dp)
+                    modifier = Modifier.padding(start = 6.dp, end = 8.dp)
                 )
+            }
+        }
+        if (isConfirmBottom) {
+            Button(
+                onClick = { onConfirm(state.time) },
+                shape = RectangleShape,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(48.dp)
+            ) {
+                Text(text = stringResource(id = R.string.confirm))
             }
         }
     }
