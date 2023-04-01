@@ -24,6 +24,8 @@ import little.goose.account.ui.AccountHome
 import little.goose.account.ui.AccountHomeViewModel
 import little.goose.account.ui.analysis.AccountAnalysisActivity
 import little.goose.account.ui.transaction.TransactionActivity
+import little.goose.account.ui.transaction.TransactionDialog
+import little.goose.account.ui.transaction.rememberTransactionDialogState
 import little.goose.design.system.component.MovableActionButton
 import little.goose.design.system.component.MovableActionButtonState
 import little.goose.design.system.component.dialog.DeleteDialog
@@ -64,8 +66,10 @@ fun HomeScreen(
 
     val indexScreenState by indexViewModel.indexScreenState.collectAsState()
     val indexTopBarState by indexViewModel.indexTopBarState.collectAsState()
+
     val buttonState = remember { MovableActionButtonState() }
     val scheduleDialogState = rememberScheduleDialogState()
+    val transactionDialogState = rememberTransactionDialogState()
     val deleteDialogState = remember { DeleteDialogState() }
 
     val transactionColumnState by accountViewModel.transactionColumnState.collectAsState()
@@ -127,7 +131,8 @@ fun HomeScreen(
                             IndexHome(
                                 modifier = Modifier.fillMaxSize(),
                                 state = indexScreenState,
-                                onScheduleClick = { scheduleDialogState.show(it) }
+                                onScheduleClick = scheduleDialogState::show,
+                                onTransactionClick = transactionDialogState::show,
                             )
                         }
                         NOTEBOOK -> {
@@ -391,5 +396,10 @@ fun HomeScreen(
         onDelete = scheduleViewModel::deleteSchedule,
         onAdd = scheduleViewModel::addSchedule,
         onModify = scheduleViewModel::updateSchedule
+    )
+
+    TransactionDialog(
+        state = transactionDialogState,
+        onDelete = accountViewModel::deleteTransaction
     )
 }

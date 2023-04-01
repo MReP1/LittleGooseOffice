@@ -1,5 +1,6 @@
 package little.goose.home.ui.component
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -31,7 +32,8 @@ data class IndexTransactionCardState(
 @Composable
 internal fun IndexTransactionCard(
     modifier: Modifier,
-    state: IndexTransactionCardState
+    state: IndexTransactionCardState,
+    onTransactionClick: (Transaction) -> Unit
 ) {
     val context = LocalContext.current
     Card(
@@ -50,7 +52,8 @@ internal fun IndexTransactionCard(
             IndexTransactionColumn(
                 modifier = Modifier
                     .fillMaxWidth(),
-                transactions = state.transactions
+                transactions = state.transactions,
+                onTransactionClick = onTransactionClick
             )
         } else {
             Row(verticalAlignment = Alignment.CenterVertically) {
@@ -70,7 +73,8 @@ internal fun IndexTransactionCard(
 @Composable
 private fun IndexTransactionColumn(
     modifier: Modifier = Modifier,
-    transactions: List<Transaction>
+    transactions: List<Transaction>,
+    onTransactionClick: (Transaction) -> Unit
 ) {
     LazyColumn(
         modifier = modifier,
@@ -78,7 +82,9 @@ private fun IndexTransactionColumn(
     ) {
         items(transactions) { transaction ->
             IndexTransactionItem(
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .clickable { onTransactionClick(transaction) },
                 transaction = transaction
             )
         }

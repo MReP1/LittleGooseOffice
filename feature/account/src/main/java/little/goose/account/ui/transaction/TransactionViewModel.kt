@@ -12,7 +12,10 @@ import little.goose.account.data.constants.AccountConstant.INCOME
 import little.goose.account.data.entities.Transaction
 import little.goose.account.logic.AccountRepository
 import little.goose.account.ui.transaction.icon.TransactionIconHelper
+import little.goose.common.constants.KEY_TIME
 import little.goose.common.constants.KEY_TRANSACTION
+import little.goose.common.utils.*
+import java.util.*
 import javax.inject.Inject
 
 @HiltViewModel
@@ -21,10 +24,19 @@ class TransactionViewModel @Inject constructor(
     private val accountRepository: AccountRepository
 ) : ViewModel() {
 
-    private val defaultTransaction get() = Transaction(
-        icon_id = TransactionIconHelper.expenseIconList.first().id,
-        content = TransactionIconHelper.expenseIconList.first().name
-    )
+    private val defaultTransaction
+        get() = Transaction(
+            time = savedStateHandle.get<Long>(KEY_TIME)?.let {
+                val time = Calendar.getInstance().apply { timeInMillis = it }
+                Calendar.getInstance().apply {
+                    setYear(time.getYear())
+                    setMonth(time.getMonth())
+                    setDate(time.getDate())
+                }.time
+            } ?: Date(),
+            icon_id = TransactionIconHelper.expenseIconList.first().id,
+            content = TransactionIconHelper.expenseIconList.first().name
+        )
 
     enum class Event {
         WriteSuccess

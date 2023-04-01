@@ -8,6 +8,8 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.ui.Modifier
 import dagger.hilt.android.AndroidEntryPoint
+import little.goose.common.constants.KEY_TIME
+import little.goose.common.constants.KEY_TRANSACTION
 import little.goose.design.system.theme.AccountTheme
 import java.util.*
 
@@ -15,8 +17,6 @@ import java.util.*
 class TransactionActivity : AppCompatActivity() {
 
     companion object {
-        private const val TRANSACTION = "transaction"
-        private const val KEY_TIME = "time"
 
         fun openAdd(context: Context, date: Date? = null) {
             val intent = Intent(context, TransactionActivity::class.java)
@@ -29,7 +29,7 @@ class TransactionActivity : AppCompatActivity() {
             transaction: little.goose.account.data.entities.Transaction
         ) {
             val intent = Intent(context, TransactionActivity::class.java).apply {
-                putExtra(TRANSACTION, transaction)
+                putExtra(KEY_TRANSACTION, transaction)
             }
             context.startActivity(intent)
         }

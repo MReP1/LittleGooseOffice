@@ -17,6 +17,7 @@ import com.kizitonwose.calendar.core.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.launch
+import little.goose.account.data.entities.Transaction
 import little.goose.design.system.theme.RoundedCorner16
 import little.goose.home.data.CalendarModel
 import little.goose.home.ui.component.IndexMemorialCard
@@ -44,7 +45,8 @@ data class IndexScreenState(
 fun IndexHome(
     modifier: Modifier = Modifier,
     state: IndexScreenState,
-    onScheduleClick: (Schedule) -> Unit
+    onScheduleClick: (Schedule) -> Unit,
+    onTransactionClick: (Transaction) -> Unit
 ) {
     val initMonth = remember { YearMonth.now() }
     val startMonth = remember { initMonth.minusMonths(120) }
@@ -165,7 +167,8 @@ fun IndexHome(
                     .padding(horizontal = 16.dp, vertical = 6.dp)
                     .fillMaxWidth()
                     .heightIn(0.dp, 160.dp),
-                state = indexTransactionCardState
+                state = indexTransactionCardState,
+                onTransactionClick = onTransactionClick
             )
             if (state.currentCalendarModel.value.schedules.isNotEmpty()) {
                 IndexScheduleCard(

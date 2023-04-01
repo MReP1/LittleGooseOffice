@@ -163,7 +163,12 @@ class IndexViewModel @Inject constructor(
         calendarModelMap.asSequence().filter {
             it.key in range && it.key !in map.keys
         }.forEach {
-            it.value.value = it.value.value.copy(transactions = emptyList())
+            it.value.value = it.value.value.copy(
+                transactions = emptyList(),
+                income = BigDecimal(0),
+                expense = BigDecimal(0),
+                balance = BigDecimal(0)
+            )
         }
         map.forEach { (time, transactions) ->
             val calendarModelState = getCalendarModelState(time)
