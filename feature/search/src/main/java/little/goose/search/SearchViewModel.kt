@@ -51,6 +51,16 @@ class SearchViewModel @Inject constructor(
         object Empty : State<Nothing>()
     }
 
+    sealed class Event {
+        data class DeleteTransactions(val transactions: List<Transaction>) : Event()
+        data class DeleteNotes(val notes: List<Note>) : Event()
+        data class DeleteMemorials(val memorials: List<Memorial>) : Event()
+        data class DeleteSchedules(val schedules: List<Schedule>) : Event()
+    }
+
+    private val _event = MutableSharedFlow<Event>()
+    val event = _event.asSharedFlow()
+
     private val multiSelectedTransactions = MutableStateFlow<Set<Transaction>>(emptySet())
 
     var transactionState: State<StateFlow<List<Transaction>>> by mutableStateOf(State.Empty)
@@ -245,12 +255,14 @@ class SearchViewModel @Inject constructor(
     fun deleteTransaction(transaction: Transaction) {
         viewModelScope.launch {
             accountRepository.deleteTransaction(transaction)
+            _event.emit(Event.DeleteTransactions(listOf(transaction)))
         }
     }
 
     private fun deleteTransactions(transactions: List<Transaction>) {
         viewModelScope.launch {
             accountRepository.deleteTransactions(transactions)
+            _event.emit(Event.DeleteTransactions(transactions))
         }
     }
 
@@ -291,12 +303,14 @@ class SearchViewModel @Inject constructor(
     fun deleteMemorial(memorial: Memorial) {
         viewModelScope.launch {
             memorialRepository.deleteMemorial(memorial)
+            _event.emit(Event.DeleteMemorials(listOf(memorial)))
         }
     }
 
     private fun deleteMemorials(memorials: List<Memorial>) {
         viewModelScope.launch {
             memorialRepository.deleteMemorials(memorials)
+            _event.emit(Event.DeleteMemorials(memorials))
         }
     }
 
@@ -319,6 +333,7 @@ class SearchViewModel @Inject constructor(
     fun deleteSchedule(schedule: Schedule) {
         viewModelScope.launch {
             scheduleRepository.deleteSchedule(schedule)
+            _event.emit(Event.DeleteSchedules(listOf(schedule)))
         }
     }
 
@@ -337,6 +352,7 @@ class SearchViewModel @Inject constructor(
     private fun deleteSchedules(schedules: List<Schedule>) {
         viewModelScope.launch {
             scheduleRepository.deleteSchedules(schedules)
+            _event.emit(Event.DeleteSchedules(schedules))
         }
     }
 
@@ -372,6 +388,7 @@ class SearchViewModel @Inject constructor(
     private fun deleteNotes(notes: List<Note>) {
         viewModelScope.launch {
             noteRepository.deleteNotes(notes)
+            _event.emit(Event.DeleteNotes(notes))
         }
     }
 

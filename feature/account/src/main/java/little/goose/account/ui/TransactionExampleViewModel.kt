@@ -28,16 +28,13 @@ class TransactionExampleViewModel @Inject constructor(
 ) : AndroidViewModel(application) {
 
     sealed class Event {
-        data class DeleteTransaction(val transactions: List<Transaction>) : Event()
-        data class InsertTransaction(val transaction: List<Transaction>) : Event()
+        data class DeleteTransactions(val transactions: List<Transaction>) : Event()
     }
 
     private val time: Date = savedStateHandle[KEY_TIME]!!
     private val content: String? = savedStateHandle[KEY_CONTENT]
     private val timeType: TimeType = savedStateHandle[KEY_TIME_TYPE]!!
     private val moneyType: MoneyType = savedStateHandle[KEY_MONEY_TYPE]!!
-
-    var deletingTransactions: List<Transaction> = emptyList()
 
     val title = when (timeType) {
         TimeType.DATE -> time.toChineseYearMonthDay()
@@ -129,25 +126,14 @@ class TransactionExampleViewModel @Inject constructor(
     fun deleteTransaction(transaction: Transaction) {
         viewModelScope.launch {
             accountRepository.deleteTransaction(transaction)
-            val transactions = listOf(transaction)
-            deletingTransactions = transactions
-            _event.emit(Event.DeleteTransaction(transactions))
-        }
-    }
-
-    fun insertTransactions(transaction: List<Transaction>) {
-        viewModelScope.launch {
-            accountRepository.addTransactions(transaction)
-            deletingTransactions = emptyList()
-            _event.emit(Event.InsertTransaction(transaction))
+            _event.emit(Event.DeleteTransactions(listOf(transaction)))
         }
     }
 
     private fun deleteTransactions(transactions: List<Transaction>) {
         viewModelScope.launch {
             accountRepository.deleteTransactions(transactions)
-            deletingTransactions = transactions
-            _event.emit(Event.DeleteTransaction(transactions))
+            _event.emit(Event.DeleteTransactions(transactions))
         }
     }
 

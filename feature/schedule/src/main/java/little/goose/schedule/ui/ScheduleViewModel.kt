@@ -15,6 +15,13 @@ class ScheduleViewModel @Inject constructor(
     private val scheduleRepository: ScheduleRepository
 ) : ViewModel() {
 
+    sealed class Event {
+        data class DeleteSchedules(val schedules: List<Schedule>) : Event()
+    }
+
+    private val _event = MutableSharedFlow<Event>()
+    val event = _event.asSharedFlow()
+
     private val multiSelectedSchedules = MutableStateFlow<Set<Schedule>>(emptySet())
 
     private val _schedules = MutableStateFlow<List<Schedule>>(listOf())
@@ -56,12 +63,14 @@ class ScheduleViewModel @Inject constructor(
     fun deleteSchedule(schedule: Schedule) {
         viewModelScope.launch {
             scheduleRepository.deleteSchedule(schedule)
+            _event.emit(Event.DeleteSchedules(listOf(schedule)))
         }
     }
 
     private fun deleteSchedules(schedules: List<Schedule>) {
         viewModelScope.launch(Dispatchers.IO) {
             scheduleRepository.deleteSchedules(schedules)
+            _event.emit(Event.DeleteSchedules(schedules))
         }
     }
 
@@ -93,13 +102,6 @@ class ScheduleViewModel @Inject constructor(
         scheduleRepository.getAllScheduleFlow().onEach {
             _schedules.value = it
         }.launchIn(viewModelScope)
-    }
-
-    fun updateSchedules() {
-        viewModelScope.launch {
-            _schedules.value = emptyList()
-            _schedules.value = scheduleRepository.getAllSchedule()
-        }
     }
 
 }

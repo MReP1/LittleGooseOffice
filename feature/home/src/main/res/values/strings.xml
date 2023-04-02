@@ -7,5 +7,6 @@
     <string name="income">收入</string>
     <string name="expense">支出</string>
     <string name="take_a_transaction">记一笔</string>
+    <string name="deleted">已删除</string>
 
 </resources>

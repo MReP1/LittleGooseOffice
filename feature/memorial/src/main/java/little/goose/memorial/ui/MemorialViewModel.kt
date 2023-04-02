@@ -15,6 +15,13 @@ class MemorialViewModel @Inject constructor(
     private val memorialRepository: MemorialRepository
 ) : ViewModel() {
 
+    sealed class Event {
+        data class DeleteMemorials(val memorials: List<Memorial>) : Event()
+    }
+
+    private val _event = MutableSharedFlow<Event>()
+    val event = _event.asSharedFlow()
+
     private val multiSelectedMemorials = MutableStateFlow<Set<Memorial>>(emptySet())
 
     private val memorials = memorialRepository.getAllMemorialFlow().stateIn(
@@ -60,12 +67,14 @@ class MemorialViewModel @Inject constructor(
     fun deleteMemorial(memorial: Memorial) {
         viewModelScope.launch {
             memorialRepository.deleteMemorial(memorial)
+            _event.emit(Event.DeleteMemorials(listOf(memorial)))
         }
     }
 
     private fun deleteMemorials(memorials: List<Memorial>) {
         viewModelScope.launch {
             memorialRepository.deleteMemorials(memorials)
+            _event.emit(Event.DeleteMemorials(memorials))
         }
     }
 

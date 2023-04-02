@@ -19,12 +19,8 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
 import little.goose.account.data.constants.MoneyType
 import little.goose.account.data.entities.Transaction
 import little.goose.account.ui.component.TransactionColumn
@@ -39,7 +35,6 @@ import little.goose.common.utils.TimeType
 import little.goose.design.system.component.MovableActionButton
 import little.goose.design.system.component.MovableActionButtonState
 import little.goose.design.system.theme.AccountTheme
-import little.goose.design.system.theme.Red200
 import java.io.Serializable
 import java.util.*
 
@@ -60,9 +55,6 @@ class TransactionExampleActivity : AppCompatActivity() {
                     title = viewModel.title,
                     onTransactionClick = transactionDialogState::show,
                     snackbarHostState = snackbarHostState,
-                    snackbarAction = {
-                        viewModel.insertTransactions(transaction = viewModel.deletingTransactions)
-                    },
                     transactionColumnState = transactionColumnState,
                     onBack = ::finish
                 )
@@ -119,22 +111,11 @@ class TransactionExampleActivity : AppCompatActivity() {
                 LaunchedEffect(viewModel.event) {
                     viewModel.event.collect { event ->
                         when (event) {
-                            is TransactionExampleViewModel.Event.DeleteTransaction -> {
-                                launch {
-                                    snackbarHostState.showSnackbar(
-                                        message = getString(little.goose.account.R.string.deleted),
-                                        actionLabel = getString(little.goose.account.R.string.undo),
-                                        withDismissAction = true,
-                                        duration = SnackbarDuration.Indefinite
-                                    )
-                                }
-                                launch {
-                                    delay(2000L)
-                                    snackbarHostState.currentSnackbarData?.dismiss()
-                                }
-                            }
-                            is TransactionExampleViewModel.Event.InsertTransaction -> {
-                                snackbarHostState.currentSnackbarData?.dismiss()
+                            is TransactionExampleViewModel.Event.DeleteTransactions -> {
+                                snackbarHostState.showSnackbar(
+                                    message = getString(little.goose.account.R.string.deleted),
+                                    withDismissAction = true,
+                                )
                             }
                         }
                     }
@@ -168,7 +149,6 @@ private fun TransactionTimeScreen(
     title: String,
     transactionColumnState: TransactionColumnState,
     snackbarHostState: SnackbarHostState,
-    snackbarAction: () -> Unit,
     onTransactionClick: (Transaction) -> Unit,
     onBack: () -> Unit
 ) {
@@ -189,10 +169,9 @@ private fun TransactionTimeScreen(
             )
         },
         snackbarHost = {
-            DeleteSnackbarHost(
-                action = snackbarAction,
-                snackbarHostState = snackbarHostState
-            )
+            SnackbarHost(hostState = snackbarHostState) { snackbarData ->
+                Snackbar(snackbarData)
+            }
         }
     ) { paddingValues ->
         TransactionColumn(
@@ -201,24 +180,4 @@ private fun TransactionTimeScreen(
             onTransactionClick = onTransactionClick
         )
     }
-}
-
-
-@Composable
-fun DeleteSnackbarHost(
-    modifier: Modifier = Modifier,
-    action: () -> Unit,
-    snackbarHostState: SnackbarHostState
-) {
-    SnackbarHost(hostState = snackbarHostState) { snackbarData ->
-        Snackbar(modifier = modifier.padding(12.dp), action = {
-            snackbarData.visuals.actionLabel?.let { label ->
-                TextButton(onClick = action) {
-                    Text(text = label, color = Red200)
-                }
-            }
-        }) {
-            Text(text = snackbarData.visuals.message, color = Color.White)
-        } // Snackbar
-    } // SnackbarHost
 }

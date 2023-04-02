@@ -30,6 +30,7 @@ import little.goose.design.system.component.MovableActionButton
 import little.goose.design.system.component.MovableActionButtonState
 import little.goose.design.system.component.dialog.DeleteDialog
 import little.goose.design.system.component.dialog.DeleteDialogState
+import little.goose.home.R
 import little.goose.home.data.*
 import little.goose.home.ui.component.IndexTopBar
 import little.goose.memorial.ui.*
@@ -70,7 +71,10 @@ fun HomeScreen(
     val buttonState = remember { MovableActionButtonState() }
     val scheduleDialogState = rememberScheduleDialogState()
     val transactionDialogState = rememberTransactionDialogState()
+    val memorialDialogState = rememberMemorialDialogState()
     val deleteDialogState = remember { DeleteDialogState() }
+
+    val snackbarHostState = remember { SnackbarHostState() }
 
     val transactionColumnState by accountViewModel.transactionColumnState.collectAsState()
     val memorialColumnState by memorialViewModel.memorialColumnState.collectAsState()
@@ -93,8 +97,65 @@ fun HomeScreen(
         }
     }
 
+    LaunchedEffect(scheduleViewModel.event) {
+        scheduleViewModel.event.collect { event ->
+            when (event) {
+                is ScheduleViewModel.Event.DeleteSchedules -> {
+                    snackbarHostState.showSnackbar(
+                        message = context.getString(R.string.deleted),
+                        withDismissAction = true
+                    )
+                }
+            }
+        }
+    }
+
+    LaunchedEffect(accountViewModel.event) {
+        accountViewModel.event.collect { event ->
+            when (event) {
+                is AccountHomeViewModel.Event.DeleteTransactions -> {
+                    snackbarHostState.showSnackbar(
+                        message = context.getString(R.string.deleted),
+                        withDismissAction = true
+                    )
+                }
+            }
+        }
+    }
+
+    LaunchedEffect(memorialViewModel.event) {
+        memorialViewModel.event.collect { event ->
+            when (event) {
+                is MemorialViewModel.Event.DeleteMemorials -> {
+                    snackbarHostState.showSnackbar(
+                        message = context.getString(R.string.deleted),
+                        withDismissAction = true
+                    )
+                }
+            }
+        }
+    }
+
+    LaunchedEffect(notebookViewModel.event) {
+        notebookViewModel.event.collect { event ->
+            when (event) {
+                is NotebookViewModel.Event.DeleteNotes -> {
+                    snackbarHostState.showSnackbar(
+                        message = context.getString(R.string.deleted),
+                        withDismissAction = true
+                    )
+                }
+            }
+        }
+    }
+
     Scaffold(
         modifier = modifier,
+        snackbarHost = {
+            SnackbarHost(hostState = snackbarHostState) {
+                Snackbar(snackbarData = it)
+            }
+        },
         topBar = {
             if (currentHomePage != HomePage.Home) {
                 CenterAlignedTopAppBar(
@@ -401,5 +462,10 @@ fun HomeScreen(
     TransactionDialog(
         state = transactionDialogState,
         onDelete = accountViewModel::deleteTransaction
+    )
+
+    MemorialDialog(
+        state = memorialDialogState,
+        onDelete = memorialViewModel::deleteMemorial
     )
 }

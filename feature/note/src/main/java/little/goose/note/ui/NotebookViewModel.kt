@@ -3,11 +3,7 @@ package little.goose.note.ui
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.SharingStarted
-import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import little.goose.note.data.entities.Note
 import little.goose.note.logic.NoteRepository
@@ -17,6 +13,13 @@ import javax.inject.Inject
 class NotebookViewModel @Inject constructor(
     private val noteRepository: NoteRepository
 ) : ViewModel() {
+
+    sealed class Event {
+        data class DeleteNotes(val notes: List<Note>) : Event()
+    }
+
+    private val _event = MutableSharedFlow<Event>()
+    val event = _event.asSharedFlow()
 
     private val multiSelectedNotes = MutableStateFlow<Set<Note>>(emptySet())
 
@@ -67,12 +70,7 @@ class NotebookViewModel @Inject constructor(
     private fun deleteNotes(notes: List<Note>) {
         viewModelScope.launch {
             noteRepository.deleteNotes(notes)
-        }
-    }
-
-    fun addNoteList(notes: List<Note>) {
-        viewModelScope.launch(Dispatchers.IO) {
-            noteRepository.addNoteList(notes)
+            _event.emit(Event.DeleteNotes(notes))
         }
     }
 

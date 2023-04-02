@@ -4,7 +4,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.NonCancellable
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import little.goose.account.data.constants.AccountConstant
@@ -24,6 +23,13 @@ import javax.inject.Inject
 class AccountHomeViewModel @Inject constructor(
     private val accountRepository: AccountRepository
 ) : ViewModel() {
+
+    sealed class Event {
+        data class DeleteTransactions(val transactions: List<Transaction>) : Event()
+    }
+
+    private val _event = MutableSharedFlow<Event>()
+    val event = _event.asSharedFlow()
 
     private val _year = MutableStateFlow(Calendar.getInstance().getYear())
     val year = _year.asStateFlow()
@@ -155,27 +161,17 @@ class AccountHomeViewModel @Inject constructor(
         _month.value = month
     }
 
-    fun addTransaction(transaction: Transaction) {
-        viewModelScope.launch(NonCancellable) {
-            accountRepository.insertTransaction(transaction)
-        }
-    }
-
-    fun addTransactions(transactions: List<Transaction>) {
-        viewModelScope.launch(NonCancellable) {
-            accountRepository.addTransactions(transactions)
-        }
-    }
-
     fun deleteTransaction(transaction: Transaction) {
         viewModelScope.launch {
             accountRepository.deleteTransaction(transaction)
+            _event.emit(Event.DeleteTransactions(listOf(transaction)))
         }
     }
 
     private fun deleteTransactions(transactions: List<Transaction>) {
         viewModelScope.launch {
             accountRepository.deleteTransactions(transactions)
+            _event.emit(Event.DeleteTransactions(transactions))
         }
     }
 

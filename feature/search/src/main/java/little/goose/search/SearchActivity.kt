@@ -15,14 +15,12 @@ import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.ArrowBack
 import androidx.compose.material.icons.rounded.Clear
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -69,8 +67,34 @@ private fun SearchScreen(
             viewModel.search(it)
         }
     }
+
+    val context = LocalContext.current
+    val snackbarHostState = remember { SnackbarHostState() }
+
+    LaunchedEffect(viewModel.event) {
+        suspend fun showDeletedSnackbar() {
+            snackbarHostState.showSnackbar(
+                message = context.getString(R.string.deleted),
+                withDismissAction = true
+            )
+        }
+        viewModel.event.collect { event ->
+            when (event) {
+                is SearchViewModel.Event.DeleteMemorials -> showDeletedSnackbar()
+                is SearchViewModel.Event.DeleteNotes -> showDeletedSnackbar()
+                is SearchViewModel.Event.DeleteSchedules -> showDeletedSnackbar()
+                is SearchViewModel.Event.DeleteTransactions -> showDeletedSnackbar()
+            }
+        }
+    }
+
     Scaffold(
         modifier = modifier,
+        snackbarHost = {
+            SnackbarHost(snackbarHostState) { snackbarData ->
+                Snackbar(snackbarData)
+            }
+        },
         topBar = {
             TopAppBar(
                 modifier = Modifier.fillMaxWidth(),
