@@ -194,6 +194,7 @@ fun HomeScreen(
                                 state = indexScreenState,
                                 onScheduleClick = scheduleDialogState::show,
                                 onTransactionClick = transactionDialogState::show,
+                                onMemorialClick = memorialDialogState::show
                             )
                         }
                         NOTEBOOK -> {

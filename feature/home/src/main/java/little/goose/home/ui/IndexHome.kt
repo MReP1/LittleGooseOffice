@@ -24,6 +24,7 @@ import little.goose.home.ui.component.IndexMemorialCard
 import little.goose.home.ui.component.IndexScheduleCard
 import little.goose.home.ui.component.IndexTransactionCard
 import little.goose.home.ui.component.IndexTransactionCardState
+import little.goose.memorial.data.entities.Memorial
 import little.goose.schedule.data.entities.Schedule
 import java.time.LocalDate
 import java.time.YearMonth
@@ -46,7 +47,8 @@ fun IndexHome(
     modifier: Modifier = Modifier,
     state: IndexScreenState,
     onScheduleClick: (Schedule) -> Unit,
-    onTransactionClick: (Transaction) -> Unit
+    onTransactionClick: (Transaction) -> Unit,
+    onMemorialClick: (Memorial) -> Unit
 ) {
     val initMonth = remember { YearMonth.now() }
     val startMonth = remember { initMonth.minusMonths(120) }
@@ -149,7 +151,8 @@ fun IndexHome(
             if (state.currentCalendarModel.value.memorials.isNotEmpty()) {
                 IndexMemorialCard(
                     modifier = Modifier.padding(horizontal = 16.dp, vertical = 6.dp),
-                    memorial = state.currentCalendarModel.value.memorials.first()
+                    memorial = state.currentCalendarModel.value.memorials.first(),
+                    onMemorialClick = onMemorialClick
                 )
             }
             val indexTransactionCardState by remember(state.currentDay) {

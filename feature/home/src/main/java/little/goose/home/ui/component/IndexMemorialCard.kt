@@ -21,7 +21,8 @@ import java.util.*
 @Composable
 fun IndexMemorialCard(
     modifier: Modifier,
-    memorial: Memorial
+    memorial: Memorial,
+    onMemorialClick: (Memorial) -> Unit
 ) {
     val context = LocalContext.current
 
@@ -32,6 +33,7 @@ fun IndexMemorialCard(
 
     Card(
         modifier = modifier,
+        onClick = { onMemorialClick(memorial) },
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primary)
     ) {
         Box(
