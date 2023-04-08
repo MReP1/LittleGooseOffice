@@ -14,6 +14,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
+import androidx.datastore.preferences.core.edit
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.HorizontalPager
@@ -33,6 +34,8 @@ import little.goose.design.system.component.dialog.DeleteDialogState
 import little.goose.home.R
 import little.goose.home.data.*
 import little.goose.home.ui.component.IndexTopBar
+import little.goose.home.utils.KEY_PREF_PAGER
+import little.goose.home.utils.homeDataStore
 import little.goose.memorial.ui.*
 import little.goose.note.ui.NotebookHome
 import little.goose.note.ui.NotebookViewModel
@@ -50,10 +53,11 @@ import java.util.*
 @Composable
 fun HomeScreen(
     modifier: Modifier,
+    initPage: Int
 ) {
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
-    val pagerState = rememberPagerState()
+    val pagerState = rememberPagerState(initPage)
     val scrollable by remember { derivedStateOf { pagerState.currentPage != HOME } }
     val currentHomePage = remember(pagerState.currentPage) {
         HomePage.fromPageIndex(pagerState.currentPage)
@@ -87,6 +91,12 @@ fun HomeScreen(
         HomePage.Schedule -> scheduleColumnState.isMultiSelecting
         HomePage.Memorial -> memorialColumnState.isMultiSelecting
         else -> false
+    }
+
+    LaunchedEffect(pagerState.currentPage) {
+        context.homeDataStore.edit { preferences ->
+            preferences[KEY_PREF_PAGER] = pagerState.currentPage
+        }
     }
 
     LaunchedEffect(isMultiSelecting) {
