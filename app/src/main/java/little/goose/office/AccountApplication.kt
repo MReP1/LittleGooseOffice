@@ -6,8 +6,8 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.launch
+import little.goose.common.utils.initial
 import little.goose.home.utils.homeDataStore
-import little.goose.home.utils.initial
 
 @HiltAndroidApp
 class AccountApplication : Application() {

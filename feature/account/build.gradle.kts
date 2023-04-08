@@ -13,7 +13,6 @@ android {
 dependencies {
     implementation(libs.androidx.appcompat)
 
-    implementation(libs.androidx.localbroadcastManager)
     implementation(libs.androidx.constraintLayout)
 
     implementation(project(":core:design-system"))
@@ -31,8 +30,7 @@ dependencies {
 
     implementation(libs.androidx.hilt.navigation.compose)
     implementation(libs.androidx.constraintLayout.compose)
-    implementation(libs.accompanist.pager)
 
     //MPAndroidChart
-    implementation("com.github.PhilJay:MPAndroidChart:v3.1.0")
+    implementation("com.github.PhilJay:MPAndroidChart:3.1.0")
 }

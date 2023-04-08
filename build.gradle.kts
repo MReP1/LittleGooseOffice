@@ -1,6 +1,17 @@
+import com.github.benmanes.gradle.versions.updates.DependencyUpdatesTask
+
 plugins {
     alias(libs.plugins.android.application) apply false
     alias(libs.plugins.android.library) apply false
     alias(libs.plugins.hilt) apply false
     alias(libs.plugins.ksp) apply false
+    id("com.github.ben-manes.versions") version "0.46.0"
+}
+
+tasks.withType<DependencyUpdatesTask> {
+    rejectVersionIf {
+        listOf("alpha", "beta", "rc", "cr", "m", "eap", "pr").any { qualifier ->
+            candidate.version.contains(qualifier, ignoreCase = true)
+        }
+    }
 }

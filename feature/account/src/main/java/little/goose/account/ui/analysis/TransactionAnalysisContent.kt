@@ -3,9 +3,14 @@ package little.goose.account.ui.analysis
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.pager.HorizontalPager
+import androidx.compose.foundation.pager.PagerState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.*
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
+import androidx.compose.material3.contentColorFor
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -19,9 +24,6 @@ import androidx.compose.ui.viewinterop.AndroidView
 import com.github.mikephil.charting.data.Entry
 import com.github.mikephil.charting.highlight.Highlight
 import com.github.mikephil.charting.listener.OnChartValueSelectedListener
-import com.google.accompanist.pager.ExperimentalPagerApi
-import com.google.accompanist.pager.HorizontalPager
-import com.google.accompanist.pager.PagerState
 import little.goose.account.R
 import little.goose.account.data.constants.MoneyType
 import little.goose.account.data.models.TimeMoney
@@ -32,10 +34,8 @@ import little.goose.account.ui.analysis.widget.TransactionAnalysisLineChartView
 import little.goose.account.ui.component.TransactionPercentCircleChart
 import little.goose.account.ui.component.TransactionPercentColumn
 import little.goose.common.collections.CircularLinkList
-import little.goose.common.utils.TimeType
 import little.goose.common.utils.*
 import java.math.BigDecimal
-import java.util.*
 
 data class TransactionAnalysisContentState(
     val timeType: TransactionAnalysisViewModel.TimeType = TransactionAnalysisViewModel.TimeType.MONTH,
@@ -55,7 +55,6 @@ data class TransactionAnalysisTimeState(
     val balances: List<TimeMoney> = listOf()
 )
 
-@OptIn(ExperimentalPagerApi::class)
 @Composable
 fun TransactionAnalysisContent(
     modifier: Modifier = Modifier,
@@ -63,7 +62,7 @@ fun TransactionAnalysisContent(
     pagerState: PagerState
 ) {
     HorizontalPager(
-        count = 3,
+        pageCount = 3,
         modifier = modifier
             .fillMaxSize(),
         state = pagerState
@@ -288,23 +287,28 @@ fun TransactionAnalysisLineChart(
         }
         val lineChartView = remember { TransactionAnalysisLineChartView(context) }
         Spacer(modifier = Modifier.height(6.dp))
-        AndroidView(
+        Box(
             modifier = Modifier
-                .fillMaxWidth()
                 .weight(1F)
-                .padding(horizontal = 16.dp),
-            factory = { lineChartView }
+                .fillMaxWidth()
+                .padding(16.dp)
         ) {
-            lineChartView.setOnChartValueSelectedListener(object : OnChartValueSelectedListener {
-                override fun onValueSelected(entry: Entry?, highlight: Highlight?) {
-                    if (entry == null || highlight == null) return
-                    currentTimeMoney = entry.data as TimeMoney
-                }
+            AndroidView(
+                modifier = Modifier.fillMaxSize(),
+                factory = { lineChartView }
+            ) {
+                lineChartView.setOnChartValueSelectedListener(object :
+                    OnChartValueSelectedListener {
+                    override fun onValueSelected(entry: Entry?, highlight: Highlight?) {
+                        if (entry == null || highlight == null) return
+                        currentTimeMoney = entry.data as TimeMoney
+                    }
 
-                override fun onNothingSelected() {
-                    currentTimeMoney = null
-                }
-            })
+                    override fun onNothingSelected() {
+                        currentTimeMoney = null
+                    }
+                })
+            }
         }
         LaunchedEffect(timeMoneys) {
             lineChartView.bindData(

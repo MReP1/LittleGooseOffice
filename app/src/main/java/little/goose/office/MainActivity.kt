@@ -9,11 +9,11 @@ import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.lifecycle.lifecycleScope
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
+import little.goose.common.utils.getDataOrDefault
 import little.goose.design.system.theme.AccountTheme
 import little.goose.home.data.HOME
 import little.goose.home.ui.HomeScreen
 import little.goose.home.utils.KEY_PREF_PAGER
-import little.goose.home.utils.getDataOrDefault
 import little.goose.home.utils.homeDataStore
 
 @AndroidEntryPoint

@@ -13,8 +13,6 @@ android {
 dependencies {
     implementation(libs.androidx.appcompat)
 
-    implementation(libs.androidx.localbroadcastManager)
-
     implementation(project(":core:design-system"))
     implementation(project(":core:common"))
 

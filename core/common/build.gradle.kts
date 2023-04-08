@@ -15,8 +15,8 @@ android {
 dependencies {
     implementation(libs.androidx.appcompat)
     implementation(libs.androidx.core.ktx)
-    implementation(libs.androidx.localbroadcastManager)
     implementation(libs.androidx.lifecycle.rumtime.ktx)
+    implementation(libs.androidx.dataStore.preferences)
 
     implementation(libs.kotlinx.coroutines.core)
     implementation(libs.kotlinx.coroutines.android)

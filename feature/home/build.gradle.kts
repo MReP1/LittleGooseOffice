@@ -10,7 +10,6 @@ android {
 
 dependencies {
     implementation(libs.androidx.appcompat)
-    implementation(libs.accompanist.pager)
     implementation(libs.google.android.material)
     implementation(libs.androidx.activity.ktx)
     implementation(libs.androidx.hilt.navigation.compose)

@@ -1,37 +1,35 @@
 [versions]
 androidGradlePlugin = "7.4.2"
-androidxActivityCompose = "1.6.1"
-androidxAppcompat = "1.5.1"
-androidxActivityKtx = "1.6.1"
-androidxFragmentKtx = "1.5.2"
-androidxComposeBom = "2023.01.00"
+androidxActivityCompose = "1.7.0"
+androidxAppcompat = "1.6.1"
+androidxActivityKtx = "1.7.0"
+androidxFragmentKtx = "1.5.6"
+androidxComposeBom = "2023.04.00"
 androidxCoreSplashscreen = "1.0.0"
 androidxCore = "1.9.0"
 androidxConstraintLayout = "2.1.4"
 androidxDataStore = "1.0.0"
-androidxComposeCompiler = "1.3.2"
-androidxTestExt = "1.1.4"
-androidxEspresso = "3.5.0"
-androidxLocalbroadcastManager = "1.1.0"
-androidMaterial = "1.6.1"
-accompanistVersion = "0.28.0"
+androidxComposeCompiler = "1.4.4"
+androidxTestExt = "1.1.5"
+androidxEspresso = "3.5.1"
+androidMaterial = "1.8.0"
+accompanistVersion = "0.30.1"
 androidxHiltNavigationCompose = "1.0.0"
 androidxConstraintLayoutCompose = "1.0.1"
-androidLifecycle = "2.5.1"
-composeCalendar = "2.2.0"
+androidLifecycle = "2.6.1"
+composeCalendar = "2.3.0"
 junit4 = "4.13.2"
-kotlin = "1.7.20"
+kotlin = "1.8.10"
 
-hilt = "2.44.2"
+hilt = "2.45"
 hiltCompose = "1.0.0"
 kotlinxCoroutines = "1.6.4"
-ksp = "1.7.20-1.0.8"
-recyclerView = "1.2.1"
-room = "2.5.0-rc01"
+ksp = "1.8.10-1.0.9"
+recyclerView = "1.3.0"
+room = "2.5.1"
 
 [libraries]
 accompanist-navigation-animation = { group = "com.google.accompanist", name = "accompanist-navigation-animation", version.ref = "accompanistVersion" }
-accompanist-pager = { group = "com.google.accompanist", name = "accompanist-pager", version.ref = "accompanistVersion" }
 androidx-appcompat = { group = "androidx.appcompat", name = "appcompat", version.ref = "androidxAppcompat" }
 androidx-activity-ktx = { group = "androidx.activity", name = "activity-ktx", version.ref = "androidxActivityKtx" }
 androidx-fragment-ktx = { group = "androidx.fragment", name = "fragment-ktx", version.ref = "androidxFragmentKtx" }
@@ -57,7 +55,6 @@ androidx-constraintLayout = { group = "androidx.constraintlayout", name = "const
 androidx-dataStore-preferences = { group = "androidx.datastore", name = "datastore-preferences", version.ref = "androidxDataStore" }
 androidx-test-ext = { group = "androidx.test.ext", name = "junit-ktx", version.ref = "androidxTestExt" }
 androidx-test-espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "androidxEspresso" }
-androidx-localbroadcastManager = { group = "androidx.localbroadcastmanager", name = "localbroadcastmanager", version.ref = "androidxLocalbroadcastManager" }
 compose-calendar = { group = "com.kizitonwose.calendar", name= "compose", version.ref = "composeCalendar"}
 google-android-material = { group = "com.google.android.material", name = "material", version.ref = "androidMaterial" }
 hilt-android = { group = "com.google.dagger", name = "hilt-android", version.ref = "hilt" }

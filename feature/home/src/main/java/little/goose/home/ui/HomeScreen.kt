@@ -3,8 +3,9 @@ package little.goose.home.ui
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.pager.HorizontalPager
+import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.*
 import androidx.compose.material.icons.rounded.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -16,9 +17,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
 import androidx.datastore.preferences.core.edit
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.google.accompanist.pager.ExperimentalPagerApi
-import com.google.accompanist.pager.HorizontalPager
-import com.google.accompanist.pager.rememberPagerState
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import little.goose.account.ui.AccountHome
@@ -47,9 +45,7 @@ import little.goose.schedule.ui.ScheduleViewModel
 import little.goose.schedule.ui.rememberScheduleDialogState
 import little.goose.search.SearchActivity
 import little.goose.search.SearchType
-import java.util.*
 
-@OptIn(ExperimentalPagerApi::class)
 @Composable
 fun HomeScreen(
     modifier: Modifier,
@@ -190,7 +186,7 @@ fun HomeScreen(
                     .padding(paddingValues)
             ) {
                 HorizontalPager(
-                    count = 5,
+                    pageCount = 5,
                     modifier = Modifier
                         .fillMaxSize()
                         .zIndex(-1F),
