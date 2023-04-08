@@ -30,20 +30,6 @@ suspend inline fun <T> DataStore<Preferences>.getDataOrDefault(
     key: Preferences.Key<T>, default: T
 ): T = this.data.firstOrNull()?.get(key) ?: default
 
-suspend inline fun <T> DataStore<Preferences>.withData(
-    key: Preferences.Key<T>, action: (T) -> Unit
-) = this.getDataOrNull(key)?.also { action(it) }
-
-suspend inline fun DataStore<Preferences>.withPref(
-    action: (Preferences) -> Unit
-) {
-    this.data.firstOrNull()?.also { action(it) }
-}
-
-enum class DataStoreHelper {
-    INSTANCE; //封装一层是因为不想将初始化方法暴露到顶层
-
-    suspend fun initDataStore(context: Context) {
-        context.homeDataStore.data.first()
-    }
+suspend inline fun DataStore<Preferences>.initial() {
+    data.first()
 }
