@@ -10,7 +10,7 @@ plugins {
 
 tasks.withType<DependencyUpdatesTask> {
     rejectVersionIf {
-        listOf("alpha", "beta", "rc", "cr", "m", "eap", "pr").any { qualifier ->
+        listOf("alpha", "beta", "rc", "cr", "m", "eap", "pr", "dev").any { qualifier ->
             candidate.version.contains(qualifier, ignoreCase = true)
         }
     }
