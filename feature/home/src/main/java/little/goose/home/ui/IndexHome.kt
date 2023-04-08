@@ -239,11 +239,14 @@ private fun DayContent(
         }
         Text(
             text = date.dayOfMonth.toString(),
-            modifier = Modifier,
-            color = if (isCurrentDay) {
+            modifier = Modifier.run {
+                if (isToday) background(colorScheme.tertiaryContainer, RoundedCorner16)
+                    .padding(horizontal = 6.dp) else this
+            },
+            color = if (isToday) {
+                MaterialTheme.colorScheme.onTertiaryContainer
+            } else if (isCurrentDay) {
                 MaterialTheme.colorScheme.onPrimary
-            } else if (isToday) {
-                MaterialTheme.colorScheme.tertiary
             } else if (isCurrentMonth) {
                 MaterialTheme.colorScheme.onSurface
             } else {

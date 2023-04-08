@@ -54,7 +54,6 @@ fun HomeScreen(
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
     val pagerState = rememberPagerState(initPage)
-    val scrollable by remember { derivedStateOf { pagerState.currentPage != HOME } }
     val currentHomePage = remember(pagerState.currentPage) {
         HomePage.fromPageIndex(pagerState.currentPage)
     }
@@ -191,7 +190,7 @@ fun HomeScreen(
                         .fillMaxSize()
                         .zIndex(-1F),
                     state = pagerState,
-                    userScrollEnabled = scrollable
+                    userScrollEnabled = true
                 ) { index ->
                     when (index) {
                         HOME -> {
