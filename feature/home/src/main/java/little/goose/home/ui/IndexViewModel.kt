@@ -49,7 +49,9 @@ class IndexViewModel @Inject constructor(
     private val currentCalendarModel: StateFlow<MutableState<CalendarModel>> = currentDay.map {
         getCalendarModelState(it)
     }.stateIn(
-        viewModelScope, SharingStarted.WhileSubscribed(5000), mutableStateOf(CalendarModel())
+        scope = viewModelScope,
+        started = SharingStarted.WhileSubscribed(5000),
+        initialValue = getCalendarModelState(currentDay.value)
     )
 
     val indexScreenState = combine(
