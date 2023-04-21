@@ -1,6 +1,5 @@
 package little.goose.design.system.component
 
-import androidx.compose.animation.core.Animatable
 import androidx.compose.foundation.interaction.DragInteraction
 import androidx.compose.foundation.interaction.Interaction
 import androidx.compose.foundation.layout.Box
@@ -52,8 +51,8 @@ fun ScrollSelector(
     val currentUnselectedScale by rememberUpdatedState(newValue = unselectedScale)
     val currentSelectedScale by rememberUpdatedState(newValue = selectedScale)
     var contentSize by remember { mutableStateOf(IntSize.Zero) }
-    val secondScale = remember { Animatable(selectedScale) }
-    val thirdScale = remember { Animatable(unselectedScale) }
+    val scrollingOutScale = remember { mutableStateOf(selectedScale) }
+    val scrollingInScale = remember { mutableStateOf(unselectedScale) }
     var firstVisibleItemIndex by remember { mutableStateOf(0) }
 
     LaunchedEffect(state) {
@@ -66,8 +65,8 @@ fun ScrollSelector(
             // 滑动时，根据滑动距离计算缩放比例
             val progress = firstVisibleItemScrollOffset.toFloat() / contentSize.height.toFloat()
             val disparity = (currentSelectedScale - currentUnselectedScale) * progress
-            secondScale.snapTo(currentSelectedScale - disparity)
-            thirdScale.snapTo(currentUnselectedScale + disparity)
+            scrollingOutScale.value = currentSelectedScale - disparity
+            scrollingInScale.value = currentUnselectedScale + disparity
             lastFirstVisibleItemScrollOffset = firstVisibleItemScrollOffset
             firstVisibleItemIndex = lastFirstVisibleItemIndex
         }.launchIn(this)
@@ -158,8 +157,8 @@ fun ScrollSelector(
                         style = textStyle,
                         modifier = Modifier.scale(
                             when (index) {
-                                firstVisibleItemIndex -> secondScale.value
-                                firstVisibleItemIndex + 1 -> thirdScale.value
+                                firstVisibleItemIndex -> scrollingOutScale.value
+                                firstVisibleItemIndex + 1 -> scrollingInScale.value
                                 else -> currentUnselectedScale
                             }
                         )
