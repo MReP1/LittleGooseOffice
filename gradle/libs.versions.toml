@@ -12,6 +12,7 @@ androidxDataStore = "1.0.0"
 androidxComposeCompiler = "1.4.6"
 androidxTestExt = "1.1.5"
 androidxEspresso = "3.5.1"
+androidxStartUp = "1.1.1"
 androidMaterial = "1.8.0"
 accompanistVersion = "0.30.1"
 androidxHiltNavigationCompose = "1.0.0"
@@ -55,6 +56,7 @@ androidx-constraintLayout = { group = "androidx.constraintlayout", name = "const
 androidx-dataStore-preferences = { group = "androidx.datastore", name = "datastore-preferences", version.ref = "androidxDataStore" }
 androidx-test-ext = { group = "androidx.test.ext", name = "junit-ktx", version.ref = "androidxTestExt" }
 androidx-test-espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "androidxEspresso" }
+androidx-startUp-runtime = { group = "androidx.startup", name = "startup-runtime", version.ref = "androidxStartUp" }
 compose-calendar = { group = "com.kizitonwose.calendar", name= "compose", version.ref = "composeCalendar"}
 google-android-material = { group = "com.google.android.material", name = "material", version.ref = "androidMaterial" }
 hilt-android = { group = "com.google.dagger", name = "hilt-android", version.ref = "hilt" }

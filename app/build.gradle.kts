@@ -1,4 +1,3 @@
-@Suppress("DSL_SCOPE_VIOLATION")
 plugins {
     id("goose.android.app")
     id("goose.android.compose")
@@ -23,13 +22,9 @@ dependencies {
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
-
     implementation(libs.google.android.material)
-    implementation(libs.androidx.constraintLayout)
-    implementation(libs.androidx.recyclerView)
-
     implementation(libs.androidx.activity.ktx)
-    implementation(libs.androidx.fragment.ktx)
+    implementation(libs.androidx.startUp.runtime)
 
     implementation(project(":feature:home"))
     implementation(project(":feature:account"))
@@ -43,7 +38,6 @@ dependencies {
     implementation(project(":core:design-system"))
     implementation(libs.accompanist.navigation.animation)
     implementation(libs.androidx.hilt.navigation.compose)
-    implementation(libs.androidx.constraintLayout.compose)
     androidTestImplementation(libs.androidx.compose.ui.test)
     debugImplementation(libs.androidx.compose.ui.tooling)
     debugImplementation(libs.androidx.compose.ui.testManifest)

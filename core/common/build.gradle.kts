@@ -1,4 +1,3 @@
-@Suppress("DSL_SCOPE_VIOLATION")
 plugins {
     id("goose.android.library")
     alias(libs.plugins.ksp)

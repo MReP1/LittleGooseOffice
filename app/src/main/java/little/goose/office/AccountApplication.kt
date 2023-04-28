@@ -3,14 +3,16 @@ package little.goose.office
 import android.app.Application
 import dagger.hilt.android.HiltAndroidApp
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.launch
 import little.goose.common.utils.initial
 import little.goose.home.utils.homeDataStore
+import javax.inject.Inject
 
 @HiltAndroidApp
 class AccountApplication : Application() {
+
+    @Inject
+    lateinit var appScope: CoroutineScope
 
     override fun onCreate() {
         super.onCreate()
@@ -25,8 +27,6 @@ class AccountApplication : Application() {
         }
     }
 }
-
-val appScope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
 
 @Volatile
 var isAppInit = false
