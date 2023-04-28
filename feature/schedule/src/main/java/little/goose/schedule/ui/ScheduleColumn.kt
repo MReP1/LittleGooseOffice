@@ -11,7 +11,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import little.goose.design.system.theme.AccountTheme
 import little.goose.schedule.data.entities.Schedule
-import kotlin.random.Random
 
 data class ScheduleColumnState(
     val schedules: List<Schedule>,
