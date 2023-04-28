@@ -1,16 +1,28 @@
 package little.goose.schedule.ui
 
 import androidx.compose.foundation.combinedClickable
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
-import androidx.compose.material3.*
+import androidx.compose.material3.Card
+import androidx.compose.material3.Checkbox
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import little.goose.common.utils.toChineseMonthDayTime
+import little.goose.design.system.theme.AccountTheme
 import little.goose.schedule.data.entities.Schedule
 
 @Composable
@@ -82,5 +94,24 @@ fun ScheduleItem(
                 )
             }
         }
+    }
+}
+
+@Preview
+@Composable
+private fun PreviewScheduleItem() {
+    AccountTheme {
+        ScheduleItem(
+            modifier = Modifier.fillMaxWidth(),
+            schedule = Schedule(
+                title = "title",
+                content = "content"
+            ),
+            isMultiSelecting = true,
+            selected = true,
+            onScheduleClick = {},
+            onCheckedChange = { _, _ -> },
+            onSelectSchedule = { _, _ -> }
+        )
     }
 }

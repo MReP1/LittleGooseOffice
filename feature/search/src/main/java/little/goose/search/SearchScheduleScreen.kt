@@ -8,13 +8,16 @@ import androidx.compose.material.icons.rounded.Delete
 import androidx.compose.material.icons.rounded.DoneAll
 import androidx.compose.material.icons.rounded.RemoveDone
 import androidx.compose.material3.Icon
+import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.tooling.preview.Preview
 import little.goose.design.system.component.MovableActionButton
 import little.goose.design.system.component.MovableActionButtonState
+import little.goose.design.system.theme.AccountTheme
 import little.goose.schedule.data.entities.Schedule
 import little.goose.schedule.ui.ScheduleColumn
 import little.goose.schedule.ui.ScheduleColumnState
@@ -78,4 +81,31 @@ internal fun SearchScheduleScreen(
             )
         }
     }
+}
+
+@Preview
+@Composable
+private fun PreviewSearchScheduleScreen() = AccountTheme {
+    SearchScheduleScreen(
+        scheduleColumnState = ScheduleColumnState(
+            schedules = (0..5).map {
+                Schedule(
+                    id = it.toLong(),
+                    title = "title$it",
+                    content = "content$it",
+                    isfinish = it % 2 == 0
+                )
+            },
+            isMultiSelecting = true,
+            multiSelectedSchedules = emptySet(),
+            onSelectSchedule = { _, _ -> },
+            onCheckedChange = { _, _ -> },
+            selectAllSchedules = {},
+            cancelMultiSelecting = {},
+            deleteSchedules = {}
+        ),
+        deleteSchedule = {},
+        addSchedule = {},
+        modifySchedule = {}
+    )
 }

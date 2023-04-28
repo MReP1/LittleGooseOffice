@@ -1,12 +1,17 @@
 package little.goose.schedule.ui
 
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import little.goose.design.system.theme.AccountTheme
 import little.goose.schedule.data.entities.Schedule
+import kotlin.random.Random
 
 data class ScheduleColumnState(
     val schedules: List<Schedule>,
@@ -45,4 +50,29 @@ fun ScheduleColumn(
             )
         }
     }
+}
+
+@Preview
+@Composable
+private fun PreviewScheduleColumn() = AccountTheme {
+    ScheduleColumn(
+        state = ScheduleColumnState(
+            schedules = (0..5).map {
+                Schedule(
+                    id = it.toLong(),
+                    title = "title$it",
+                    content = "content$it",
+                    isfinish = it % 2 == 0
+                )
+            },
+            isMultiSelecting = false,
+            multiSelectedSchedules = emptySet(),
+            onSelectSchedule = { _, _ -> },
+            onCheckedChange = { _, _ -> },
+            selectAllSchedules = {},
+            cancelMultiSelecting = {},
+            deleteSchedules = {}
+        ),
+        onScheduleClick = {}
+    )
 }

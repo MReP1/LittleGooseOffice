@@ -121,7 +121,7 @@ fun MemorialItem(
 
 @Preview(widthDp = 375, heightDp = 100)
 @Composable
-fun PreviewMemorialItem() {
+private fun PreviewMemorialItem() {
     MemorialItem(
         memorial = Memorial(null, "HelloWorld", false, Date()),
         selected = true,

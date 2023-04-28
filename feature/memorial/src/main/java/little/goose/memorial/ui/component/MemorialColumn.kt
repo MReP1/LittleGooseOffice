@@ -6,7 +6,9 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import little.goose.design.system.theme.AccountTheme
 import little.goose.memorial.data.entities.Memorial
 
 data class MemorialColumnState(
@@ -43,4 +45,23 @@ fun MemorialColumn(
             )
         }
     }
+}
+
+@Preview
+@Composable
+private fun PreviewMemorialColumn() = AccountTheme {
+    MemorialColumn(
+        state = MemorialColumnState(
+            memorials = (0..5).map {
+                Memorial(id = it.toLong(), content = "Memorial$it")
+            },
+            isMultiSelecting = false,
+            multiSelectedMemorials = emptySet(),
+            onSelectMemorial = { _, _ -> },
+            selectAllMemorial = {},
+            cancelMultiSelecting = {},
+            deleteMemorials = {}
+        ),
+        onMemorialClick = {}
+    )
 }
