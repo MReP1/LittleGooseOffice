@@ -5,6 +5,8 @@ plugins {
     alias(libs.plugins.android.library) apply false
     alias(libs.plugins.hilt) apply false
     alias(libs.plugins.ksp) apply false
+
+    // Run ./gradlew dependencyUpdates to check for dependency updates
     id("com.github.ben-manes.versions") version "0.46.0"
 }
 
@@ -12,14 +14,6 @@ tasks.withType<DependencyUpdatesTask> {
     rejectVersionIf {
         listOf("alpha", "beta", "rc", "cr", "m", "eap", "pr", "dev").any { qualifier ->
             candidate.version.contains(qualifier, ignoreCase = true)
-        }
-    }
-}
-
-allprojects {
-    tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>().configureEach {
-        kotlinOptions {
-            jvmTarget = JavaVersion.VERSION_17.toString()
         }
     }
 }

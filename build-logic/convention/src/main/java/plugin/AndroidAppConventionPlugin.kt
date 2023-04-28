@@ -1,11 +1,12 @@
 package plugin
 
 import AndroidConfigConventions
-import com.android.build.gradle.internal.dsl.BaseAppModuleExtension
+import com.android.build.api.dsl.ApplicationExtension
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.artifacts.VersionCatalogsExtension
 import org.gradle.api.plugins.PluginManager
+import org.gradle.kotlin.dsl.configure
 import org.gradle.kotlin.dsl.dependencies
 import org.gradle.kotlin.dsl.getByType
 
@@ -15,9 +16,9 @@ class AndroidAppConventionPlugin : Plugin<Project> {
     override fun apply(project: Project) {
         with(project) {
             pluginManager.applyPlugin()
-            applyAndroid<BaseAppModuleExtension> {
+            extensions.configure<ApplicationExtension> {
                 configureAndroid()
-                configureKotlin()
+                configureKotlin(this)
             }
             applyDependencies()
         }
@@ -31,7 +32,7 @@ class AndroidAppConventionPlugin : Plugin<Project> {
         apply("com.google.devtools.ksp")
     }
 
-    private fun BaseAppModuleExtension.configureAndroid() {
+    private fun ApplicationExtension.configureAndroid() {
         configureAndroidCommon()
 
         defaultConfig.targetSdk = AndroidConfigConventions.TARGET_SDK_VERSION

@@ -15,7 +15,7 @@ class AndroidLibraryConventionPlugin : Plugin<Project> {
         with(project) {
             pluginManager.applyPlugin()
             applyAndroid<LibraryExtension> {
-                configureKotlin()
+                configureKotlin(this)
                 configureAndroid()
             }
             applyDependencies()
