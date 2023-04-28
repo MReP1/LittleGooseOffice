@@ -12,7 +12,6 @@ android {
 
 dependencies {
     implementation(libs.androidx.appcompat)
-    implementation(libs.google.android.material)
 
     implementation(project(":core:design-system"))
     implementation(project(":core:common"))
