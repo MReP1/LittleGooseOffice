@@ -16,6 +16,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
+import com.mikepenz.markdown.Markdown
 import little.goose.note.data.entities.Note
 import middle.goose.richtext.RichTextView
 
@@ -95,12 +96,10 @@ fun NoteItem(
 
             ) {
                 Text(text = note.title)
-                AndroidView(
-                    factory = { RichTextView(it) },
-                    modifier = Modifier.weight(1f)
-                ) { textureView ->
-                    textureView.fromHtml(note.content)
-                }
+                Markdown(
+                    content = note.content,
+                    modifier = Modifier.weight(1F)
+                )
             }
             if (isSelected) {
                 Icon(

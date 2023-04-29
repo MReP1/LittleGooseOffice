@@ -20,11 +20,14 @@ dependencies {
 
     implementation(libs.google.android.material)
 
-    //富文本
+    // 富文本
     implementation(project(":RichText"))
     implementation(project(":core:design-system"))
     implementation(project(":core:common"))
 
+    // Markdown note
+    implementation(libs.compose.markdown)
+    
     // Room database
     implementation(libs.room.runtime)
     implementation(libs.room.ktx)
