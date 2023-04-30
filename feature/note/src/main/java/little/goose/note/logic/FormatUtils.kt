@@ -15,22 +15,30 @@ suspend fun TextFieldValue.formatH1(): TextFieldValue {
 
 private fun TextFieldValue.internalFormatH1(): TextFieldValue {
     val contentTextFieldValue = this
-    val lines = contentTextFieldValue.text
-        .split("\n")
-        .toMutableList()
     var cursorPosition = contentTextFieldValue.selection.start
     var currentLineCursorPosition = 0
-    val currentLineIndex = contentTextFieldValue.text
-        .subSequence(0, cursorPosition)
-        .count { char ->
-            (char == '\n').also {
-                if (it) {
-                    currentLineCursorPosition = 0
-                } else {
-                    currentLineCursorPosition++
-                }
+    val lines = mutableListOf<String>()
+    var startSplitIndex = 0
+    var currentLineIndex = 0
+    var isSingleLine = true
+    contentTextFieldValue.text.forEachIndexed { index, char ->
+        if (char == '\n') {
+            isSingleLine = false
+            lines.add(contentTextFieldValue.text.substring(startSplitIndex, index))
+            startSplitIndex = index + 1
+            if (index <= cursorPosition) {
+                currentLineCursorPosition = 0
+                currentLineIndex++
             }
+        } else if (index < cursorPosition) {
+            currentLineCursorPosition++
         }
+    }
+    if (isSingleLine) {
+        lines.add(contentTextFieldValue.text)
+    } else {
+        lines.add(contentTextFieldValue.text.substring(startSplitIndex))
+    }
     val currentLine = lines[currentLineIndex]
     lines[currentLineIndex] = if (currentLine.startsWith("# ")) {
         cursorPosition -= minOf(2, currentLineCursorPosition)
