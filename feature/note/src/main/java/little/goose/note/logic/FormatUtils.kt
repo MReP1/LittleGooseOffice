@@ -40,12 +40,11 @@ private fun TextFieldValue.internalFormatH1(): TextFieldValue {
         "# $currentLine"
     } else {
         var level = 0
-        val isHeader = currentLine
-            .split(' ')
-            .firstOrNull()
-            ?.all { char ->
-                (char == '#').also { if (it) level++ }
-            } == true
+        val firstBlank = currentLine.indexOfFirst { it == ' ' }
+        val isHeader = (firstBlank > 0) &&
+                currentLine.substring(0, firstBlank).all { char ->
+                    (char == '#').also { if (it) level++ }
+                }
         if (isHeader) {
             cursorPosition -= minOf((level - 1), currentLineCursorPosition)
             currentLine.replaceRange(0, level, "#")
