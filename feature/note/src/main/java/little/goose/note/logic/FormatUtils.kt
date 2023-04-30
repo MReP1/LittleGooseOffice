@@ -40,9 +40,9 @@ private fun TextFieldValue.internalFormatH1(): TextFieldValue {
         "# $currentLine"
     } else {
         var level = 0
-        val firstBlank = currentLine.indexOfFirst { it == ' ' }
+        val firstBlank = currentLine.indexOf(' ')
         val isHeader = (firstBlank > 0) &&
-                currentLine.substring(0, firstBlank).all { char ->
+                currentLine.subSequence(0, firstBlank).all { char ->
                     (char == '#').also { if (it) level++ }
                 }
         if (isHeader) {
