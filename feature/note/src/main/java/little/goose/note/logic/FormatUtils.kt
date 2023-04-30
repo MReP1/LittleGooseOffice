@@ -26,7 +26,7 @@ private fun TextFieldValue.internalFormatH1(): TextFieldValue {
             isSingleLine = false
             lines.add(contentTextFieldValue.text.substring(startSplitIndex, index))
             startSplitIndex = index + 1
-            if (index <= cursorPosition) {
+            if (index < cursorPosition) {
                 currentLineCursorPosition = 0
                 currentLineIndex++
             }
@@ -48,11 +48,15 @@ private fun TextFieldValue.internalFormatH1(): TextFieldValue {
         "# $currentLine"
     } else {
         var level = 0
-        val firstBlank = currentLine.indexOf(' ')
-        val isHeader = (firstBlank > 0) &&
-                currentLine.subSequence(0, firstBlank).all { char ->
-                    (char == '#').also { if (it) level++ }
-                }
+        var isHeader = false
+        for (char in currentLine) {
+            if (char == '#') {
+                level ++
+            } else {
+                isHeader = char == ' '
+                break
+            }
+        }
         if (isHeader) {
             cursorPosition -= minOf((level - 1), currentLineCursorPosition)
             currentLine.replaceRange(0, level, "#")
