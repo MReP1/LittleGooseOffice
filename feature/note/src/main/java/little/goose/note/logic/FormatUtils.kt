@@ -5,15 +5,42 @@ import androidx.compose.ui.text.input.TextFieldValue
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
-suspend fun TextFieldValue.formatH1(): TextFieldValue {
-    return if (this.text.length < 500) {
-        internalFormatH1()
+sealed class FormatType {
+
+    sealed class Header(val value: String) : FormatType() {
+        object H1 : Header("# ")
+        object H2 : Header("## ")
+        object H3 : Header("### ")
+        object H4 : Header("#### ")
+        object H5 : Header("##### ")
+        object H6 : Header("###### ")
+    }
+
+}
+
+suspend fun TextFieldValue.format(
+    type: FormatType
+): TextFieldValue {
+    return if (this.text.length < 711) {
+        internalFormat(type)
     } else withContext(Dispatchers.Default) {
-        this@formatH1.internalFormatH1()
+        this@format.internalFormat(type)
     }
 }
 
-private fun TextFieldValue.internalFormatH1(): TextFieldValue {
+private fun TextFieldValue.internalFormat(type: FormatType): TextFieldValue {
+    return when (type) {
+        is FormatType.Header -> {
+            formatHeader(type)
+        }
+
+        else -> this
+    }
+}
+
+private fun TextFieldValue.formatHeader(
+    header: FormatType.Header
+): TextFieldValue {
     val contentTextFieldValue = this
     var cursorPosition = contentTextFieldValue.selection.start
     var currentLineCursorPosition = 0
@@ -39,30 +66,31 @@ private fun TextFieldValue.internalFormatH1(): TextFieldValue {
     } else {
         lines.add(contentTextFieldValue.text.substring(startSplitIndex))
     }
+
     val currentLine = lines[currentLineIndex]
-    lines[currentLineIndex] = if (currentLine.startsWith("# ")) {
-        cursorPosition -= minOf(2, currentLineCursorPosition)
-        currentLine.substring(2)
+    lines[currentLineIndex] = if (currentLine.startsWith(header.value)) {
+        cursorPosition -= minOf(header.value.length, currentLineCursorPosition)
+        currentLine.substring(header.value.length)
     } else if (!currentLine.startsWith("#")) {
-        cursorPosition += 2
-        "# $currentLine"
+        cursorPosition += header.value.length
+        header.value + currentLine
     } else {
         var level = 0
         var isHeader = false
         for (char in currentLine) {
             if (char == '#') {
-                level ++
+                level++
             } else {
                 isHeader = char == ' '
                 break
             }
         }
         if (isHeader) {
-            cursorPosition -= minOf((level - 1), currentLineCursorPosition)
-            currentLine.replaceRange(0, level, "#")
+            cursorPosition -= minOf((level - (header.value.length - 1)), currentLineCursorPosition)
+            currentLine.replaceRange(0, level + 1, header.value)
         } else {
-            cursorPosition += 2
-            "# $currentLine"
+            cursorPosition += header.value.length
+            header.value + currentLine
         }
     }
     val newText = lines.joinToString(separator = "\n")

@@ -15,20 +15,12 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import little.goose.note.R
-
-data class FormatHeaderIconState(
-    val onH1Click: () -> Unit = {},
-    val onH2Click: () -> Unit = {},
-    val onH3Click: () -> Unit = {},
-    val onH4Click: () -> Unit = {},
-    val onH5Click: () -> Unit = {},
-    val onH6Click: () -> Unit = {}
-)
+import little.goose.note.logic.FormatType
 
 @Composable
 fun FormatHeaderIcon(
     modifier: Modifier = Modifier,
-    state: FormatHeaderIconState = remember { FormatHeaderIconState() }
+    onHeaderClick: (FormatType.Header) -> Unit
 ) {
     var isExpended by remember { mutableStateOf(false) }
 
@@ -45,37 +37,49 @@ fun FormatHeaderIcon(
         }
 
         if (isExpended) {
-            IconButton(onClick = state.onH1Click) {
+            IconButton(
+                onClick = { onHeaderClick(FormatType.Header.H1) }
+            ) {
                 Icon(
                     painter = painterResource(id = R.drawable.icon_format_h1),
                     contentDescription = "Header1"
                 )
             }
-            IconButton(onClick = state.onH2Click) {
+            IconButton(
+                onClick = { onHeaderClick(FormatType.Header.H2) }
+            ) {
                 Icon(
                     painter = painterResource(id = R.drawable.icon_format_h2),
                     contentDescription = "Header2"
                 )
             }
-            IconButton(onClick = state.onH3Click) {
+            IconButton(
+                onClick = { onHeaderClick(FormatType.Header.H3) }
+            ) {
                 Icon(
                     painter = painterResource(id = R.drawable.icon_format_h3),
                     contentDescription = "Header3"
                 )
             }
-            IconButton(onClick = state.onH4Click) {
+            IconButton(
+                onClick = { onHeaderClick(FormatType.Header.H4) }
+            ) {
                 Icon(
                     painter = painterResource(id = R.drawable.icon_format_h4),
                     contentDescription = "Header4"
                 )
             }
-            IconButton(onClick = state.onH5Click) {
+            IconButton(
+                onClick = { onHeaderClick(FormatType.Header.H5) }
+            ) {
                 Icon(
                     painter = painterResource(id = R.drawable.icon_format_h5),
                     contentDescription = "Header5"
                 )
             }
-            IconButton(onClick = state.onH6Click) {
+            IconButton(
+                onClick = { onHeaderClick(FormatType.Header.H6) }
+            ) {
                 Icon(
                     painter = painterResource(id = R.drawable.icon_format_h6),
                     contentDescription = "Header6"

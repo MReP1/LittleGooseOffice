@@ -3,11 +3,16 @@ package little.goose.note.ui.note
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.ime
+import androidx.compose.foundation.layout.isImeVisible
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.union
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material.icons.Icons
@@ -17,6 +22,7 @@ import androidx.compose.material.icons.rounded.FormatListBulleted
 import androidx.compose.material.icons.rounded.FormatListNumbered
 import androidx.compose.material.icons.rounded.Preview
 import androidx.compose.material3.BottomAppBar
+import androidx.compose.material3.BottomAppBarDefaults
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -44,9 +50,8 @@ import kotlinx.coroutines.launch
 import little.goose.design.system.theme.AccountTheme
 import little.goose.note.R
 import little.goose.note.data.entities.Note
-import little.goose.note.logic.formatH1
+import little.goose.note.logic.format
 import little.goose.note.ui.component.FormatHeaderIcon
-import little.goose.note.ui.component.FormatHeaderIconState
 
 
 data class NoteScreenState(
@@ -55,6 +60,7 @@ data class NoteScreenState(
     val onContentChange: (String) -> Unit = {}
 )
 
+@OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun NoteScreen(
     modifier: Modifier = Modifier,
@@ -66,16 +72,6 @@ fun NoteScreen(
 
     var contentTextFieldValue by remember {
         mutableStateOf(TextFieldValue(text = state.note.content))
-    }
-
-    val formatHeaderIconState = remember {
-        FormatHeaderIconState(
-            onH1Click = {
-                scope.launch(Dispatchers.Main.immediate) {
-                    contentTextFieldValue = contentTextFieldValue.formatH1()
-                }
-            }
-        )
     }
 
     Scaffold(
@@ -97,6 +93,11 @@ fun NoteScreen(
         bottomBar = {
             BottomAppBar(
                 modifier = Modifier.fillMaxWidth(),
+                windowInsets = if (WindowInsets.isImeVisible) {
+                    WindowInsets.ime.union(BottomAppBarDefaults.windowInsets)
+                } else {
+                    BottomAppBarDefaults.windowInsets
+                },
                 content = {
                     Spacer(modifier = Modifier.width(12.dp))
                     val horScrollState = rememberScrollState()
@@ -107,7 +108,11 @@ fun NoteScreen(
                     ) {
                         FormatHeaderIcon(
                             modifier = Modifier,
-                            state = formatHeaderIconState
+                            onHeaderClick = {
+                                scope.launch(Dispatchers.Main.immediate) {
+                                    contentTextFieldValue = contentTextFieldValue.format(it)
+                                }
+                            }
                         )
                         IconButton(
                             onClick = { /*TODO*/ }
