@@ -57,8 +57,11 @@ fun ScrollSelector(
 
     val textMeasurer = rememberTextMeasurer()
     val contentHeight = remember(textStyle) {
-        textMeasurer.measure("", textStyle).size.height + with(density) {
-            (padding.calculateTopPadding() + padding.calculateBottomPadding()).toPx()
+        with(density) {
+            val textContentHeight = textMeasurer.measure("", textStyle).size.height
+            val topPadding = padding.calculateTopPadding()
+            val bottomPadding = padding.calculateBottomPadding()
+            (topPadding + bottomPadding).toPx() + textContentHeight
         }
     }
 
