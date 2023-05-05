@@ -70,8 +70,6 @@ fun ScrollSelector(
 
     LaunchedEffect(state) {
 
-        var lastFirstVisibleItemScrollOffset = 0
-
         snapshotFlow { state.firstVisibleItemScrollOffset }
             .onEach { firstVisibleItemScrollOffset ->
                 // 滑动时，根据滑动距离计算缩放比例
@@ -79,7 +77,6 @@ fun ScrollSelector(
                 val disparity = (currentSelectedScale - currentUnselectedScale) * progress
                 scrollingOutScale.value = currentSelectedScale - disparity
                 scrollingInScale.value = currentUnselectedScale + disparity
-                lastFirstVisibleItemScrollOffset = firstVisibleItemScrollOffset
             }.launchIn(this)
 
         snapshotFlow { state.firstVisibleItemIndex }
@@ -104,7 +101,7 @@ fun ScrollSelector(
                 it
             }.collectLatest {
                 val halfHeight = contentHeight / 2
-                if (lastFirstVisibleItemScrollOffset < halfHeight) {
+                if (state.firstVisibleItemScrollOffset < halfHeight) {
                     // 若滑动距离小于一半，则回滚到上一个item
                     if (firstVisibleItemIndex < items.size) {
                         onItemSelected(
