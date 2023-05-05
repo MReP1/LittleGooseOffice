@@ -35,6 +35,7 @@ import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.mapNotNull
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
@@ -70,59 +71,60 @@ fun ScrollSelector(
     LaunchedEffect(state) {
 
         var lastFirstVisibleItemScrollOffset = 0
-        combine(
-            snapshotFlow { state.firstVisibleItemIndex },
-            snapshotFlow { state.firstVisibleItemScrollOffset }
-        ) { lastFirstVisibleItemIndex, firstVisibleItemScrollOffset ->
-            // 滑动时，根据滑动距离计算缩放比例
-            val progress = firstVisibleItemScrollOffset.toFloat() / contentHeight
-            val disparity = (currentSelectedScale - currentUnselectedScale) * progress
-            scrollingOutScale.value = currentSelectedScale - disparity
-            scrollingInScale.value = currentUnselectedScale + disparity
-            lastFirstVisibleItemScrollOffset = firstVisibleItemScrollOffset
-            firstVisibleItemIndex = lastFirstVisibleItemIndex
-        }.launchIn(this)
 
-        var needReset = false
-        var lastInteraction: Interaction? = null
-        state.interactionSource.interactions.mapNotNull {
-            it as? DragInteraction
-        }.onEach { interaction ->
-            // 滑动结束或取消时，判断是否需要复位
-            val currentStart = (interaction as? DragInteraction.Stop)?.start
-                ?: (interaction as? DragInteraction.Cancel)?.start
-            needReset = currentStart == lastInteraction
-        }.onEach { interaction ->
-            lastInteraction = interaction
-        }.launchIn(this)
+        snapshotFlow { state.firstVisibleItemScrollOffset }
+            .onEach { firstVisibleItemScrollOffset ->
+                // 滑动时，根据滑动距离计算缩放比例
+                val progress = firstVisibleItemScrollOffset.toFloat() / contentHeight
+                val disparity = (currentSelectedScale - currentUnselectedScale) * progress
+                scrollingOutScale.value = currentSelectedScale - disparity
+                scrollingInScale.value = currentUnselectedScale + disparity
+                lastFirstVisibleItemScrollOffset = firstVisibleItemScrollOffset
+            }.launchIn(this)
+
+        snapshotFlow { state.firstVisibleItemIndex }
+            .filter { it != firstVisibleItemIndex }
+            .onEach { firstVisibleItemIndex = it }
+            .launchIn(this)
 
         launch {
-            snapshotFlow { state.isScrollInProgress }
-                .filter { isScroll -> !isScroll && needReset }
-                .onEach { needReset = false }
-                .collectLatest {
-                    val halfHeight = contentHeight / 2
-                    if (lastFirstVisibleItemScrollOffset < halfHeight) {
-                        // 若滑动距离小于一半，则回滚到上一个item
-                        if (firstVisibleItemIndex < items.size) {
-                            onItemSelected(
-                                firstVisibleItemIndex,
-                                items[firstVisibleItemIndex]
-                            )
-                        }
-                        state.animateScrollToItem(firstVisibleItemIndex)
-                    } else {
-                        // 若滑动距离大于一半，则滚动到下一个item
-                        val selectedIndex = firstVisibleItemIndex + 1
-                        if (selectedIndex < items.size) {
-                            onItemSelected(
-                                firstVisibleItemIndex + 1,
-                                items[firstVisibleItemIndex + 1]
-                            )
-                        }
-                        state.animateScrollToItem(firstVisibleItemIndex + 1)
+            var lastInteraction: Interaction? = null
+            state.interactionSource.interactions.mapNotNull {
+                it as? DragInteraction
+            }.map { interaction ->
+                // 滑动结束或取消时，判断是否需要复位
+                val currentStart = (interaction as? DragInteraction.Stop)?.start
+                    ?: (interaction as? DragInteraction.Cancel)?.start
+                val needReset = currentStart == lastInteraction
+                lastInteraction = interaction
+                needReset
+            }.combine(snapshotFlow { state.isScrollInProgress }) { needReset, isScrollInProgress ->
+                needReset && !isScrollInProgress
+            }.filter {
+                it
+            }.collectLatest {
+                val halfHeight = contentHeight / 2
+                if (lastFirstVisibleItemScrollOffset < halfHeight) {
+                    // 若滑动距离小于一半，则回滚到上一个item
+                    if (firstVisibleItemIndex < items.size) {
+                        onItemSelected(
+                            firstVisibleItemIndex,
+                            items[firstVisibleItemIndex]
+                        )
                     }
+                    state.animateScrollToItem(firstVisibleItemIndex)
+                } else {
+                    // 若滑动距离大于一半，则滚动到下一个item
+                    val selectedIndex = firstVisibleItemIndex + 1
+                    if (selectedIndex < items.size) {
+                        onItemSelected(
+                            firstVisibleItemIndex + 1,
+                            items[firstVisibleItemIndex + 1]
+                        )
+                    }
+                    state.animateScrollToItem(firstVisibleItemIndex + 1)
                 }
+            }
         }
     }
 
