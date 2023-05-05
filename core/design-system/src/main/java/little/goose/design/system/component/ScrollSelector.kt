@@ -104,22 +104,16 @@ fun ScrollSelector(
                 if (state.firstVisibleItemScrollOffset < halfHeight) {
                     // 若滑动距离小于一半，则回滚到上一个item
                     if (firstVisibleItemIndex < items.size) {
-                        onItemSelected(
-                            firstVisibleItemIndex,
-                            items[firstVisibleItemIndex]
-                        )
+                        onItemSelected(firstVisibleItemIndex, items[firstVisibleItemIndex])
                     }
                     state.animateScrollToItem(firstVisibleItemIndex)
                 } else {
                     // 若滑动距离大于一半，则滚动到下一个item
                     val selectedIndex = firstVisibleItemIndex + 1
                     if (selectedIndex < items.size) {
-                        onItemSelected(
-                            firstVisibleItemIndex + 1,
-                            items[firstVisibleItemIndex + 1]
-                        )
+                        onItemSelected(selectedIndex, items[selectedIndex])
                     }
-                    state.animateScrollToItem(firstVisibleItemIndex + 1)
+                    state.animateScrollToItem(selectedIndex)
                 }
             }
         }
