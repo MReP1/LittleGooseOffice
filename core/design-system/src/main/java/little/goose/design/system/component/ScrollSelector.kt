@@ -66,7 +66,7 @@ fun ScrollSelector(
 
     val scrollingOutScale = remember { mutableStateOf(selectedScale) }
     val scrollingInScale = remember { mutableStateOf(unselectedScale) }
-    var firstVisibleItemIndex by remember { mutableStateOf(0) }
+    var firstVisibleItemIndex by remember { mutableStateOf(state.firstVisibleItemIndex) }
 
     LaunchedEffect(state) {
 
