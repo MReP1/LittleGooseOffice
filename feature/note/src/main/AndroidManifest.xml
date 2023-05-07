@@ -4,7 +4,8 @@
     <application>
         <activity
             android:name=".ui.note.NoteActivity"
-            android:exported="false" />
+            android:exported="false"
+            android:windowSoftInputMode="adjustNothing" />
     </application>
 
 </manifest>

@@ -17,26 +17,28 @@ import androidx.compose.ui.platform.LocalContext
 import little.goose.design.system.component.MovableActionButton
 import little.goose.design.system.component.MovableActionButtonState
 import little.goose.note.ui.NoteGrid
-import little.goose.note.ui.NoteGridState
+import little.goose.note.ui.NoteColumnState
 import little.goose.note.ui.note.NoteActivity
 
 @Composable
 internal fun SearchNoteScreen(
     modifier: Modifier = Modifier,
-    noteGridState: NoteGridState,
+    noteColumnState: NoteColumnState,
 ) {
     val context = LocalContext.current
-    if (noteGridState.notes.isNotEmpty()) {
+    if (noteColumnState.noteWithContents.isNotEmpty()) {
         NoteGrid(
             modifier = modifier.fillMaxSize(),
-            state = noteGridState,
-            onNoteClick = {
-                NoteActivity.openEdit(context, it)
+            state = noteColumnState,
+            onNoteClick = { note ->
+                note.id?.let { noteId ->
+                    NoteActivity.openEdit(context, noteId)
+                }
             }
         )
     }
 
-    if (noteGridState.isMultiSelecting) {
+    if (noteColumnState.isMultiSelecting) {
         val buttonState = remember { MovableActionButtonState() }
         LaunchedEffect(buttonState) { buttonState.expend() }
         Box(
@@ -51,19 +53,19 @@ internal fun SearchNoteScreen(
                     Icon(imageVector = Icons.Rounded.Delete, contentDescription = "Delete")
                 },
                 onMainButtonClick = {
-                    noteGridState.deleteNotes(noteGridState.multiSelectedNotes.toList())
+                    noteColumnState.deleteNotes(noteColumnState.multiSelectedNotes.toList())
                 },
                 topSubButtonContent = {
                     Icon(imageVector = Icons.Rounded.DoneAll, contentDescription = "Select All")
                 },
                 onTopSubButtonClick = {
-                    noteGridState.selectAllNotes()
+                    noteColumnState.selectAllNotes()
                 },
                 bottomSubButtonContent = {
                     Icon(imageVector = Icons.Rounded.RemoveDone, contentDescription = "Cancel")
                 },
                 onBottomSubButtonClick = {
-                    noteGridState.cancelMultiSelecting()
+                    noteColumnState.cancelMultiSelecting()
                 }
             )
         }

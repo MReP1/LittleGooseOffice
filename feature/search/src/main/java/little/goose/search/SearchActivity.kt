@@ -165,12 +165,12 @@ private fun SearchScreen(
                         SearchViewModel.State.Empty -> {
                         }
                     }
-                    SearchType.Note -> when (viewModel.noteState) {
+                    SearchType.Note -> when (viewModel.noteWithContents) {
                         is SearchViewModel.State.Data -> {
-                            val noteGridState by viewModel.noteGridState.collectAsState()
+                            val noteGridState by viewModel.noteColumnState.collectAsState()
                             SearchNoteScreen(
                                 modifier = Modifier.fillMaxSize(),
-                                noteGridState = noteGridState
+                                noteColumnState = noteGridState
                             )
                         }
                         SearchViewModel.State.Empty -> {

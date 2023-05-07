@@ -1,6 +1,7 @@
 package little.goose.note.data.entities
 
 import android.os.Parcelable
+import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import kotlinx.parcelize.Parcelize
@@ -12,9 +13,8 @@ import java.util.*
 data class Note(
     @PrimaryKey(autoGenerate = true)
     val id: Long? = null,
-    val title: String,
-    val content: String,
+    @ColumnInfo("title")
+    val title: String = "",
+    @ColumnInfo("time")
     val time: Date = Date()
-) : Parcelable {
-    constructor(): this(null, "", "", Date())
-}
+) : Parcelable

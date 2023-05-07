@@ -4,72 +4,49 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.drop
-import kotlinx.coroutines.flow.launchIn
-import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.onEach
-import kotlinx.coroutines.flow.stateIn
-import little.goose.note.data.constants.KEY_NOTE
-import little.goose.note.data.entities.Note
-import little.goose.note.logic.NoteRepository
+import kotlinx.coroutines.flow.asSharedFlow
+import little.goose.note.data.constants.KEY_NOTE_ID
+import little.goose.note.logic.DeleteNoteContentBlockUseCase
+import little.goose.note.logic.GetNoteFlowUseCase
+import little.goose.note.logic.GetNoteWithContentMapFlowUseCase
+import little.goose.note.logic.InsertNoteContentBlockUseCase
+import little.goose.note.logic.InsertNoteUseCase
+import little.goose.note.logic.UpdateNoteContentBlockUseCase
+import little.goose.note.logic.UpdateNoteContentBlocksUseCase
+import little.goose.note.logic.UpdateNoteUseCase
 import javax.inject.Inject
 
 @HiltViewModel
 class NoteViewModel @Inject constructor(
-    private val savedStateHandle: SavedStateHandle,
-    private val noteRepository: NoteRepository
+    savedStateHandle: SavedStateHandle,
+    getNoteWithContentMapFlow: GetNoteWithContentMapFlowUseCase,
+    insertNoteContentBlock: InsertNoteContentBlockUseCase,
+    updateNoteContentBlock: UpdateNoteContentBlockUseCase,
+    updateNoteContentBlocks: UpdateNoteContentBlocksUseCase,
+    deleteNoteContentBlock: DeleteNoteContentBlockUseCase,
+    insertNote: InsertNoteUseCase,
+    updateNote: UpdateNoteUseCase,
+    getNoteFlow: GetNoteFlowUseCase
 ) : ViewModel() {
 
-    private enum class Type {
-        ADD, MODIFY
-    }
+    private val _noteScreenEvent = MutableSharedFlow<NoteScreenEvent>()
+    val noteScreenEvent = _noteScreenEvent.asSharedFlow()
 
-    val note: StateFlow<Note> = savedStateHandle.getStateFlow(KEY_NOTE, Note())
-
-    private val type get() = if (note.value.id == null) Type.ADD else Type.MODIFY
-
-    private val isNoteBlank get() = note.value.title.isBlank() && note.value.content.isBlank()
-
-    val noteScreenState = note.map {
-        NoteScreenState(note = it, onTitleChange = ::changeTitle, onContentChange = ::changeContent)
-    }.stateIn(
-        viewModelScope,
-        SharingStarted.WhileSubscribed(5000L),
-        initialValue = NoteScreenState(note.value, ::changeTitle, ::changeContent)
+    val noteRouteState: StateFlow<NoteRouteState> by NoteRouteStateFlowDelegate(
+        noteIdFlow = savedStateHandle.getStateFlow<Long>(KEY_NOTE_ID, -1),
+        updateNoteId = { noteId -> savedStateHandle[KEY_NOTE_ID] = noteId },
+        coroutineScope = viewModelScope,
+        emitNoteScreenEvent = _noteScreenEvent::emit,
+        updateNoteContentBlock = updateNoteContentBlock,
+        updateNoteContentBlocks = updateNoteContentBlocks,
+        deleteNoteContentBlock = deleteNoteContentBlock,
+        insertNoteContentBlock = insertNoteContentBlock,
+        insertNote = insertNote,
+        updateNote = updateNote,
+        getNoteWithContentMapFlow = getNoteWithContentMapFlow,
+        getNoteFlow = getNoteFlow
     )
-
-    private fun changeTitle(title: String) {
-        savedStateHandle[KEY_NOTE] = note.value.copy(title = title)
-    }
-
-    private fun changeContent(content: String) {
-        savedStateHandle[KEY_NOTE] = note.value.copy(content = content)
-    }
-
-    init {
-        note.drop(1).onEach {
-            when (type) {
-                Type.ADD -> insertDatabase()
-                Type.MODIFY -> updateDatabase()
-            }
-        }.launchIn(viewModelScope)
-    }
-
-    private suspend fun updateDatabase() {
-        if (!isNoteBlank) {
-            noteRepository.updateNote(note.value)
-        } else {
-            noteRepository.deleteNote(note.value)
-        }
-    }
-
-    private suspend fun insertDatabase() {
-        if (!isNoteBlank) {
-            val id = noteRepository.addNote(note.value)
-            savedStateHandle[KEY_NOTE] = note.value.copy(id = id)
-        }
-    }
 
 }

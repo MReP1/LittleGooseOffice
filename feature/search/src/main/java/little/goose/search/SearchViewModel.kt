@@ -1,30 +1,41 @@
 package little.goose.search
 
+import android.os.Parcelable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshotFlow
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
-import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.parcelize.Parcelize
-import little.goose.account.logic.AccountRepository
-import little.goose.memorial.logic.MemorialRepository
-import little.goose.note.logic.NoteRepository
-import little.goose.schedule.logic.ScheduleRepository
-import javax.inject.Inject
-import android.os.Parcelable
-import androidx.compose.runtime.snapshotFlow
 import androidx.lifecycle.viewModelScope
-import kotlinx.coroutines.flow.*
+import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asSharedFlow
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.emptyFlow
+import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import kotlinx.parcelize.Parcelize
 import little.goose.account.data.entities.Transaction
+import little.goose.account.logic.AccountRepository
 import little.goose.account.ui.component.TransactionColumnState
 import little.goose.memorial.data.entities.Memorial
+import little.goose.memorial.logic.MemorialRepository
 import little.goose.memorial.ui.component.MemorialColumnState
 import little.goose.note.data.entities.Note
-import little.goose.note.ui.NoteGridState
+import little.goose.note.data.entities.NoteContentBlock
+import little.goose.note.logic.GetNoteWithContentMapFlowByKeyword
+import little.goose.note.logic.NoteRepository
+import little.goose.note.ui.NoteColumnState
 import little.goose.schedule.data.entities.Schedule
+import little.goose.schedule.logic.ScheduleRepository
 import little.goose.schedule.ui.ScheduleColumnState
+import javax.inject.Inject
 
 @Parcelize
 enum class SearchType : Parcelable {
@@ -41,7 +52,8 @@ class SearchViewModel @Inject constructor(
     private val accountRepository: AccountRepository,
     private val scheduleRepository: ScheduleRepository,
     private val noteRepository: NoteRepository,
-    private val memorialRepository: MemorialRepository
+    private val memorialRepository: MemorialRepository,
+    private val getNoteWithContentMapFlowByKeyword: GetNoteWithContentMapFlowByKeyword
 ) : ViewModel() {
 
     val type: SearchType = savedStateHandle[SearchType.KEY_SEARCH_TYPE] ?: SearchType.Transaction
@@ -95,35 +107,31 @@ class SearchViewModel @Inject constructor(
         )
     )
 
-    private val multiSelectedNotes = MutableStateFlow<Set<Note>>(emptySet())
-
-    var noteState: State<StateFlow<List<Note>>> by mutableStateOf(State.Empty)
+    var noteWithContents: State<StateFlow<Map<Note, List<NoteContentBlock>>>>
+            by mutableStateOf(State.Empty)
         private set
 
-    val noteGridState = combine(
-        snapshotFlow { noteState }.flatMapLatest { (it as? State.Data)?.items ?: emptyFlow() },
+    private val multiSelectedNotes = MutableStateFlow<Set<Note>>(emptySet())
+
+    val noteColumnState = combine(
+        snapshotFlow { noteWithContents }
+            .flatMapLatest { (it as? State.Data)?.items ?: emptyFlow() },
         multiSelectedNotes
-    ) { notes, multiSelectedNotes ->
-        NoteGridState(
-            notes = notes,
+    ) { noteWithContents, multiSelectedNotes ->
+        NoteColumnState(
+            noteWithContents = noteWithContents,
             isMultiSelecting = multiSelectedNotes.isNotEmpty(),
             multiSelectedNotes = multiSelectedNotes,
-            ::selectNote,
-            ::selectAllNote,
-            ::cancelNotesMultiSelecting,
-            ::deleteNotes
+            ::selectNote, ::selectAllNote, ::cancelNotesMultiSelecting, ::deleteNotes
         )
     }.stateIn(
         scope = viewModelScope,
         started = SharingStarted.WhileSubscribed(5000L),
-        initialValue = NoteGridState(
-            notes = (noteState as? State.Data)?.items?.value ?: emptyList(),
+        initialValue = NoteColumnState(
+            noteWithContents = (noteWithContents as? State.Data)?.items?.value ?: emptyMap(),
             isMultiSelecting = multiSelectedNotes.value.isNotEmpty(),
             multiSelectedNotes = multiSelectedNotes.value,
-            ::selectNote,
-            ::selectAllNote,
-            ::cancelNotesMultiSelecting,
-            ::deleteNotes
+            ::selectNote, ::selectAllNote, ::cancelNotesMultiSelecting, ::deleteNotes
         )
     )
 
@@ -212,16 +220,19 @@ class SearchViewModel @Inject constructor(
                         State.Data(transactionStateFlow)
                     }
                 }
+
                 SearchType.Note -> {
-                    noteState = if (keyword.isBlank()) State.Empty else {
-                        val noteStateFlow = noteRepository.searchNoteByTextFlow(keyword).stateIn(
-                            viewModelScope,
-                            SharingStarted.WhileSubscribed(5000),
-                            emptyList()
-                        )
-                        State.Data(noteStateFlow)
+                    noteWithContents = if (keyword.isBlank()) State.Empty else {
+                        val noteWithContentsFlow = getNoteWithContentMapFlowByKeyword(keyword)
+                            .stateIn(
+                                scope = viewModelScope,
+                                started = SharingStarted.WhileSubscribed(5000),
+                                initialValue = emptyMap()
+                            )
+                        State.Data(noteWithContentsFlow)
                     }
                 }
+
                 SearchType.Memorial -> {
                     memorialState = if (keyword.isBlank()) State.Empty else {
                         val memorialStateFlow = memorialRepository.searchMemorialByTextFlow(keyword)
@@ -233,6 +244,7 @@ class SearchViewModel @Inject constructor(
                         State.Data(memorialStateFlow)
                     }
                 }
+
                 SearchType.Schedule -> {
                     scheduleState = if (keyword.isBlank()) State.Empty else {
                         val scheduleFlow =
@@ -378,7 +390,8 @@ class SearchViewModel @Inject constructor(
     }
 
     private fun selectAllNote() {
-        multiSelectedNotes.value = (noteState as? State.Data)?.items?.value?.toSet() ?: emptySet()
+        multiSelectedNotes.value =
+            (noteWithContents as? State.Data)?.items?.value?.keys ?: emptySet()
     }
 
     private fun cancelNotesMultiSelecting() {

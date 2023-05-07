@@ -78,7 +78,7 @@ fun HomeScreen(
     val transactionColumnState by accountViewModel.transactionColumnState.collectAsState()
     val memorialColumnState by memorialViewModel.memorialColumnState.collectAsState()
     val scheduleColumnState by scheduleViewModel.scheduleColumnState.collectAsState()
-    val noteGridState by notebookViewModel.noteGridState.collectAsState()
+    val noteGridState by notebookViewModel.noteColumnState.collectAsState()
 
     val isMultiSelecting = when (currentHomePage) {
         HomePage.Notebook -> noteGridState.isMultiSelecting
@@ -205,7 +205,7 @@ fun HomeScreen(
                         NOTEBOOK -> {
                             NotebookHome(
                                 modifier = Modifier.fillMaxSize(),
-                                noteGridState = noteGridState,
+                                noteColumnState = noteGridState,
                             )
                         }
                         ACCOUNT -> {

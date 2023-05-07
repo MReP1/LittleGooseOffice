@@ -1,5 +1,5 @@
 [versions]
-androidGradlePlugin = "8.0.0"
+androidGradlePlugin = "8.0.1"
 androidxActivityCompose = "1.7.1"
 androidxAppcompat = "1.6.1"
 androidxActivityKtx = "1.7.1"
@@ -41,6 +41,7 @@ androidx-recyclerView = { group = "androidx.recyclerview", name = "recyclerview"
 androidx-lifecycle-rumtime-ktx = { group = "androidx.lifecycle", name = "lifecycle-runtime-ktx", version.ref = "androidLifecycle" }
 androidx-lifecycle-viewModel-ktx = { group = "androidx.lifecycle", name = "lifecycle-viewmodel-ktx", version.ref = "androidLifecycle" }
 androidx-lifecycle-viewModel-compose = { group = "androidx.lifecycle", name = "lifecycle-viewmodel-compose", version.ref = "androidLifecycle" }
+androidx-lifecycle-runtime-compose = { group = "androidx.lifecycle", name = "lifecycle-runtime-compose", version.ref = "androidLifecycle" }
 androidx-lifecycle-viewModel-savedState = { group = "androidx.lifecycle", name = "lifecycle-viewmodel-savedstate", version.ref = "androidLifecycle" }
 androidx-activity-compose = { group = "androidx.activity", name = "activity-compose", version.ref = "androidxActivityCompose" }
 androidx-hilt-navigation-compose = { group = "androidx.hilt", name = "hilt-navigation-compose", version.ref = "androidxHiltNavigationCompose" }

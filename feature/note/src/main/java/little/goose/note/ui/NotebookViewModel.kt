@@ -3,15 +3,22 @@ package little.goose.note.ui
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.asSharedFlow
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import little.goose.note.data.entities.Note
-import little.goose.note.logic.NoteRepository
+import little.goose.note.logic.DeleteNotesUseCase
+import little.goose.note.logic.GetNoteWithContentsMapFlowUseCase
 import javax.inject.Inject
 
 @HiltViewModel
 class NotebookViewModel @Inject constructor(
-    private val noteRepository: NoteRepository
+    getNoteWithContentsMapFlow: GetNoteWithContentsMapFlowUseCase,
+    private val deleteNotesUseCase: DeleteNotesUseCase
 ) : ViewModel() {
 
     sealed class Event {
@@ -23,15 +30,17 @@ class NotebookViewModel @Inject constructor(
 
     private val multiSelectedNotes = MutableStateFlow<Set<Note>>(emptySet())
 
-    val notes = noteRepository.getAllNoteFlow().stateIn(
+    private val noteWithContents = getNoteWithContentsMapFlow().stateIn(
         scope = viewModelScope,
         started = SharingStarted.Eagerly,
-        initialValue = emptyList()
+        initialValue = emptyMap()
     )
 
-    val noteGridState = combine(multiSelectedNotes, notes) { multiSelectedNotes, notes ->
-        NoteGridState(
-            notes = notes,
+    val noteColumnState = combine(
+        multiSelectedNotes, noteWithContents
+    ) { multiSelectedNotes, noteWithContents ->
+        NoteColumnState(
+            noteWithContents = noteWithContents,
             multiSelectedNotes = multiSelectedNotes,
             isMultiSelecting = multiSelectedNotes.isNotEmpty(),
             onSelectNote = ::selectNote,
@@ -42,8 +51,8 @@ class NotebookViewModel @Inject constructor(
     }.stateIn(
         scope = viewModelScope,
         started = SharingStarted.Eagerly,
-        initialValue = NoteGridState(
-            notes = notes.value,
+        initialValue = NoteColumnState(
+            noteWithContents = noteWithContents.value,
             multiSelectedNotes = multiSelectedNotes.value,
             isMultiSelecting = multiSelectedNotes.value.isNotEmpty(),
             onSelectNote = ::selectNote,
@@ -60,7 +69,7 @@ class NotebookViewModel @Inject constructor(
     }
 
     private fun selectAllNotes() {
-        multiSelectedNotes.value = notes.value.toSet()
+        multiSelectedNotes.value = noteWithContents.value.keys
     }
 
     private fun cancelMultiSelecting() {
@@ -69,7 +78,7 @@ class NotebookViewModel @Inject constructor(
 
     private fun deleteNotes(notes: List<Note>) {
         viewModelScope.launch {
-            noteRepository.deleteNotes(notes)
+            deleteNotesUseCase(notes)
             _event.emit(Event.DeleteNotes(notes))
         }
     }

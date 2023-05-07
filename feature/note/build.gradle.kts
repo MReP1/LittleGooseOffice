@@ -34,6 +34,7 @@ dependencies {
     ksp(libs.room.compiler)
 
     implementation(libs.androidx.hilt.navigation.compose)
+    implementation(libs.androidx.lifecycle.runtime.compose)
 
     implementation(libs.androidx.activity.ktx)
     implementation(libs.androidx.fragment.ktx)

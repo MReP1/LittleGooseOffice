@@ -2,9 +2,7 @@ package little.goose.note.ui
 
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.grid.GridCells
-import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
-import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material3.Card
@@ -12,16 +10,16 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.viewinterop.AndroidView
-import com.mikepenz.markdown.Markdown
 import little.goose.note.data.entities.Note
-import middle.goose.richtext.RichTextView
+import little.goose.note.data.entities.NoteContentBlock
+import little.goose.note.logic.notes
 
-data class NoteGridState(
-    val notes: List<Note>,
+data class NoteColumnState(
+    val noteWithContents: Map<Note, List<NoteContentBlock>>,
     val isMultiSelecting: Boolean,
     val multiSelectedNotes: Set<Note>,
     val onSelectNote: (item: Note, selected: Boolean) -> Unit,
@@ -33,30 +31,33 @@ data class NoteGridState(
 @Composable
 fun NoteGrid(
     modifier: Modifier = Modifier,
-    state: NoteGridState,
+    state: NoteColumnState,
     onNoteClick: (Note) -> Unit
 ) {
-    LazyVerticalGrid(
+    val notes = remember(state.noteWithContents) { state.noteWithContents.notes }
+    LazyColumn(
         modifier = modifier,
-        columns = GridCells.Fixed(2),
-        contentPadding = PaddingValues(8.dp),
+        contentPadding = PaddingValues(horizontal = 16.dp, vertical = 4.dp),
         content = {
             items(
-                items = state.notes,
-                key = { it.id ?: -1 }
-            ) { note ->
-                NoteItem(
-                    modifier = Modifier
-                        .padding(8.dp)
-                        .fillMaxWidth()
-                        .height(160.dp),
-                    note = note,
-                    onNoteSelect = state.onSelectNote,
-                    isMultiSelecting = state.isMultiSelecting,
-                    isSelected = state.multiSelectedNotes.contains(note),
-                    onNoteClick = onNoteClick
-                )
-            }
+                count = notes.size,
+                key = { index -> notes[index].id ?: -1 },
+                itemContent = {
+                    val note = notes[it]
+                    val noteContentBlocks = state.noteWithContents[note] ?: emptyList()
+                    NoteItem(
+                        modifier = Modifier
+                            .padding(horizontal = 0.dp, vertical = 4.dp)
+                            .fillMaxWidth(),
+                        note = note,
+                        noteContentBlocks = noteContentBlocks,
+                        isMultiSelecting = state.isMultiSelecting,
+                        onNoteSelect = state.onSelectNote,
+                        isSelected = state.multiSelectedNotes.contains(note),
+                        onNoteClick = onNoteClick
+                    )
+                }
+            )
         }
     )
 }
@@ -65,6 +66,7 @@ fun NoteGrid(
 fun NoteItem(
     modifier: Modifier = Modifier,
     note: Note,
+    noteContentBlocks: List<NoteContentBlock>,
     isMultiSelecting: Boolean,
     onNoteSelect: (Note, Boolean) -> Unit,
     isSelected: Boolean,
@@ -93,13 +95,12 @@ fun NoteItem(
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(12.dp)
-
             ) {
                 Text(text = note.title)
-                Markdown(
-                    content = note.content,
-                    modifier = Modifier.weight(1F)
-                )
+                val firstNoteContentBlock = noteContentBlocks.firstOrNull()
+                if (firstNoteContentBlock != null) {
+                    Text(text = firstNoteContentBlock.content)
+                }
             }
             if (isSelected) {
                 Icon(
