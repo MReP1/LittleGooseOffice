@@ -15,6 +15,7 @@ class NoteRepository(context: Context) {
         context, NoteDatabase::class.java, TABLE_NOTE
     ).addMigrations(NoteDatabase.MIGRATION_1_2)
         .addMigrations(NoteDatabase.MIGRATION_2_3)
+        .addMigrations(NoteDatabase.MIGRATION_3_4)
         .build()
 
     private val noteDao = database.noteDao()
@@ -27,8 +28,6 @@ class NoteRepository(context: Context) {
         val timeRange = getOneMonthRange(year, month)
         return noteDao.getNoteByTimeFlow(timeRange.startTime, timeRange.endTime)
     }
-
-    fun getAllNoteFlow() = noteDao.getAllNoteFlow()
 
     suspend fun deleteNote(note: Note) = noteDao.deleteNote(note)
 

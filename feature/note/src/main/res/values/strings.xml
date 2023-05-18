@@ -2,13 +2,4 @@
 <resources>
     <string name="title">标题</string>
     <string name="notebook">备忘录</string>
-
-    <string name="underline">下划线</string>
-    <string name="sweep">划线</string>
-    <string name="italic">斜体</string>
-    <string name="bold">加粗</string>
-    <string name="undo">撤回</string>
-    <string name="redo">重做</string>
-    <string name="content">内容</string>
-
 </resources>

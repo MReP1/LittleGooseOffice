@@ -19,7 +19,6 @@ dependencyResolutionManagement {
 
 rootProject.name = "account"
 include(":app")
-include(":RichText")
 include(":core:design-system")
 include(":core:common")
 include(":feature:memorial")

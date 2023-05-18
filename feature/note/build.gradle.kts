@@ -7,10 +7,6 @@ plugins {
 
 android {
     namespace = "little.goose.note"
-
-    buildFeatures {
-        viewBinding = true
-    }
 }
 
 dependencies {
@@ -21,7 +17,6 @@ dependencies {
     implementation(libs.google.android.material)
 
     // 富文本
-    implementation(project(":RichText"))
     implementation(project(":core:design-system"))
     implementation(project(":core:common"))
 

@@ -12,7 +12,7 @@ import little.goose.note.data.entities.NoteContentBlock
 
 @Database(
     entities = [Note::class, NoteContentBlock::class],
-    version = 3,
+    version = 4,
     exportSchema = false
 )
 @TypeConverters(CommonTypeConverters::class)
@@ -33,6 +33,15 @@ abstract class NoteDatabase : RoomDatabase() {
                        (`id` INTEGER PRIMARY KEY AUTOINCREMENT, 
                         `note_id` INTEGER,
                         `content` TEXT NOT NULL)""".trimIndent()
+                )
+            }
+        }
+        val MIGRATION_3_4 = object : Migration(3, 4) {
+            override fun migrate(database: SupportSQLiteDatabase) {
+                // create note content block table
+                database.execSQL(
+                    """ALTER TABLE `note_content_block` 
+                       ADD COLUMN `index` INTEGER NOT NULL DEFAULT 0""".trimIndent()
                 )
             }
         }
