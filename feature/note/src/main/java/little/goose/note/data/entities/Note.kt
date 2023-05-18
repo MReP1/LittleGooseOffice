@@ -16,5 +16,7 @@ data class Note(
     @ColumnInfo("title")
     val title: String = "",
     @ColumnInfo("time")
-    val time: Date = Date()
+    val time: Date = Date(),
+    @ColumnInfo("content")
+    val content: String = ""
 ) : Parcelable
