@@ -8,7 +8,7 @@ object AndroidConfigConventions {
     const val COMPILE_SDK_VERSION = SDK_VERSION
     const val TARGET_SDK_VERSION = SDK_VERSION
 
-    val JAVA_VERSION = JavaVersion.VERSION_17
+    val JAVA_VERSION = JavaVersion.VERSION_11
 
     object LittleGoose {
         private const val PACKAGE_NAME = "little.goose.account"
