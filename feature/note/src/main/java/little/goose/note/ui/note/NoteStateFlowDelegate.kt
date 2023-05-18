@@ -306,7 +306,7 @@ class NoteRouteStateFlowDelegate(
 class NoteContentStateFlowDelegate(
     noteWithContent: StateFlow<Map<Note, List<NoteContentBlock>>?>,
     isPreview: StateFlow<Boolean>,
-    focusingBlockId: StateFlow<Long?>,
+    private val focusingBlockId: StateFlow<Long?>,
     private val textFieldValueCache: StateFlow<Map<Long, TextFieldValue>>,
     private val coroutineScope: CoroutineScope,
     private val changeTextFileValueCache: (Map<Long, TextFieldValue>) -> Unit,
@@ -343,6 +343,10 @@ class NoteContentStateFlowDelegate(
                         ins.interactions.onEach {
                             if (it is FocusInteraction.Focus) {
                                 changeFocusingBlockId(block.id)
+                            } else if (it is FocusInteraction.Unfocus) {
+                                if (this@NoteContentStateFlowDelegate.focusingBlockId.value == block.id) {
+                                    changeFocusingBlockId(null)
+                                }
                             }
                         }.launchIn(coroutineScope)
                     }
