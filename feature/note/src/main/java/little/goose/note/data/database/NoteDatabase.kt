@@ -21,8 +21,8 @@ abstract class NoteDatabase : RoomDatabase() {
     companion object {
         val MIGRATION_1_2 = object : Migration(1, 2) {
             override fun migrate(database: SupportSQLiteDatabase) {
-                // delete note content column
-                database.execSQL("ALTER TABLE `note` DROP COLUMN content")
+                // SQLite does not support dropping columns. Therefore, we have to create a new table
+                // database.execSQL("ALTER TABLE `note` DROP COLUMN content")
             }
         }
         val MIGRATION_2_3 = object : Migration(2, 3) {
