@@ -29,7 +29,7 @@ data class NoteColumnState(
 )
 
 @Composable
-fun NoteGrid(
+fun NoteColumn(
     modifier: Modifier = Modifier,
     state: NoteColumnState,
     onNoteClick: (Note) -> Unit
@@ -96,7 +96,7 @@ fun NoteItem(
                     .fillMaxSize()
                     .padding(12.dp)
             ) {
-                Text(text = note.title)
+                Text(text = note.title.ifBlank { "Untitled" })
                 val firstNoteContentBlock = noteContentBlocks.firstOrNull()
                 if (firstNoteContentBlock != null) {
                     Text(text = firstNoteContentBlock.content)
@@ -108,7 +108,7 @@ fun NoteItem(
                     tint = MaterialTheme.colorScheme.tertiary,
                     contentDescription = "selected",
                     modifier = Modifier
-                        .fillMaxSize()
+                        .matchParentSize()
                         .alpha(0.5F)
                 )
             }

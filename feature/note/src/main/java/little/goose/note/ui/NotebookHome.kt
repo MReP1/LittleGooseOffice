@@ -29,7 +29,7 @@ fun NotebookScreen(
     noteColumnState: NoteColumnState,
     onNoteClick: (Note) -> Unit
 ) {
-    NoteGrid(
+    NoteColumn(
         modifier = modifier,
         state = noteColumnState,
         onNoteClick = onNoteClick

@@ -16,7 +16,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import little.goose.design.system.component.MovableActionButton
 import little.goose.design.system.component.MovableActionButtonState
-import little.goose.note.ui.NoteGrid
+import little.goose.note.ui.NoteColumn
 import little.goose.note.ui.NoteColumnState
 import little.goose.note.ui.note.NoteActivity
 
@@ -27,7 +27,7 @@ internal fun SearchNoteScreen(
 ) {
     val context = LocalContext.current
     if (noteColumnState.noteWithContents.isNotEmpty()) {
-        NoteGrid(
+        NoteColumn(
             modifier = modifier.fillMaxSize(),
             state = noteColumnState,
             onNoteClick = { note ->
