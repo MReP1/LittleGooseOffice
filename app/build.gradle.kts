@@ -36,11 +36,15 @@ dependencies {
     // Compose
     implementation(libs.androidx.activity.compose)
     implementation(project(":core:design-system"))
+    implementation(project(":core:ui"))
     implementation(libs.accompanist.navigation.animation)
     implementation(libs.androidx.hilt.navigation.compose)
     androidTestImplementation(libs.androidx.compose.ui.test)
     debugImplementation(libs.androidx.compose.ui.tooling)
     debugImplementation(libs.androidx.compose.ui.testManifest)
+
+    // compose material
+    implementation("androidx.compose.animation:animation-graphics")
 
     // SplashScreen
     implementation(libs.androidx.core.splashscreen)

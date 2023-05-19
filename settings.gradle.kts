@@ -21,6 +21,7 @@ rootProject.name = "account"
 include(":app")
 include(":core:design-system")
 include(":core:common")
+include(":core:ui")
 include(":feature:memorial")
 include(":feature:schedule")
 include(":feature:note")
