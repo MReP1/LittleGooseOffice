@@ -43,7 +43,6 @@ dependencies {
     debugImplementation(libs.androidx.compose.ui.tooling)
     debugImplementation(libs.androidx.compose.ui.testManifest)
 
-    // compose material
     implementation("androidx.compose.animation:animation-graphics")
 
     // SplashScreen
