@@ -78,10 +78,10 @@ fun HomeScreen(
     val transactionColumnState by accountViewModel.transactionColumnState.collectAsState()
     val memorialColumnState by memorialViewModel.memorialColumnState.collectAsState()
     val scheduleColumnState by scheduleViewModel.scheduleColumnState.collectAsState()
-    val noteGridState by notebookViewModel.noteColumnState.collectAsState()
+    val noteColumnState by notebookViewModel.noteColumnState.collectAsState()
 
     val isMultiSelecting = when (currentHomePage) {
-        HomePage.Notebook -> noteGridState.isMultiSelecting
+        HomePage.Notebook -> noteColumnState.isMultiSelecting
         HomePage.ACCOUNT -> transactionColumnState.isMultiSelecting
         HomePage.Schedule -> scheduleColumnState.isMultiSelecting
         HomePage.Memorial -> memorialColumnState.isMultiSelecting
@@ -205,7 +205,7 @@ fun HomeScreen(
                         NOTEBOOK -> {
                             NotebookHome(
                                 modifier = Modifier.fillMaxSize(),
-                                noteColumnState = noteGridState,
+                                noteColumnState = noteColumnState,
                             )
                         }
                         ACCOUNT -> {
@@ -258,10 +258,10 @@ fun HomeScreen(
                                 HomePage.Notebook -> {
                                     if (isMultiSelecting) {
                                         deleteDialogState.show(onConfirm = {
-                                            noteGridState.deleteNotes(
-                                                noteGridState.multiSelectedNotes.toList()
+                                            noteColumnState.deleteNotes(
+                                                noteColumnState.multiSelectedNotes.toList()
                                             )
-                                            noteGridState.cancelMultiSelecting()
+                                            noteColumnState.cancelMultiSelecting()
                                         })
                                     } else {
                                         NoteActivity.openAdd(context)
@@ -325,7 +325,7 @@ fun HomeScreen(
                             when (currentHomePage) {
                                 HomePage.Notebook -> {
                                     if (isMultiSelecting) {
-                                        noteGridState.selectAllNotes()
+                                        noteColumnState.selectAllNotes()
                                     } else {
                                         SearchActivity.open(context, SearchType.Note)
                                     }
@@ -400,7 +400,7 @@ fun HomeScreen(
                                 }
                                 HomePage.Notebook -> {
                                     if (isMultiSelecting) {
-                                        noteGridState.cancelMultiSelecting()
+                                        noteColumnState.cancelMultiSelecting()
                                     } else scope.launch {
                                         buttonState.fold()
                                     }

@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.Stable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -53,12 +54,11 @@ class NoteActivity : AppCompatActivity() {
 
 }
 
-sealed class NoteRouteState {
-    object Loading : NoteRouteState()
+@Stable
+sealed interface NoteRouteState {
+    object Loading : NoteRouteState
 
-    data class State(
-        val state: NoteScreenState
-    ) : NoteRouteState()
+    data class State(val state: NoteScreenState) : NoteRouteState
 }
 
 sealed class NoteScreenEvent {

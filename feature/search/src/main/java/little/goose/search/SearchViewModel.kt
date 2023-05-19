@@ -29,8 +29,8 @@ import little.goose.memorial.logic.MemorialRepository
 import little.goose.memorial.ui.component.MemorialColumnState
 import little.goose.note.data.entities.Note
 import little.goose.note.data.entities.NoteContentBlock
+import little.goose.note.logic.DeleteNotesUseCase
 import little.goose.note.logic.GetNoteWithContentMapFlowByKeyword
-import little.goose.note.logic.NoteRepository
 import little.goose.note.ui.NoteColumnState
 import little.goose.schedule.data.entities.Schedule
 import little.goose.schedule.logic.ScheduleRepository
@@ -51,9 +51,9 @@ class SearchViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     private val accountRepository: AccountRepository,
     private val scheduleRepository: ScheduleRepository,
-    private val noteRepository: NoteRepository,
     private val memorialRepository: MemorialRepository,
-    private val getNoteWithContentMapFlowByKeyword: GetNoteWithContentMapFlowByKeyword
+    private val getNoteWithContentMapFlowByKeyword: GetNoteWithContentMapFlowByKeyword,
+    private val deleteNotesUseCase: DeleteNotesUseCase
 ) : ViewModel() {
 
     val type: SearchType = savedStateHandle[SearchType.KEY_SEARCH_TYPE] ?: SearchType.Transaction
@@ -400,7 +400,7 @@ class SearchViewModel @Inject constructor(
 
     private fun deleteNotes(notes: List<Note>) {
         viewModelScope.launch {
-            noteRepository.deleteNotes(notes)
+            deleteNotesUseCase (notes)
             _event.emit(Event.DeleteNotes(notes))
         }
     }
