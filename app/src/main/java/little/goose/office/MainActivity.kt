@@ -4,11 +4,11 @@ import android.os.Bundle
 import androidx.activity.compose.setContent
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.produceState
 import androidx.compose.ui.Modifier
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
-import androidx.lifecycle.lifecycleScope
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.launch
 import little.goose.common.utils.getDataOrDefault
 import little.goose.design.system.theme.AccountTheme
 import little.goose.home.data.HOME
@@ -23,15 +23,15 @@ class MainActivity : AppCompatActivity() {
         val splashScreen = installSplashScreen()
         splashScreen.setKeepOnScreenCondition { !isAppInit }
         super.onCreate(savedInstanceState)
-        lifecycleScope.launch {
-            val initPage = homeDataStore.getDataOrDefault(KEY_PREF_PAGER, HOME)
-            setContent {
-                AccountTheme {
-                    HomeScreen(
-                        modifier = Modifier.fillMaxSize(),
-                        initPage = initPage
-                    )
+        setContent {
+            AccountTheme {
+                val initPage by produceState(initialValue = HOME) {
+                    value = homeDataStore.getDataOrDefault(KEY_PREF_PAGER, HOME)
                 }
+                HomeScreen(
+                    modifier = Modifier.fillMaxSize(),
+                    initPage = initPage
+                )
             }
         }
     }
