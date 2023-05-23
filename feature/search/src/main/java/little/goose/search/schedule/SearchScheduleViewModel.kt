@@ -12,13 +12,21 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.launch
 import little.goose.schedule.data.entities.Schedule
-import little.goose.schedule.logic.ScheduleRepository
+import little.goose.schedule.logic.DeleteScheduleUseCase
+import little.goose.schedule.logic.DeleteSchedulesUseCase
+import little.goose.schedule.logic.InsertScheduleUseCase
+import little.goose.schedule.logic.SearchScheduleByTextFlowUseCase
+import little.goose.schedule.logic.UpdateScheduleUseCase
 import little.goose.schedule.ui.ScheduleColumnState
 import javax.inject.Inject
 
 @HiltViewModel
 class SearchScheduleViewModel @Inject constructor(
-    private val scheduleRepository: ScheduleRepository
+    private val insertScheduleUseCase: InsertScheduleUseCase,
+    private val updateScheduleUseCase: UpdateScheduleUseCase,
+    private val deleteScheduleUseCase: DeleteScheduleUseCase,
+    private val deleteSchedulesUseCase: DeleteSchedulesUseCase,
+    private val searchScheduleByTextFlowUseCase: SearchScheduleByTextFlowUseCase
 ) : ViewModel() {
 
     private val _searchScheduleState = MutableStateFlow<SearchScheduleState>(
@@ -41,7 +49,7 @@ class SearchScheduleViewModel @Inject constructor(
         _searchScheduleState.value = SearchScheduleState.Loading(::search)
         searchingJob?.cancel()
         combine(
-            scheduleRepository.searchScheduleByTextFlow(keyword),
+            searchScheduleByTextFlowUseCase(keyword),
             multiSelectedSchedules
         ) { schedules, multiSelectedSchedules ->
             _searchScheduleState.value = if (schedules.isEmpty()) {
@@ -76,32 +84,32 @@ class SearchScheduleViewModel @Inject constructor(
 
     private fun checkSchedule(schedule: Schedule, checked: Boolean) {
         viewModelScope.launch {
-            scheduleRepository.updateSchedule(schedule.copy(isfinish = checked))
+            updateScheduleUseCase(schedule.copy(isfinish = checked))
         }
     }
 
     private fun deleteSchedule(schedule: Schedule) {
         viewModelScope.launch {
-            scheduleRepository.deleteSchedule(schedule)
+            deleteScheduleUseCase(schedule)
             _searchNoteEvent.emit(SearchScheduleEvent.DeleteSchedules(listOf(schedule)))
         }
     }
 
     private fun addSchedule(schedule: Schedule) {
         viewModelScope.launch {
-            scheduleRepository.addSchedule(schedule)
+            insertScheduleUseCase(schedule)
         }
     }
 
     private fun updateSchedule(schedule: Schedule) {
         viewModelScope.launch {
-            scheduleRepository.updateSchedule(schedule)
+            updateScheduleUseCase(schedule)
         }
     }
 
     private fun deleteSchedules(schedules: List<Schedule>) {
         viewModelScope.launch {
-            scheduleRepository.deleteSchedules(schedules)
+            deleteSchedulesUseCase(schedules)
             _searchNoteEvent.emit(SearchScheduleEvent.DeleteSchedules(schedules))
         }
     }

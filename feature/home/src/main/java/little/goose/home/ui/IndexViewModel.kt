@@ -6,7 +6,13 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.kizitonwose.calendar.core.atStartOfMonth
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import little.goose.account.data.constants.AccountConstant.EXPENSE
 import little.goose.account.data.constants.AccountConstant.INCOME
@@ -16,10 +22,9 @@ import little.goose.home.data.CalendarModel
 import little.goose.home.ui.component.IndexTopBarState
 import little.goose.memorial.data.entities.Memorial
 import little.goose.memorial.logic.MemorialRepository
-import little.goose.note.data.entities.Note
-import little.goose.note.logic.NoteRepository
 import little.goose.schedule.data.entities.Schedule
-import little.goose.schedule.logic.ScheduleRepository
+import little.goose.schedule.logic.GetScheduleByYearMonthFlowUseCase
+import little.goose.schedule.logic.UpdateScheduleUseCase
 import java.math.BigDecimal
 import java.time.LocalDate
 import java.time.YearMonth
@@ -29,8 +34,8 @@ import javax.inject.Inject
 @HiltViewModel
 class IndexViewModel @Inject constructor(
     private val accountRepository: AccountRepository,
-    private val scheduleRepository: ScheduleRepository,
-    private val noteRepository: NoteRepository,
+    private val getScheduleByYearMonthFlowUseCase: GetScheduleByYearMonthFlowUseCase,
+    private val updateScheduleUseCase: UpdateScheduleUseCase,
     private val memorialRepository: MemorialRepository
 ) : ViewModel() {
 
@@ -100,14 +105,14 @@ class IndexViewModel @Inject constructor(
             }
             launch {
                 firstVisibleMonth.flatMapLatest {
-                    scheduleRepository.getScheduleByYearMonthFlow(it.year, it.month.value)
+                    getScheduleByYearMonthFlowUseCase(it.year, it.month.value)
                 }.collect { schedules ->
                     updateSchedules(schedules, firstVisibleMonth.value)
                 }
             }
             launch {
                 lastVisibleMonth.flatMapLatest {
-                    scheduleRepository.getScheduleByYearMonthFlow(it.year, it.month.value)
+                    getScheduleByYearMonthFlowUseCase(it.year, it.month.value)
                 }.collect { schedules ->
                     updateSchedules(schedules, lastVisibleMonth.value)
                 }
@@ -124,20 +129,6 @@ class IndexViewModel @Inject constructor(
                     memorialRepository.getMemorialsByYearMonthFlow(it.year, it.month.value)
                 }.collect { memorials ->
                     updateMemorials(memorials, lastVisibleMonth.value)
-                }
-            }
-            launch {
-                firstVisibleMonth.flatMapLatest {
-                    noteRepository.getNoteByYearMonthFlow(it.year, it.month.value)
-                }.collect { notes ->
-                    updateNotes(notes, firstVisibleMonth.value)
-                }
-            }
-            launch {
-                lastVisibleMonth.flatMapLatest {
-                    noteRepository.getNoteByYearMonthFlow(it.year, it.month.value)
-                }.collect { notes ->
-                    updateNotes(notes, lastVisibleMonth.value)
                 }
             }
         }
@@ -223,25 +214,6 @@ class IndexViewModel @Inject constructor(
         }
     }
 
-    private fun updateNotes(notes: List<Note>, month: YearMonth) {
-        val map = mutableMapOf<LocalDate, MutableList<Note>>()
-        notes.forEach { note ->
-            val time = note.time.toInstant().atZone(zoneId).toLocalDate()
-            val list = map.getOrPut(time) { mutableListOf() }
-            list.add(note)
-        }
-        val range = month.atStartOfMonth()..month.atEndOfMonth()
-        calendarModelMap.asSequence().filter {
-            it.key in range && !map.containsKey(it.key)
-        }.forEach {
-            it.value.value = it.value.value.copy(notes = emptyList())
-        }
-        map.forEach { (time, notes) ->
-            val calendarModelState = getCalendarModelState(time)
-            calendarModelState.value = calendarModelState.value.copy(notes = notes)
-        }
-    }
-
     private fun updateMonth(
         firstVisibleMonth: YearMonth,
         lastVisibleMonth: YearMonth
@@ -256,7 +228,7 @@ class IndexViewModel @Inject constructor(
 
     private fun checkSchedule(schedule: Schedule, checked: Boolean) {
         viewModelScope.launch {
-            scheduleRepository.updateSchedule(schedule.copy(isfinish = checked))
+            updateScheduleUseCase(schedule.copy(isfinish = checked))
         }
     }
 

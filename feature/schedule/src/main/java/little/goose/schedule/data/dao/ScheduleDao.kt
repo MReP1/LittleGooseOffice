@@ -23,11 +23,11 @@ interface ScheduleDao {
     @Query("SELECT * FROM $TABLE_SCHEDULE WHERE title LIKE '%'|| :keyWord ||'%' OR content LIKE '%'|| :keyWord ||'%' ")
     fun searchScheduleByTextFlow(keyWord: String): Flow<List<Schedule>>
 
-    @Insert
-    suspend fun addSchedule(schedule: Schedule)
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertSchedule(schedule: Schedule)
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun addSchedules(scheduleList: List<Schedule>)
+    suspend fun insertSchedules(scheduleList: List<Schedule>)
 
     @Update
     suspend fun updateSchedule(schedule: Schedule)

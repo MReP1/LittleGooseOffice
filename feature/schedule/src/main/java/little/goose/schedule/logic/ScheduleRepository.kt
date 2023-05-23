@@ -18,9 +18,9 @@ class ScheduleRepository(context: Context) {
 
     private val scheduleDao = database.scheduleDao()
 
-    suspend fun addSchedule(schedule: Schedule) = scheduleDao.addSchedule(schedule)
+    suspend fun insertSchedule(schedule: Schedule) = scheduleDao.insertSchedule(schedule)
 
-    suspend fun addSchedules(schedules: List<Schedule>) = scheduleDao.addSchedules(schedules)
+    suspend fun insertSchedules(schedules: List<Schedule>) = scheduleDao.insertSchedules(schedules)
 
     suspend fun updateSchedule(schedule: Schedule) = scheduleDao.updateSchedule(schedule)
 

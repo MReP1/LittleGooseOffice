@@ -7,12 +7,20 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import little.goose.schedule.data.entities.Schedule
-import little.goose.schedule.logic.ScheduleRepository
+import little.goose.schedule.logic.DeleteScheduleUseCase
+import little.goose.schedule.logic.DeleteSchedulesUseCase
+import little.goose.schedule.logic.GetAllScheduleFlowUseCase
+import little.goose.schedule.logic.InsertScheduleUseCase
+import little.goose.schedule.logic.UpdateScheduleUseCase
 import javax.inject.Inject
 
 @HiltViewModel
 class ScheduleViewModel @Inject constructor(
-    private val scheduleRepository: ScheduleRepository
+    private val insertScheduleUseCase: InsertScheduleUseCase,
+    private val updateScheduleUseCase: UpdateScheduleUseCase,
+    private val deleteScheduleUseCase: DeleteScheduleUseCase,
+    private val deleteSchedulesUseCase: DeleteSchedulesUseCase,
+    getAllScheduleFlow: GetAllScheduleFlowUseCase
 ) : ViewModel() {
 
     sealed class Event {
@@ -24,8 +32,10 @@ class ScheduleViewModel @Inject constructor(
 
     private val multiSelectedSchedules = MutableStateFlow<Set<Schedule>>(emptySet())
 
-    private val _schedules = MutableStateFlow<List<Schedule>>(listOf())
-    val schedules = _schedules.asStateFlow()
+    val schedules = getAllScheduleFlow().stateIn(
+        scope = viewModelScope, SharingStarted.WhileSubscribed(5000L),
+        initialValue = emptyList()
+    )
 
     val scheduleColumnState = combine(
         multiSelectedSchedules, schedules
@@ -56,27 +66,27 @@ class ScheduleViewModel @Inject constructor(
 
     fun addSchedule(schedule: Schedule) {
         viewModelScope.launch(Dispatchers.IO) {
-            scheduleRepository.addSchedule(schedule)
+            insertScheduleUseCase(schedule)
         }
     }
 
     fun deleteSchedule(schedule: Schedule) {
         viewModelScope.launch {
-            scheduleRepository.deleteSchedule(schedule)
+            deleteScheduleUseCase(schedule)
             _event.emit(Event.DeleteSchedules(listOf(schedule)))
         }
     }
 
     private fun deleteSchedules(schedules: List<Schedule>) {
         viewModelScope.launch(Dispatchers.IO) {
-            scheduleRepository.deleteSchedules(schedules)
+            deleteSchedulesUseCase(schedules)
             _event.emit(Event.DeleteSchedules(schedules))
         }
     }
 
     fun updateSchedule(schedule: Schedule) {
         viewModelScope.launch(Dispatchers.IO) {
-            scheduleRepository.updateSchedule(schedule)
+            updateScheduleUseCase(schedule)
         }
     }
 
@@ -96,12 +106,6 @@ class ScheduleViewModel @Inject constructor(
 
     private fun cancelMultiSelecting() {
         multiSelectedSchedules.value = emptySet()
-    }
-
-    init {
-        scheduleRepository.getAllScheduleFlow().onEach {
-            _schedules.value = it
-        }.launchIn(viewModelScope)
     }
 
 }
