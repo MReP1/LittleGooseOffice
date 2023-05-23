@@ -22,10 +22,10 @@ data class NoteColumnState(
     val noteWithContents: Map<Note, List<NoteContentBlock>>,
     val isMultiSelecting: Boolean,
     val multiSelectedNotes: Set<Note>,
-    val onSelectNote: (item: Note, selected: Boolean) -> Unit,
-    val selectAllNotes: () -> Unit,
-    val cancelMultiSelecting: () -> Unit,
-    val deleteNotes: (notes: List<Note>) -> Unit
+    val onSelectNote: (item: Note, selected: Boolean) -> Unit = { _, _ -> },
+    val selectAllNotes: () -> Unit = {},
+    val cancelMultiSelecting: () -> Unit = {},
+    val deleteNotes: (notes: List<Note>) -> Unit = {}
 )
 
 @Composable

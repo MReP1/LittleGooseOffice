@@ -11,6 +11,7 @@ android {
 dependencies {
     implementation(libs.androidx.appcompat)
     implementation(libs.androidx.hilt.navigation.compose)
+    implementation(project(":core:ui"))
     implementation(project(":core:design-system"))
     implementation(project(":core:common"))
     implementation(project(":feature:memorial"))

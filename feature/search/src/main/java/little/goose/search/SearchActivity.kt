@@ -26,6 +26,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import little.goose.design.system.theme.AccountTheme
+import little.goose.search.note.SearchNoteContent
 
 @AndroidEntryPoint
 class SearchActivity : ComponentActivity() {
@@ -168,7 +169,7 @@ private fun SearchScreen(
                     SearchType.Note -> when (viewModel.noteWithContents) {
                         is SearchViewModel.State.Data -> {
                             val noteGridState by viewModel.noteColumnState.collectAsState()
-                            SearchNoteScreen(
+                            SearchNoteContent(
                                 modifier = Modifier.fillMaxSize(),
                                 noteColumnState = noteGridState
                             )
