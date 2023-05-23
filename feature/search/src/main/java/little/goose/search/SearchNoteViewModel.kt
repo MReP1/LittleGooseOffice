@@ -17,6 +17,8 @@ import little.goose.note.data.entities.Note
 import little.goose.note.logic.DeleteNotesUseCase
 import little.goose.note.logic.GetNoteWithContentMapFlowByKeyword
 import little.goose.note.ui.NoteColumnState
+import little.goose.search.note.SearchNoteEvent
+import little.goose.search.note.SearchNoteState
 import javax.inject.Inject
 
 @HiltViewModel

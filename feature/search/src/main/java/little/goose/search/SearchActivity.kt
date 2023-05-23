@@ -27,6 +27,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import little.goose.design.system.theme.AccountTheme
 import little.goose.search.note.SearchNoteContent
+import little.goose.search.schedule.SearchScheduleScreen
 
 @AndroidEntryPoint
 class SearchActivity : ComponentActivity() {

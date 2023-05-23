@@ -1,4 +1,4 @@
-package little.goose.search
+package little.goose.search.note
 
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -21,8 +21,9 @@ import little.goose.design.system.theme.AccountTheme
 import little.goose.note.data.entities.Note
 import little.goose.note.data.entities.NoteContentBlock
 import little.goose.note.ui.NoteColumnState
+import little.goose.search.R
+import little.goose.search.SearchNoteViewModel
 import little.goose.search.component.SearchTopAppBar
-import little.goose.search.note.SearchNoteContent
 import little.goose.ui.screen.LittleGooseLoadingScreen
 
 sealed interface SearchNoteState {

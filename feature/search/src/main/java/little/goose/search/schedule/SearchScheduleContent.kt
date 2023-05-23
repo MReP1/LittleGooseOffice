@@ -1,4 +1,4 @@
-package little.goose.search
+package little.goose.search.schedule
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
@@ -24,7 +24,7 @@ import little.goose.schedule.ui.ScheduleDialog
 import little.goose.schedule.ui.rememberScheduleDialogState
 
 @Composable
-internal fun SearchScheduleScreen(
+internal fun SearchScheduleContent(
     modifier: Modifier = Modifier,
     scheduleColumnState: ScheduleColumnState,
     deleteSchedule: (Schedule) -> Unit,
@@ -84,8 +84,8 @@ internal fun SearchScheduleScreen(
 
 @Preview
 @Composable
-private fun PreviewSearchScheduleScreen() = AccountTheme {
-    SearchScheduleScreen(
+private fun PreviewSearchScheduleContent() = AccountTheme {
+    SearchScheduleContent(
         scheduleColumnState = ScheduleColumnState(
             schedules = (0..5).map {
                 Schedule(

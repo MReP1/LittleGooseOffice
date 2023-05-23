@@ -14,8 +14,12 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.tooling.preview.Preview
 import little.goose.design.system.component.MovableActionButton
 import little.goose.design.system.component.MovableActionButtonState
+import little.goose.design.system.theme.AccountTheme
+import little.goose.note.data.entities.Note
+import little.goose.note.data.entities.NoteContentBlock
 import little.goose.note.ui.NoteColumn
 import little.goose.note.ui.NoteColumnState
 import little.goose.note.ui.note.NoteActivity
@@ -70,4 +74,18 @@ internal fun SearchNoteContent(
             )
         }
     }
+}
+
+@Preview
+@Composable
+private fun PreviewSearchNoteContent() = AccountTheme {
+    SearchNoteContent(
+        noteColumnState = NoteColumnState(
+            noteWithContents = mapOf(
+                Note() to listOf(NoteContentBlock(content = "Preview"))
+            ),
+            isMultiSelecting = false,
+            multiSelectedNotes = emptySet()
+        )
+    )
 }
