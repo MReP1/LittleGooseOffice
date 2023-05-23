@@ -21,9 +21,9 @@ class MemorialRepository(context: Context) {
 
     fun getAllMemorialFlow() = memorialDao.getAllMemorialFlow()
 
-    suspend fun addMemorial(memorial: Memorial) = memorialDao.addMemorial(memorial)
+    suspend fun insertMemorial(memorial: Memorial) = memorialDao.insertMemorial(memorial)
 
-    suspend fun addMemorials(memorials: List<Memorial>) = memorialDao.addMemorials(memorials)
+    suspend fun insertMemorials(memorials: List<Memorial>) = memorialDao.insertMemorials(memorials)
 
     suspend fun deleteMemorials(memorials: List<Memorial>) = memorialDao.deleteMemorials(memorials)
 

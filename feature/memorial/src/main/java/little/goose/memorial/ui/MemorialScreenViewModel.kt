@@ -45,14 +45,14 @@ class MemorialScreenViewModel @Inject constructor(
                 memorialRepository.updateMemorials(topList)
                 when (type) {
                     TYPE_MODIFY -> memorialRepository.updateMemorial(memorial.value)
-                    TYPE_ADD -> memorialRepository.addMemorial(memorial.value)
+                    TYPE_ADD -> memorialRepository.insertMemorial(memorial.value)
                 }
             }
         } else {
             viewModelScope.launch {
                 when (type) {
                     TYPE_MODIFY -> memorialRepository.updateMemorial(memorial.value)
-                    TYPE_ADD -> memorialRepository.addMemorial(memorial.value)
+                    TYPE_ADD -> memorialRepository.insertMemorial(memorial.value)
                 }
             }
         }

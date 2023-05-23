@@ -6,13 +6,19 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import little.goose.memorial.data.entities.Memorial
-import little.goose.memorial.logic.MemorialRepository
+import little.goose.memorial.logic.DeleteMemorialUseCase
+import little.goose.memorial.logic.DeleteMemorialsUseCase
+import little.goose.memorial.logic.GetAllMemorialFlowUseCase
+import little.goose.memorial.logic.GetMemorialAtTopFlowUseCase
 import little.goose.memorial.ui.component.MemorialColumnState
 import javax.inject.Inject
 
 @HiltViewModel
 class MemorialViewModel @Inject constructor(
-    private val memorialRepository: MemorialRepository
+    getAllMemorialFlowUseCase: GetAllMemorialFlowUseCase,
+    getMemorialAtTopFlowUseCase: GetMemorialAtTopFlowUseCase,
+    private val deleteMemorialUseCase: DeleteMemorialUseCase,
+    private val deleteMemorialsUseCase: DeleteMemorialsUseCase
 ) : ViewModel() {
 
     sealed class Event {
@@ -24,7 +30,7 @@ class MemorialViewModel @Inject constructor(
 
     private val multiSelectedMemorials = MutableStateFlow<Set<Memorial>>(emptySet())
 
-    private val memorials = memorialRepository.getAllMemorialFlow().stateIn(
+    private val memorials = getAllMemorialFlowUseCase().stateIn(
         scope = viewModelScope,
         started = SharingStarted.Eagerly,
         initialValue = listOf()
@@ -56,7 +62,7 @@ class MemorialViewModel @Inject constructor(
         )
     )
 
-    val topMemorial: StateFlow<Memorial?> = memorialRepository.getMemorialAtTopFlow()
+    val topMemorial: StateFlow<Memorial?> = getMemorialAtTopFlowUseCase()
         .map { it.firstOrNull() }
         .stateIn(
             scope = viewModelScope,
@@ -66,14 +72,14 @@ class MemorialViewModel @Inject constructor(
 
     fun deleteMemorial(memorial: Memorial) {
         viewModelScope.launch {
-            memorialRepository.deleteMemorial(memorial)
+            deleteMemorialUseCase(memorial)
             _event.emit(Event.DeleteMemorials(listOf(memorial)))
         }
     }
 
     private fun deleteMemorials(memorials: List<Memorial>) {
         viewModelScope.launch {
-            memorialRepository.deleteMemorials(memorials)
+            deleteMemorialsUseCase(memorials)
             _event.emit(Event.DeleteMemorials(memorials))
         }
     }

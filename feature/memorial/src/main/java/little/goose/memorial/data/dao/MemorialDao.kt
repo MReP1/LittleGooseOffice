@@ -8,10 +8,10 @@ import little.goose.memorial.data.entities.Memorial
 @Dao
 interface MemorialDao {
     @Insert
-    suspend fun addMemorial(memorial: Memorial): Long
+    suspend fun insertMemorial(memorial: Memorial): Long
 
     @Insert
-    suspend fun addMemorials(memorials: List<Memorial>)
+    suspend fun insertMemorials(memorials: List<Memorial>)
 
     @Update
     suspend fun updateMemorial(memorial: Memorial)
