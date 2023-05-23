@@ -1,4 +1,4 @@
-package little.goose.search.note
+package little.goose.search.transaction
 
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -15,71 +15,67 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.navigation.compose.hiltViewModel
 import kotlinx.coroutines.flow.collectLatest
-import little.goose.design.system.theme.AccountTheme
-import little.goose.note.data.entities.Note
-import little.goose.note.data.entities.NoteContentBlock
-import little.goose.note.ui.NoteColumnState
+import little.goose.account.data.entities.Transaction
+import little.goose.account.ui.component.TransactionColumnState
 import little.goose.search.R
 import little.goose.search.SearchState
 import little.goose.search.component.SearchTopAppBar
 import little.goose.ui.screen.LittleGooseEmptyScreen
 import little.goose.ui.screen.LittleGooseLoadingScreen
 
-sealed interface SearchNoteState : SearchState {
-    data class Loading(
-        override val search: (String) -> Unit
-    ) : SearchNoteState
-
-    data class Success(
-        val data: NoteColumnState,
-        override val search: (String) -> Unit
-    ) : SearchNoteState
-
+sealed interface SearchTransactionState : SearchState {
     data class Empty(
         override val search: (String) -> Unit
-    ) : SearchNoteState
+    ) : SearchTransactionState
+
+    data class Loading(
+        override val search: (String) -> Unit
+    ) : SearchTransactionState
+
+    data class Success(
+        val data: TransactionColumnState,
+        override val search: (String) -> Unit
+    ) : SearchTransactionState
 }
 
-sealed interface SearchNoteEvent {
-    data class DeleteNotes(val notes: List<Note>) : SearchNoteEvent
+sealed interface SearchTransactionEvent {
+    data class DeleteTransactions(val transactions: List<Transaction>) : SearchTransactionEvent
 }
 
 @Composable
-fun SearchNoteRoute(
+fun SearchTransactionRoute(
     modifier: Modifier = Modifier,
     onBack: () -> Unit
 ) {
+    val viewModel = hiltViewModel<SearchTransactionViewModel>()
     val context = LocalContext.current
-    val viewModel = hiltViewModel<SearchNoteViewModel>()
-    val searchNoteState by viewModel.searchNoteState.collectAsState()
-
+    val searchTransactionState by viewModel.searchTransactionState.collectAsState()
     val snackbarHostState = remember { SnackbarHostState() }
 
-    LaunchedEffect(Unit) {
-        viewModel.searchNoteEvent.collectLatest { event ->
+    LaunchedEffect(viewModel.searchTransactionEvent) {
+        viewModel.searchTransactionEvent.collectLatest { event ->
             when (event) {
-                is SearchNoteEvent.DeleteNotes -> {
-                    snackbarHostState.showSnackbar(message = context.getString(R.string.deleted))
+                is SearchTransactionEvent.DeleteTransactions -> {
+                    snackbarHostState.showSnackbar(context.getString(R.string.deleted))
                 }
             }
         }
     }
 
-    SearchNoteScreen(
+    SearchTransactionScreen(
         modifier = modifier,
-        state = searchNoteState,
+        searchTransactionState = searchTransactionState,
         snackbarHostState = snackbarHostState,
         onBack = onBack
     )
 }
 
 @Composable
-fun SearchNoteScreen(
+fun SearchTransactionScreen(
     modifier: Modifier = Modifier,
-    state: SearchNoteState,
+    searchTransactionState: SearchTransactionState,
     snackbarHostState: SnackbarHostState,
     onBack: () -> Unit
 ) {
@@ -96,51 +92,34 @@ fun SearchNoteScreen(
                 keyword = keyword,
                 onKeywordChange = {
                     keyword = it
-                    state.search(it)
+                    searchTransactionState.search(it)
                 },
                 onBack = onBack
             )
         },
-        content = {
+        content = { paddingValues ->
             val contentModifier = Modifier
                 .fillMaxSize()
-                .padding(it)
-
-            when (state) {
-                is SearchNoteState.Empty -> {
+                .padding(paddingValues)
+            when (searchTransactionState) {
+                is SearchTransactionState.Empty -> {
                     LittleGooseEmptyScreen(modifier = contentModifier)
                 }
 
-                is SearchNoteState.Loading -> {
+                is SearchTransactionState.Loading -> {
                     LittleGooseLoadingScreen(modifier = contentModifier)
                 }
 
-                is SearchNoteState.Success -> {
-                    SearchNoteContent(
+                is SearchTransactionState.Success -> {
+                    SearchTransactionContent(
                         modifier = contentModifier,
-                        noteColumnState = state.data
+                        transactionColumnState = searchTransactionState.data,
+                        onDeleteTransaction = {
+                            searchTransactionState.data.deleteTransactions(listOf(it))
+                        }
                     )
                 }
             }
         }
-    )
-}
-
-@Preview
-@Composable
-private fun PreviewSearchNoteScreen() = AccountTheme {
-    SearchNoteScreen(
-        state = SearchNoteState.Success(
-            data = NoteColumnState(
-                noteWithContents = mapOf(
-                    Note() to listOf(NoteContentBlock(content = "Preview"))
-                ),
-                isMultiSelecting = false,
-                multiSelectedNotes = emptySet()
-            ),
-            search = {}
-        ),
-        snackbarHostState = SnackbarHostState(),
-        onBack = {}
     )
 }

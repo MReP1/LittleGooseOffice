@@ -26,7 +26,7 @@ internal fun SearchTopAppBar(
     modifier: Modifier = Modifier,
     keyword: String,
     onKeywordChange: (String) -> Unit,
-    onBack: () -> Unit = {}
+    onBack: () -> Unit
 ) {
     TopAppBar(
         modifier = modifier.fillMaxWidth(),
@@ -83,6 +83,7 @@ internal fun SearchTopAppBar(
 fun PreviewSearchTopAppBar() = AccountTheme {
     SearchTopAppBar(
         keyword = "Search keyword",
-        onKeywordChange = {}
+        onKeywordChange = {},
+        onBack = {}
     )
 }

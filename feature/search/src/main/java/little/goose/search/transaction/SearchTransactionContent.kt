@@ -1,4 +1,4 @@
-package little.goose.search
+package little.goose.search.transaction
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
@@ -22,7 +22,7 @@ import little.goose.design.system.component.MovableActionButton
 import little.goose.design.system.component.MovableActionButtonState
 
 @Composable
-internal fun SearchTransactionScreen(
+internal fun SearchTransactionContent(
     modifier: Modifier = Modifier,
     transactionColumnState: TransactionColumnState,
     onDeleteTransaction: (Transaction) -> Unit

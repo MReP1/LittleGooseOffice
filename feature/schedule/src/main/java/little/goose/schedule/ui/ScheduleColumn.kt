@@ -16,11 +16,11 @@ data class ScheduleColumnState(
     val schedules: List<Schedule>,
     val isMultiSelecting: Boolean,
     val multiSelectedSchedules: Set<Schedule>,
-    val onSelectSchedule: (item: Schedule, selected: Boolean) -> Unit,
-    val onCheckedChange: (Schedule, Boolean) -> Unit,
-    val selectAllSchedules: () -> Unit,
-    val cancelMultiSelecting: () -> Unit,
-    val deleteSchedules: (schedules: List<Schedule>) -> Unit
+    val onSelectSchedule: (item: Schedule, selected: Boolean) -> Unit = {_, _ -> },
+    val onCheckedChange: (Schedule, Boolean) -> Unit = {_, _ -> },
+    val selectAllSchedules: () -> Unit = {},
+    val cancelMultiSelecting: () -> Unit = {},
+    val deleteSchedules: (schedules: List<Schedule>) -> Unit = {}
 )
 
 @Composable

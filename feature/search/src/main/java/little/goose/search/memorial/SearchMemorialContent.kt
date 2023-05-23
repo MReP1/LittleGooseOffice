@@ -1,4 +1,4 @@
-package little.goose.search
+package little.goose.search.memorial
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
@@ -13,10 +13,8 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
 import little.goose.design.system.component.MovableActionButton
 import little.goose.design.system.component.MovableActionButtonState
-import little.goose.design.system.theme.AccountTheme
 import little.goose.memorial.data.entities.Memorial
 import little.goose.memorial.ui.MemorialDialog
 import little.goose.memorial.ui.component.MemorialColumn
@@ -24,7 +22,7 @@ import little.goose.memorial.ui.component.MemorialColumnState
 import little.goose.memorial.ui.rememberMemorialDialogState
 
 @Composable
-fun SearchMemorialScreen(
+internal fun SearchMemorialContent(
     modifier: Modifier = Modifier,
     memorialColumnState: MemorialColumnState,
     onDeleteMemorial: (Memorial) -> Unit
@@ -81,23 +79,4 @@ fun SearchMemorialScreen(
             )
         }
     }
-}
-
-@Preview
-@Composable
-private fun PreviewSearchMemorialScreen() = AccountTheme {
-    SearchMemorialScreen(
-        memorialColumnState = MemorialColumnState(
-            memorials = (0..5).map {
-                Memorial(id = it.toLong(), content = "Memorial$it",)
-            },
-            isMultiSelecting = true,
-            multiSelectedMemorials = emptySet(),
-            onSelectMemorial = { _, _ -> },
-            selectAllMemorial = {},
-            cancelMultiSelecting = {},
-            deleteMemorials = {}
-        ),
-        onDeleteMemorial = {}
-    )
 }

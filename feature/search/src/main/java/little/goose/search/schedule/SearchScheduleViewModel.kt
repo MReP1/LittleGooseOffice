@@ -8,8 +8,8 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.launchIn
-import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import little.goose.schedule.data.entities.Schedule
 import little.goose.schedule.logic.ScheduleRepository
@@ -40,30 +40,31 @@ class SearchScheduleViewModel @Inject constructor(
         }
         _searchScheduleState.value = SearchScheduleState.Loading(::search)
         searchingJob?.cancel()
-        scheduleRepository.searchScheduleByTextFlow(keyword)
-            .onEach { schedules ->
-                _searchScheduleState.value = if (schedules.isEmpty()) {
-                    SearchScheduleState.Empty(::search)
-                } else {
-                    SearchScheduleState.Success(
-                        data = ScheduleColumnState(
-                            schedules = schedules,
-                            multiSelectedSchedules = multiSelectedSchedules.value,
-                            isMultiSelecting = multiSelectedSchedules.value.isNotEmpty(),
-                            onSelectSchedule = ::selectSchedule,
-                            selectAllSchedules = ::selectAllSchedule,
-                            deleteSchedules = ::deleteSchedules,
-                            onCheckedChange = ::checkSchedule,
-                            cancelMultiSelecting = ::cancelSchedulesMultiSelecting
-                        ),
-                        deleteSchedule = ::deleteSchedule,
-                        addSchedule = ::addSchedule,
-                        modifySchedule = ::updateSchedule,
-                        search = ::search
-                    )
-                }
+        combine(
+            scheduleRepository.searchScheduleByTextFlow(keyword),
+            multiSelectedSchedules
+        ) { schedules, multiSelectedSchedules ->
+            _searchScheduleState.value = if (schedules.isEmpty()) {
+                SearchScheduleState.Empty(::search)
+            } else {
+                SearchScheduleState.Success(
+                    data = ScheduleColumnState(
+                        schedules = schedules,
+                        multiSelectedSchedules = multiSelectedSchedules,
+                        isMultiSelecting = multiSelectedSchedules.isNotEmpty(),
+                        onSelectSchedule = ::selectSchedule,
+                        selectAllSchedules = ::selectAllSchedule,
+                        deleteSchedules = ::deleteSchedules,
+                        onCheckedChange = ::checkSchedule,
+                        cancelMultiSelecting = ::cancelSchedulesMultiSelecting
+                    ),
+                    deleteSchedule = ::deleteSchedule,
+                    addSchedule = ::addSchedule,
+                    modifySchedule = ::updateSchedule,
+                    search = ::search
+                )
             }
-            .launchIn(viewModelScope)
+        }.launchIn(viewModelScope)
     }
 
 

@@ -1,4 +1,4 @@
-package little.goose.search.note
+package little.goose.search.memorial
 
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -19,67 +19,63 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.navigation.compose.hiltViewModel
 import kotlinx.coroutines.flow.collectLatest
 import little.goose.design.system.theme.AccountTheme
-import little.goose.note.data.entities.Note
-import little.goose.note.data.entities.NoteContentBlock
-import little.goose.note.ui.NoteColumnState
+import little.goose.memorial.data.entities.Memorial
+import little.goose.memorial.ui.component.MemorialColumnState
 import little.goose.search.R
 import little.goose.search.SearchState
 import little.goose.search.component.SearchTopAppBar
 import little.goose.ui.screen.LittleGooseEmptyScreen
 import little.goose.ui.screen.LittleGooseLoadingScreen
 
-sealed interface SearchNoteState : SearchState {
-    data class Loading(
-        override val search: (String) -> Unit
-    ) : SearchNoteState
-
-    data class Success(
-        val data: NoteColumnState,
-        override val search: (String) -> Unit
-    ) : SearchNoteState
-
+sealed interface SearchMemorialState : SearchState {
     data class Empty(
         override val search: (String) -> Unit
-    ) : SearchNoteState
+    ) : SearchMemorialState
+
+    data class Loading(
+        override val search: (String) -> Unit
+    ) : SearchMemorialState
+
+    data class Success(
+        val data: MemorialColumnState,
+        override val search: (String) -> Unit
+    ) : SearchMemorialState
 }
 
-sealed interface SearchNoteEvent {
-    data class DeleteNotes(val notes: List<Note>) : SearchNoteEvent
+sealed interface SearchMemorialEvent {
+    data class DeleteMemorials(val memorials: List<Memorial>) : SearchMemorialEvent
 }
 
 @Composable
-fun SearchNoteRoute(
+fun SearchMemorialRoute(
     modifier: Modifier = Modifier,
     onBack: () -> Unit
 ) {
+    val viewModel = hiltViewModel<SearchMemorialViewModel>()
     val context = LocalContext.current
-    val viewModel = hiltViewModel<SearchNoteViewModel>()
-    val searchNoteState by viewModel.searchNoteState.collectAsState()
-
+    val searchMemorialState by viewModel.searchMemorialState.collectAsState()
     val snackbarHostState = remember { SnackbarHostState() }
-
-    LaunchedEffect(Unit) {
-        viewModel.searchNoteEvent.collectLatest { event ->
+    LaunchedEffect(viewModel.searchMemorialEvent) {
+        viewModel.searchMemorialEvent.collectLatest { event ->
             when (event) {
-                is SearchNoteEvent.DeleteNotes -> {
+                is SearchMemorialEvent.DeleteMemorials -> {
                     snackbarHostState.showSnackbar(message = context.getString(R.string.deleted))
                 }
             }
         }
     }
-
-    SearchNoteScreen(
+    SearchMemorialScreen(
         modifier = modifier,
-        state = searchNoteState,
+        state = searchMemorialState,
         snackbarHostState = snackbarHostState,
         onBack = onBack
     )
 }
 
 @Composable
-fun SearchNoteScreen(
+fun SearchMemorialScreen(
     modifier: Modifier = Modifier,
-    state: SearchNoteState,
+    state: SearchMemorialState,
     snackbarHostState: SnackbarHostState,
     onBack: () -> Unit
 ) {
@@ -101,46 +97,49 @@ fun SearchNoteScreen(
                 onBack = onBack
             )
         },
-        content = {
+        content = { paddingValues ->
             val contentModifier = Modifier
                 .fillMaxSize()
-                .padding(it)
-
+                .padding(paddingValues)
             when (state) {
-                is SearchNoteState.Empty -> {
+                is SearchMemorialState.Empty -> {
                     LittleGooseEmptyScreen(modifier = contentModifier)
                 }
 
-                is SearchNoteState.Loading -> {
+                is SearchMemorialState.Loading -> {
                     LittleGooseLoadingScreen(modifier = contentModifier)
                 }
 
-                is SearchNoteState.Success -> {
-                    SearchNoteContent(
+                is SearchMemorialState.Success -> {
+                    SearchMemorialContent(
                         modifier = contentModifier,
-                        noteColumnState = state.data
+                        memorialColumnState = state.data,
+                        onDeleteMemorial = {
+                            state.data.deleteMemorials(listOf(it))
+                        }
                     )
                 }
             }
         }
     )
+
 }
 
 @Preview
 @Composable
-private fun PreviewSearchNoteScreen() = AccountTheme {
-    SearchNoteScreen(
-        state = SearchNoteState.Success(
-            data = NoteColumnState(
-                noteWithContents = mapOf(
-                    Note() to listOf(NoteContentBlock(content = "Preview"))
-                ),
-                isMultiSelecting = false,
-                multiSelectedNotes = emptySet()
-            ),
-            search = {}
+private fun PreviewSearchMemorialContent() = AccountTheme {
+    SearchMemorialContent(
+        memorialColumnState = MemorialColumnState(
+            memorials = (0..5).map {
+                Memorial(id = it.toLong(), content = "Memorial$it")
+            },
+            isMultiSelecting = true,
+            multiSelectedMemorials = emptySet(),
+            onSelectMemorial = { _, _ -> },
+            selectAllMemorial = {},
+            cancelMultiSelecting = {},
+            deleteMemorials = {}
         ),
-        snackbarHostState = SnackbarHostState(),
-        onBack = {}
+        onDeleteMemorial = {}
     )
 }
