@@ -1,4 +1,4 @@
-package little.goose.search
+package little.goose.search.note
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -17,8 +17,6 @@ import little.goose.note.data.entities.Note
 import little.goose.note.logic.DeleteNotesUseCase
 import little.goose.note.logic.GetNoteWithContentMapFlowByKeyword
 import little.goose.note.ui.NoteColumnState
-import little.goose.search.note.SearchNoteEvent
-import little.goose.search.note.SearchNoteState
 import javax.inject.Inject
 
 @HiltViewModel
@@ -32,24 +30,25 @@ class SearchNoteViewModel @Inject constructor(
     private val _searchNoteEvent = MutableSharedFlow<SearchNoteEvent>()
     val searchNoteEvent: SharedFlow<SearchNoteEvent> = _searchNoteEvent.asSharedFlow()
 
-    private val _searchNoteState = MutableStateFlow<SearchNoteState>(SearchNoteState.Empty)
+    private val _searchNoteState =
+        MutableStateFlow<SearchNoteState>(SearchNoteState.Empty(::search))
     val searchNoteState: StateFlow<SearchNoteState> = _searchNoteState.asStateFlow()
 
     private var searchingJob: Job? = null
 
     fun search(keyword: String) {
         if (keyword.isBlank()) {
-            _searchNoteState.value = SearchNoteState.Empty
+            _searchNoteState.value = SearchNoteState.Empty(::search)
             return
         }
-        _searchNoteState.value = SearchNoteState.Loading
+        _searchNoteState.value = SearchNoteState.Loading(::search)
         searchingJob?.cancel()
         searchingJob = combine(
             getNoteWithContentMapFlowByKeyword(keyword),
             multiSelectedNotes
         ) { nwc, multiSelectedNotes ->
-            if (nwc.isEmpty()) {
-                SearchNoteState.Empty
+            _searchNoteState.value = if (nwc.isEmpty()) {
+                SearchNoteState.Empty(::search)
             } else {
                 SearchNoteState.Success(
                     NoteColumnState(
@@ -59,8 +58,9 @@ class SearchNoteViewModel @Inject constructor(
                         onSelectNote = ::selectNote,
                         selectAllNotes = ::selectAllNote,
                         deleteNotes = ::deleteNotes,
-                        cancelMultiSelecting = ::cancelNotesMultiSelecting
-                    )
+                        cancelMultiSelecting = ::cancelNotesMultiSelecting,
+                    ),
+                    search = ::search
                 )
             }
         }.launchIn(viewModelScope)

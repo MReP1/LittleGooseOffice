@@ -17,19 +17,29 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.navigation.compose.hiltViewModel
+import kotlinx.coroutines.flow.collectLatest
 import little.goose.design.system.theme.AccountTheme
 import little.goose.note.data.entities.Note
 import little.goose.note.data.entities.NoteContentBlock
 import little.goose.note.ui.NoteColumnState
 import little.goose.search.R
-import little.goose.search.SearchNoteViewModel
+import little.goose.search.SearchState
 import little.goose.search.component.SearchTopAppBar
 import little.goose.ui.screen.LittleGooseLoadingScreen
 
-sealed interface SearchNoteState {
-    object Loading : SearchNoteState
-    data class Success(val data: NoteColumnState) : SearchNoteState
-    object Empty : SearchNoteState
+sealed interface SearchNoteState : SearchState {
+    data class Loading(
+        override val search: (String) -> Unit
+    ) : SearchNoteState
+
+    data class Success(
+        val data: NoteColumnState,
+        override val search: (String) -> Unit
+    ) : SearchNoteState
+
+    data class Empty(
+        override val search: (String) -> Unit
+    ) : SearchNoteState
 }
 
 sealed interface SearchNoteEvent {
@@ -47,7 +57,7 @@ fun SearchNoteRoute(
     val snackbarHostState = remember { SnackbarHostState() }
 
     LaunchedEffect(Unit) {
-        viewModel.searchNoteEvent.collect { event ->
+        viewModel.searchNoteEvent.collectLatest { event ->
             when (event) {
                 is SearchNoteEvent.DeleteNotes -> {
                     snackbarHostState.showSnackbar(message = context.getString(R.string.deleted))
@@ -59,8 +69,7 @@ fun SearchNoteRoute(
     SearchNoteScreen(
         modifier = modifier,
         state = searchNoteState,
-        snackbarHostState = snackbarHostState,
-        onSearch = viewModel::search
+        snackbarHostState = snackbarHostState
     )
 }
 
@@ -68,8 +77,7 @@ fun SearchNoteRoute(
 fun SearchNoteScreen(
     modifier: Modifier = Modifier,
     state: SearchNoteState,
-    snackbarHostState: SnackbarHostState,
-    onSearch: (String) -> Unit = {}
+    snackbarHostState: SnackbarHostState
 ) {
     Scaffold(
         modifier = modifier,
@@ -84,7 +92,7 @@ fun SearchNoteScreen(
                 keyword = keyword,
                 onKeywordChange = {
                     keyword = it
-                    onSearch(it)
+                    state.search(it)
                 }
             )
         },
@@ -94,11 +102,11 @@ fun SearchNoteScreen(
                 .padding(it)
 
             when (state) {
-                SearchNoteState.Empty -> {
+                is SearchNoteState.Empty -> {
                     LittleGooseLoadingScreen(modifier = contentModifier)
                 }
 
-                SearchNoteState.Loading -> {
+                is SearchNoteState.Loading -> {
                     LittleGooseLoadingScreen(modifier = contentModifier)
                 }
 
@@ -125,6 +133,7 @@ private fun PreviewSearchNoteScreen() = AccountTheme {
                 isMultiSelecting = false,
                 multiSelectedNotes = emptySet()
             ),
+            search = {}
         ),
         snackbarHostState = SnackbarHostState()
     )
