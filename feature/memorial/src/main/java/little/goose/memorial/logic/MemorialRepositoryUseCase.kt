@@ -67,6 +67,14 @@ class SearchMemorialByTextFlowUseCase(
     }
 }
 
+class GetMemorialFlowUseCase(
+    private val memorialRepository: MemorialRepository
+) {
+    operator fun invoke(id: Long): Flow<Memorial> {
+        return memorialRepository.getMemorialFlow(id)
+    }
+}
+
 class GetMemorialAtTopFlowUseCase(
     private val memorialRepository: MemorialRepository
 ) {

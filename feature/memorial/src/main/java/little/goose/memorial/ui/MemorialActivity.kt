@@ -38,10 +38,11 @@ import little.goose.design.system.component.dialog.rememberBottomSheetDialogStat
 import little.goose.design.system.component.dialog.rememberDialogState
 import little.goose.design.system.theme.AccountTheme
 import little.goose.memorial.R
-import little.goose.memorial.data.constants.KEY_MEMORIAL
+import little.goose.memorial.data.constants.KEY_MEMORIAL_ID
 import little.goose.memorial.data.entities.Memorial
 import little.goose.memorial.ui.component.MemorialText
 import little.goose.memorial.utils.appendTimeSuffix
+import little.goose.ui.screen.LittleGooseLoadingScreen
 import java.util.*
 
 @AndroidEntryPoint
@@ -61,11 +62,12 @@ class MemorialActivity : AppCompatActivity() {
 
     companion object {
 
-        fun getEditIntent(context: Context, memorial: Memorial): Intent {
-            return Intent(context, MemorialActivity::class.java).apply {
+        fun openEdit(context: Context, memorial: Memorial) {
+            val intent = Intent(context, MemorialActivity::class.java).apply {
                 putExtra(KEY_TYPE, TYPE_MODIFY)
-                putExtra(KEY_MEMORIAL, memorial)
+                putExtra(KEY_MEMORIAL_ID, memorial.id)
             }
+            context.startActivity(intent)
         }
 
         fun openAdd(context: Context) {
@@ -78,56 +80,62 @@ class MemorialActivity : AppCompatActivity() {
 
 }
 
+sealed interface MemorialScreenState {
+    object Loading : MemorialScreenState
+    data class Success(val memorial: Memorial) : MemorialScreenState
+}
+
 @Composable
 private fun MemorialRoute(
     modifier: Modifier = Modifier,
     onBack: () -> Unit
 ) {
     val viewModel: MemorialScreenViewModel = hiltViewModel()
-    val memorial by viewModel.memorial.collectAsState()
-    val context = LocalContext.current as FragmentActivity
     val timeSelectorDialogState = rememberDialogState()
     val inputTextDialogState = rememberBottomSheetDialogState()
     val scope = rememberCoroutineScope()
 
-    MemorialScreen(
-        modifier = modifier,
-        memorial = memorial,
-        onChangeTimeClick = timeSelectorDialogState::show,
-        onContentClick = {
-            scope.launch { inputTextDialogState.open() }
-        },
-        onTopCheckedChange = { isTop ->
-            viewModel.isChangeTop = true
-            viewModel.updateMemorial(memorial.copy(isTop = isTop))
-        },
-        onConfirmClick = {
-            viewModel.storeMemorial()
-            context.setResult(
-                71,
-                Intent().putExtra(KEY_MEMORIAL, viewModel.memorial.value)
+    val memorialScreenState by viewModel.memorialScreenState.collectAsState()
+    when (val state = memorialScreenState) {
+        MemorialScreenState.Loading -> LittleGooseLoadingScreen()
+        is MemorialScreenState.Success -> {
+            val memorial = state.memorial
+            MemorialScreen(
+                modifier = modifier,
+                memorial = memorial,
+                onChangeTimeClick = timeSelectorDialogState::show,
+                onContentClick = {
+                    scope.launch { inputTextDialogState.open() }
+                },
+                onTopCheckedChange = { isTop ->
+                    viewModel.isChangeTop = true
+                    viewModel.updateMemorial(memorial.copy(isTop = isTop))
+                },
+                onConfirmClick = {
+                    viewModel.storeMemorial()
+                    onBack()
+                },
+                onBack = onBack,
             )
-            onBack()
-        },
-        onBack = onBack,
-    )
 
-    TimeSelectorCenterDialog(
-        state = timeSelectorDialogState,
-        initTime = memorial.time,
-        type = TimeType.DATE,
-        onConfirm = {
-            viewModel.updateMemorial(memorial = memorial.copy(time = it))
-        }
-    )
+            TimeSelectorCenterDialog(
+                state = timeSelectorDialogState,
+                initTime = memorial.time,
+                type = TimeType.DATE,
+                onConfirm = {
+                    viewModel.updateMemorial(memorial = memorial.copy(time = it))
+                }
+            )
 
-    InputDialog(
-        state = inputTextDialogState,
-        text = memorial.content,
-        onConfirm = {
-            viewModel.updateMemorial(memorial = memorial.copy(content = it))
+            InputDialog(
+                state = inputTextDialogState,
+                text = memorial.content,
+                onConfirm = {
+                    viewModel.updateMemorial(memorial = memorial.copy(content = it))
+                }
+            )
         }
-    )
+    }
 }
 
 @Composable

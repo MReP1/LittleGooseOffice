@@ -5,9 +5,7 @@ import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.widget.Toast
-import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.compose.setContent
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.animation.*
 import androidx.compose.foundation.layout.*
@@ -28,12 +26,11 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import little.goose.common.utils.parcelable
 import little.goose.design.system.component.MovableActionButton
 import little.goose.design.system.component.MovableActionButtonState
 import little.goose.design.system.theme.AccountTheme
 import little.goose.memorial.R
-import little.goose.memorial.data.constants.KEY_MEMORIAL
+import little.goose.memorial.data.constants.KEY_MEMORIAL_ID
 import little.goose.memorial.data.entities.Memorial
 import little.goose.memorial.ui.component.MemorialCard
 
@@ -52,7 +49,7 @@ class MemorialShowActivity : AppCompatActivity() {
     companion object {
         fun open(context: Context, memorial: Memorial) {
             val intent = Intent(context, MemorialShowActivity::class.java).apply {
-                putExtra(KEY_MEMORIAL, memorial)
+                putExtra(KEY_MEMORIAL_ID, memorial.id)
             }
             context.startActivity(intent)
         }
@@ -65,21 +62,11 @@ private fun MemorialShowRoute() {
     val viewModel: MemorialShowViewModel = hiltViewModel()
     val context = LocalContext.current
     val memorial by viewModel.memorial.collectAsState()
-    val register = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.StartActivityForResult(),
-        onResult = { result ->
-            val mem = result.data?.parcelable<Memorial>(KEY_MEMORIAL)
-                ?: return@rememberLauncherForActivityResult
-            viewModel.updateMemorial(mem)
-        }
-    )
     MemorialShowScreen(
         modifier = Modifier.fillMaxSize(),
         memorial = memorial,
         onBack = (context as Activity)::finish,
-        onEditClick = remember {
-            { register.launch(MemorialActivity.getEditIntent(context, it)) }
-        }
+        onEditClick = { MemorialActivity.openEdit(context, it) }
     )
 }
 

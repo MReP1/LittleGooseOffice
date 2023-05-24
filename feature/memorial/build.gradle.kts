@@ -14,6 +14,7 @@ dependencies {
 
     implementation(project(":core:design-system"))
     implementation(project(":core:common"))
+    implementation(project(":core:ui"))
 
     // Room database
     implementation(libs.room.runtime)

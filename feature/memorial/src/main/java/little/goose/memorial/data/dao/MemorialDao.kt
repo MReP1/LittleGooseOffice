@@ -42,4 +42,7 @@ interface MemorialDao {
 
     @Query("SELECT * FROM $TABLE_MEMORIAL WHERE time > :startTime and time < :endTime ORDER BY time DESC")
     fun getMemorialByTimeFlow(startTime: Long, endTime: Long): Flow<List<Memorial>>
+
+    @Query("SELECT * FROM $TABLE_MEMORIAL WHERE id = :id")
+    fun getMemorialFlow(id: Long): Flow<Memorial>
 }
