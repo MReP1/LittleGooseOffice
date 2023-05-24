@@ -4,11 +4,25 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.asSharedFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.flowOn
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import little.goose.account.data.constants.AccountConstant
 import little.goose.account.data.entities.Transaction
-import little.goose.account.logic.AccountRepository
+import little.goose.account.logic.DeleteTransactionUseCase
+import little.goose.account.logic.DeleteTransactionsUseCase
+import little.goose.account.logic.GetAllTransactionExpenseSumFlowUseCase
+import little.goose.account.logic.GetAllTransactionIncomeSumFlowUseCase
+import little.goose.account.logic.GetTransactionByYearMonthFlowUseCase
 import little.goose.account.ui.component.AccountTitleState
 import little.goose.account.ui.component.MonthSelectorState
 import little.goose.account.ui.component.TransactionColumnState
@@ -16,12 +30,16 @@ import little.goose.account.utils.insertTime
 import little.goose.common.utils.getMonth
 import little.goose.common.utils.getYear
 import java.math.BigDecimal
-import java.util.*
+import java.util.Calendar
 import javax.inject.Inject
 
 @HiltViewModel
 class AccountHomeViewModel @Inject constructor(
-    private val accountRepository: AccountRepository
+    getAllTransactionExpenseSumFlowUseCase: GetAllTransactionExpenseSumFlowUseCase,
+    getAllTransactionIncomeSumFlowUseCase: GetAllTransactionIncomeSumFlowUseCase,
+    private val getTransactionByYearMonthFlowUseCase: GetTransactionByYearMonthFlowUseCase,
+    private val deleteTransactionUseCase: DeleteTransactionUseCase,
+    private val deleteTransactionsUseCase: DeleteTransactionsUseCase
 ) : ViewModel() {
 
     sealed class Event {
@@ -37,23 +55,23 @@ class AccountHomeViewModel @Inject constructor(
     private val _month = MutableStateFlow(Calendar.getInstance().getMonth())
     val month = _month.asStateFlow()
 
-    val totalExpenseSum = accountRepository
-        .getAllTransactionExpenseSumFlow()
+    private val totalExpenseSum = getAllTransactionExpenseSumFlowUseCase()
         .stateIn(
             viewModelScope,
             SharingStarted.WhileSubscribed(5000),
             BigDecimal(0)
         )
 
-    val totalIncomeSum = accountRepository
-        .getAllTransactionIncomeSumFlow()
+    private val totalIncomeSum = getAllTransactionIncomeSumFlowUseCase()
         .stateIn(
             viewModelScope,
             SharingStarted.WhileSubscribed(5000),
             BigDecimal(0)
         )
 
-    val totalBalance = combine(totalExpenseSum, totalIncomeSum) { expenseSum, incomeSum ->
+    private val totalBalance = combine(
+        totalExpenseSum, totalIncomeSum
+    ) { expenseSum, incomeSum ->
         expenseSum + incomeSum
     }.stateIn(
         viewModelScope,
@@ -61,13 +79,13 @@ class AccountHomeViewModel @Inject constructor(
         BigDecimal(0)
     )
 
-    private val _curMonthExpenseSum = MutableStateFlow(BigDecimal(0))
-    val curMonthExpenseSum = _curMonthExpenseSum.asStateFlow()
+    private val curMonthExpenseSum = MutableStateFlow(BigDecimal(0))
 
-    private val _curMonthIncomeSum = MutableStateFlow(BigDecimal(0))
-    val curMonthIncomeSum = _curMonthIncomeSum.asStateFlow()
+    private val curMonthIncomeSum = MutableStateFlow(BigDecimal(0))
 
-    val curMonthBalance = combine(curMonthExpenseSum, curMonthIncomeSum) { expenseSum, incomeSum ->
+    private val curMonthBalance = combine(
+        curMonthExpenseSum, curMonthIncomeSum
+    ) { expenseSum, incomeSum ->
         expenseSum + incomeSum
     }.stateIn(
         viewModelScope,
@@ -78,14 +96,14 @@ class AccountHomeViewModel @Inject constructor(
     private val multiSelectedTransactions = MutableStateFlow<Set<Transaction>>(emptySet())
 
     private val curMonthTransactionFlow = combine(year, month) { year, month ->
-        accountRepository.getTransactionByYearMonthFlow(year, month)
+        getTransactionByYearMonthFlowUseCase(year, month)
     }.flatMapLatest { it }.onEach { transactions ->
-        _curMonthExpenseSum.value = BigDecimal(0)
-        _curMonthIncomeSum.value = BigDecimal(0)
+        curMonthExpenseSum.value = BigDecimal(0)
+        curMonthIncomeSum.value = BigDecimal(0)
         for (transaction in transactions) {
             when (transaction.type) {
-                AccountConstant.EXPENSE -> _curMonthExpenseSum.value += transaction.money
-                AccountConstant.INCOME -> _curMonthIncomeSum.value += transaction.money
+                AccountConstant.EXPENSE -> curMonthExpenseSum.value += transaction.money
+                AccountConstant.INCOME -> curMonthIncomeSum.value += transaction.money
             }
         }
         multiSelectedTransactions.value = emptySet()
@@ -97,7 +115,7 @@ class AccountHomeViewModel @Inject constructor(
         emptyList()
     )
 
-    val curMonthTransactionWithTime = curMonthTransactionFlow.map {
+    private val curMonthTransactionWithTime = curMonthTransactionFlow.map {
         it.insertTime()
     }.flowOn(Dispatchers.Default).stateIn(
         viewModelScope,
@@ -156,21 +174,21 @@ class AccountHomeViewModel @Inject constructor(
         MonthSelectorState(year.value, month.value, ::changeTime)
     )
 
-    fun changeTime(year: Int, month: Int) {
+    private fun changeTime(year: Int, month: Int) {
         _year.value = year
         _month.value = month
     }
 
     fun deleteTransaction(transaction: Transaction) {
         viewModelScope.launch {
-            accountRepository.deleteTransaction(transaction)
+            deleteTransactionUseCase(transaction)
             _event.emit(Event.DeleteTransactions(listOf(transaction)))
         }
     }
 
     private fun deleteTransactions(transactions: List<Transaction>) {
         viewModelScope.launch {
-            accountRepository.deleteTransactions(transactions)
+            deleteTransactionsUseCase(transactions)
             _event.emit(Event.DeleteTransactions(transactions))
         }
     }

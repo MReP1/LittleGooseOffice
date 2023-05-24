@@ -13,17 +13,23 @@ import little.goose.common.constants.TYPE_ADD
 import little.goose.common.constants.TYPE_MODIFY
 import little.goose.memorial.data.constants.KEY_MEMORIAL
 import little.goose.memorial.data.entities.Memorial
-import little.goose.memorial.logic.MemorialRepository
-import java.util.*
+import little.goose.memorial.logic.GetMemorialAtTopFlowUseCase
+import little.goose.memorial.logic.InsertMemorialUseCase
+import little.goose.memorial.logic.UpdateMemorialUseCase
+import little.goose.memorial.logic.UpdateMemorialsUseCase
+import java.util.Date
 import javax.inject.Inject
 
 @HiltViewModel
 class MemorialScreenViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
-    private val memorialRepository: MemorialRepository
+    private val getMemorialAtTopFlowUseCase: GetMemorialAtTopFlowUseCase,
+    private val updateMemorialUseCase: UpdateMemorialUseCase,
+    private val updateMemorialsUseCase: UpdateMemorialsUseCase,
+    private val insertMemorialUseCase: InsertMemorialUseCase
 ) : ViewModel() {
 
-    val type: String by lazy(LazyThreadSafetyMode.NONE) { savedStateHandle[KEY_TYPE]!! }
+    private val type: String by lazy(LazyThreadSafetyMode.NONE) { savedStateHandle[KEY_TYPE]!! }
 
     private val _memorial = MutableStateFlow(
         value = savedStateHandle[KEY_MEMORIAL] ?: Memorial(null, "纪念日", false, Date())
@@ -40,19 +46,19 @@ class MemorialScreenViewModel @Inject constructor(
         if (isChangeTop && memorial.value.isTop) { //在主线程判断，以免线程不同步
             // FIXME scope
             viewModelScope.launch {
-                val topList = memorialRepository.getMemorialAtTopFlow().first()
+                val topList = getMemorialAtTopFlowUseCase().first()
                     .map { it.copy(isTop = false) }
-                memorialRepository.updateMemorials(topList)
+                updateMemorialsUseCase(topList)
                 when (type) {
-                    TYPE_MODIFY -> memorialRepository.updateMemorial(memorial.value)
-                    TYPE_ADD -> memorialRepository.insertMemorial(memorial.value)
+                    TYPE_MODIFY -> updateMemorialUseCase(memorial.value)
+                    TYPE_ADD -> insertMemorialUseCase(memorial.value)
                 }
             }
         } else {
             viewModelScope.launch {
                 when (type) {
-                    TYPE_MODIFY -> memorialRepository.updateMemorial(memorial.value)
-                    TYPE_ADD -> memorialRepository.insertMemorial(memorial.value)
+                    TYPE_MODIFY -> updateMemorialUseCase(memorial.value)
+                    TYPE_ADD -> insertMemorialUseCase(memorial.value)
                 }
             }
         }

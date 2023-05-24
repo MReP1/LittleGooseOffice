@@ -5,26 +5,51 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.asSharedFlow
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import little.goose.account.data.constants.MoneyType
 import little.goose.account.data.entities.Transaction
-import little.goose.account.logic.AccountRepository
+import little.goose.account.logic.DeleteTransactionUseCase
+import little.goose.account.logic.DeleteTransactionsUseCase
+import little.goose.account.logic.GetAllTransactionFlowUseCase
+import little.goose.account.logic.GetTransactionByDateFlowUseCase
+import little.goose.account.logic.GetTransactionByYearFlowWithKeyContentUseCase
+import little.goose.account.logic.GetTransactionByYearMonthFlowUseCase
+import little.goose.account.logic.GetTransactionByYearMonthFlowWithKeyContentUseCase
 import little.goose.account.ui.component.TransactionColumnState
 import little.goose.common.constants.KEY_CONTENT
 import little.goose.common.constants.KEY_MONEY_TYPE
 import little.goose.common.constants.KEY_TIME
 import little.goose.common.constants.KEY_TIME_TYPE
 import little.goose.common.utils.TimeType
-import little.goose.common.utils.*
-import java.util.*
+import little.goose.common.utils.getDate
+import little.goose.common.utils.getMonth
+import little.goose.common.utils.getYear
+import little.goose.common.utils.toChineseYear
+import little.goose.common.utils.toChineseYearMonth
+import little.goose.common.utils.toChineseYearMonthDay
+import java.util.Calendar
+import java.util.Date
 import javax.inject.Inject
 
 @HiltViewModel
 class TransactionExampleViewModel @Inject constructor(
     application: Application,
     savedStateHandle: SavedStateHandle,
-    private val accountRepository: AccountRepository
+    private val getTransactionByDateFlowUseCase: GetTransactionByDateFlowUseCase,
+    private val getTransactionByYearMonthFlowUseCase: GetTransactionByYearMonthFlowUseCase,
+    private val getTransactionByYearFlowWithKeyContentUseCase: GetTransactionByYearFlowWithKeyContentUseCase,
+    private val getTransactionByYearMonthFlowWithKeyContentUseCase: GetTransactionByYearMonthFlowWithKeyContentUseCase,
+    private val getAllTransactionFlowUseCase: GetAllTransactionFlowUseCase,
+    private val deleteTransactionUseCase: DeleteTransactionUseCase,
+    private val deleteTransactionsUseCase: DeleteTransactionsUseCase
 ) : AndroidViewModel(application) {
 
     sealed class Event {
@@ -94,30 +119,34 @@ class TransactionExampleViewModel @Inject constructor(
         calendar.time = time
         return if (content == null) {
             when (timeType) {
-                TimeType.DATE -> accountRepository.getTransactionByDateFlow(
+                TimeType.DATE -> getTransactionByDateFlowUseCase(
                     calendar.getYear(), calendar.getMonth(), calendar.getDate(), moneyType
                 )
-                TimeType.YEAR_MONTH -> accountRepository.getTransactionByYearMonthFlow(
+
+                TimeType.YEAR_MONTH -> getTransactionByYearMonthFlowUseCase(
                     calendar.getYear(), calendar.getMonth(), moneyType
                 )
+
                 else -> {
-                    accountRepository.getAllTransactionFlow()
+                    getAllTransactionFlowUseCase()
                 }
             }
         } else {
             when (timeType) {
                 TimeType.YEAR -> {
-                    accountRepository.getTransactionByYearFlowWithKeyContent(
+                    getTransactionByYearFlowWithKeyContentUseCase(
                         calendar.getYear(), content
                     )
                 }
+
                 TimeType.YEAR_MONTH -> {
-                    accountRepository.getTransactionByYearMonthFlowWithKeyContent(
+                    getTransactionByYearMonthFlowWithKeyContentUseCase(
                         calendar.getYear(), calendar.getMonth(), content
                     )
                 }
+
                 else -> {
-                    accountRepository.getAllTransactionFlow()
+                    getAllTransactionFlowUseCase()
                 }
             }
         }
@@ -125,14 +154,14 @@ class TransactionExampleViewModel @Inject constructor(
 
     fun deleteTransaction(transaction: Transaction) {
         viewModelScope.launch {
-            accountRepository.deleteTransaction(transaction)
+            deleteTransactionUseCase(transaction)
             _event.emit(Event.DeleteTransactions(listOf(transaction)))
         }
     }
 
     private fun deleteTransactions(transactions: List<Transaction>) {
         viewModelScope.launch {
-            accountRepository.deleteTransactions(transactions)
+            deleteTransactionsUseCase(transactions)
             _event.emit(Event.DeleteTransactions(transactions))
         }
     }

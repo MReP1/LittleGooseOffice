@@ -12,13 +12,15 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.launch
 import little.goose.memorial.data.entities.Memorial
-import little.goose.memorial.logic.MemorialRepository
+import little.goose.memorial.logic.DeleteMemorialsUseCase
+import little.goose.memorial.logic.SearchMemorialByTextFlowUseCase
 import little.goose.memorial.ui.component.MemorialColumnState
 import javax.inject.Inject
 
 @HiltViewModel
 class SearchMemorialViewModel @Inject constructor(
-    private val memorialRepository: MemorialRepository
+    private val searchMemorialByTextFlowUseCase: SearchMemorialByTextFlowUseCase,
+    private val deleteMemorialsUseCase: DeleteMemorialsUseCase
 ) : ViewModel() {
 
     private val _searchMemorialState = MutableStateFlow<SearchMemorialState>(
@@ -41,7 +43,7 @@ class SearchMemorialViewModel @Inject constructor(
         _searchMemorialState.value = SearchMemorialState.Loading(::search)
         searchingJob?.cancel()
         searchingJob = combine(
-            memorialRepository.searchMemorialByTextFlow(keyword),
+            searchMemorialByTextFlowUseCase(keyword),
             multiSelectedMemorials
         ) { memorials, multiSelectedMemorials ->
             _searchMemorialState.value = if (memorials.isEmpty()) {
@@ -80,7 +82,7 @@ class SearchMemorialViewModel @Inject constructor(
 
     private fun deleteMemorials(memorials: List<Memorial>) {
         viewModelScope.launch {
-            memorialRepository.deleteMemorials(memorials)
+            deleteMemorialsUseCase(memorials)
             _searchMemorialEvent.emit(SearchMemorialEvent.DeleteMemorials(memorials))
         }
     }

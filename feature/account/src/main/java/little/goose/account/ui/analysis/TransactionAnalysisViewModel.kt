@@ -4,9 +4,13 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
-import little.goose.account.logic.AccountRepository
 import little.goose.account.ui.component.MonthSelectorState
 import little.goose.account.ui.component.YearSelectorState
 import little.goose.common.utils.getMonth
@@ -16,15 +20,13 @@ import javax.inject.Inject
 
 @HiltViewModel
 class TransactionAnalysisViewModel @Inject constructor(
-    accountRepository: AccountRepository
+    private val analysisHelper: AnalysisHelper
 ) : ViewModel() {
-
-    private val analysisHelper = AnalysisHelper(accountRepository)
 
     enum class TimeType { MONTH, YEAR }
 
     private val _timeType = MutableStateFlow(TimeType.MONTH)
-    val timeType = _timeType.asStateFlow()
+    private val timeType = _timeType.asStateFlow()
 
     private val _year = MutableStateFlow(Calendar.getInstance().getYear())
     val year = _year.asStateFlow()
@@ -44,7 +46,7 @@ class TransactionAnalysisViewModel @Inject constructor(
         viewModelScope.launch { updateData(timeType.value, year.value, month.value) }
     }
 
-    suspend fun updateData(type: TimeType, year: Int, month: Int) {
+    private suspend fun updateData(type: TimeType, year: Int, month: Int) {
         when (type) {
             TimeType.MONTH -> analysisHelper.updateTransactionListMonth(year, month)
             TimeType.YEAR -> analysisHelper.updateTransactionListYear(year)

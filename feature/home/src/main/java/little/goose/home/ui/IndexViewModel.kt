@@ -17,11 +17,11 @@ import kotlinx.coroutines.launch
 import little.goose.account.data.constants.AccountConstant.EXPENSE
 import little.goose.account.data.constants.AccountConstant.INCOME
 import little.goose.account.data.entities.Transaction
-import little.goose.account.logic.AccountRepository
+import little.goose.account.logic.GetTransactionByYearMonthFlowUseCase
 import little.goose.home.data.CalendarModel
 import little.goose.home.ui.component.IndexTopBarState
 import little.goose.memorial.data.entities.Memorial
-import little.goose.memorial.logic.MemorialRepository
+import little.goose.memorial.logic.GetMemorialsByYearMonthFlowUseCase
 import little.goose.schedule.data.entities.Schedule
 import little.goose.schedule.logic.GetScheduleByYearMonthFlowUseCase
 import little.goose.schedule.logic.UpdateScheduleUseCase
@@ -33,10 +33,10 @@ import javax.inject.Inject
 
 @HiltViewModel
 class IndexViewModel @Inject constructor(
-    private val accountRepository: AccountRepository,
+    private val getTransactionByYearMonthFlowUseCase: GetTransactionByYearMonthFlowUseCase,
     private val getScheduleByYearMonthFlowUseCase: GetScheduleByYearMonthFlowUseCase,
     private val updateScheduleUseCase: UpdateScheduleUseCase,
-    private val memorialRepository: MemorialRepository
+    private val getMemorialByYearMonthFlowUseCase: GetMemorialsByYearMonthFlowUseCase
 ) : ViewModel() {
 
     private val zoneId by lazy { ZoneId.systemDefault() }
@@ -91,14 +91,14 @@ class IndexViewModel @Inject constructor(
         viewModelScope.launch {
             launch {
                 firstVisibleMonth.flatMapLatest {
-                    accountRepository.getTransactionByYearMonthFlow(it.year, it.month.value)
+                    getTransactionByYearMonthFlowUseCase(it.year, it.month.value)
                 }.collect { transactions: List<Transaction> ->
                     updateTransactions(transactions, firstVisibleMonth.value)
                 }
             }
             launch {
                 lastVisibleMonth.flatMapLatest {
-                    accountRepository.getTransactionByYearMonthFlow(it.year, it.month.value)
+                    getTransactionByYearMonthFlowUseCase(it.year, it.month.value)
                 }.collect { transactions: List<Transaction> ->
                     updateTransactions(transactions, lastVisibleMonth.value)
                 }
@@ -119,14 +119,14 @@ class IndexViewModel @Inject constructor(
             }
             launch {
                 firstVisibleMonth.flatMapLatest {
-                    memorialRepository.getMemorialsByYearMonthFlow(it.year, it.month.value)
+                    getMemorialByYearMonthFlowUseCase(it.year, it.month.value)
                 }.collect { memorials ->
                     updateMemorials(memorials, firstVisibleMonth.value)
                 }
             }
             launch {
                 lastVisibleMonth.flatMapLatest {
-                    memorialRepository.getMemorialsByYearMonthFlow(it.year, it.month.value)
+                    getMemorialByYearMonthFlowUseCase(it.year, it.month.value)
                 }.collect { memorials ->
                     updateMemorials(memorials, lastVisibleMonth.value)
                 }

@@ -10,7 +10,7 @@ import kotlinx.coroutines.launch
 import little.goose.account.data.constants.AccountConstant.EXPENSE
 import little.goose.account.data.constants.AccountConstant.INCOME
 import little.goose.account.data.entities.Transaction
-import little.goose.account.logic.AccountRepository
+import little.goose.account.logic.InsertTransactionUseCase
 import little.goose.account.ui.transaction.icon.TransactionIconHelper
 import little.goose.common.constants.KEY_TIME
 import little.goose.common.constants.KEY_TRANSACTION
@@ -21,7 +21,7 @@ import javax.inject.Inject
 @HiltViewModel
 class TransactionViewModel @Inject constructor(
     private val savedStateHandle: SavedStateHandle,
-    private val accountRepository: AccountRepository
+    private val insertTransactionUseCase: InsertTransactionUseCase
 ) : ViewModel() {
 
     private val defaultTransaction
@@ -59,9 +59,9 @@ class TransactionViewModel @Inject constructor(
         } else transaction
         viewModelScope.launch {
             if (tra.id == null) {
-                accountRepository.insertTransaction(tra)
+                insertTransactionUseCase(tra)
             } else {
-                accountRepository.updateTransaction(tra)
+                insertTransactionUseCase(tra)
             }
             if (!isAgain) {
                 _event.emit(Event.WriteSuccess)

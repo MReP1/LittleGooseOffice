@@ -11,16 +11,31 @@ import little.goose.account.data.entities.Transaction
 import little.goose.account.data.models.TimeMoney
 import little.goose.account.data.models.TransactionBalance
 import little.goose.account.data.models.TransactionPercent
-import little.goose.account.logic.AccountRepository
-import little.goose.common.utils.*
+import little.goose.account.logic.GetExpenseSumByYearMonthUseCase
+import little.goose.account.logic.GetExpenseSumByYearUseCase
+import little.goose.account.logic.GetIncomeSumByYearMonthUseCase
+import little.goose.account.logic.GetIncomeSumByYearUseCase
+import little.goose.account.logic.GetTransactionByYearUseCase
+import little.goose.account.logic.GetTransactionsByYearAndMonthUseCase
+import little.goose.common.utils.DateTimeUtils
+import little.goose.common.utils.getRealDate
+import little.goose.common.utils.getRealMonth
+import little.goose.common.utils.getRoundTwo
+import little.goose.common.utils.setDate
+import little.goose.common.utils.setMonth
+import little.goose.common.utils.setYear
 import java.math.BigDecimal
-import java.util.*
+import java.util.Calendar
 import kotlin.math.min
 
 class AnalysisHelper(
-    private val accountRepository: AccountRepository
+    private val getTransactionByYearUseCase: GetTransactionByYearUseCase,
+    private val getExpenseSumByYearUseCase: GetExpenseSumByYearUseCase,
+    private val getIncomeSumByYearUseCase: GetIncomeSumByYearUseCase,
+    private val getTransactionsByYearAndMonthUseCase: GetTransactionsByYearAndMonthUseCase,
+    private val getExpenseSumByYearMonthUseCase: GetExpenseSumByYearMonthUseCase,
+    private val getIncomeSumByYearMonthUseCase: GetIncomeSumByYearMonthUseCase
 ) {
-
     private val calendar = Calendar.getInstance()
 
     private val mapExpensePercent: HashMap<Int, TransactionPercent> = HashMap()
@@ -62,9 +77,9 @@ class AnalysisHelper(
     suspend fun updateTransactionListYear(
         year: Int
     ) = withContext(Dispatchers.IO) {
-        val listDeferred = async { accountRepository.getTransactionByYear(year) }
-        val expenseSumDeferred = async { accountRepository.getExpenseSumByYear(year) }
-        val incomeSumDeferred = async { accountRepository.getIncomeSumByYear(year) }
+        val listDeferred = async { getTransactionByYearUseCase(year) }
+        val expenseSumDeferred = async { getExpenseSumByYearUseCase(year) }
+        val incomeSumDeferred = async { getIncomeSumByYearUseCase(year) }
         val list = listDeferred.await()
         val expenseSum = expenseSumDeferred.await()
         val incomeSum = incomeSumDeferred.await()
@@ -76,9 +91,9 @@ class AnalysisHelper(
     suspend fun updateTransactionListMonth(
         year: Int, month: Int
     ) = withContext(Dispatchers.IO) {
-        val listDeferred = async { accountRepository.getTransactionsByYearAndMonth(year, month) }
-        val expenseSumDeferred = async { accountRepository.getExpenseSumByYearMonth(year, month) }
-        val incomeSumDeferred = async { accountRepository.getIncomeSumByYearMonth(year, month) }
+        val listDeferred = async { getTransactionsByYearAndMonthUseCase(year, month) }
+        val expenseSumDeferred = async { getExpenseSumByYearMonthUseCase(year, month) }
+        val incomeSumDeferred = async { getIncomeSumByYearMonthUseCase(year, month) }
         val list = listDeferred.await()
         val expenseSum = expenseSumDeferred.await()
         val incomeSum = incomeSumDeferred.await()
@@ -108,6 +123,7 @@ class AnalysisHelper(
                 initTimeListYear(year)
                 dealWithListYear(list)
             }
+
             TransactionAnalysisViewModel.TimeType.MONTH -> {
                 initTimeListMonth(year, month)
                 dealWithListMonth(list)
@@ -193,6 +209,7 @@ class AnalysisHelper(
                     //处理TransactionBalance
                     dealWithBalanceOfExpenseYear(value)
                 }
+
                 INCOME -> {
                     //处理TransactionPercent
                     dealWithIncome(value)
@@ -212,6 +229,7 @@ class AnalysisHelper(
                     //处理TransactionBalance
                     dealWithBalanceOfExpenseMonth(value)
                 }
+
                 INCOME -> {
                     //处理TransactionPercent
                     dealWithIncome(value)

@@ -13,13 +13,17 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.launch
 import little.goose.account.data.entities.Transaction
-import little.goose.account.logic.AccountRepository
+import little.goose.account.logic.DeleteTransactionsUseCase
+import little.goose.account.logic.SearchTransactionByMoneyFlowUseCase
+import little.goose.account.logic.SearchTransactionByTextFlowUseCase
 import little.goose.account.ui.component.TransactionColumnState
 import javax.inject.Inject
 
 @HiltViewModel
 class SearchTransactionViewModel @Inject constructor(
-    private val accountRepository: AccountRepository
+    private val searchTransactionByMoneyFlowUseCase: SearchTransactionByMoneyFlowUseCase,
+    private val searchTransactionByTextFlowUseCase: SearchTransactionByTextFlowUseCase,
+    private val deleteTransactionsUseCase: DeleteTransactionsUseCase
 ) : ViewModel() {
 
     private val multiSelectedTransactions = MutableStateFlow(emptySet<Transaction>())
@@ -43,9 +47,9 @@ class SearchTransactionViewModel @Inject constructor(
         searchingJob?.cancel()
         searchingJob = combine(
             if (keyword.isDigitsOnly()) {
-                accountRepository.searchTransactionByMoneyFlow(keyword)
+                searchTransactionByMoneyFlowUseCase(keyword)
             } else {
-                accountRepository.searchTransactionByTextFlow(keyword)
+                searchTransactionByTextFlowUseCase(keyword)
             },
             multiSelectedTransactions
         ) { transactions, multiSelectedTransactions ->
@@ -70,7 +74,7 @@ class SearchTransactionViewModel @Inject constructor(
 
     private fun deleteTransactions(transactions: List<Transaction>) {
         viewModelScope.launch {
-            accountRepository.deleteTransactions(transactions)
+            deleteTransactionsUseCase(transactions)
             _searchTransactionEvent.emit(SearchTransactionEvent.DeleteTransactions(transactions))
         }
     }
