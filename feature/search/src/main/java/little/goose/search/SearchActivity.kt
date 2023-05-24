@@ -3,14 +3,12 @@ package little.goose.search
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
-import android.os.Parcelable
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import dagger.hilt.android.AndroidEntryPoint
-import little.goose.common.utils.parcelable
 import little.goose.design.system.theme.AccountTheme
 import little.goose.search.memorial.SearchMemorialRoute
 import little.goose.search.note.SearchNoteRoute
@@ -24,14 +22,15 @@ class SearchActivity : ComponentActivity() {
         fun open(context: Context, searchType: SearchType) {
             context.startActivity(
                 Intent(context, SearchActivity::class.java)
-                    .apply { putExtra(SearchType.KEY_SEARCH_TYPE, searchType as Parcelable) }
+                    .apply { putExtra(SearchType.KEY_SEARCH_TYPE, searchType.value) }
             )
         }
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        val type = intent.parcelable<SearchType>(SearchType.KEY_SEARCH_TYPE)!!
+        val typeValue = intent.getIntExtra(SearchType.KEY_SEARCH_TYPE, 0)
+        val type = SearchType.fromValue(typeValue)
         setContent {
             AccountTheme {
                 SearchScreen(
