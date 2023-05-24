@@ -165,16 +165,6 @@ fun NoteEditContent(
                         state.onBlockChange(block.index, blockId, value)
                     }
                 },
-                onBlockAdd = {
-                    state.onBlockAdd(
-                        NoteContentBlock(
-                            id = null,
-                            noteId = state.noteId,
-                            index = index + 1,
-                            content = ""
-                        )
-                    )
-                },
                 onBlockDelete = {
                     state.onBlockDelete(block)
                 }

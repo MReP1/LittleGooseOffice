@@ -111,7 +111,11 @@ class NoteRouteStateFlowDelegate(
         changeTitle = ::changeTitle,
         changeText = ::changeText,
         deleteContentBlock = ::deleteContentBlock,
-        addContentBlock = ::addContentBlock
+        addContentBlock = { block ->
+            coroutineScope.launch {
+                addContentBlock(block)
+            }
+        }
     )
 
     private val noteBottomBarState: StateFlow<NoteBottomBarState> by NoteBottomStateFlowDelegate(
@@ -179,11 +183,35 @@ class NoteRouteStateFlowDelegate(
     }
 
     private fun changeText(index: Int, id: Long, textFieldValue: TextFieldValue) {
-        val nwcMap = noteWithContent.value ?: return
-        _textFieldValueCache.value = _textFieldValueCache.value.toMutableMap()
-            .apply { put(id, textFieldValue) }
-        val newBlock = nwcMap.content[index].copy(content = textFieldValue.text)
-        changeContentBlock(newBlock)
+        coroutineScope.launch(Dispatchers.Main.immediate) {
+            val nwcMap = noteWithContent.value ?: return@launch
+            if (textFieldValue.text.lastIndexOf('\n') >= 0) {
+                // when textFieldValue Contains \n, split it to two blocks
+                val splitText = textFieldValue.text.split('\n')
+                val block1Content = splitText[0]
+                val block2Content = splitText[1]
+                val block1 = nwcMap.content[index].copy(content = block1Content)
+                val block2 = NoteContentBlock(
+                    id = null,
+                    content = block2Content,
+                    index = index + 1,
+                    noteId = nwcMap.note.id
+                )
+                val block2Id = addContentBlock(block2)
+                _textFieldValueCache.value = _textFieldValueCache.value.toMutableMap().apply {
+                    put(id, textFieldValue.copy(text = block1Content))
+                    if (block2Id != null) {
+                        put(block2Id, TextFieldValue(block2.content))
+                    }
+                }
+                changeContentBlock(block1)
+            } else {
+                _textFieldValueCache.value = _textFieldValueCache.value.toMutableMap()
+                    .apply { put(id, textFieldValue) }
+                val newBlock = nwcMap.content[index].copy(content = textFieldValue.text)
+                changeContentBlock(newBlock)
+            }
+        }
     }
 
     private fun format(
@@ -240,53 +268,52 @@ class NoteRouteStateFlowDelegate(
         }
     }
 
-    private fun addContentBlock(block: NoteContentBlock) {
-        coroutineScope.launch {
-            writingMutex.withLock {
-                var nwc = noteWithContent.value ?: return@launch
-                val insertBlock = if (block.noteId == null) {
-                    // If this note doesn't exit, insert the note first.
-                    val noteId = insertNote(nwc.note)
-                    nwc = buildMap { put(nwc.note.copy(id = noteId), nwc.content) }
-                    noteWithContent.value = nwc
-                    updateNoteId(noteId)
-                    block.copy(noteId = noteId)
-                } else block
+    private suspend fun addContentBlock(block: NoteContentBlock): Long? {
+        return writingMutex.withLock {
+            var nwc = noteWithContent.value ?: return@withLock null
+            val insertBlock = if (block.noteId == null) {
+                // If this note doesn't exit, insert the note first.
+                val noteId = insertNote(nwc.note)
+                nwc = buildMap { put(nwc.note.copy(id = noteId), nwc.content) }
+                noteWithContent.value = nwc
+                updateNoteId(noteId)
+                block.copy(noteId = noteId)
+            } else block
 
-                // Insert the content block
-                val noteContentBlockId = insertNoteContentBlock(insertBlock)
-                val newBlock = insertBlock.copy(id = noteContentBlockId)
+            // Insert the content block
+            val noteContentBlockId = insertNoteContentBlock(insertBlock)
+            val newBlock = insertBlock.copy(id = noteContentBlockId)
 
-                val newBlocks = if (nwc.content.size == newBlock.index) {
-                    // Add to the end
-                    nwc.content + newBlock
-                } else withContext(Dispatchers.Default) {
-                    buildList {
-                        val movingBlocks = mutableListOf<NoteContentBlock>()
-                        nwc.content.forEachIndexed { index, noteContentBlock ->
-                            if (index < newBlock.index) {
-                                add(noteContentBlock)
-                            } else {
-                                if (index == newBlock.index) {
-                                    add(newBlock)
-                                }
-                                noteContentBlock.copy(index = index + 1).also {
-                                    add(it)
-                                    movingBlocks.add(it)
-                                }
+            val newBlocks = if (nwc.content.size == newBlock.index) {
+                // Add to the end
+                nwc.content + newBlock
+            } else withContext(Dispatchers.Default) {
+                buildList {
+                    val movingBlocks = mutableListOf<NoteContentBlock>()
+                    nwc.content.forEachIndexed { index, noteContentBlock ->
+                        if (index < newBlock.index) {
+                            add(noteContentBlock)
+                        } else {
+                            if (index == newBlock.index) {
+                                add(newBlock)
+                            }
+                            noteContentBlock.copy(index = index + 1).also {
+                                add(it)
+                                movingBlocks.add(it)
                             }
                         }
-                        updateNoteContentBlocks(movingBlocks)
                     }
+                    updateNoteContentBlocks(movingBlocks)
                 }
-
-                noteWithContent.value = buildMap { put(nwc.note, newBlocks) }
-                emitNoteScreenEvent(NoteScreenEvent.AddNoteBlock(newBlock))
             }
+
+            noteWithContent.value = buildMap { put(nwc.note, newBlocks) }
+            emitNoteScreenEvent(NoteScreenEvent.AddNoteBlock(newBlock))
+            noteContentBlockId
         }
     }
 
-    private fun changeContentBlock(block: NoteContentBlock) {
+    private suspend fun changeContentBlock(block: NoteContentBlock) {
         if (block.id == null) {
             addContentBlock(block)
         } else {

@@ -12,8 +12,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.text.BasicTextField
-import androidx.compose.foundation.text.KeyboardActions
-import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Delete
 import androidx.compose.material3.Icon
@@ -23,12 +21,10 @@ import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
-import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -39,7 +35,6 @@ fun NoteContentBlockItem(
     modifier: Modifier = Modifier,
     value: TextFieldValue,
     onValueChange: (TextFieldValue) -> Unit,
-    onBlockAdd: () -> Unit,
     onBlockDelete: () -> Unit,
     interactionSource: MutableInteractionSource = remember { MutableInteractionSource() },
     focusRequester: FocusRequester = remember { FocusRequester() }
@@ -61,8 +56,7 @@ fun NoteContentBlockItem(
             value = value,
             onValueChange = onValueChange,
             interactionSource = interactionSource,
-            focusRequester = focusRequester,
-            onBlockAdd = onBlockAdd
+            focusRequester = focusRequester
         )
         if (isFocused) {
             IconButton(
@@ -86,18 +80,13 @@ fun NoteContentBlockTextField(
     focusRequester: FocusRequester = remember { FocusRequester() },
     value: TextFieldValue,
     onValueChange: (TextFieldValue) -> Unit,
-    interactionSource: MutableInteractionSource = remember { MutableInteractionSource() },
-    onBlockAdd: () -> Unit
+    interactionSource: MutableInteractionSource = remember { MutableInteractionSource() }
 ) {
-    val currentOnBlockAdd by rememberUpdatedState(newValue = onBlockAdd)
-
     BasicTextField(
         modifier = modifier.focusRequester(focusRequester),
         value = value,
         onValueChange = onValueChange,
         interactionSource = interactionSource,
-        keyboardOptions = remember { KeyboardOptions(imeAction = ImeAction.Next) },
-        keyboardActions = remember { KeyboardActions(onNext = { currentOnBlockAdd() }) },
         decorationBox = { innerTextField ->
             Box(
                 modifier = Modifier
@@ -117,7 +106,6 @@ private fun PreviewNoteBlockBlockItem() = AccountTheme {
     NoteContentBlockItem(
         value = TextFieldValue("Content"),
         onValueChange = {},
-        onBlockAdd = {},
         onBlockDelete = {}
     )
 }
@@ -128,8 +116,7 @@ private fun PreviewNoteContentBlockTextField() = AccountTheme {
     Surface {
         NoteContentBlockTextField(
             value = TextFieldValue("Content"),
-            onValueChange = {},
-            onBlockAdd = {}
+            onValueChange = {}
         )
     }
 }
