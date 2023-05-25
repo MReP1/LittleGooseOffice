@@ -143,8 +143,10 @@ fun NoteEditContent(
                     Text(text = stringResource(id = R.string.title))
                 },
                 shape = RectangleShape,
-                colors = TextFieldDefaults.textFieldColors(
-                    containerColor = MaterialTheme.colorScheme.background
+                colors = TextFieldDefaults.colors(
+                    focusedContainerColor = MaterialTheme.colorScheme.background,
+                    unfocusedContainerColor = MaterialTheme.colorScheme.background,
+                    disabledContainerColor = MaterialTheme.colorScheme.background,
                 )
             )
             Spacer(modifier = Modifier.height(8.dp))

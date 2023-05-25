@@ -170,7 +170,8 @@ class NoteRouteStateFlowDelegate(
     }
 
     private fun changeTitle(title: String) {
-        coroutineScope.launch {
+        if (title.contains('\n')) return
+        coroutineScope.launch(Dispatchers.Main.immediate) {
             val nwc = noteWithContent.value ?: return@launch
             val note = nwc.note.copy(title = title)
             if (note.id != null) {
