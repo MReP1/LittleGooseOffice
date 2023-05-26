@@ -11,6 +11,7 @@ import little.goose.account.data.constants.AccountConstant.EXPENSE
 import little.goose.account.data.constants.AccountConstant.INCOME
 import little.goose.account.data.entities.Transaction
 import little.goose.account.logic.InsertTransactionUseCase
+import little.goose.account.logic.UpdateTransactionUseCase
 import little.goose.account.ui.transaction.icon.TransactionIconHelper
 import little.goose.common.constants.KEY_TIME
 import little.goose.common.constants.KEY_TRANSACTION
@@ -21,7 +22,8 @@ import javax.inject.Inject
 @HiltViewModel
 class TransactionViewModel @Inject constructor(
     private val savedStateHandle: SavedStateHandle,
-    private val insertTransactionUseCase: InsertTransactionUseCase
+    private val insertTransactionUseCase: InsertTransactionUseCase,
+    private val updateTransactionUseCase: UpdateTransactionUseCase
 ) : ViewModel() {
 
     private val defaultTransaction
@@ -61,7 +63,7 @@ class TransactionViewModel @Inject constructor(
             if (tra.id == null) {
                 insertTransactionUseCase(tra)
             } else {
-                insertTransactionUseCase(tra)
+                updateTransactionUseCase(tra)
             }
             if (!isAgain) {
                 _event.emit(Event.WriteSuccess)
