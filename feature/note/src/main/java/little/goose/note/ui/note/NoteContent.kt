@@ -158,7 +158,9 @@ fun NoteEditContent(
         ) { index ->
             val block = state.content[index]
             NoteContentBlockItem(
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .animateItemPlacement(),
                 value = state.textFieldValues[block.id]!!,
                 focusRequester = state.focusRequesters[block.id]!!,
                 interactionSource = state.interactions[block.id]!!,
