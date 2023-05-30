@@ -24,7 +24,6 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withContext
-import little.goose.common.utils.DebounceActionChannel
 import little.goose.note.data.entities.Note
 import little.goose.note.data.entities.NoteContentBlock
 import little.goose.note.logic.DeleteNoteContentBlockUseCase
@@ -68,38 +67,6 @@ class NoteRouteStateFlowDelegate(
 
     private var _textFieldValueCache = MutableStateFlow(mapOf<Long, TextFieldValue>())
 
-    private var lastUpdateBlock: NoteContentBlock? = null
-
-    private val updateContentBlockChannel = DebounceActionChannel<NoteContentBlock>(
-        coroutineScope = coroutineScope,
-        debounceTime = 500L,
-        preEach = {
-            if (lastUpdateBlock?.id != it.id) {
-                lastUpdateBlock?.let { lastBlock ->
-                    writingMutex.withLock {
-                        updateNoteContentBlock(lastBlock)
-                    }
-                }
-            }
-            lastUpdateBlock = it
-        },
-        action = {
-            writingMutex.withLock {
-                updateNoteContentBlock(it)
-            }
-        }
-    )
-
-    private val updateNoteChannel = DebounceActionChannel<Note>(
-        coroutineScope = coroutineScope,
-        debounceTime = 500L,
-        action = { note ->
-            writingMutex.withLock {
-                updateNote(note)
-            }
-        }
-    )
-
     private val noteContentState: StateFlow<NoteContentState?> by NoteContentStateFlowDelegate(
         coroutineScope = coroutineScope,
         isPreview = _isPreview,
@@ -112,7 +79,7 @@ class NoteRouteStateFlowDelegate(
         changeText = ::changeText,
         deleteContentBlock = ::deleteContentBlock,
         addContentBlock = { block ->
-            coroutineScope.launch {
+            coroutineScope.launchWithWritingMutex {
                 addContentBlock(block)
             }
         }
@@ -171,11 +138,11 @@ class NoteRouteStateFlowDelegate(
 
     private fun changeTitle(title: String) {
         if (title.contains('\n')) return
-        coroutineScope.launch(Dispatchers.Main.immediate) {
-            val nwc = noteWithContent.value ?: return@launch
+        coroutineScope.launchWithWritingMutex {
+            val nwc = noteWithContent.value ?: return@launchWithWritingMutex
             val note = nwc.note.copy(title = title)
             if (note.id != null) {
-                updateNoteChannel.send(note)
+                updateNote(note)
             }
             noteWithContent.value = buildMap {
                 put(note, nwc.content)
@@ -184,8 +151,8 @@ class NoteRouteStateFlowDelegate(
     }
 
     private fun changeText(index: Int, id: Long, textFieldValue: TextFieldValue) {
-        coroutineScope.launch(Dispatchers.Main.immediate) {
-            val nwcMap = noteWithContent.value ?: return@launch
+        coroutineScope.launchWithWritingMutex {
+            val nwcMap = noteWithContent.value ?: return@launchWithWritingMutex
             if (textFieldValue.text.lastIndexOf('\n') >= 0) {
                 // when textFieldValue Contains \n, split it to two blocks
                 val splitText = textFieldValue.text.split('\n')
@@ -206,7 +173,7 @@ class NoteRouteStateFlowDelegate(
                     }
                 }
                 changeContentBlock(block1)
-            } else {
+            } else runCatching {
                 _textFieldValueCache.value = _textFieldValueCache.value.toMutableMap()
                     .apply { put(id, textFieldValue) }
                 val newBlock = nwcMap.content[index].copy(content = textFieldValue.text)
@@ -218,87 +185,46 @@ class NoteRouteStateFlowDelegate(
     private fun format(
         type: FormatType
     ) {
-        coroutineScope.launch {
-            val nwc = noteWithContent.value ?: return@launch
+        coroutineScope.launchWithWritingMutex {
+            val nwc = noteWithContent.value ?: return@launchWithWritingMutex
             val focusingContentBlock = _focusingBlockId.value?.let { focusingBlockId ->
                 nwc.content.findLast { it.id == focusingBlockId }
-            } ?: return@launch
-            focusingContentBlock.id ?: return@launch
+            } ?: return@launchWithWritingMutex
+            focusingContentBlock.id ?: return@launchWithWritingMutex
 
-            val realType = if (type is FormatType.List.Ordered && focusingContentBlock.index > 0) {
-                val previewNum = nwc.content[focusingContentBlock.index - 1].content.orderListNum
-                FormatType.List.Ordered(previewNum + 1)
-            } else type
+            val realType =
+                if (type is FormatType.List.Ordered && focusingContentBlock.index > 0) {
+                    val previewNum =
+                        nwc.content[focusingContentBlock.index - 1].content.orderListNum
+                    FormatType.List.Ordered(previewNum + 1)
+                } else type
 
             val content = _textFieldValueCache.value[focusingContentBlock.id]
                 ?.format(realType)
                 ?.also {
                     _textFieldValueCache.value = _textFieldValueCache.value.toMutableMap()
                         .apply { put(focusingContentBlock.id, it) }
-                } ?: return@launch
+                } ?: return@launchWithWritingMutex
             val newBlock = focusingContentBlock.copy(content = content.text)
 
             changeContentBlock(newBlock)
         }
+
     }
 
     private fun deleteContentBlock(block: NoteContentBlock) {
-        coroutineScope.launch {
-            writingMutex.withLock {
-                val nwc = noteWithContent.value ?: return@launch
-                val newBlocks = withContext(Dispatchers.Default) {
-                    buildList {
-                        val movingBlocks = mutableListOf<NoteContentBlock>()
-                        nwc.content.forEachIndexed { index, noteContentBlock ->
-                            if (noteContentBlock.id == block.id) {
-                                deleteNoteContentBlock(noteContentBlock)
-                            } else if (index < block.index) {
-                                add(noteContentBlock)
-                            } else {
-                                noteContentBlock.copy(index = index - 1).also {
-                                    add(it)
-                                    movingBlocks.add(it)
-                                }
-                            }
-                        }
-                        updateNoteContentBlocks(movingBlocks)
-                    }
-                }
-                noteWithContent.value = buildMap { put(nwc.note, newBlocks) }
-            }
-        }
-    }
-
-    private suspend fun addContentBlock(block: NoteContentBlock): Long? {
-        return writingMutex.withLock {
-            var nwc = noteWithContent.value ?: return@withLock null
-            val insertBlock = if (block.noteId == null) {
-                // If this note doesn't exit, insert the note first.
-                val noteId = insertNote(nwc.note)
-                nwc = buildMap { put(nwc.note.copy(id = noteId), nwc.content) }
-                noteWithContent.value = nwc
-                updateNoteId(noteId)
-                block.copy(noteId = noteId)
-            } else block
-
-            // Insert the content block
-            val noteContentBlockId = insertNoteContentBlock(insertBlock)
-            val newBlock = insertBlock.copy(id = noteContentBlockId)
-
-            val newBlocks = if (nwc.content.size == newBlock.index) {
-                // Add to the end
-                nwc.content + newBlock
-            } else withContext(Dispatchers.Default) {
+        coroutineScope.launchWithWritingMutex {
+            val nwc = noteWithContent.value ?: return@launchWithWritingMutex
+            val newBlocks = withContext(Dispatchers.Default) {
                 buildList {
                     val movingBlocks = mutableListOf<NoteContentBlock>()
                     nwc.content.forEachIndexed { index, noteContentBlock ->
-                        if (index < newBlock.index) {
+                        if (noteContentBlock.id == block.id) {
+                            deleteNoteContentBlock(noteContentBlock)
+                        } else if (index < block.index) {
                             add(noteContentBlock)
                         } else {
-                            if (index == newBlock.index) {
-                                add(newBlock)
-                            }
-                            noteContentBlock.copy(index = index + 1).also {
+                            noteContentBlock.copy(index = index - 1).also {
                                 add(it)
                                 movingBlocks.add(it)
                             }
@@ -307,11 +233,50 @@ class NoteRouteStateFlowDelegate(
                     updateNoteContentBlocks(movingBlocks)
                 }
             }
-
             noteWithContent.value = buildMap { put(nwc.note, newBlocks) }
-            emitNoteScreenEvent(NoteScreenEvent.AddNoteBlock(newBlock))
-            noteContentBlockId
         }
+    }
+
+    private suspend fun addContentBlock(block: NoteContentBlock): Long? {
+        var nwc = noteWithContent.value ?: return null
+        val insertBlock = if (block.noteId == null) {
+            // If this note doesn't exit, insert the note first.
+            val noteId = insertNote(nwc.note)
+            nwc = buildMap { put(nwc.note.copy(id = noteId), nwc.content) }
+            noteWithContent.value = nwc
+            updateNoteId(noteId)
+            block.copy(noteId = noteId)
+        } else block
+
+        // Insert the content block
+        val noteContentBlockId = insertNoteContentBlock(insertBlock)
+        val newBlock = insertBlock.copy(id = noteContentBlockId)
+
+        val newBlocks = if (nwc.content.size == newBlock.index) {
+            // Add to the end
+            nwc.content + newBlock
+        } else withContext(Dispatchers.Default) {
+            buildList {
+                val movingBlocks = mutableListOf<NoteContentBlock>()
+                nwc.content.forEachIndexed { index, noteContentBlock ->
+                    if (index < newBlock.index) {
+                        add(noteContentBlock)
+                    } else if (index == newBlock.index) {
+                        add(newBlock)
+                    } else {
+                        noteContentBlock.copy(index = index + 1).also {
+                            add(it)
+                            movingBlocks.add(it)
+                        }
+                    }
+                }
+                updateNoteContentBlocks(movingBlocks)
+            }
+        }
+
+        noteWithContent.value = buildMap { put(nwc.note, newBlocks) }
+        emitNoteScreenEvent(NoteScreenEvent.AddNoteBlock(newBlock))
+        return noteContentBlockId
     }
 
     private suspend fun changeContentBlock(block: NoteContentBlock) {
@@ -324,9 +289,14 @@ class NoteRouteStateFlowDelegate(
                 put(nwcMap.note, content.apply { set(block.index, block) })
             }
             noteWithContent.value = newNwc
-
-            updateContentBlockChannel.trySend(block)
+            updateNoteContentBlock(block)
         }
+    }
+
+    private inline fun CoroutineScope.launchWithWritingMutex(
+        crossinline block: suspend CoroutineScope.() -> Unit
+    ) {
+        launch { writingMutex.withLock { block() } }
     }
 
 }
