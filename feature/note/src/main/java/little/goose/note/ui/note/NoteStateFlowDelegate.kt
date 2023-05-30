@@ -261,9 +261,10 @@ class NoteRouteStateFlowDelegate(
                 nwc.content.forEachIndexed { index, noteContentBlock ->
                     if (index < newBlock.index) {
                         add(noteContentBlock)
-                    } else if (index == newBlock.index) {
-                        add(newBlock)
                     } else {
+                        if (index == newBlock.index) {
+                            add(newBlock)
+                        }
                         noteContentBlock.copy(index = index + 1).also {
                             add(it)
                             movingBlocks.add(it)
