@@ -30,22 +30,22 @@ Figma，Icon 来自于 Material Icons。
 
 ## 简单使用
 
-![简单流程](doc/image/简单使用.gif)
+<img src="doc/image/简单使用.gif" width=50% height=50%>
 
 该APP分为四个模块，分别是记账、笔记、日程和纪念日。还有基于此的日历首页、分析、搜索功能。
 
 ## 记账
 
-![记账页面](doc/image/记账本.png)
+<img src="doc/image/记账本.png" width=50% height=50%>
 
 ## 笔记
 
-![笔记页面](doc/image/笔记.png)
+<img src="doc/image/笔记.png" width=50% height=50%>
 
 ## 日程
 
-![日程页面](doc/image/日程.png)
+<img src="doc/image/日程.png" width=50% height=50%>
 
 ## 纪念日
 
-![纪念日页面](doc/image/纪念日.png)
+<img src="doc/image/纪念日.png" width=50% height=50%>
