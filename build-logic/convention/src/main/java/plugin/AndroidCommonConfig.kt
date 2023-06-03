@@ -4,6 +4,8 @@ import AndroidConfigConventions
 import com.android.build.api.dsl.CommonExtension
 import org.gradle.api.Project
 import org.gradle.kotlin.dsl.withType
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+import org.jetbrains.kotlin.gradle.dsl.KotlinVersion
 
 fun Project.configureKotlin(
     commonExtension: CommonExtension<*, *, *, *>
@@ -15,6 +17,8 @@ fun Project.configureKotlin(
         }
         kotlinOptions {
             jvmTarget = AndroidConfigConventions.JAVA_VERSION.toString()
+            // enable K2 compiler
+            options.languageVersion.set(KotlinVersion.KOTLIN_2_0)
             freeCompilerArgs = freeCompilerArgs.toMutableList().apply {
                 addAll(
                     listOf(
@@ -31,8 +35,9 @@ fun Project.configureKotlin(
     }
 
     tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>().configureEach {
-        kotlinOptions {
-            jvmTarget = AndroidConfigConventions.JAVA_VERSION.toString()
+        compilerOptions {
+            // JVM 17 not support sealed class, so use JVM 11 yet.
+            jvmTarget.set(JvmTarget.fromTarget(AndroidConfigConventions.JAVA_VERSION.toString()))
         }
     }
 
