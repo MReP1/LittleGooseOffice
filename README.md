@@ -9,6 +9,7 @@
 在各个领域中我致力于最佳实践，项目经常进行重构，因此若在博客中看到的代码与项目中的代码不一致，请联系本人修改博客内容，或是到/ver/xml分支查看上一个阶段的代码，在最近一次大重构之前将代码放到了该分支。
 
 项目介绍：
+
 - https://juejin.cn/post/7132853501402546184/
 - https://juejin.cn/post/7219862257644961849/
 
@@ -30,22 +31,32 @@ Figma，Icon 来自于 Material Icons。
 
 ## 简单使用
 
-<img src="doc/image/简单使用.gif" width=50% height=50%>
+<p align="center">
+  <img src="doc/image/简单使用.gif" width=50% height=50% >
+</p>
 
 该APP分为四个模块，分别是记账、笔记、日程和纪念日。还有基于此的日历首页、分析、搜索功能。
 
 ## 记账
 
-<img src="doc/image/记账本.png" width=50% height=50%>
+<p align="center">
+  <img src="doc/image/记账本.png" width=50% height=50%>
+</p>
 
 ## 笔记
 
-<img src="doc/image/笔记.png" width=50% height=50%>
+<p align="center">
+  <img src="doc/image/笔记.png" width=50% height=50%>
+</p>
 
 ## 日程
 
-<img src="doc/image/日程.png" width=50% height=50%>
+<p align="center">
+  <img src="doc/image/日程.png" width=50% height=50%>
+</p>
 
 ## 纪念日
 
-<img src="doc/image/纪念日.png" width=50% height=50%>
+<p align="center">
+  <img src="doc/image/纪念日.png" width=50% height=50%>
+</p>
