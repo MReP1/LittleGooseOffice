@@ -141,11 +141,11 @@ class NoteRouteStateFlowDelegate(
         coroutineScope.launchWithWritingMutex {
             val nwc = noteWithContent.value ?: return@launchWithWritingMutex
             val note = nwc.note.copy(title = title)
-            if (note.id != null) {
-                updateNote(note)
-            }
             noteWithContent.value = buildMap {
                 put(note, nwc.content)
+            }
+            if (note.id != null) {
+                updateNote(note)
             }
         }
     }
