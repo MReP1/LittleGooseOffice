@@ -12,7 +12,40 @@
 - https://juejin.cn/post/7132853501402546184/
 - https://juejin.cn/post/7219862257644961849/
 
-用到的开源库有
-- 图表模块：https://github.com/PhilJay/MPAndroidChart
+### UI设计软件
 
-Icon 来自于 Material Icons。
+Figma，Icon 来自于 Material Icons。
+
+### 使用到的库
+
+- Jetpack Compose
+- Room
+- Jetpack DataStore
+- Hilt
+- Kotlin Coroutine
+- Kotlin Flow
+- SplashScreen
+- MPAndroidChart —— https://github.com/PhilJay/MPAndroidChart
+- Compose Calendar
+
+## 简单使用
+
+[简单流程](doc/image/简单使用.gif)
+
+该APP分为四个模块，分别是记账、笔记、日程和纪念日。还有基于此的日历首页、分析、搜索功能。
+
+## 记账
+
+[记账页面](doc/image/记账本.png)
+
+## 笔记
+
+[笔记页面](doc/image/笔记.png)
+
+## 日程
+
+[日程页面](doc/image/日程.png)
+
+## 纪念日
+
+[纪念日页面](doc/image/纪念日.png)
