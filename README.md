@@ -37,6 +37,12 @@ Figma，Icon 来自于 Material Icons。
 
 该APP分为四个模块，分别是记账、笔记、日程和纪念日。还有基于此的日历首页、分析、搜索功能。
 
+## 首页
+
+<p align="center">
+  <img src="doc/image/首页.png" width=50% height=50%>
+</p>
+
 ## 记账
 
 <p align="center">
@@ -59,4 +65,16 @@ Figma，Icon 来自于 Material Icons。
 
 <p align="center">
   <img src="doc/image/纪念日.png" width=50% height=50%>
+</p>
+
+## 搜索
+
+<p align="center">
+  <img src="doc/image/搜索.png" width=50% height=50%>
+</p>
+
+## 分析
+
+<p align="center">
+  <img src="doc/image/分析.png" width=50% height=50%>
 </p>
