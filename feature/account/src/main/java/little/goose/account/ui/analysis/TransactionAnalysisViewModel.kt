@@ -12,6 +12,8 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.debounce
+import kotlinx.coroutines.flow.flowOn
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import little.goose.account.ui.component.MonthSelectorState
@@ -48,9 +50,11 @@ class TransactionAnalysisViewModel @Inject constructor(
 
 
     init {
-        viewModelScope.launch(Dispatchers.IO) {
+        viewModelScope.launch {
             combine(timeType, year, month) { type, year, month ->
                 updateData(type, year, month)
+                Pair(year, month)
+            }.flowOn(Dispatchers.IO).onEach { (year, month) ->
                 timeSelectorState.year = year
                 timeSelectorState.month = month
             }.collect()
