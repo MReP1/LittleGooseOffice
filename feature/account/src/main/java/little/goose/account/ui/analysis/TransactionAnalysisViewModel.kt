@@ -4,14 +4,14 @@ import androidx.compose.runtime.snapshotFlow
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.debounce
-import kotlinx.coroutines.flow.launchIn
-import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import little.goose.account.ui.component.MonthSelectorState
@@ -48,30 +48,33 @@ class TransactionAnalysisViewModel @Inject constructor(
 
 
     init {
-        viewModelScope.launch {
+        viewModelScope.launch(Dispatchers.IO) {
             combine(timeType, year, month) { type, year, month ->
                 updateData(type, year, month)
                 timeSelectorState.year = year
                 timeSelectorState.month = month
-            }.launchIn(this)
-
+            }.collect()
+        }
+        viewModelScope.launch {
             combine(
                 snapshotFlow { timeSelectorState.year },
                 snapshotFlow { timeSelectorState.month }
             ) { year, month ->
                 Pair(year, month)
-            }.debounce(600L).onEach { (year, month) ->
+            }.debounce(600L).collect { (year, month) ->
                 when (timeType.value) {
                     TimeType.MONTH -> changeTime(year, month)
                     TimeType.YEAR -> changeYear(year)
                 }
-            }.launchIn(this)
+            }
         }
 
     }
 
     fun updateData() {
-        viewModelScope.launch { updateData(timeType.value, year.value, month.value) }
+        viewModelScope.launch(Dispatchers.IO) {
+            updateData(timeType.value, year.value, month.value)
+        }
     }
 
     private suspend fun updateData(type: TimeType, year: Int, month: Int) {
