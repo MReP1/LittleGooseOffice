@@ -1,25 +1,42 @@
 package little.goose.design.system.component
 
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.Stable
+import androidx.compose.runtime.derivedStateOf
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import little.goose.common.utils.TimeType
+import kotlinx.coroutines.flow.filter
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.onEach
 import little.goose.common.utils.DateTimeUtils
+import little.goose.common.utils.TimeType
 import little.goose.design.system.R
-import java.util.*
+import java.util.Calendar
+import java.util.Date
 
 @Stable
 class TimeSelectorState(
-    private val initTime: Date,
-    internal val type: TimeType
+    private val initTime: Date
 ) {
     private val calendar = Calendar.getInstance().apply { time = initTime }
     var year by mutableStateOf(calendar.get(Calendar.YEAR))
@@ -42,11 +59,13 @@ class TimeSelectorState(
 fun TimeSelector(
     modifier: Modifier = Modifier,
     state: TimeSelectorState,
+    isShowConfirm: Boolean = true,
     isConfirmBottom: Boolean = true,
-    onConfirm: (Date) -> Unit
+    timeType: TimeType,
+    onConfirm: (Date) -> Unit = {}
 ) {
     Column(modifier = modifier) {
-        if (!isConfirmBottom) {
+        if (!isConfirmBottom && isShowConfirm) {
             Button(
                 onClick = { onConfirm(state.time) },
                 shape = RectangleShape,
@@ -64,10 +83,19 @@ fun TimeSelector(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.Center
         ) {
-            if (state.type.containYear()) {
+            if (timeType.containYear()) {
                 val yearSelectorState = rememberLazyListState(
                     initialFirstVisibleItemIndex = state.yearList.indexOf(state.year.toString())
                 )
+                LaunchedEffect(yearSelectorState, state) {
+                    snapshotFlow { state.year }.map {
+                        state.yearList.indexOf(it.toString())
+                    }.filter {
+                        yearSelectorState.firstVisibleItemIndex != it
+                    }.onEach {
+                        yearSelectorState.animateScrollToItem(it)
+                    }.launchIn(this)
+                }
                 ScrollSelector(
                     modifier = Modifier
                         .fillMaxHeight(),
@@ -81,10 +109,19 @@ fun TimeSelector(
                     modifier = Modifier.padding(start = 10.dp, end = 8.dp)
                 )
             }
-            if (state.type.containMonth()) {
+            if (timeType.containMonth()) {
                 val monthSelectorState = rememberLazyListState(
                     initialFirstVisibleItemIndex = state.monthList.indexOf(state.month.toString())
                 )
+                LaunchedEffect(monthSelectorState, state) {
+                    snapshotFlow { state.month }.map {
+                        state.monthList.indexOf(it.toString())
+                    }.filter {
+                        monthSelectorState.firstVisibleItemIndex != it
+                    }.onEach {
+                        monthSelectorState.animateScrollToItem(it)
+                    }.launchIn(this)
+                }
                 ScrollSelector(
                     modifier = Modifier
                         .fillMaxHeight(),
@@ -98,10 +135,19 @@ fun TimeSelector(
                     modifier = Modifier.padding(start = 6.dp, end = 8.dp)
                 )
             }
-            if (state.type.containDay()) {
+            if (timeType.containDay()) {
                 val daySelectorState = rememberLazyListState(
                     initialFirstVisibleItemIndex = state.dayList.indexOf(state.day.toString())
                 )
+                LaunchedEffect(daySelectorState, state) {
+                    snapshotFlow { state.day }.map {
+                        state.dayList.indexOf(it.toString())
+                    }.filter {
+                        daySelectorState.firstVisibleItemIndex != it
+                    }.onEach {
+                        daySelectorState.animateScrollToItem(it)
+                    }.launchIn(this)
+                }
                 ScrollSelector(
                     modifier = Modifier
                         .fillMaxHeight(),
@@ -115,10 +161,19 @@ fun TimeSelector(
                     modifier = Modifier.padding(start = 6.dp, end = 8.dp)
                 )
             }
-            if (state.type.containTime()) {
+            if (timeType.containTime()) {
                 val hourSelectorStable = rememberLazyListState(
                     initialFirstVisibleItemIndex = state.hourList.indexOf(state.hour.toString())
                 )
+                LaunchedEffect(hourSelectorStable, state) {
+                    snapshotFlow { state.hour }.map {
+                        state.hourList.indexOf(it.toString())
+                    }.filter {
+                        hourSelectorStable.firstVisibleItemIndex != it
+                    }.onEach {
+                        hourSelectorStable.animateScrollToItem(it)
+                    }.launchIn(this)
+                }
                 ScrollSelector(
                     modifier = Modifier
                         .fillMaxHeight(),
@@ -134,6 +189,15 @@ fun TimeSelector(
                 val minuteSelectorState = rememberLazyListState(
                     initialFirstVisibleItemIndex = state.minuteList.indexOf(state.minute.toString())
                 )
+                LaunchedEffect(minuteSelectorState, state) {
+                    snapshotFlow { state.minute }.map {
+                        state.minuteList.indexOf(it.toString())
+                    }.filter {
+                        minuteSelectorState.firstVisibleItemIndex != it
+                    }.onEach {
+                        minuteSelectorState.animateScrollToItem(it)
+                    }.launchIn(this)
+                }
                 ScrollSelector(
                     modifier = Modifier
                         .fillMaxHeight(),
@@ -148,7 +212,7 @@ fun TimeSelector(
                 )
             }
         }
-        if (isConfirmBottom) {
+        if (isConfirmBottom && isShowConfirm) {
             Button(
                 onClick = { onConfirm(state.time) },
                 shape = RectangleShape,

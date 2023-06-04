@@ -28,7 +28,7 @@ fun TimeSelectorCenterDialog(
     val scope = rememberCoroutineScope()
     val properties = remember { DialogProperties() }
     NormalDialog(state = state, properties = properties) {
-        val selectorState = remember(initTime, type) { TimeSelectorState(initTime, type) }
+        val selectorState = remember(initTime) { TimeSelectorState(initTime) }
         Surface(shape = RoundedCorner24) {
             TimeSelector(
                 state = selectorState,
@@ -41,6 +41,7 @@ fun TimeSelectorCenterDialog(
                         state.dismiss()
                     }
                 },
+                timeType = type,
                 isConfirmBottom = true
             )
         }
@@ -57,7 +58,7 @@ fun TimeSelectorBottomDialog(
     val scope = rememberCoroutineScope()
     BottomSheetDialog(state = state) {
         Surface(shape = TopRoundedCorner24) {
-            val selectorState = remember(initTime, type) { TimeSelectorState(initTime, type) }
+            val selectorState = remember(initTime) { TimeSelectorState(initTime) }
             TimeSelector(
                 state = selectorState,
                 modifier = Modifier
@@ -69,6 +70,7 @@ fun TimeSelectorBottomDialog(
                         state.close()
                     }
                 },
+                timeType = type,
                 isConfirmBottom = false
             )
         }

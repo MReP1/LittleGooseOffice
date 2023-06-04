@@ -25,7 +25,8 @@ data class YearSelectorState(
 fun YearSelector(
     modifier: Modifier = Modifier,
     state: YearSelectorState,
-    shape: Shape = RectangleShape
+    shape: Shape = RectangleShape,
+    onSelectTimeClick: () -> Unit
 ) {
     Row(modifier = modifier.clip(shape)) {
         Surface(
@@ -43,9 +44,7 @@ fun YearSelector(
             modifier = Modifier
                 .weight(1F)
                 .fillMaxHeight(),
-            onClick = {
-
-            },
+            onClick = onSelectTimeClick,
             tonalElevation = 2.dp
         ) {
             Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {

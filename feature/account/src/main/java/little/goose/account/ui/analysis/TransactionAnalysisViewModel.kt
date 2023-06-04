@@ -1,23 +1,31 @@
 package little.goose.account.ui.analysis
 
+import androidx.compose.runtime.snapshotFlow
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.debounce
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import little.goose.account.ui.component.MonthSelectorState
 import little.goose.account.ui.component.YearSelectorState
+import little.goose.common.utils.calendar
 import little.goose.common.utils.getMonth
 import little.goose.common.utils.getYear
+import little.goose.common.utils.setMonth
+import little.goose.common.utils.setYear
+import little.goose.design.system.component.TimeSelectorState
 import java.util.Calendar
 import javax.inject.Inject
 
+@OptIn(FlowPreview::class)
 @HiltViewModel
 class TransactionAnalysisViewModel @Inject constructor(
     private val analysisHelper: AnalysisHelper
@@ -34,12 +42,32 @@ class TransactionAnalysisViewModel @Inject constructor(
     private val _month = MutableStateFlow(Calendar.getInstance().getMonth())
     val month = _month.asStateFlow()
 
+    val timeSelectorState = TimeSelectorState(
+        calendar.apply { clear(); setYear(year.value); setMonth(month.value) }.time
+    )
+
+
     init {
-        viewModelScope.launch(Dispatchers.IO) {
+        viewModelScope.launch {
             combine(timeType, year, month) { type, year, month ->
                 updateData(type, year, month)
-            }.collect()
+                timeSelectorState.year = year
+                timeSelectorState.month = month
+            }.launchIn(this)
+
+            combine(
+                snapshotFlow { timeSelectorState.year },
+                snapshotFlow { timeSelectorState.month }
+            ) { year, month ->
+                Pair(year, month)
+            }.debounce(600L).onEach { (year, month) ->
+                when (timeType.value) {
+                    TimeType.MONTH -> changeTime(year, month)
+                    TimeType.YEAR -> changeYear(year)
+                }
+            }.launchIn(this)
         }
+
     }
 
     fun updateData() {
@@ -89,21 +117,25 @@ class TransactionAnalysisViewModel @Inject constructor(
         initialValue = TransactionAnalysisTopBarState()
     )
 
+    private val changeYear: (year: Int) -> Unit = { year -> _year.value = year }
+
+    private val changeTime: (year: Int, month: Int) -> Unit = { year, month ->
+        _year.value = year; _month.value = month
+    }
+
     val bottomBarState = combine(timeType, year, month) { type, year, month ->
         TransactionAnalysisBottomBarState(
             type, year, month,
-            MonthSelectorState(year, month) { y, m -> _year.value = y; _month.value = m },
-            YearSelectorState(year) { y -> _year.value = y },
+            MonthSelectorState(year, month, changeTime),
+            YearSelectorState(year, changeYear),
             onTypeChange = { t -> _timeType.value = t }
         )
     }.stateIn(
         scope = viewModelScope, started = SharingStarted.WhileSubscribed(5000),
         initialValue = TransactionAnalysisBottomBarState(
             timeType.value, year.value, month.value,
-            MonthSelectorState(year.value, month.value) { y, m ->
-                _year.value = y; _month.value = m
-            },
-            YearSelectorState(year.value) { y -> _year.value = y },
+            MonthSelectorState(year.value, month.value, changeTime),
+            YearSelectorState(year.value, changeYear),
             onTypeChange = { t -> _timeType.value = t }
         )
     )

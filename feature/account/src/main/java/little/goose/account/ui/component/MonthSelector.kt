@@ -1,10 +1,12 @@
 package little.goose.account.ui.component
 
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -13,10 +15,6 @@ import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import little.goose.account.R
-import little.goose.common.utils.TimeType
-import little.goose.common.utils.*
-import little.goose.design.system.component.dialog.TimeSelectorCenterDialog
-import little.goose.design.system.component.dialog.rememberDialogState
 
 data class MonthSelectorState(
     val year: Int,
@@ -29,8 +27,8 @@ fun MonthSelector(
     modifier: Modifier = Modifier,
     shape: Shape = RectangleShape,
     state: MonthSelectorState,
+    onSelectTimeClick: () -> Unit
 ) {
-    val selectorTimeDialogState = rememberDialogState()
     Row(modifier = modifier.clip(shape)) {
         Surface(
             modifier = Modifier
@@ -57,7 +55,7 @@ fun MonthSelector(
             modifier = Modifier
                 .weight(1F)
                 .fillMaxHeight(),
-            onClick = selectorTimeDialogState::show,
+            onClick = onSelectTimeClick,
             tonalElevation = 2.dp
         ) {
             Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
@@ -86,16 +84,4 @@ fun MonthSelector(
             }
         }
     }
-
-    TimeSelectorCenterDialog(
-        state = selectorTimeDialogState,
-        initTime = remember(state.year, state.month) {
-            calendar.apply { clear(); setYear(state.year); setMonth(state.month) }.time
-        },
-        type = TimeType.YEAR_MONTH,
-        onConfirm = {
-            val cal = calendar.apply { time = it }
-            state.onTimeChange(cal.getYear(), cal.getMonth())
-        }
-    )
 }

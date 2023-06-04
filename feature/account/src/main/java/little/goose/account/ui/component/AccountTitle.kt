@@ -8,6 +8,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import little.goose.common.utils.TimeType
+import little.goose.common.utils.calendar
+import little.goose.common.utils.getMonth
+import little.goose.common.utils.getYear
+import little.goose.common.utils.setMonth
+import little.goose.common.utils.setYear
+import little.goose.design.system.component.dialog.TimeSelectorCenterDialog
+import little.goose.design.system.component.dialog.rememberDialogState
 import java.math.BigDecimal
 
 @Stable
@@ -73,12 +81,32 @@ fun AccountTitle(
             Text(text = balanceMoney, style = MaterialTheme.typography.displaySmall)
         }
         Spacer(modifier = Modifier.height(8.dp))
+
+        val selectorTimeDialogState = rememberDialogState()
+
         MonthSelector(
             modifier = Modifier
                 .fillMaxWidth()
                 .height(48.dp),
             state = monthSelectorState,
-            shape = RectangleShape
+            shape = RectangleShape,
+            onSelectTimeClick = { selectorTimeDialogState.show() }
+        )
+
+        TimeSelectorCenterDialog(
+            state = selectorTimeDialogState,
+            initTime = remember(monthSelectorState.year, monthSelectorState.month) {
+                calendar.apply {
+                    clear()
+                    setYear(monthSelectorState.year)
+                    setMonth(monthSelectorState.month)
+                }.time
+            },
+            type = TimeType.YEAR_MONTH,
+            onConfirm = {
+                val cal = calendar.apply { time = it }
+                monthSelectorState.onTimeChange(cal.getYear(), cal.getMonth())
+            }
         )
     }
 }

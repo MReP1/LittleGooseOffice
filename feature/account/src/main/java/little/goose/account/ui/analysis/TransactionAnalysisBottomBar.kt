@@ -1,28 +1,32 @@
 package little.goose.account.ui.analysis
 
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.WindowInsetsSides
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.only
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.systemBars
+import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.*
+import androidx.compose.material3.NavigationBarItem
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import little.goose.account.R
 import little.goose.account.ui.component.MonthSelector
 import little.goose.account.ui.component.MonthSelectorState
 import little.goose.account.ui.component.YearSelector
 import little.goose.account.ui.component.YearSelectorState
-import little.goose.common.utils.TimeType
-import little.goose.common.utils.calendar
-import little.goose.common.utils.setMonth
-import little.goose.common.utils.setYear
-import little.goose.design.system.component.dialog.TimeSelectorCenterDialog
 
 data class TransactionAnalysisBottomBarState(
     val timeType: TransactionAnalysisViewModel.TimeType,
@@ -36,91 +40,72 @@ data class TransactionAnalysisBottomBarState(
 @Composable
 fun TransactionAnalysisBottomBar(
     modifier: Modifier = Modifier,
-    containerColor: Color = MaterialTheme.colorScheme.surface,
-    tonalElevation: Dp = 3.dp,
     state: TransactionAnalysisBottomBarState,
-    shape: Shape = RoundedCornerShape(topStart = 24.dp, topEnd = 24.dp)
+    onSelectTimeClick: () -> Unit
 ) {
     val windowInsets =
         WindowInsets.systemBars.only(WindowInsetsSides.Horizontal + WindowInsetsSides.Bottom)
-    Surface(
-        modifier = modifier,
-        tonalElevation = tonalElevation,
-        contentColor = containerColor,
-        shape = shape
+    Column(
+        modifier = modifier
+            .fillMaxWidth()
+            .windowInsetsPadding(windowInsets),
     ) {
-        Column(
+        val selectorModifier = remember {
+            Modifier
+                .padding(horizontal = 24.dp)
+                .height(42.dp)
+                .fillMaxWidth()
+        }
+
+        if (state.timeType == TransactionAnalysisViewModel.TimeType.YEAR) {
+            YearSelector(
+                modifier = selectorModifier,
+                state = state.yearSelectorState,
+                shape = RoundedCornerShape(18.dp),
+                onSelectTimeClick = onSelectTimeClick
+            )
+        } else {
+            MonthSelector(
+                modifier = selectorModifier,
+                state = state.monthSelectorState,
+                shape = RoundedCornerShape(18.dp),
+                onSelectTimeClick = onSelectTimeClick
+            )
+        }
+
+        Spacer(modifier = Modifier.height(8.dp))
+
+        Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .windowInsetsPadding(windowInsets),
+                .height(42.dp),
+            verticalAlignment = Alignment.CenterVertically
         ) {
-            Spacer(modifier = Modifier.height(16.dp))
-
-            val selectorModifier = remember {
-                Modifier
-                    .padding(horizontal = 24.dp)
-                    .height(42.dp)
-                    .fillMaxWidth()
-            }
-
-            if (state.timeType == TransactionAnalysisViewModel.TimeType.YEAR) {
-                YearSelector(
-                    modifier = selectorModifier,
-                    state = state.yearSelectorState,
-                    shape = RoundedCornerShape(18.dp)
-                )
-            } else {
-                MonthSelector(
-                    modifier = selectorModifier,
-                    state = state.monthSelectorState,
-                    shape = RoundedCornerShape(18.dp)
-                )
-            }
-
-            Spacer(modifier = Modifier.height(8.dp))
-
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(42.dp),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                NavigationBarItem(
-                    selected = state.timeType == TransactionAnalysisViewModel.TimeType.YEAR,
-                    onClick = { state.onTypeChange(TransactionAnalysisViewModel.TimeType.YEAR) },
-                    icon = {
-                        Text(
-                            text = "${state.year}" + stringResource(id = R.string.year),
-                            Modifier.padding(6.dp)
-                        )
-                    }
-                )
-                NavigationBarItem(
-                    selected = state.timeType == TransactionAnalysisViewModel.TimeType.MONTH,
-                    onClick = { state.onTypeChange(TransactionAnalysisViewModel.TimeType.MONTH) },
-                    icon = {
-                        Text(
-                            text = if (state.timeType == TransactionAnalysisViewModel.TimeType.MONTH) {
-                                "${state.month}" + stringResource(id = R.string.month)
-                            } else stringResource(id = R.string.month),
-                            Modifier.padding(6.dp)
-                        )
-                    }
-                )
-            }
-            Spacer(modifier = Modifier.height(8.dp))
+            NavigationBarItem(
+                selected = state.timeType == TransactionAnalysisViewModel.TimeType.YEAR,
+                onClick = { state.onTypeChange(TransactionAnalysisViewModel.TimeType.YEAR) },
+                icon = {
+                    Text(
+                        text = "${state.year}" + stringResource(id = R.string.year),
+                        Modifier.padding(6.dp)
+                    )
+                }
+            )
+            NavigationBarItem(
+                selected = state.timeType == TransactionAnalysisViewModel.TimeType.MONTH,
+                onClick = { state.onTypeChange(TransactionAnalysisViewModel.TimeType.MONTH) },
+                icon = {
+                    Text(
+                        text = if (state.timeType == TransactionAnalysisViewModel.TimeType.MONTH) {
+                            "${state.month}" + stringResource(id = R.string.month)
+                        } else stringResource(id = R.string.month),
+                        Modifier.padding(6.dp)
+                    )
+                }
+            )
         }
+        Spacer(modifier = Modifier.height(8.dp))
     }
-
-    TimeSelectorCenterDialog(
-        initTime = remember(state.year, state.month) {
-            calendar.apply { clear(); setYear(state.year); setMonth(state.month) }.time
-        },
-        type = TimeType.YEAR_MONTH,
-        onConfirm = {
-
-        }
-    )
 }
 
 @Preview(widthDp = 380, heightDp = 200)
@@ -132,6 +117,7 @@ private fun PreviewTransactionAnalysisBottomBar() {
             TransactionAnalysisViewModel.TimeType.YEAR, 0, 0,
             MonthSelectorState(0, 0) { _, _ -> },
             YearSelectorState(0) {}
-        ) {}
+        ) {},
+        onSelectTimeClick = {}
     )
 }
