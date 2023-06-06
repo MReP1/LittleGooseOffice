@@ -9,25 +9,6 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Account">
         <activity
-            android:name="little.goose.account.ui.TransactionExampleActivity"
-            android:exported="false" />
-        <activity
-            android:name="little.goose.memorial.ui.MemorialShowActivity"
-            android:exported="false" />
-        <activity
-            android:name="little.goose.memorial.ui.MemorialActivity"
-            android:exported="false" />
-        <activity
-            android:name="little.goose.account.ui.analysis.AccountAnalysisActivity"
-            android:exported="false" />
-        <activity
-            android:name="little.goose.account.ui.transaction.TransactionActivity"
-            android:exported="false"
-            android:windowSoftInputMode="adjustPan" />
-        <activity
-            android:name="little.goose.search.SearchActivity"
-            android:exported="false" />
-        <activity
             android:name="little.goose.office.MainActivity"
             android:exported="true"
             android:theme="@style/Theme.AppSplashScreen">
