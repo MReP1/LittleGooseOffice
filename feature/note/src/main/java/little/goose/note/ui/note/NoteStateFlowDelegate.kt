@@ -362,7 +362,7 @@ class NoteContentStateFlowDelegate(
         lastContentSize = blockContents.size
 
         NoteContentState(
-            noteId = note.id,
+            note = note,
             title = note.title,
             content = blockContents,
             focusingBlockId = focusingBlockId,

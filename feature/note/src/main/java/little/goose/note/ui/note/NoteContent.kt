@@ -34,11 +34,12 @@ import com.mikepenz.markdown.MarkdownDefaults
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import little.goose.note.R
+import little.goose.note.data.entities.Note
 import little.goose.note.data.entities.NoteContentBlock
 
 data class NoteContentState(
     val title: String = "Title",
-    val noteId: Long? = null,
+    val note: Note? = null,
     val focusingBlockId: Long? = null,
     val isPreview: Boolean = false,
     val content: List<NoteContentBlock> = listOf(),
@@ -181,7 +182,7 @@ fun NoteEditContent(
                     state.onBlockAdd(
                         NoteContentBlock(
                             id = null,
-                            noteId = state.noteId,
+                            noteId = state.note?.id,
                             index = state.content.size,
                             content = ""
                         )
