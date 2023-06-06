@@ -9,8 +9,6 @@ import little.goose.note.data.entities.NoteContentBlock
 
 @Dao
 interface NoteDao {
-    @Query("SELECT * FROM $TABLE_NOTE WHERE time > :startTime and time < :endTime ORDER BY time DESC")
-    fun getNoteByTimeFlow(startTime: Long, endTime: Long): Flow<List<Note>>
 
     @Insert
     suspend fun insertNote(note: Note): Long
