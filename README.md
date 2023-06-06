@@ -28,6 +28,7 @@ Figma，Icon 来自于 Material Icons。
 - SplashScreen
 - MPAndroidChart —— https://github.com/PhilJay/MPAndroidChart
 - Compose Calendar
+- MarkDown Renderer —— https://github.com/mikepenz/multiplatform-markdown-renderer
 
 ## 简单使用
 
