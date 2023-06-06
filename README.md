@@ -27,7 +27,7 @@ Figma，Icon 来自于 Material Icons。
 - Kotlin Flow
 - SplashScreen
 - MPAndroidChart —— https://github.com/PhilJay/MPAndroidChart
-- Compose Calendar
+- Compose Calendar —— https://github.com/kizitonwose/Calendar
 - MarkDown Renderer —— https://github.com/mikepenz/multiplatform-markdown-renderer
 
 ## 简单使用
