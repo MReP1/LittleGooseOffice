@@ -101,7 +101,7 @@ fun NoteContentBlockItem(
         },
         dismissContent = {
             Row(
-                modifier = modifier.background(backgroundColor),
+                modifier = Modifier.background(backgroundColor),
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 NoteContentBlockTextField(
