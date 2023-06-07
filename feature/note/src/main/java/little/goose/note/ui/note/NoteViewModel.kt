@@ -57,7 +57,7 @@ class NoteViewModel @Inject constructor(
 
         // Update note last modified time
         val noteState = noteRouteState.value as? NoteRouteState.State ?: return
-        val note = noteState.state.contentState.note ?: return
+        val note = noteState.state.contentState.note.takeIf { it.id != null} ?: return
         viewModelScope.launch(NonCancellable) {
             updateNote(note.copy(time = Date()))
         }
