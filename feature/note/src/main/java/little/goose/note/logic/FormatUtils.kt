@@ -86,34 +86,34 @@ private fun TextFieldValue.formatHeader(
 }
 
 private fun TextFieldValue.formatList(
-    list: FormatType.List
+    listType: FormatType.List
 ): TextFieldValue {
-    return if (this.text.startsWith(list.value)) {
+    return if (this.text.startsWith(listType.value)) {
         this.copy(
-            text = this.text.substring(list.value.length),
+            text = this.text.substring(listType.value.length),
             selection = TextRange(
-                this.selection.start - list.value.length,
-                this.selection.end - list.value.length
+                this.selection.start - listType.value.length,
+                this.selection.end - listType.value.length
             )
         )
     } else {
-        if (list is FormatType.List.Ordered) {
+        if (listType is FormatType.List.Ordered) {
             val num = this.text.orderListNum
             if (num > 0) {
                 return this.copy(
-                    text = this.text.replaceRange(0, num.length + 2, list.value),
+                    text = this.text.replaceRange(0, num.length + 2, listType.value),
                     selection = TextRange(
-                        this.selection.start + list.value.length - num.length - 2,
-                        this.selection.end + list.value.length - num.length - 2
+                        this.selection.start + listType.value.length - num.length - 2,
+                        this.selection.end + listType.value.length - num.length - 2
                     )
                 )
             }
         }
         this.copy(
-            text = list.value + this.text,
+            text = listType.value + this.text,
             selection = TextRange(
-                this.selection.start + list.value.length,
-                this.selection.end + list.value.length
+                this.selection.start + listType.value.length,
+                this.selection.end + listType.value.length
             )
         )
     }
