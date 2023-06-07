@@ -38,8 +38,7 @@ import little.goose.note.data.entities.Note
 import little.goose.note.data.entities.NoteContentBlock
 
 data class NoteContentState(
-    val title: String = "Title",
-    val note: Note? = null,
+    val note: Note = Note(id = null),
     val focusingBlockId: Long? = null,
     val isPreview: Boolean = false,
     val content: List<NoteContentBlock> = listOf(),
@@ -82,17 +81,10 @@ private fun MarkDownContent(
     state: NoteContentState
 ) {
     val fullContent by produceState(initialValue = "", key1 = state.content) {
-        value = if (state.content.size < 100) {
+        value = withContext(Dispatchers.Default) {
             buildString {
-                if (state.title.isNotBlank()) {
-                    append("# ${state.title}\n\n")
-                }
-                append(state.content.joinToString("\n\n") { it.content })
-            }
-        } else withContext(Dispatchers.Default) {
-            buildString {
-                if (state.title.isNotBlank()) {
-                    append("# ${state.title}\n\n")
+                if (state.note.title.isNotBlank()) {
+                    append("# ${state.note.title}\n\n")
                 }
                 append(state.content.joinToString("\n\n") { it.content })
             }
@@ -136,7 +128,7 @@ fun NoteEditContent(
     ) {
         item {
             TextField(
-                value = state.title,
+                value = state.note.title,
                 onValueChange = state.onTitleChange,
                 modifier = Modifier.fillMaxWidth(),
                 maxLines = 1,
@@ -182,7 +174,7 @@ fun NoteEditContent(
                     state.onBlockAdd(
                         NoteContentBlock(
                             id = null,
-                            noteId = state.note?.id,
+                            noteId = state.note.id,
                             index = state.content.size,
                             content = ""
                         )

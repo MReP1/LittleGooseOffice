@@ -363,7 +363,6 @@ class NoteContentStateFlowDelegate(
 
         NoteContentState(
             note = note,
-            title = note.title,
             content = blockContents,
             focusingBlockId = focusingBlockId,
             isPreview = isPreview,
