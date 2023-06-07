@@ -81,7 +81,14 @@ private fun MarkdownContent(
     state: NoteContentState
 ) {
     val fullContent by produceState(initialValue = "", key1 = state.content) {
-        value = withContext(Dispatchers.Default) {
+        value = if (state.content.size < 50) {
+            buildString {
+                if (state.note.title.isNotBlank()) {
+                    append("# ${state.note.title}\n\n")
+                }
+                append(state.content.joinToString("\n\n") { it.content })
+            }
+        } else withContext(Dispatchers.Default) {
             buildString {
                 if (state.note.title.isNotBlank()) {
                     append("# ${state.note.title}\n\n")
