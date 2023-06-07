@@ -61,7 +61,7 @@ fun NoteContent(
         modifier = modifier.fillMaxSize()
     ) {
         if (state.isPreview) {
-            MarkDownContent(
+            MarkdownContent(
                 modifier = Modifier.fillMaxSize(),
                 state = state
             )
@@ -76,7 +76,7 @@ fun NoteContent(
 }
 
 @Composable
-private fun MarkDownContent(
+private fun MarkdownContent(
     modifier: Modifier = Modifier,
     state: NoteContentState
 ) {
