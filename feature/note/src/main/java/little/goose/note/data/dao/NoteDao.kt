@@ -71,4 +71,18 @@ interface NoteDao {
 
     @Update
     suspend fun updateNoteContentBlocks(noteContentBlocks: List<NoteContentBlock>)
+
+    @Transaction
+    suspend fun deleteNoteAndItsBlocks(note: Note) {
+        note.id?.let { deleteNoteContentBlocks(it) }
+        deleteNote(note)
+    }
+
+    @Transaction
+    suspend fun deleteNotesAndItsBlocks(noteList: List<Note>) {
+        noteList.mapNotNull { it.id }
+            .takeIf { it.isNotEmpty() }
+            ?.let { deleteNoteContentBlocks(it) }
+        deleteNoteList(noteList)
+    }
 }

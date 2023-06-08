@@ -23,9 +23,9 @@ class NoteRepository(context: Context) {
 
     suspend fun updateNote(note: Note) = noteDao.updateNote(note)
 
-    suspend fun deleteNote(note: Note) = noteDao.deleteNote(note)
+    suspend fun deleteNoteAndItsBlocks(note: Note) = noteDao.deleteNoteAndItsBlocks(note)
 
-    suspend fun deleteNotes(noteList: List<Note>) = noteDao.deleteNoteList(noteList)
+    suspend fun deleteNotesAndItsBlocks(notes: List<Note>) = noteDao.deleteNotesAndItsBlocks(notes)
 
     fun getNoteFlow(noteId: Long) = noteDao.getNoteFlow(noteId)
 
@@ -47,14 +47,6 @@ class NoteRepository(context: Context) {
 
     suspend fun deleteNoteContentBlock(noteContentBlock: NoteContentBlock) {
         return noteDao.deleteNoteContentBlock(noteContentBlock)
-    }
-
-    suspend fun deleteNoteContentBlocks(noteId: Long) {
-        return noteDao.deleteNoteContentBlocks(noteId)
-    }
-
-    suspend fun deleteNoteContentBlocks(noteContentBlocks: List<Long>) {
-        return noteDao.deleteNoteContentBlocks(noteContentBlocks)
     }
 
     fun getNoteWithContentMapFlow(noteId: Long) = noteDao.getNoteWithContentMapFlow(noteId)

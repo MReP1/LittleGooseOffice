@@ -8,8 +8,8 @@ import dagger.hilt.android.components.ViewModelComponent
 import dagger.hilt.android.scopes.ViewModelScoped
 import dagger.hilt.components.SingletonComponent
 import little.goose.note.logic.DeleteNoteContentBlockUseCase
-import little.goose.note.logic.DeleteNoteUseCase
-import little.goose.note.logic.DeleteNotesUseCase
+import little.goose.note.logic.DeleteNoteAndItsBlocksUseCase
+import little.goose.note.logic.DeleteNotesAndItsBlocksUseCase
 import little.goose.note.logic.GetNoteFlowUseCase
 import little.goose.note.logic.GetNoteWithContentMapFlowUseCase
 import little.goose.note.logic.GetNoteWithContentsMapFlowUseCase
@@ -63,18 +63,18 @@ class NoteViewModelModule {
 
     @Provides
     @ViewModelScoped
-    fun provideDeleteNoteUseCase(
+    fun provideDeleteNoteAndItsBlocksUseCase(
         noteRepository: NoteRepository
-    ): DeleteNoteUseCase {
-        return DeleteNoteUseCase(noteRepository)
+    ): DeleteNoteAndItsBlocksUseCase {
+        return DeleteNoteAndItsBlocksUseCase(noteRepository)
     }
 
     @Provides
     @ViewModelScoped
-    fun provideDeleteNotesUseCase(
+    fun provideDeleteNotesAndItsBlocksUseCase(
         noteRepository: NoteRepository
-    ): DeleteNotesUseCase {
-        return DeleteNotesUseCase(noteRepository)
+    ): DeleteNotesAndItsBlocksUseCase {
+        return DeleteNotesAndItsBlocksUseCase(noteRepository)
     }
 
     @Provides

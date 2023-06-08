@@ -14,7 +14,7 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.launch
 import little.goose.note.data.entities.Note
-import little.goose.note.logic.DeleteNotesUseCase
+import little.goose.note.logic.DeleteNotesAndItsBlocksUseCase
 import little.goose.note.logic.GetNoteWithContentMapFlowByKeyword
 import little.goose.note.ui.NoteColumnState
 import javax.inject.Inject
@@ -22,7 +22,7 @@ import javax.inject.Inject
 @HiltViewModel
 class SearchNoteViewModel @Inject constructor(
     private val getNoteWithContentMapFlowByKeyword: GetNoteWithContentMapFlowByKeyword,
-    private val deleteNotesUseCase: DeleteNotesUseCase
+    private val deleteNotesAndItsBlocksUseCase: DeleteNotesAndItsBlocksUseCase
 ) : ViewModel() {
 
     private val multiSelectedNotes = MutableStateFlow<Set<Note>>(emptySet())
@@ -87,7 +87,7 @@ class SearchNoteViewModel @Inject constructor(
 
     private fun deleteNotes(notes: List<Note>) {
         viewModelScope.launch {
-            deleteNotesUseCase(notes)
+            deleteNotesAndItsBlocksUseCase(notes)
             _searchNoteEvent.emit(SearchNoteEvent.DeleteNotes(notes))
         }
     }

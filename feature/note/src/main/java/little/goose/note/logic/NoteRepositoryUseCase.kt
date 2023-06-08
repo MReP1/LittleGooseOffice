@@ -31,24 +31,19 @@ class UpdateNoteUseCase @Inject constructor(
     }
 }
 
-class DeleteNoteUseCase @Inject constructor(
+class DeleteNoteAndItsBlocksUseCase @Inject constructor(
     private val repository: NoteRepository
 ) {
     suspend operator fun invoke(note: Note) {
-        note.id?.let { noteId ->
-            repository.deleteNoteContentBlocks(noteId)
-        }
-        return repository.deleteNote(note)
+        return repository.deleteNoteAndItsBlocks(note)
     }
 }
 
-class DeleteNotesUseCase @Inject constructor(
+class DeleteNotesAndItsBlocksUseCase @Inject constructor(
     private val repository: NoteRepository
 ) {
     suspend operator fun invoke(notes: List<Note>) {
-        val noteIds = notes.mapNotNull { it.id }
-        repository.deleteNoteContentBlocks(noteIds)
-        return repository.deleteNotes(notes)
+        return repository.deleteNotesAndItsBlocks(notes)
     }
 }
 

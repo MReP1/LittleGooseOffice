@@ -11,14 +11,14 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import little.goose.note.data.entities.Note
-import little.goose.note.logic.DeleteNotesUseCase
+import little.goose.note.logic.DeleteNotesAndItsBlocksUseCase
 import little.goose.note.logic.GetNoteWithContentsMapFlowUseCase
 import javax.inject.Inject
 
 @HiltViewModel
 class NotebookViewModel @Inject constructor(
     getNoteWithContentsMapFlow: GetNoteWithContentsMapFlowUseCase,
-    private val deleteNotesUseCase: DeleteNotesUseCase
+    private val deleteNotesAndItsBlocksUseCase: DeleteNotesAndItsBlocksUseCase
 ) : ViewModel() {
 
     sealed class Event {
@@ -78,7 +78,7 @@ class NotebookViewModel @Inject constructor(
 
     private fun deleteNotes(notes: List<Note>) {
         viewModelScope.launch {
-            deleteNotesUseCase(notes)
+            deleteNotesAndItsBlocksUseCase(notes)
             _event.emit(Event.DeleteNotes(notes))
         }
     }
