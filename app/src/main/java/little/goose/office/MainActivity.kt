@@ -16,22 +16,43 @@ import little.goose.home.ui.HomeScreen
 import little.goose.home.utils.KEY_PREF_PAGER
 import little.goose.home.utils.homeDataStore
 
+sealed interface MainState {
+    object Loading : MainState
+    data class Success(val page: Int) : MainState
+}
+
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
 
+    companion object {
+        @Volatile
+        @JvmStatic
+        var isMainPageInit = false
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         val splashScreen = installSplashScreen()
-        splashScreen.setKeepOnScreenCondition { !isAppInit }
+        splashScreen.setKeepOnScreenCondition { !isAppInit && !isMainPageInit }
         super.onCreate(savedInstanceState)
         setContent {
             AccountTheme {
-                val initPage by produceState(initialValue = HOME) {
-                    value = homeDataStore.getDataOrDefault(KEY_PREF_PAGER, HOME)
+                val mainState = produceState<MainState>(initialValue = MainState.Loading) {
+                    val initPage = homeDataStore.getDataOrDefault(KEY_PREF_PAGER, HOME)
+                    isMainPageInit = true
+                    value = MainState.Success(initPage)
                 }
-                HomeScreen(
-                    modifier = Modifier.fillMaxSize(),
-                    initPage = initPage
-                )
+                when (val state = mainState.value) {
+                    MainState.Loading -> {
+                        // TODO
+                    }
+
+                    is MainState.Success -> {
+                        HomeScreen(
+                            modifier = Modifier.fillMaxSize(),
+                            initPage = state.page
+                        )
+                    }
+                }
             }
         }
     }
