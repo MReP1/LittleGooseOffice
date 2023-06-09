@@ -2,22 +2,20 @@ package little.goose.note.ui
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import little.goose.note.data.entities.Note
-import little.goose.note.ui.note.NoteActivity
 
 @Composable
 fun NotebookHome(
     modifier: Modifier = Modifier,
-    noteColumnState: NoteColumnState
+    noteColumnState: NoteColumnState,
+    onNavigateToNote: (noteId: Long) -> Unit
 ) {
-    val context = LocalContext.current
     NotebookScreen(
         modifier = modifier,
         noteColumnState = noteColumnState,
         onNoteClick = { note ->
             note.id?.let { noteId ->
-                NoteActivity.openEdit(context, noteId)
+                onNavigateToNote(noteId)
             }
         }
     )

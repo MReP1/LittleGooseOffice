@@ -49,11 +49,6 @@ dependencies {
     // DataStore
     implementation(libs.androidx.dataStore.preferences)
 
-    // Room database
-    implementation(libs.room.runtime)
-    implementation(libs.room.ktx)
-    ksp(libs.room.compiler)
-
     // coroutines
     implementation(libs.kotlinx.coroutines.core)
     implementation(libs.kotlinx.coroutines.android)

@@ -2,20 +2,43 @@ package little.goose.home.ui
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.pager.HorizontalPager
-import androidx.compose.foundation.pager.rememberPagerState
+import androidx.compose.foundation.pager.PagerState
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.*
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.material.icons.rounded.Add
+import androidx.compose.material.icons.rounded.Delete
+import androidx.compose.material.icons.rounded.DoneAll
+import androidx.compose.material.icons.rounded.DonutSmall
+import androidx.compose.material.icons.rounded.RemoveDone
+import androidx.compose.material.icons.rounded.Search
+import androidx.compose.material.icons.rounded.SubdirectoryArrowRight
+import androidx.compose.material3.BottomAppBar
+import androidx.compose.material3.CenterAlignedTopAppBar
+import androidx.compose.material3.Icon
+import androidx.compose.material3.NavigationBarItem
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Snackbar
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
-import androidx.datastore.preferences.core.edit
 import androidx.hilt.navigation.compose.hiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -30,14 +53,20 @@ import little.goose.design.system.component.MovableActionButtonState
 import little.goose.design.system.component.dialog.DeleteDialog
 import little.goose.design.system.component.dialog.DeleteDialogState
 import little.goose.home.R
-import little.goose.home.data.*
+import little.goose.home.data.ACCOUNT
+import little.goose.home.data.HOME
+import little.goose.home.data.HomePage
+import little.goose.home.data.MEMORIAL
+import little.goose.home.data.NOTEBOOK
+import little.goose.home.data.SCHEDULE
 import little.goose.home.ui.component.IndexTopBar
-import little.goose.home.utils.KEY_PREF_PAGER
-import little.goose.home.utils.homeDataStore
-import little.goose.memorial.ui.*
+import little.goose.memorial.ui.MemorialActivity
+import little.goose.memorial.ui.MemorialDialog
+import little.goose.memorial.ui.MemorialHome
+import little.goose.memorial.ui.MemorialViewModel
+import little.goose.memorial.ui.rememberMemorialDialogState
 import little.goose.note.ui.NotebookHome
 import little.goose.note.ui.NotebookViewModel
-import little.goose.note.ui.note.NoteActivity
 import little.goose.schedule.data.entities.Schedule
 import little.goose.schedule.ui.ScheduleDialog
 import little.goose.schedule.ui.ScheduleHome
@@ -49,11 +78,11 @@ import little.goose.search.SearchType
 @Composable
 fun HomeScreen(
     modifier: Modifier,
-    initPage: Int
+    pagerState: PagerState,
+    onNavigateToNote: (noteId: Long?) -> Unit
 ) {
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
-    val pagerState = rememberPagerState(initPage)
     val currentHomePage = remember(pagerState.currentPage) {
         HomePage.fromPageIndex(pagerState.currentPage)
     }
@@ -86,12 +115,6 @@ fun HomeScreen(
         HomePage.Schedule -> scheduleColumnState.isMultiSelecting
         HomePage.Memorial -> memorialColumnState.isMultiSelecting
         else -> false
-    }
-
-    LaunchedEffect(pagerState.currentPage) {
-        context.homeDataStore.edit { preferences ->
-            preferences[KEY_PREF_PAGER] = pagerState.currentPage
-        }
     }
 
     LaunchedEffect(isMultiSelecting) {
@@ -206,6 +229,7 @@ fun HomeScreen(
                             NotebookHome(
                                 modifier = Modifier.fillMaxSize(),
                                 noteColumnState = noteColumnState,
+                                onNavigateToNote = onNavigateToNote,
                             )
                         }
                         ACCOUNT -> {
@@ -264,7 +288,7 @@ fun HomeScreen(
                                             noteColumnState.cancelMultiSelecting()
                                         })
                                     } else {
-                                        NoteActivity.openAdd(context)
+                                        onNavigateToNote(null)
                                     }
                                 }
                                 HomePage.ACCOUNT -> {

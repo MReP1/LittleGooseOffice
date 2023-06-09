@@ -14,6 +14,11 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.navigation.NavController
+import androidx.navigation.NavGraphBuilder
+import androidx.navigation.NavType
+import androidx.navigation.navArgument
+import com.google.accompanist.navigation.animation.composable
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.android.awaitFrame
 import kotlinx.coroutines.delay
@@ -39,11 +44,6 @@ class NoteActivity : AppCompatActivity() {
 
 
     companion object {
-        fun openAdd(context: Context) {
-            val intent = Intent(context, NoteActivity::class.java)
-            context.startActivity(intent)
-        }
-
         fun openEdit(context: Context, noteId: Long) {
             val intent = Intent(context, NoteActivity::class.java).apply {
                 putExtra(KEY_NOTE_ID, noteId)
@@ -63,6 +63,25 @@ sealed interface NoteRouteState {
 
 sealed class NoteScreenEvent {
     data class AddNoteBlock(val noteContentBlock: NoteContentBlock) : NoteScreenEvent()
+}
+
+const val ROUTE_NOTE = "route_note"
+
+fun NavGraphBuilder.noteRoute(navController: NavController) {
+    composable(
+        route = "$ROUTE_NOTE/{$KEY_NOTE_ID}",
+        arguments = listOf(
+            navArgument(KEY_NOTE_ID) {
+                type = NavType.LongType
+                defaultValue = -1L
+            }
+        )
+    ) {
+        NoteRoute(
+            modifier = Modifier.fillMaxSize(),
+            onBack = navController::popBackStack
+        )
+    }
 }
 
 @Composable
