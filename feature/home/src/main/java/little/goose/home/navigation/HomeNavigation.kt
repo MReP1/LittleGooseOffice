@@ -4,24 +4,27 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.Stable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.produceState
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.datastore.preferences.core.edit
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import com.google.accompanist.navigation.animation.composable
-import kotlinx.coroutines.flow.collectLatest
-import little.goose.common.utils.flowDataOrDefault
+import little.goose.common.utils.getDataOrDefault
 import little.goose.home.data.HOME
 import little.goose.home.ui.HomeScreen
 import little.goose.home.utils.KEY_PREF_PAGER
 import little.goose.home.utils.homeDataStore
 import little.goose.note.ui.note.ROUTE_NOTE
 
-@Stable
 var isHomePageInit = true
+
+var homePage by mutableStateOf(-1)
 
 const val ROUTE_HOME = "route_home"
 
@@ -47,16 +50,15 @@ fun HomeRoute(
     onNavigateToNote: (noteId: Long?) -> Unit
 ) {
     val context = LocalContext.current
-    val mainState = produceState<HomeRouteState>(
-        initialValue = HomeRouteState.Loading
-    ) {
-        context.homeDataStore.flowDataOrDefault(KEY_PREF_PAGER, HOME).collectLatest {
-            isHomePageInit = true
-            value = HomeRouteState.Success(it)
-        }
+    val homeState = if (homePage >= 0) remember {
+        mutableStateOf(HomeRouteState.Success(homePage))
+    } else produceState<HomeRouteState>(initialValue = HomeRouteState.Loading) {
+        val page = context.homeDataStore.getDataOrDefault(KEY_PREF_PAGER, HOME)
+        isHomePageInit = true
+        value = HomeRouteState.Success(page)
     }
 
-    when (val state = mainState.value) {
+    when (val state = homeState.value) {
         HomeRouteState.Loading -> {
             // TODO
         }
@@ -69,6 +71,7 @@ fun HomeRoute(
                 onNavigateToNote = onNavigateToNote
             )
             LaunchedEffect(pagerState.currentPage) {
+                homePage = pagerState.currentPage
                 context.homeDataStore.edit { preferences ->
                     preferences[KEY_PREF_PAGER] = pagerState.currentPage
                 }
