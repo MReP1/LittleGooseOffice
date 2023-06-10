@@ -19,6 +19,7 @@ dependencies {
     // 富文本
     implementation(project(":core:design-system"))
     implementation(project(":core:common"))
+    implementation(project(":core:ui"))
 
     // Markdown note
     implementation(libs.compose.markdown)
