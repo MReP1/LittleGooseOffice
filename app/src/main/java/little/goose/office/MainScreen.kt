@@ -17,6 +17,7 @@ import little.goose.home.homeRoute
 import little.goose.memorial.memorialGraph
 import little.goose.memorial.ui.MemorialScreenType
 import little.goose.memorial.ui.navigateToMemorial
+import little.goose.memorial.ui.navigateToMemorialDialog
 import little.goose.memorial.ui.navigateToMemorialShow
 import little.goose.note.ui.note.NoteNavigatingType
 import little.goose.note.ui.note.navigateToNote
@@ -53,21 +54,23 @@ internal fun MainScreen(
                     navController.navigateToTransaction(time)
                 }
             },
-            onNavigateToMemorialShow = navController::navigateToMemorialShow,
             onNavigateToMemorialAdd = {
                 navController.navigateToMemorial(MemorialScreenType.Add)
             },
+            onNavigateToMemorialDialog = navController::navigateToMemorialDialog,
             onNavigateToAccountAnalysis = navController::navigateToAccountAnalysis,
             onNavigateToScheduleDialog = navController::navigateToScheduleDialog
         )
 
-        noteRoute(onBack = navController::navigateUp)
+        noteRoute(
+            onBack = navController::navigateUp
+        )
 
         searchRoute(
             onNavigateToNote = { noteId ->
                 navController.navigateToNote(NoteNavigatingType.Edit(noteId))
             },
-            onNavigateToMemorialShow = navController::navigateToMemorialShow,
+            onNavigateToMemorialDialog = navController::navigateToMemorialDialog,
             onNavigateToTransaction = navController::navigateToTransaction,
             onNavigateToScheduleDialog = navController::navigateToScheduleDialog,
             onBack = navController::navigateUp
@@ -89,7 +92,8 @@ internal fun MainScreen(
             onBack = navController::navigateUp,
             onNavigateToMemorial = {
                 navController.navigateToMemorial(MemorialScreenType.Modify, memorialId = it)
-            }
+            },
+            onNavigateToMemorialShow = navController::navigateToMemorialShow,
         )
 
         scheduleRoute(

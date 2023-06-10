@@ -58,10 +58,8 @@ import little.goose.home.data.MEMORIAL
 import little.goose.home.data.NOTEBOOK
 import little.goose.home.data.SCHEDULE
 import little.goose.home.ui.component.IndexTopBar
-import little.goose.memorial.ui.MemorialDialog
 import little.goose.memorial.ui.MemorialHome
 import little.goose.memorial.ui.MemorialViewModel
-import little.goose.memorial.ui.rememberMemorialDialogState
 import little.goose.note.ui.NotebookHome
 import little.goose.note.ui.NotebookViewModel
 import little.goose.schedule.ui.ScheduleHome
@@ -74,7 +72,7 @@ fun HomeScreen(
     modifier: Modifier,
     pagerState: PagerState,
     onNavigateToMemorialAdd: () -> Unit,
-    onNavigateToMemorialShow: (memorialId: Long) -> Unit,
+    onNavigateToMemorialDialog: (memorialId: Long) -> Unit,
     onNavigateToTransaction: (transactionId: Long?, date: Date?) -> Unit,
     onNavigateToNote: (noteId: Long?) -> Unit,
     onNavigateToSearch: (SearchType) -> Unit,
@@ -98,7 +96,6 @@ fun HomeScreen(
 
     val buttonState = remember { MovableActionButtonState() }
     val transactionDialogState = rememberTransactionDialogState()
-    val memorialDialogState = rememberMemorialDialogState()
     val deleteDialogState = remember { DeleteDialogState() }
 
     val snackbarHostState = remember { SnackbarHostState() }
@@ -224,7 +221,9 @@ fun HomeScreen(
                                 },
                                 onScheduleClick = { onNavigateToScheduleDialog(it.id) },
                                 onTransactionClick = transactionDialogState::show,
-                                onMemorialClick = memorialDialogState::show
+                                onMemorialClick = { memorial ->
+                                    memorial.id?.let(onNavigateToMemorialDialog)
+                                }
                             )
                         }
 
@@ -265,8 +264,7 @@ fun HomeScreen(
                                 modifier = Modifier.fillMaxSize(),
                                 topMemorial = topMemorial,
                                 memorialColumnState = memorialColumnState,
-                                onNavigateMemorialShow = onNavigateToMemorialShow,
-                                deleteMemorial = memorialViewModel::deleteMemorial
+                                onNavigateToMemorialDialog = onNavigateToMemorialDialog
                             )
                         }
                     }
@@ -509,11 +507,5 @@ fun HomeScreen(
             onNavigateToTransaction(it, null)
         },
         onDelete = accountViewModel::deleteTransaction
-    )
-
-    MemorialDialog(
-        state = memorialDialogState,
-        onNavigateToMemorialShow = onNavigateToMemorialShow,
-        onDelete = memorialViewModel::deleteMemorial
     )
 }

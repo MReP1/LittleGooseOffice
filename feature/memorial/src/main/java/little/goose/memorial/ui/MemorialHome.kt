@@ -18,22 +18,15 @@ fun MemorialHome(
     modifier: Modifier,
     topMemorial: Memorial?,
     memorialColumnState: MemorialColumnState,
-    onNavigateMemorialShow: (Long) -> Unit,
-    deleteMemorial: (Memorial) -> Unit
+    onNavigateToMemorialDialog: (Long) -> Unit,
 ) {
-    val memorialDialogState = rememberMemorialDialogState()
-
-    MemorialDialog(
-        state = memorialDialogState,
-        onNavigateToMemorialShow = onNavigateMemorialShow,
-        onDelete = deleteMemorial
-    )
-
     MemorialScreen(
         modifier = modifier,
         memorialColumnState = memorialColumnState,
         topMemorial = topMemorial,
-        onMemorialClick = memorialDialogState::show
+        onMemorialClick = { memorial ->
+            memorial.id?.run(onNavigateToMemorialDialog)
+        }
     )
 }
 

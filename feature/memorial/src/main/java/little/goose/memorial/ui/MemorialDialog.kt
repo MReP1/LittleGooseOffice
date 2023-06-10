@@ -10,62 +10,60 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.navigation.NavController
+import androidx.navigation.NavGraphBuilder
+import androidx.navigation.NavType
+import androidx.navigation.compose.dialog
+import androidx.navigation.navArgument
 import little.goose.design.system.component.dialog.*
 import little.goose.memorial.R
+import little.goose.memorial.data.constants.KEY_MEMORIAL_ID
 import little.goose.memorial.data.entities.Memorial
 import little.goose.memorial.ui.component.MemorialCard
 
-@Composable
-fun rememberMemorialDialogState(): MemorialDialogState {
-    return remember { MemorialDialogState() }
+const val ROUTE_DIALOG_MEMORIAL = "dialog_memorial"
+
+fun NavController.navigateToMemorialDialog(memorialId: Long) {
+    navigate("$ROUTE_DIALOG_MEMORIAL/$memorialId")
 }
 
-@Stable
-class MemorialDialogState {
-
-    var memorial by mutableStateOf(Memorial())
-
-    internal val dialogState: DialogState = DialogState(false)
-
-    fun show(memorial: Memorial) {
-        this.memorial = memorial
-        dialogState.show()
-    }
-
-    fun dismiss() {
-        dialogState.dismiss()
-    }
-
-}
-
-@Composable
-fun MemorialDialog(
-    state: MemorialDialogState,
-    onNavigateToMemorialShow: (Long) -> Unit,
-    onDelete: (Memorial) -> Unit
+fun NavGraphBuilder.memorialDialogRoute(
+    onDismissRequest: () -> Unit,
+    onNavigateToMemorialShow: (Long) -> Unit
 ) {
-    val deleteMemorialDialogState = remember { DeleteDialogState() }
-    NormalDialog(state = state.dialogState) {
-        MaterialDialogScreen(
+    dialog(
+        route = "$ROUTE_DIALOG_MEMORIAL/{$KEY_MEMORIAL_ID}",
+        arguments = listOf(
+            navArgument(KEY_MEMORIAL_ID) {
+                type = NavType.LongType
+            }
+        )
+    ) {
+        val deleteMemorialDialogState = remember { DeleteDialogState() }
+        val viewModel = hiltViewModel<MemorialDialogViewModel>()
+        val memorial by viewModel.memorial.collectAsStateWithLifecycle()
+        MemorialDialogScreen(
             modifier = Modifier.wrapContentSize(),
-            memorial = state.memorial,
+            memorial = memorial,
             onDelete = {
                 deleteMemorialDialogState.show(onConfirm = {
-                    onDelete(state.memorial)
-                    state.dismiss()
+                    viewModel.deleteMemorial()
+                    onDismissRequest()
                 })
             },
             onEdit = {
-                state.memorial.id?.let { onNavigateToMemorialShow(it) }
-                state.dismiss()
+                onDismissRequest()
+                memorial.id?.let { onNavigateToMemorialShow(it) }
             }
         )
+        DeleteDialog(state = deleteMemorialDialogState)
     }
-    DeleteDialog(state = deleteMemorialDialogState)
 }
 
 @Composable
-fun MaterialDialogScreen(
+fun MemorialDialogScreen(
     modifier: Modifier,
     memorial: Memorial,
     onDelete: () -> Unit,

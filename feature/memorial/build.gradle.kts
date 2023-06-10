@@ -24,5 +24,6 @@ dependencies {
     implementation(libs.accompanist.navigation.animation)
     implementation(libs.androidx.hilt.navigation.compose)
     implementation(libs.androidx.constraintLayout.compose)
+    implementation(libs.androidx.lifecycle.runtime.compose)
 
 }

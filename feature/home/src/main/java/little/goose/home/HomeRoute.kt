@@ -30,7 +30,7 @@ const val ROUTE_HOME = "home"
 
 fun NavGraphBuilder.homeRoute(
     onNavigateToMemorialAdd: () -> Unit,
-    onNavigateToMemorialShow: (memorialId: Long) -> Unit,
+    onNavigateToMemorialDialog: (memorialId: Long) -> Unit,
     onNavigateToNote: (noteId: Long?) -> Unit,
     onNavigateToSearch: (SearchType) -> Unit,
     onNavigateToTransaction: (id: Long?, time: Date?) -> Unit,
@@ -41,7 +41,7 @@ fun NavGraphBuilder.homeRoute(
         HomeRoute(
             modifier = Modifier.fillMaxSize(),
             onNavigateToMemorialAdd = onNavigateToMemorialAdd,
-            onNavigateToMemorialShow = onNavigateToMemorialShow,
+            onNavigateToMemorialDialog = onNavigateToMemorialDialog,
             onNavigateToNote = onNavigateToNote,
             onNavigateToSearch = onNavigateToSearch,
             onNavigateToTransaction = onNavigateToTransaction,
@@ -60,7 +60,7 @@ sealed interface HomeRouteState {
 fun HomeRoute(
     modifier: Modifier = Modifier,
     onNavigateToMemorialAdd: () -> Unit,
-    onNavigateToMemorialShow: (memorialId: Long) -> Unit,
+    onNavigateToMemorialDialog: (memorialId: Long) -> Unit,
     onNavigateToTransaction: (id: Long?, time: Date?) -> Unit,
     onNavigateToNote: (noteId: Long?) -> Unit,
     onNavigateToSearch: (SearchType) -> Unit,
@@ -90,7 +90,7 @@ fun HomeRoute(
                 onNavigateToSearch = onNavigateToSearch,
                 onNavigateToTransaction = onNavigateToTransaction,
                 onNavigateToMemorialAdd = onNavigateToMemorialAdd,
-                onNavigateToMemorialShow = onNavigateToMemorialShow,
+                onNavigateToMemorialDialog = onNavigateToMemorialDialog,
                 onNavigateToAccountAnalysis = onNavigateToAccountAnalysis,
                 onNavigateToScheduleDialog = onNavigateToScheduleDialog
             )

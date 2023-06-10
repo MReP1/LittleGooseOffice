@@ -24,7 +24,7 @@ fun NavController.navigateToSearch(type: SearchType) {
 
 fun NavGraphBuilder.searchRoute(
     onNavigateToNote: (noteId: Long) -> Unit,
-    onNavigateToMemorialShow: (memorialId: Long) -> Unit,
+    onNavigateToMemorialDialog: (memorialId: Long) -> Unit,
     onNavigateToTransaction: (transactionId: Long) -> Unit,
     onNavigateToScheduleDialog: (scheduleId: Long) -> Unit,
     onBack: () -> Unit
@@ -40,7 +40,7 @@ fun NavGraphBuilder.searchRoute(
     SearchRoute(
         modifier = Modifier.fillMaxSize(),
         onNavigateToNote = onNavigateToNote,
-        onNavigateToMemorialShow = onNavigateToMemorialShow,
+        onNavigateToMemorialDialog = onNavigateToMemorialDialog,
         onNavigateToTransaction = onNavigateToTransaction,
         onNavigateToScheduleDialog = onNavigateToScheduleDialog,
         onBack = onBack
@@ -50,7 +50,7 @@ fun NavGraphBuilder.searchRoute(
 @Composable
 fun SearchRoute(
     modifier: Modifier = Modifier,
-    onNavigateToMemorialShow: (memorialId: Long) -> Unit,
+    onNavigateToMemorialDialog: (memorialId: Long) -> Unit,
     onNavigateToTransaction: (transactionId: Long) -> Unit,
     onNavigateToNote: (noteId: Long) -> Unit,
     onNavigateToScheduleDialog: (Long) -> Unit,
@@ -60,7 +60,7 @@ fun SearchRoute(
     when (viewModel.searchType) {
         SearchType.Memorial -> SearchMemorialRoute(
             modifier = modifier.fillMaxSize(),
-            onNavigateToMemorialShow = onNavigateToMemorialShow,
+            onNavigateToMemorialDialog = onNavigateToMemorialDialog,
             onBack = onBack
         )
 

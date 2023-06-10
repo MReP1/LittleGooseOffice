@@ -15,31 +15,21 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import little.goose.design.system.component.MovableActionButton
 import little.goose.design.system.component.MovableActionButtonState
-import little.goose.memorial.data.entities.Memorial
-import little.goose.memorial.ui.MemorialDialog
 import little.goose.memorial.ui.component.MemorialColumn
 import little.goose.memorial.ui.component.MemorialColumnState
-import little.goose.memorial.ui.rememberMemorialDialogState
 
 @Composable
 internal fun SearchMemorialContent(
     modifier: Modifier = Modifier,
     memorialColumnState: MemorialColumnState,
-    onNavigateToMemorialShow: (Long) -> Unit,
-    onDeleteMemorial: (Memorial) -> Unit
+    onNavigateToMemorialDialog: (Long) -> Unit
 ) {
     if (memorialColumnState.memorials.isNotEmpty()) {
-        val memorialDialogState = rememberMemorialDialogState()
-        MemorialDialog(
-            state = memorialDialogState,
-            onNavigateToMemorialShow = onNavigateToMemorialShow,
-            onDelete = onDeleteMemorial
-        )
         MemorialColumn(
             modifier = modifier.fillMaxSize(),
             state = memorialColumnState,
-            onMemorialClick = {
-                memorialDialogState.show(it)
+            onMemorialClick = { memorial ->
+                memorial.id?.run(onNavigateToMemorialDialog)
             }
         )
     }

@@ -50,7 +50,7 @@ sealed interface SearchMemorialEvent {
 @Composable
 fun SearchMemorialRoute(
     modifier: Modifier = Modifier,
-    onNavigateToMemorialShow: (Long) -> Unit,
+    onNavigateToMemorialDialog: (Long) -> Unit,
     onBack: () -> Unit
 ) {
     val viewModel = hiltViewModel<SearchMemorialViewModel>()
@@ -70,7 +70,7 @@ fun SearchMemorialRoute(
         modifier = modifier,
         state = searchMemorialState,
         snackbarHostState = snackbarHostState,
-        onNavigateToMemorialShow = onNavigateToMemorialShow,
+        onNavigateToMemorialDialog = onNavigateToMemorialDialog,
         onBack = onBack
     )
 }
@@ -80,7 +80,7 @@ fun SearchMemorialScreen(
     modifier: Modifier = Modifier,
     state: SearchMemorialState,
     snackbarHostState: SnackbarHostState,
-    onNavigateToMemorialShow: (Long) -> Unit,
+    onNavigateToMemorialDialog: (Long) -> Unit,
     onBack: () -> Unit
 ) {
     Scaffold(
@@ -118,10 +118,7 @@ fun SearchMemorialScreen(
                     SearchMemorialContent(
                         modifier = contentModifier,
                         memorialColumnState = state.data,
-                        onNavigateToMemorialShow = onNavigateToMemorialShow,
-                        onDeleteMemorial = {
-                            state.data.deleteMemorials(listOf(it))
-                        }
+                        onNavigateToMemorialDialog = onNavigateToMemorialDialog
                     )
                 }
             }
@@ -145,7 +142,6 @@ private fun PreviewSearchMemorialContent() = AccountTheme {
             cancelMultiSelecting = {},
             deleteMemorials = {}
         ),
-        onNavigateToMemorialShow = {},
-        onDeleteMemorial = {}
+        onNavigateToMemorialDialog = {}
     )
 }
