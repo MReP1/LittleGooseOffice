@@ -1,80 +1,90 @@
 package little.goose.schedule.ui
 
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.navigation.NavController
+import androidx.navigation.NavGraphBuilder
+import androidx.navigation.NavType
+import androidx.navigation.compose.dialog
+import androidx.navigation.navArgument
 import kotlinx.coroutines.launch
 import little.goose.common.utils.TimeType
 import little.goose.common.utils.toChineseStringWithYear
-import little.goose.design.system.component.dialog.*
+import little.goose.design.system.component.dialog.DeleteDialog
+import little.goose.design.system.component.dialog.DeleteDialogState
+import little.goose.design.system.component.dialog.TimeSelectorBottomDialog
+import little.goose.design.system.component.dialog.rememberBottomSheetDialogState
 import little.goose.schedule.R
 import little.goose.schedule.data.entities.Schedule
 
-@Composable
-fun rememberScheduleDialogState(): ScheduleDialogState {
-    return remember { ScheduleDialogState() }
+
+const val KEY_SCHEDULE_ID = "schedule_id"
+
+const val ROUTE_DIALOG_SCHEDULE = "dialog_schedule"
+
+fun NavController.navigateToScheduleDialog(scheduleId: Long?) {
+    navigate("$ROUTE_DIALOG_SCHEDULE/${scheduleId ?: -1}") {
+        launchSingleTop = true
+    }
 }
 
-@Stable
-class ScheduleDialogState {
-
-    var schedule by mutableStateOf(Schedule())
-
-    internal val dialogState = DialogState(false)
-
-    fun show(schedule: Schedule) {
-        this.schedule = schedule
-        dialogState.show()
-    }
-
-    fun dismiss() {
-        dialogState.dismiss()
-    }
-
-}
-
-@Composable
-fun ScheduleDialog(
-    state: ScheduleDialogState,
-    onDelete: (Schedule) -> Unit,
-    onAdd: (Schedule) -> Unit,
-    onModify: (Schedule) -> Unit
+fun NavGraphBuilder.scheduleRoute(
+    onDismissRequest: () -> Unit
 ) {
-    val deleteScheduleDialogState = remember { DeleteDialogState() }
-    val timeSelectorDialogState = rememberBottomSheetDialogState()
-    val scope = rememberCoroutineScope()
+    dialog(
+        route = "$ROUTE_DIALOG_SCHEDULE/{$KEY_SCHEDULE_ID}",
+        arguments = listOf(
+            navArgument(KEY_SCHEDULE_ID) {
+                type = NavType.LongType
+                defaultValue = -1L
+            }
+        )
+    ) {
+        val scope = rememberCoroutineScope()
+        val deleteScheduleDialogState = remember { DeleteDialogState() }
+        val timeSelectorDialogState = rememberBottomSheetDialogState()
 
-    NormalDialog(state = state.dialogState) {
+        val viewModel = hiltViewModel<ScheduleDialogViewModel>()
+
+        val schedule by viewModel.schedule.collectAsStateWithLifecycle()
         ScheduleDialogScreen(
-            schedule = state.schedule,
-            onTitleChange = {
-                state.schedule = state.schedule.copy(title = it)
-            },
-            onContentChange = {
-                state.schedule = state.schedule.copy(content = it)
-            },
-            onCancelClick = state::dismiss,
+            schedule = schedule,
+            onTitleChange = viewModel::updateScheduleTitle,
+            onContentChange = viewModel::updateScheduleContent,
+            onCancelClick = onDismissRequest,
             onConfirmClick = {
-                if (state.schedule.id == null) {
-                    onAdd(state.schedule)
+                if (schedule.id == null) {
+                    viewModel.insertSchedule()
                 } else {
-                    onModify(state.schedule)
+                    viewModel.updateSchedule()
                 }
-                state.dismiss()
+                onDismissRequest()
             },
             onDeleteClick = {
                 deleteScheduleDialogState.show(onConfirm = {
-                    onDelete(state.schedule)
-                    state.dismiss()
+                    viewModel.deleteSchedule()
+                    onDismissRequest()
                 })
             },
             onChangeTimeClick = {
@@ -83,16 +93,18 @@ fun ScheduleDialog(
                 }
             }
         )
+
+        DeleteDialog(
+            state = deleteScheduleDialogState
+        )
+
+        TimeSelectorBottomDialog(
+            state = timeSelectorDialogState,
+            initTime = schedule.time,
+            type = TimeType.DATE_TIME,
+            onConfirm = viewModel::updateScheduleTime
+        )
     }
-
-    DeleteDialog(state = deleteScheduleDialogState)
-
-    TimeSelectorBottomDialog(
-        state = timeSelectorDialogState,
-        initTime = state.schedule.time,
-        type = TimeType.DATE_TIME,
-        onConfirm = { state.schedule = state.schedule.copy(time = it) }
-    )
 }
 
 @Composable

@@ -23,4 +23,6 @@ dependencies {
     // hilt
     implementation(libs.androidx.hilt.navigation.compose)
     implementation(libs.androidx.activity.ktx)
+    implementation(libs.androidx.lifecycle.runtime.compose)
+
 }

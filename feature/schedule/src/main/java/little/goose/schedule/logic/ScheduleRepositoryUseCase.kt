@@ -43,6 +43,14 @@ class DeleteSchedulesUseCase(
     }
 }
 
+class GetScheduleByIdFlowUseCase(
+    private val scheduleRepository: ScheduleRepository
+) {
+    operator fun invoke(id: Long): Flow<Schedule> {
+        return scheduleRepository.getScheduleByIdFlow(id)
+    }
+}
+
 class GetAllScheduleFlowUseCase(
     private val scheduleRepository: ScheduleRepository
 ) {

@@ -34,7 +34,8 @@ fun NavGraphBuilder.homeRoute(
     onNavigateToNote: (noteId: Long?) -> Unit,
     onNavigateToSearch: (SearchType) -> Unit,
     onNavigateToTransaction: (id: Long?, time: Date?) -> Unit,
-    onNavigateToAccountAnalysis: () -> Unit
+    onNavigateToAccountAnalysis: () -> Unit,
+    onNavigateToScheduleDialog: (Long?) -> Unit
 ) {
     composable(ROUTE_HOME) {
         HomeRoute(
@@ -44,7 +45,8 @@ fun NavGraphBuilder.homeRoute(
             onNavigateToNote = onNavigateToNote,
             onNavigateToSearch = onNavigateToSearch,
             onNavigateToTransaction = onNavigateToTransaction,
-            onNavigateToAccountAnalysis = onNavigateToAccountAnalysis
+            onNavigateToAccountAnalysis = onNavigateToAccountAnalysis,
+            onNavigateToScheduleDialog = onNavigateToScheduleDialog
         )
     }
 }
@@ -62,7 +64,8 @@ fun HomeRoute(
     onNavigateToTransaction: (id: Long?, time: Date?) -> Unit,
     onNavigateToNote: (noteId: Long?) -> Unit,
     onNavigateToSearch: (SearchType) -> Unit,
-    onNavigateToAccountAnalysis: () -> Unit
+    onNavigateToAccountAnalysis: () -> Unit,
+    onNavigateToScheduleDialog: (Long?) -> Unit
 ) {
     val context = LocalContext.current
     val homeState = if (homePage >= 0) remember {
@@ -88,7 +91,8 @@ fun HomeRoute(
                 onNavigateToTransaction = onNavigateToTransaction,
                 onNavigateToMemorialAdd = onNavigateToMemorialAdd,
                 onNavigateToMemorialShow = onNavigateToMemorialShow,
-                onNavigateToAccountAnalysis = onNavigateToAccountAnalysis
+                onNavigateToAccountAnalysis = onNavigateToAccountAnalysis,
+                onNavigateToScheduleDialog = onNavigateToScheduleDialog
             )
             LaunchedEffect(pagerState.currentPage) {
                 homePage = pagerState.currentPage

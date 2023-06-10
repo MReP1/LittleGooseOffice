@@ -10,6 +10,7 @@ import dagger.hilt.components.SingletonComponent
 import little.goose.schedule.logic.DeleteScheduleUseCase
 import little.goose.schedule.logic.DeleteSchedulesUseCase
 import little.goose.schedule.logic.GetAllScheduleFlowUseCase
+import little.goose.schedule.logic.GetScheduleByIdFlowUseCase
 import little.goose.schedule.logic.GetScheduleByYearMonthFlowUseCase
 import little.goose.schedule.logic.InsertScheduleUseCase
 import little.goose.schedule.logic.InsertSchedulesUseCase
@@ -72,6 +73,14 @@ class ScheduleViewModelModule {
         scheduleRepository: ScheduleRepository
     ): DeleteSchedulesUseCase {
         return DeleteSchedulesUseCase(scheduleRepository)
+    }
+
+    @Provides
+    @ViewModelScoped
+    fun provideGetScheduleByIdFlowUseCase(
+        scheduleRepository: ScheduleRepository
+    ): GetScheduleByIdFlowUseCase {
+        return GetScheduleByIdFlowUseCase(scheduleRepository)
     }
 
     @Provides

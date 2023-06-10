@@ -11,6 +11,9 @@ interface ScheduleDao {
     @Query("SELECT * FROM $TABLE_SCHEDULE ORDER BY time DESC")
     fun getAllScheduleFlow(): Flow<List<Schedule>>
 
+    @Query("SELECT * FROM $TABLE_SCHEDULE WHERE id = :id")
+    fun getScheduleByIdFlow(id: Long): Flow<Schedule>
+
     @Query("SELECT * FROM $TABLE_SCHEDULE ORDER BY time DESC")
     suspend fun getAllSchedule(): List<Schedule>
 

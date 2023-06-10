@@ -24,6 +24,8 @@ class ScheduleRepository(context: Context) {
 
     suspend fun updateSchedule(schedule: Schedule) = scheduleDao.updateSchedule(schedule)
 
+    fun getScheduleByIdFlow(id: Long): Flow<Schedule> = scheduleDao.getScheduleByIdFlow(id)
+
     fun getAllScheduleFlow(): Flow<List<Schedule>> = scheduleDao.getAllScheduleFlow()
 
     suspend fun getAllSchedule(): List<Schedule> = scheduleDao.getAllSchedule()

@@ -15,7 +15,7 @@ import little.goose.schedule.logic.UpdateScheduleUseCase
 import javax.inject.Inject
 
 @HiltViewModel
-class ScheduleViewModel @Inject constructor(
+class ScheduleHomeViewModel @Inject constructor(
     private val insertScheduleUseCase: InsertScheduleUseCase,
     private val updateScheduleUseCase: UpdateScheduleUseCase,
     private val deleteScheduleUseCase: DeleteScheduleUseCase,

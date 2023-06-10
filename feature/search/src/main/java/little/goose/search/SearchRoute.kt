@@ -26,6 +26,7 @@ fun NavGraphBuilder.searchRoute(
     onNavigateToNote: (noteId: Long) -> Unit,
     onNavigateToMemorialShow: (memorialId: Long) -> Unit,
     onNavigateToTransaction: (transactionId: Long) -> Unit,
+    onNavigateToScheduleDialog: (scheduleId: Long) -> Unit,
     onBack: () -> Unit
 ) = composable(
     route = "$ROUTE_SEARCH/{${SearchType.KEY_SEARCH_TYPE}}",
@@ -41,6 +42,7 @@ fun NavGraphBuilder.searchRoute(
         onNavigateToNote = onNavigateToNote,
         onNavigateToMemorialShow = onNavigateToMemorialShow,
         onNavigateToTransaction = onNavigateToTransaction,
+        onNavigateToScheduleDialog = onNavigateToScheduleDialog,
         onBack = onBack
     )
 }
@@ -51,6 +53,7 @@ fun SearchRoute(
     onNavigateToMemorialShow: (memorialId: Long) -> Unit,
     onNavigateToTransaction: (transactionId: Long) -> Unit,
     onNavigateToNote: (noteId: Long) -> Unit,
+    onNavigateToScheduleDialog: (Long) -> Unit,
     onBack: () -> Unit
 ) {
     val viewModel = hiltViewModel<SearchViewModel>()
@@ -69,6 +72,7 @@ fun SearchRoute(
 
         SearchType.Schedule -> SearchScheduleRoute(
             modifier = modifier,
+            onNavigateToScheduleDialog = onNavigateToScheduleDialog,
             onBack = onBack
         )
 

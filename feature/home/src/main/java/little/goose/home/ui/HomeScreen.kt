@@ -64,11 +64,8 @@ import little.goose.memorial.ui.MemorialViewModel
 import little.goose.memorial.ui.rememberMemorialDialogState
 import little.goose.note.ui.NotebookHome
 import little.goose.note.ui.NotebookViewModel
-import little.goose.schedule.data.entities.Schedule
-import little.goose.schedule.ui.ScheduleDialog
 import little.goose.schedule.ui.ScheduleHome
-import little.goose.schedule.ui.ScheduleViewModel
-import little.goose.schedule.ui.rememberScheduleDialogState
+import little.goose.schedule.ui.ScheduleHomeViewModel
 import little.goose.search.SearchType
 import java.util.Date
 
@@ -81,7 +78,8 @@ fun HomeScreen(
     onNavigateToTransaction: (transactionId: Long?, date: Date?) -> Unit,
     onNavigateToNote: (noteId: Long?) -> Unit,
     onNavigateToSearch: (SearchType) -> Unit,
-    onNavigateToAccountAnalysis: () -> Unit
+    onNavigateToAccountAnalysis: () -> Unit,
+    onNavigateToScheduleDialog: (Long?) -> Unit
 ) {
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
@@ -89,7 +87,7 @@ fun HomeScreen(
         HomePage.fromPageIndex(pagerState.currentPage)
     }
 
-    val scheduleViewModel = hiltViewModel<ScheduleViewModel>()
+    val scheduleHomeViewModel = hiltViewModel<ScheduleHomeViewModel>()
     val indexViewModel = hiltViewModel<IndexViewModel>()
     val accountViewModel = hiltViewModel<AccountHomeViewModel>()
     val memorialViewModel = hiltViewModel<MemorialViewModel>()
@@ -99,7 +97,6 @@ fun HomeScreen(
     val indexTopBarState by indexViewModel.indexTopBarState.collectAsState()
 
     val buttonState = remember { MovableActionButtonState() }
-    val scheduleDialogState = rememberScheduleDialogState()
     val transactionDialogState = rememberTransactionDialogState()
     val memorialDialogState = rememberMemorialDialogState()
     val deleteDialogState = remember { DeleteDialogState() }
@@ -108,7 +105,7 @@ fun HomeScreen(
 
     val transactionColumnState by accountViewModel.transactionColumnState.collectAsState()
     val memorialColumnState by memorialViewModel.memorialColumnState.collectAsState()
-    val scheduleColumnState by scheduleViewModel.scheduleColumnState.collectAsState()
+    val scheduleColumnState by scheduleHomeViewModel.scheduleColumnState.collectAsState()
     val noteColumnState by notebookViewModel.noteColumnState.collectAsState()
 
     val isMultiSelecting = when (currentHomePage) {
@@ -127,10 +124,10 @@ fun HomeScreen(
         }
     }
 
-    LaunchedEffect(scheduleViewModel.event) {
-        scheduleViewModel.event.collect { event ->
+    LaunchedEffect(scheduleHomeViewModel.event) {
+        scheduleHomeViewModel.event.collect { event ->
             when (event) {
-                is ScheduleViewModel.Event.DeleteSchedules -> {
+                is ScheduleHomeViewModel.Event.DeleteSchedules -> {
                     snackbarHostState.showSnackbar(
                         message = context.getString(R.string.deleted),
                         withDismissAction = true
@@ -225,7 +222,7 @@ fun HomeScreen(
                                 onTransactionAdd = {
                                     onNavigateToTransaction(null, it)
                                 },
-                                onScheduleClick = scheduleDialogState::show,
+                                onScheduleClick = { onNavigateToScheduleDialog(it.id) },
                                 onTransactionClick = transactionDialogState::show,
                                 onMemorialClick = memorialDialogState::show
                             )
@@ -258,9 +255,7 @@ fun HomeScreen(
                             ScheduleHome(
                                 modifier = Modifier.fillMaxSize(),
                                 scheduleColumnState = scheduleColumnState,
-                                deleteSchedule = scheduleViewModel::deleteSchedule,
-                                addSchedule = scheduleViewModel::addSchedule,
-                                modifySchedule = scheduleViewModel::updateSchedule
+                                onNavigateToScheduleDialog = onNavigateToScheduleDialog
                             )
                         }
 
@@ -328,7 +323,7 @@ fun HomeScreen(
                                             scheduleColumnState.cancelMultiSelecting()
                                         })
                                     } else {
-                                        scheduleDialogState.show(Schedule())
+                                        onNavigateToScheduleDialog(null)
                                     }
                                 }
 
@@ -507,13 +502,6 @@ fun HomeScreen(
     )
 
     DeleteDialog(state = deleteDialogState)
-
-    ScheduleDialog(
-        state = scheduleDialogState,
-        onDelete = scheduleViewModel::deleteSchedule,
-        onAdd = scheduleViewModel::addSchedule,
-        onModify = scheduleViewModel::updateSchedule
-    )
 
     TransactionDialog(
         state = transactionDialogState,

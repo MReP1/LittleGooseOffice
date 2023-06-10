@@ -54,6 +54,7 @@ sealed interface SearchScheduleEvent {
 @Composable
 fun SearchScheduleRoute(
     modifier: Modifier = Modifier,
+    onNavigateToScheduleDialog: (Long) -> Unit,
     onBack: () -> Unit
 ) {
     val viewModel = hiltViewModel<SearchScheduleViewModel>()
@@ -75,6 +76,7 @@ fun SearchScheduleRoute(
         modifier = modifier,
         state = searchScheduleState,
         snackbarHostState = snackbarHostState,
+        onNavigateToScheduleDialog= onNavigateToScheduleDialog,
         onBack = onBack
     )
 }
@@ -84,6 +86,7 @@ fun SearchScheduleScreen(
     modifier: Modifier,
     state: SearchScheduleState,
     snackbarHostState: SnackbarHostState,
+    onNavigateToScheduleDialog: (Long) -> Unit,
     onBack: () -> Unit
 ) {
     Scaffold(
@@ -121,9 +124,7 @@ fun SearchScheduleScreen(
                     SearchScheduleContent(
                         modifier = contentModifier,
                         scheduleColumnState = state.data,
-                        addSchedule = state.addSchedule,
-                        modifySchedule = state.modifySchedule,
-                        deleteSchedule = state.deleteSchedule
+                        onNavigateToScheduleDialog = onNavigateToScheduleDialog
                     )
                 }
             }
@@ -150,6 +151,7 @@ private fun PreviewSearchScheduleScreen() = AccountTheme {
             search = {}
         ),
         snackbarHostState = SnackbarHostState(),
+        onNavigateToScheduleDialog = {},
         onBack = {}
     )
 }

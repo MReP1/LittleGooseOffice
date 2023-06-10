@@ -20,29 +20,20 @@ import little.goose.design.system.theme.AccountTheme
 import little.goose.schedule.data.entities.Schedule
 import little.goose.schedule.ui.ScheduleColumn
 import little.goose.schedule.ui.ScheduleColumnState
-import little.goose.schedule.ui.ScheduleDialog
-import little.goose.schedule.ui.rememberScheduleDialogState
 
 @Composable
 internal fun SearchScheduleContent(
     modifier: Modifier = Modifier,
     scheduleColumnState: ScheduleColumnState,
-    deleteSchedule: (Schedule) -> Unit,
-    addSchedule: (Schedule) -> Unit,
-    modifySchedule: (Schedule) -> Unit
+    onNavigateToScheduleDialog: (Long) -> Unit
 ) {
     if (scheduleColumnState.schedules.isNotEmpty()) {
-        val scheduleDialogState = rememberScheduleDialogState()
         ScheduleColumn(
             modifier = modifier.fillMaxSize(),
             state = scheduleColumnState,
-            onScheduleClick = scheduleDialogState::show
-        )
-        ScheduleDialog(
-            state = scheduleDialogState,
-            onDelete = deleteSchedule,
-            onAdd = addSchedule,
-            onModify = modifySchedule
+            onScheduleClick = { schedule ->
+                schedule.id?.let { id -> onNavigateToScheduleDialog(id) }
+            }
         )
     }
 
@@ -103,8 +94,6 @@ private fun PreviewSearchScheduleContent() = AccountTheme {
             cancelMultiSelecting = {},
             deleteSchedules = {}
         ),
-        deleteSchedule = {},
-        addSchedule = {},
-        modifySchedule = {}
+        onNavigateToScheduleDialog = {}
     )
 }
