@@ -55,7 +55,7 @@ class NoteRouteStateFlowDelegate(
     private val insertNote: InsertNoteUseCase,
     private val updateNote: UpdateNoteUseCase,
     private val getNoteFlow: GetNoteFlowUseCase
-) : ReadOnlyProperty<ViewModel, StateFlow<NoteRouteState>> {
+) : ReadOnlyProperty<ViewModel, StateFlow<NoteScreenState>> {
 
     private val writingMutex = Mutex()
 
@@ -92,11 +92,11 @@ class NoteRouteStateFlowDelegate(
         format = ::format
     )
 
-    private val noteRouteState = combine(
+    private val noteScreenState = combine(
         noteContentState.filterNotNull(), noteBottomBarState
     ) { noteContentState, noteBottomBarState ->
-        NoteRouteState.State(
-            NoteScreenState(
+        NoteScreenState.State(
+            NoteScaffoldState(
                 contentState = noteContentState,
                 bottomBarState = noteBottomBarState
             )
@@ -104,7 +104,7 @@ class NoteRouteStateFlowDelegate(
     }.stateIn(
         scope = coroutineScope,
         SharingStarted.WhileSubscribed(5000L),
-        NoteRouteState.Loading
+        NoteScreenState.Loading
     )
 
     init {
@@ -132,8 +132,8 @@ class NoteRouteStateFlowDelegate(
         }.launchIn(coroutineScope)
     }
 
-    override fun getValue(thisRef: ViewModel, property: KProperty<*>): StateFlow<NoteRouteState> {
-        return noteRouteState
+    override fun getValue(thisRef: ViewModel, property: KProperty<*>): StateFlow<NoteScreenState> {
+        return noteScreenState
     }
 
     private fun changeTitle(title: String) {

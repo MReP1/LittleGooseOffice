@@ -1,16 +1,19 @@
 package little.goose.note.ui.note
 
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import little.goose.design.system.theme.AccountTheme
+import little.goose.ui.screen.LittleGooseLoadingScreen
 
-data class NoteScreenState(
+data class NoteScaffoldState(
     val contentState: NoteContentState = NoteContentState(),
     val bottomBarState: NoteBottomBarState = NoteBottomBarState()
 )
@@ -31,16 +34,32 @@ fun NoteScreen(
             )
         },
         content = { scaffoldPaddingValue ->
-            NoteContent(
-                modifier = Modifier.padding(scaffoldPaddingValue),
-                state = state.contentState,
-                blockColumnState = blockColumnState
-            )
+            val contentModifier = Modifier
+                .fillMaxSize()
+                .padding(scaffoldPaddingValue)
+            when (state) {
+                NoteScreenState.Loading -> {
+                    LittleGooseLoadingScreen(
+                        modifier = contentModifier
+                    )
+                }
+
+                is NoteScreenState.State -> {
+                    NoteContent(
+                        modifier = contentModifier,
+                        state = state.scaffoldState.contentState,
+                        blockColumnState = blockColumnState
+                    )
+                }
+            }
         },
         bottomBar = {
             NoteBottomBar(
                 modifier = Modifier.fillMaxWidth(),
-                state = state.bottomBarState
+                state = when (state) {
+                    NoteScreenState.Loading -> remember { NoteBottomBarState() }
+                    is NoteScreenState.State -> state.scaffoldState.bottomBarState
+                }
             )
         }
     )
@@ -50,7 +69,7 @@ fun NoteScreen(
 @Composable
 private fun PreviewNoteScreen() = AccountTheme {
     NoteScreen(
-        state = NoteScreenState(),
+        state = NoteScreenState.State(NoteScaffoldState()),
         onBack = {},
         blockColumnState = rememberLazyListState()
     )

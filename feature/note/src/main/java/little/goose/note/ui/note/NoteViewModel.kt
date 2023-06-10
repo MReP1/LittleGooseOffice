@@ -37,7 +37,7 @@ class NoteViewModel @Inject constructor(
     private val _noteScreenEvent = MutableSharedFlow<NoteScreenEvent>()
     val noteScreenEvent = _noteScreenEvent.asSharedFlow()
 
-    val noteRouteState: StateFlow<NoteRouteState> by NoteRouteStateFlowDelegate(
+    val noteScreenState: StateFlow<NoteScreenState> by NoteRouteStateFlowDelegate(
         noteIdFlow = savedStateHandle.getStateFlow<Long>(KEY_NOTE_ID, -1),
         updateNoteId = { noteId -> savedStateHandle[KEY_NOTE_ID] = noteId },
         coroutineScope = viewModelScope,
@@ -56,8 +56,8 @@ class NoteViewModel @Inject constructor(
         super.onCleared()
 
         // Update note last modified time
-        val noteState = noteRouteState.value as? NoteRouteState.State ?: return
-        val note = noteState.state.contentState.note.takeIf { it.id != null} ?: return
+        val noteState = noteScreenState.value as? NoteScreenState.State ?: return
+        val note = noteState.scaffoldState.contentState.note.takeIf { it.id != null} ?: return
         viewModelScope.launch(NonCancellable) {
             updateNote(note.copy(time = Date()))
         }
