@@ -58,7 +58,6 @@ import little.goose.home.data.MEMORIAL
 import little.goose.home.data.NOTEBOOK
 import little.goose.home.data.SCHEDULE
 import little.goose.home.ui.component.IndexTopBar
-import little.goose.memorial.ui.MemorialActivity
 import little.goose.memorial.ui.MemorialDialog
 import little.goose.memorial.ui.MemorialHome
 import little.goose.memorial.ui.MemorialViewModel
@@ -77,6 +76,8 @@ import java.util.Date
 fun HomeScreen(
     modifier: Modifier,
     pagerState: PagerState,
+    onNavigateToMemorialAdd: () -> Unit,
+    onNavigateToMemorialShow: (memorialId: Long) -> Unit,
     onNavigateToTransaction: (transactionId: Long?, date: Date?) -> Unit,
     onNavigateToNote: (noteId: Long?) -> Unit,
     onNavigateToSearch: (SearchType) -> Unit,
@@ -269,6 +270,7 @@ fun HomeScreen(
                                 modifier = Modifier.fillMaxSize(),
                                 topMemorial = topMemorial,
                                 memorialColumnState = memorialColumnState,
+                                onNavigateMemorialShow = onNavigateToMemorialShow,
                                 deleteMemorial = memorialViewModel::deleteMemorial
                             )
                         }
@@ -339,7 +341,7 @@ fun HomeScreen(
                                             memorialColumnState.cancelMultiSelecting()
                                         })
                                     } else {
-                                        MemorialActivity.openAdd(context)
+                                        onNavigateToMemorialAdd()
                                     }
                                 }
 
@@ -523,6 +525,7 @@ fun HomeScreen(
 
     MemorialDialog(
         state = memorialDialogState,
+        onNavigateToMemorialShow = onNavigateToMemorialShow,
         onDelete = memorialViewModel::deleteMemorial
     )
 }

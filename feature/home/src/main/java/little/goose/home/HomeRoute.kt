@@ -29,6 +29,8 @@ var homePage by mutableStateOf(-1)
 const val ROUTE_HOME = "home"
 
 fun NavGraphBuilder.homeRoute(
+    onNavigateToMemorialAdd: () -> Unit,
+    onNavigateToMemorialShow: (memorialId: Long) -> Unit,
     onNavigateToNote: (noteId: Long?) -> Unit,
     onNavigateToSearch: (SearchType) -> Unit,
     onNavigateToTransaction: (id: Long?, time: Date?) -> Unit,
@@ -37,6 +39,8 @@ fun NavGraphBuilder.homeRoute(
     composable(ROUTE_HOME) {
         HomeRoute(
             modifier = Modifier.fillMaxSize(),
+            onNavigateToMemorialAdd = onNavigateToMemorialAdd,
+            onNavigateToMemorialShow = onNavigateToMemorialShow,
             onNavigateToNote = onNavigateToNote,
             onNavigateToSearch = onNavigateToSearch,
             onNavigateToTransaction = onNavigateToTransaction,
@@ -53,6 +57,8 @@ sealed interface HomeRouteState {
 @Composable
 fun HomeRoute(
     modifier: Modifier = Modifier,
+    onNavigateToMemorialAdd: () -> Unit,
+    onNavigateToMemorialShow: (memorialId: Long) -> Unit,
     onNavigateToTransaction: (id: Long?, time: Date?) -> Unit,
     onNavigateToNote: (noteId: Long?) -> Unit,
     onNavigateToSearch: (SearchType) -> Unit,
@@ -80,6 +86,8 @@ fun HomeRoute(
                 onNavigateToNote = onNavigateToNote,
                 onNavigateToSearch = onNavigateToSearch,
                 onNavigateToTransaction = onNavigateToTransaction,
+                onNavigateToMemorialAdd = onNavigateToMemorialAdd,
+                onNavigateToMemorialShow = onNavigateToMemorialShow,
                 onNavigateToAccountAnalysis = onNavigateToAccountAnalysis
             )
             LaunchedEffect(pagerState.currentPage) {

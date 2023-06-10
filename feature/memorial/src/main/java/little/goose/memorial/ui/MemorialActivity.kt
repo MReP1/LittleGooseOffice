@@ -1,17 +1,25 @@
 package little.goose.memorial.ui
 
-import android.content.Context
-import android.content.Intent
-import android.os.Bundle
-import androidx.activity.compose.setContent
-import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.ArrowBack
-import androidx.compose.material3.*
+import androidx.compose.material3.Button
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Switch
+import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -23,61 +31,74 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.fragment.app.FragmentActivity
 import androidx.hilt.navigation.compose.hiltViewModel
-import dagger.hilt.android.AndroidEntryPoint
+import androidx.lifecycle.SavedStateHandle
+import androidx.navigation.NavController
+import androidx.navigation.NavGraphBuilder
+import androidx.navigation.NavType
+import androidx.navigation.navArgument
+import com.google.accompanist.navigation.animation.composable
 import kotlinx.coroutines.launch
 import little.goose.common.constants.KEY_TYPE
-import little.goose.common.constants.TYPE_ADD
-import little.goose.common.constants.TYPE_MODIFY
 import little.goose.common.utils.TimeType
 import little.goose.common.utils.toChineseYearMonDayWeek
 import little.goose.design.system.component.dialog.InputDialog
 import little.goose.design.system.component.dialog.TimeSelectorCenterDialog
 import little.goose.design.system.component.dialog.rememberBottomSheetDialogState
 import little.goose.design.system.component.dialog.rememberDialogState
-import little.goose.design.system.theme.AccountTheme
 import little.goose.memorial.R
 import little.goose.memorial.data.constants.KEY_MEMORIAL_ID
 import little.goose.memorial.data.entities.Memorial
 import little.goose.memorial.ui.component.MemorialText
 import little.goose.memorial.utils.appendTimeSuffix
 import little.goose.ui.screen.LittleGooseLoadingScreen
-import java.util.*
+import java.util.Date
 
-@AndroidEntryPoint
-class MemorialActivity : AppCompatActivity() {
+const val ROUTE_MEMORIAL = "memorial"
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setContent {
-            AccountTheme {
-                MemorialRoute(
-                    modifier = Modifier.fillMaxSize(),
-                    onBack = ::finish
-                )
-            }
-        }
+fun NavController.navigateToMemorial(
+    type: MemorialScreenType,
+    memorialId: Long? = null
+) {
+    navigate(
+        route = ROUTE_MEMORIAL +
+                "/$KEY_TYPE=$type" +
+                if (memorialId != null) "?$KEY_MEMORIAL_ID=$memorialId" else ""
+    ) {
+        launchSingleTop = true
     }
+}
 
-    companion object {
+internal class MemorialScreenArgs private constructor(
+    val type: MemorialScreenType,
+    val memorialId: Long? = null
+) {
+    internal constructor(savedStateHandle: SavedStateHandle) : this(
+        type = MemorialScreenType.valueOf(savedStateHandle[KEY_TYPE]!!),
+        memorialId = savedStateHandle.get<Long>(KEY_MEMORIAL_ID)?.takeIf { it > 0 }
+    )
+}
 
-        fun openEdit(context: Context, memorial: Memorial) {
-            val intent = Intent(context, MemorialActivity::class.java).apply {
-                putExtra(KEY_TYPE, TYPE_MODIFY)
-                putExtra(KEY_MEMORIAL_ID, memorial.id)
-            }
-            context.startActivity(intent)
+internal fun NavGraphBuilder.memorialRoute(
+    onBack: () -> Unit
+) = composable(
+    route = ROUTE_MEMORIAL +
+            "/$KEY_TYPE={$KEY_TYPE}" +
+            "?$KEY_MEMORIAL_ID={$KEY_MEMORIAL_ID}",
+    arguments = listOf(
+        navArgument(KEY_TYPE) {
+            type = NavType.StringType
+        },
+        navArgument(KEY_MEMORIAL_ID) {
+            type = NavType.LongType
+            defaultValue = 0
         }
-
-        fun openAdd(context: Context) {
-            val intent = Intent(context, MemorialActivity::class.java).apply {
-                putExtra(KEY_TYPE, TYPE_ADD)
-            }
-            context.startActivity(intent)
-        }
-    }
-
+    )
+) {
+    MemorialRoute(
+        modifier = Modifier.fillMaxSize(),
+        onBack = onBack
+    )
 }
 
 sealed interface MemorialScreenState {

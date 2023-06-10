@@ -8,7 +8,6 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.RectangleShape
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import little.goose.design.system.component.dialog.*
@@ -42,9 +41,9 @@ class MemorialDialogState {
 @Composable
 fun MemorialDialog(
     state: MemorialDialogState,
+    onNavigateToMemorialShow: (Long) -> Unit,
     onDelete: (Memorial) -> Unit
 ) {
-    val context = LocalContext.current
     val deleteMemorialDialogState = remember { DeleteDialogState() }
     NormalDialog(state = state.dialogState) {
         MaterialDialogScreen(
@@ -57,7 +56,7 @@ fun MemorialDialog(
                 })
             },
             onEdit = {
-                MemorialShowActivity.open(context, state.memorial)
+                state.memorial.id?.let { onNavigateToMemorialShow(it) }
                 state.dismiss()
             }
         )

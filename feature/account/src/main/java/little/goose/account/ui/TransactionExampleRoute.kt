@@ -49,7 +49,7 @@ import java.util.Date
 
 const val ROUTE_TRANSACTION_EXAMPLE = "transaction_example"
 
-class TransactionExampleRouteArgs private constructor(
+internal class TransactionExampleRouteArgs private constructor(
     val time: Date,
     val timeType: TimeType,
     val moneyType: MoneyType,
@@ -74,7 +74,7 @@ fun NavController.navigateToTransactionExample(
                 "/$KEY_TIME=${time.time}" +
                 "/$KEY_TIME_TYPE=$timeType" +
                 "/$KEY_MONEY_TYPE=$moneyType" +
-                if (keyContent != null) "/$KEY_CONTENT=$KEY_CONTENT" else "",
+                if (keyContent != null) "?$KEY_CONTENT=$KEY_CONTENT" else "",
     ) {
         launchSingleTop = true
     }

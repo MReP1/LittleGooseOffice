@@ -10,7 +10,7 @@ import little.goose.account.ui.transactionExampleRoute
 import little.goose.common.utils.TimeType
 import java.util.Date
 
-const val ROUTE_GRAPH_ACCOUNT = "account"
+const val ROUTE_GRAPH_ACCOUNT = "graph_account"
 
 fun NavGraphBuilder.accountGraph(
     onNavigateToTransaction: (id: Long?, time: Date?) -> Unit,

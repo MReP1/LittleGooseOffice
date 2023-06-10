@@ -6,11 +6,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
 import little.goose.memorial.data.entities.Memorial
 import little.goose.memorial.ui.component.MemorialColumn
 import little.goose.memorial.ui.component.MemorialColumnState
@@ -21,12 +18,14 @@ fun MemorialHome(
     modifier: Modifier,
     topMemorial: Memorial?,
     memorialColumnState: MemorialColumnState,
+    onNavigateMemorialShow: (Long) -> Unit,
     deleteMemorial: (Memorial) -> Unit
 ) {
     val memorialDialogState = rememberMemorialDialogState()
 
     MemorialDialog(
         state = memorialDialogState,
+        onNavigateToMemorialShow = onNavigateMemorialShow,
         onDelete = deleteMemorial
     )
 

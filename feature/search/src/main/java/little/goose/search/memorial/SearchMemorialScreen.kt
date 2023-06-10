@@ -12,6 +12,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -49,6 +50,7 @@ sealed interface SearchMemorialEvent {
 @Composable
 fun SearchMemorialRoute(
     modifier: Modifier = Modifier,
+    onNavigateToMemorialShow: (Long) -> Unit,
     onBack: () -> Unit
 ) {
     val viewModel = hiltViewModel<SearchMemorialViewModel>()
@@ -68,6 +70,7 @@ fun SearchMemorialRoute(
         modifier = modifier,
         state = searchMemorialState,
         snackbarHostState = snackbarHostState,
+        onNavigateToMemorialShow = onNavigateToMemorialShow,
         onBack = onBack
     )
 }
@@ -77,6 +80,7 @@ fun SearchMemorialScreen(
     modifier: Modifier = Modifier,
     state: SearchMemorialState,
     snackbarHostState: SnackbarHostState,
+    onNavigateToMemorialShow: (Long) -> Unit,
     onBack: () -> Unit
 ) {
     Scaffold(
@@ -87,7 +91,7 @@ fun SearchMemorialScreen(
             }
         },
         topBar = {
-            var keyword by remember { mutableStateOf("") }
+            var keyword by rememberSaveable { mutableStateOf("") }
             SearchTopAppBar(
                 keyword = keyword,
                 onKeywordChange = {
@@ -114,6 +118,7 @@ fun SearchMemorialScreen(
                     SearchMemorialContent(
                         modifier = contentModifier,
                         memorialColumnState = state.data,
+                        onNavigateToMemorialShow = onNavigateToMemorialShow,
                         onDeleteMemorial = {
                             state.data.deleteMemorials(listOf(it))
                         }
@@ -140,6 +145,7 @@ private fun PreviewSearchMemorialContent() = AccountTheme {
             cancelMultiSelecting = {},
             deleteMemorials = {}
         ),
+        onNavigateToMemorialShow = {},
         onDeleteMemorial = {}
     )
 }

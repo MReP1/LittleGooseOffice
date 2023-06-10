@@ -25,12 +25,14 @@ import little.goose.memorial.ui.rememberMemorialDialogState
 internal fun SearchMemorialContent(
     modifier: Modifier = Modifier,
     memorialColumnState: MemorialColumnState,
+    onNavigateToMemorialShow: (Long) -> Unit,
     onDeleteMemorial: (Memorial) -> Unit
 ) {
     if (memorialColumnState.memorials.isNotEmpty()) {
         val memorialDialogState = rememberMemorialDialogState()
         MemorialDialog(
             state = memorialDialogState,
+            onNavigateToMemorialShow = onNavigateToMemorialShow,
             onDelete = onDeleteMemorial
         )
         MemorialColumn(

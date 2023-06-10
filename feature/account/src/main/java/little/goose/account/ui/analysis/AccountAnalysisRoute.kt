@@ -19,7 +19,9 @@ import java.util.Date
 const val ROUTE_ACCOUNT_ANALYSIS = "account_analysis"
 
 fun NavController.navigateToAccountAnalysis() {
-    navigate(ROUTE_ACCOUNT_ANALYSIS)
+    navigate(ROUTE_ACCOUNT_ANALYSIS) {
+        launchSingleTop = true
+    }
 }
 
 fun NavGraphBuilder.accountAnalysisRoute(

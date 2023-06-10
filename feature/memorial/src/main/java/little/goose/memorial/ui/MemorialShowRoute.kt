@@ -1,72 +1,95 @@
 package little.goose.memorial.ui
 
-import android.app.Activity
-import android.content.Context
-import android.content.Intent
-import android.os.Bundle
 import android.widget.Toast
-import androidx.activity.compose.setContent
-import androidx.appcompat.app.AppCompatActivity
-import androidx.compose.animation.*
-import androidx.compose.foundation.layout.*
+import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.expandIn
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.shrinkOut
+import androidx.compose.animation.with
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Add
 import androidx.compose.material.icons.rounded.ArrowBack
 import androidx.compose.material.icons.rounded.Edit
 import androidx.compose.material.icons.rounded.Image
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import dagger.hilt.android.AndroidEntryPoint
+import androidx.navigation.NavController
+import androidx.navigation.NavGraphBuilder
+import androidx.navigation.NavType
+import androidx.navigation.navArgument
+import com.google.accompanist.navigation.animation.composable
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import little.goose.design.system.component.MovableActionButton
 import little.goose.design.system.component.MovableActionButtonState
-import little.goose.design.system.theme.AccountTheme
 import little.goose.memorial.R
 import little.goose.memorial.data.constants.KEY_MEMORIAL_ID
 import little.goose.memorial.data.entities.Memorial
 import little.goose.memorial.ui.component.MemorialCard
 
-@AndroidEntryPoint
-class MemorialShowActivity : AppCompatActivity() {
+const val ROUTE_MEMORIAL_SHOW = "memorial_show"
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setContent {
-            AccountTheme {
-                MemorialShowRoute()
-            }
-        }
+fun NavController.navigateToMemorialShow(memorialId: Long) {
+    navigate("$ROUTE_MEMORIAL_SHOW/$KEY_MEMORIAL_ID=$memorialId") {
+        launchSingleTop = true
+        restoreState = true
     }
+}
 
-    companion object {
-        fun open(context: Context, memorial: Memorial) {
-            val intent = Intent(context, MemorialShowActivity::class.java).apply {
-                putExtra(KEY_MEMORIAL_ID, memorial.id)
+internal fun NavGraphBuilder.memorialShowRoute(
+    onBack: () -> Unit,
+    onNavigateToMemorial: (Long) -> Unit,
+) {
+    composable(
+        route = "$ROUTE_MEMORIAL_SHOW/$KEY_MEMORIAL_ID={$KEY_MEMORIAL_ID}",
+        arguments = listOf(
+            navArgument(KEY_MEMORIAL_ID) {
+                type = NavType.LongType
             }
-            context.startActivity(intent)
-        }
+        )
+    ) {
+        MemorialShowRoute(
+            modifier = Modifier.fillMaxSize(),
+            onBack = onBack,
+            onEditClick = onNavigateToMemorial
+        )
     }
-
 }
 
 @Composable
-private fun MemorialShowRoute() {
+private fun MemorialShowRoute(
+    modifier: Modifier = Modifier,
+    onBack: () -> Unit,
+    onEditClick: (Long) -> Unit
+) {
     val viewModel: MemorialShowViewModel = hiltViewModel()
-    val context = LocalContext.current
     val memorial by viewModel.memorial.collectAsState()
     MemorialShowScreen(
-        modifier = Modifier.fillMaxSize(),
+        modifier = modifier.fillMaxSize(),
         memorial = memorial,
-        onBack = (context as Activity)::finish,
-        onEditClick = { MemorialActivity.openEdit(context, it) }
+        onBack = onBack,
+        onEditClick = onEditClick
     )
 }
 
@@ -75,7 +98,7 @@ private fun MemorialShowScreen(
     modifier: Modifier = Modifier,
     memorial: Memorial,
     onBack: () -> Unit,
-    onEditClick: (Memorial) -> Unit,
+    onEditClick: (Long) -> Unit,
 ) {
     Scaffold(
         modifier = modifier,
@@ -132,7 +155,7 @@ private fun MemorialShowScreen(
                     }
                 },
                 onMainButtonClick = {
-                    onEditClick(memorial)
+                    memorial.id?.let { id -> onEditClick(id) }
                     scope.launch(Dispatchers.Main.immediate) {
                         state.fold()
                     }

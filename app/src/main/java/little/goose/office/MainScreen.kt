@@ -14,6 +14,10 @@ import little.goose.account.ui.navigateToTransactionExample
 import little.goose.account.ui.transaction.navigateToTransaction
 import little.goose.home.ROUTE_HOME
 import little.goose.home.homeRoute
+import little.goose.memorial.memorialGraph
+import little.goose.memorial.ui.MemorialScreenType
+import little.goose.memorial.ui.navigateToMemorial
+import little.goose.memorial.ui.navigateToMemorialShow
 import little.goose.note.ui.note.NoteNavigatingType
 import little.goose.note.ui.note.navigateToNote
 import little.goose.note.ui.note.noteRoute
@@ -47,16 +51,24 @@ internal fun MainScreen(
                     navController.navigateToTransaction(time)
                 }
             },
+            onNavigateToMemorialShow = navController::navigateToMemorialShow,
+            onNavigateToMemorialAdd = {
+                navController.navigateToMemorial(MemorialScreenType.Add)
+            },
             onNavigateToAccountAnalysis = navController::navigateToAccountAnalysis
         )
-        noteRoute(onBack = navController::popBackStack)
+
+        noteRoute(onBack = navController::navigateUp)
+
         searchRoute(
             onNavigateToNote = { noteId ->
                 navController.navigateToNote(NoteNavigatingType.Edit(noteId))
             },
+            onNavigateToMemorialShow = navController::navigateToMemorialShow,
             onNavigateToTransaction = navController::navigateToTransaction,
-            onBack = navController::popBackStack
+            onBack = navController::navigateUp
         )
+
         accountGraph(
             onNavigateToTransactionExample = navController::navigateToTransactionExample,
             onNavigateToTransaction = { id, time ->
@@ -66,7 +78,14 @@ internal fun MainScreen(
                     navController.navigateToTransaction(time)
                 }
             },
-            onBack = navController::popBackStack
+            onBack = navController::navigateUp
+        )
+
+        memorialGraph(
+            onBack = navController::navigateUp,
+            onNavigateToMemorial = {
+                navController.navigateToMemorial(MemorialScreenType.Modify, memorialId = it)
+            }
         )
     }
 }

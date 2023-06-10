@@ -15,7 +15,7 @@ const val ROUTE_TRANSACTION = "transaction"
 
 const val KEY_TRANSACTION_ID = "transaction_id"
 
-class TransactionRouteArgs private constructor(
+internal class TransactionRouteArgs private constructor(
     val transactionId: Long? = null,
     val time: Long? = null
 ) {
