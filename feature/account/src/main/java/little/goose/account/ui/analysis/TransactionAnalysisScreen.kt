@@ -10,50 +10,31 @@ import androidx.compose.material3.BottomSheetScaffold
 import androidx.compose.material3.SheetValue
 import androidx.compose.material3.rememberBottomSheetScaffoldState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.DisposableEffect
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.DefaultLifecycleObserver
-import androidx.lifecycle.LifecycleOwner
 import kotlinx.coroutines.launch
+import little.goose.account.data.constants.MoneyType
 import little.goose.common.utils.TimeType
 import little.goose.design.system.component.TimeSelector
+import little.goose.design.system.component.TimeSelectorState
+import java.util.Date
 
 @Composable
 fun TransactionAnalysisScreen(
     modifier: Modifier = Modifier,
+    topBarState: TransactionAnalysisTopBarState,
+    contentState: TransactionAnalysisContentState,
+    bottomBarState: TransactionAnalysisBottomBarState,
+    timeSelectorState: TimeSelectorState,
+    onNavigateToTransactionExample: (
+        time: Date, timeType: TimeType, moneyType: MoneyType, content: String?
+    ) -> Unit,
     onBack: () -> Unit
 ) {
-    val viewModel = hiltViewModel<TransactionAnalysisViewModel>()
-    val bottomBarState by viewModel.bottomBarState.collectAsState()
-    val topBarState by viewModel.topBarState.collectAsState()
-    val contentState by viewModel.contentState.collectAsState()
-
     val scope = rememberCoroutineScope()
     val pagerState = rememberPagerState(initialPage = 0)
-
-    val lifecycle = LocalLifecycleOwner.current
-
-    DisposableEffect(Unit) {
-        val observer = object : DefaultLifecycleObserver {
-            var isFirstTime = true
-            override fun onStart(owner: LifecycleOwner) {
-                if (!isFirstTime) {
-                    viewModel.updateData()
-                } else {
-                    isFirstTime = false
-                }
-            }
-        }
-        lifecycle.lifecycle.addObserver(observer)
-        onDispose { lifecycle.lifecycle.removeObserver(observer) }
-    }
 
     val scaffoldState = rememberBottomSheetScaffoldState()
 
@@ -93,7 +74,7 @@ fun TransactionAnalysisScreen(
                     modifier = Modifier
                         .height(220.dp)
                         .align(Alignment.CenterHorizontally),
-                    state = viewModel.timeSelectorState,
+                    state = timeSelectorState,
                     timeType = when (bottomBarState.timeType) {
                         TransactionAnalysisViewModel.TimeType.MONTH -> TimeType.YEAR_MONTH
                         TransactionAnalysisViewModel.TimeType.YEAR -> TimeType.YEAR
@@ -110,7 +91,8 @@ fun TransactionAnalysisScreen(
                 .padding(innerPadding)
                 .fillMaxSize(),
             pagerState = pagerState,
-            state = contentState
+            state = contentState,
+            onNavigateToTransactionExample = onNavigateToTransactionExample
         )
     }
 }

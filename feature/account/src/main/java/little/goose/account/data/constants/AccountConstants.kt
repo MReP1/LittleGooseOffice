@@ -1,8 +1,5 @@
 package little.goose.account.data.constants
 
-import android.os.Parcelable
-import kotlinx.parcelize.Parcelize
-
 const val TABLE_TRANSACTION = "transactions"
 
 object AccountConstant {
@@ -11,7 +8,6 @@ object AccountConstant {
     const val TIME = 2 //时间
 }
 
-@Parcelize
-enum class MoneyType: Parcelable {
+enum class MoneyType {
     BALANCE, EXPENSE, INCOME
 }

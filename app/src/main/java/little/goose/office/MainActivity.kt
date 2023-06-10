@@ -8,7 +8,7 @@ import androidx.compose.ui.Modifier
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import dagger.hilt.android.AndroidEntryPoint
 import little.goose.design.system.theme.AccountTheme
-import little.goose.home.navigation.isHomePageInit
+import little.goose.home.isHomePageInit
 
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity() {

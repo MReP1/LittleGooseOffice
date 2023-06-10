@@ -27,6 +27,8 @@ class AccountRepository(
     //跑全库方法，不要乱用哦
     fun getAllTransactionFlow() = accountDao.getAllTransactionFlow()
 
+    fun getTransactionByIdFlow(id: Long) = accountDao.getTransactionById(id)
+
     suspend fun insertTransaction(transaction: Transaction) =
         accountDao.insertTransaction(transaction)
 

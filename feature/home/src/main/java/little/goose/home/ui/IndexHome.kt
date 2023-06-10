@@ -46,6 +46,7 @@ data class IndexScreenState(
 fun IndexHome(
     modifier: Modifier = Modifier,
     state: IndexScreenState,
+    onTransactionAdd: (Date) -> Unit,
     onScheduleClick: (Schedule) -> Unit,
     onTransactionClick: (Transaction) -> Unit,
     onMemorialClick: (Memorial) -> Unit
@@ -171,6 +172,7 @@ fun IndexHome(
                     .fillMaxWidth()
                     .heightIn(0.dp, 160.dp),
                 state = indexTransactionCardState,
+                onTransactionAdd = onTransactionAdd,
                 onTransactionClick = onTransactionClick
             )
             if (state.currentCalendarModel.value.schedules.isNotEmpty()) {

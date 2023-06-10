@@ -11,16 +11,15 @@ import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import little.goose.account.data.entities.Transaction
-import little.goose.account.ui.transaction.TransactionActivity
 import little.goose.account.ui.transaction.icon.TransactionIconHelper
 import little.goose.common.utils.toDate
 import java.math.BigDecimal
 import java.time.LocalDate
+import java.util.Date
 
 data class IndexTransactionCardState(
     val expense: BigDecimal,
@@ -33,9 +32,9 @@ data class IndexTransactionCardState(
 internal fun IndexTransactionCard(
     modifier: Modifier,
     state: IndexTransactionCardState,
+    onTransactionAdd: (Date) -> Unit,
     onTransactionClick: (Transaction) -> Unit
 ) {
-    val context = LocalContext.current
     Card(
         modifier = modifier
     ) {
@@ -61,7 +60,7 @@ internal fun IndexTransactionCard(
                 Text(text = stringResource(id = little.goose.home.R.string.today_no_transaction))
                 Spacer(modifier = Modifier.weight(1F))
                 TextButton(onClick = {
-                    TransactionActivity.openAdd(context, state.currentTime.toDate())
+                    onTransactionAdd(state.currentTime.toDate())
                 }) {
                     Text(text = stringResource(id = little.goose.home.R.string.take_a_transaction))
                 }

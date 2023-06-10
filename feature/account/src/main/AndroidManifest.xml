@@ -1,16 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <application>
-        <activity
-            android:name="little.goose.account.ui.TransactionExampleActivity"
-            android:exported="false" />
-        <activity
-            android:name="little.goose.account.ui.analysis.AccountAnalysisActivity"
-            android:exported="false" />
-        <activity
-            android:name="little.goose.account.ui.transaction.TransactionActivity"
-            android:exported="false"
-            android:windowSoftInputMode="adjustPan" />
-    </application>
 </manifest>

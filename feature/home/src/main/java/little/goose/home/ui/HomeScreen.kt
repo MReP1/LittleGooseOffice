@@ -44,8 +44,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import little.goose.account.ui.AccountHome
 import little.goose.account.ui.AccountHomeViewModel
-import little.goose.account.ui.analysis.AccountAnalysisActivity
-import little.goose.account.ui.transaction.TransactionActivity
 import little.goose.account.ui.transaction.TransactionDialog
 import little.goose.account.ui.transaction.rememberTransactionDialogState
 import little.goose.design.system.component.MovableActionButton
@@ -72,14 +70,17 @@ import little.goose.schedule.ui.ScheduleDialog
 import little.goose.schedule.ui.ScheduleHome
 import little.goose.schedule.ui.ScheduleViewModel
 import little.goose.schedule.ui.rememberScheduleDialogState
-import little.goose.search.SearchActivity
 import little.goose.search.SearchType
+import java.util.Date
 
 @Composable
 fun HomeScreen(
     modifier: Modifier,
     pagerState: PagerState,
-    onNavigateToNote: (noteId: Long?) -> Unit
+    onNavigateToTransaction: (transactionId: Long?, date: Date?) -> Unit,
+    onNavigateToNote: (noteId: Long?) -> Unit,
+    onNavigateToSearch: (SearchType) -> Unit,
+    onNavigateToAccountAnalysis: () -> Unit
 ) {
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
@@ -220,11 +221,15 @@ fun HomeScreen(
                             IndexHome(
                                 modifier = Modifier.fillMaxSize(),
                                 state = indexScreenState,
+                                onTransactionAdd = {
+                                    onNavigateToTransaction(null, it)
+                                },
                                 onScheduleClick = scheduleDialogState::show,
                                 onTransactionClick = transactionDialogState::show,
                                 onMemorialClick = memorialDialogState::show
                             )
                         }
+
                         NOTEBOOK -> {
                             NotebookHome(
                                 modifier = Modifier.fillMaxSize(),
@@ -232,6 +237,7 @@ fun HomeScreen(
                                 onNavigateToNote = onNavigateToNote,
                             )
                         }
+
                         ACCOUNT -> {
                             val accountTitleState by accountViewModel.accountTitleState.collectAsState()
                             val monthSelectorState by accountViewModel.monthSelectorState.collectAsState()
@@ -240,9 +246,13 @@ fun HomeScreen(
                                 transactionColumnState = transactionColumnState,
                                 accountTitleState = accountTitleState,
                                 monthSelectorState = monthSelectorState,
+                                onNavigateToTransaction = {
+                                    onNavigateToTransaction(it, null)
+                                },
                                 deleteTransaction = accountViewModel::deleteTransaction
                             )
                         }
+
                         SCHEDULE -> {
                             ScheduleHome(
                                 modifier = Modifier.fillMaxSize(),
@@ -252,6 +262,7 @@ fun HomeScreen(
                                 modifySchedule = scheduleViewModel::updateSchedule
                             )
                         }
+
                         MEMORIAL -> {
                             val topMemorial by memorialViewModel.topMemorial.collectAsState()
                             MemorialHome(
@@ -291,6 +302,7 @@ fun HomeScreen(
                                         onNavigateToNote(null)
                                     }
                                 }
+
                                 HomePage.ACCOUNT -> {
                                     if (isMultiSelecting) {
                                         deleteDialogState.show(onConfirm = {
@@ -301,9 +313,10 @@ fun HomeScreen(
                                             transactionColumnState.cancelMultiSelecting()
                                         })
                                     } else {
-                                        TransactionActivity.openAdd(context)
+                                        onNavigateToTransaction(null, Date())
                                     }
                                 }
+
                                 HomePage.Schedule -> {
                                     if (isMultiSelecting) {
                                         deleteDialogState.show(onConfirm = {
@@ -316,6 +329,7 @@ fun HomeScreen(
                                         scheduleDialogState.show(Schedule())
                                     }
                                 }
+
                                 HomePage.Memorial -> {
                                     if (isMultiSelecting) {
                                         deleteDialogState.show(onConfirm = {
@@ -328,6 +342,7 @@ fun HomeScreen(
                                         MemorialActivity.openAdd(context)
                                     }
                                 }
+
                                 else -> {}
                             }
                         },
@@ -351,30 +366,34 @@ fun HomeScreen(
                                     if (isMultiSelecting) {
                                         noteColumnState.selectAllNotes()
                                     } else {
-                                        SearchActivity.open(context, SearchType.Note)
+                                        onNavigateToSearch(SearchType.Note)
                                     }
                                 }
+
                                 HomePage.ACCOUNT -> {
                                     if (isMultiSelecting) {
                                         transactionColumnState.selectAllTransactions()
                                     } else {
-                                        SearchActivity.open(context, SearchType.Transaction)
+                                        onNavigateToSearch(SearchType.Transaction)
                                     }
                                 }
+
                                 HomePage.Schedule -> {
                                     if (isMultiSelecting) {
                                         scheduleColumnState.selectAllSchedules()
                                     } else {
-                                        SearchActivity.open(context, SearchType.Schedule)
+                                        onNavigateToSearch(SearchType.Schedule)
                                     }
                                 }
+
                                 HomePage.Memorial -> {
                                     if (isMultiSelecting) {
                                         memorialColumnState.selectAllMemorial()
                                     } else {
-                                        SearchActivity.open(context, SearchType.Memorial)
+                                        onNavigateToSearch(SearchType.Memorial)
                                     }
                                 }
+
                                 else -> {}
                             }
                         },
@@ -391,6 +410,7 @@ fun HomeScreen(
                                         contentDescription = "Analysis"
                                     )
                                 }
+
                                 else -> {
                                     Icon(
                                         imageVector = Icons.Rounded.SubdirectoryArrowRight,
@@ -405,9 +425,10 @@ fun HomeScreen(
                                     if (isMultiSelecting) {
                                         transactionColumnState.cancelMultiSelecting()
                                     } else {
-                                        AccountAnalysisActivity.open(context)
+                                        onNavigateToAccountAnalysis()
                                     }
                                 }
+
                                 HomePage.Memorial -> {
                                     if (isMultiSelecting) {
                                         memorialColumnState.cancelMultiSelecting()
@@ -415,6 +436,7 @@ fun HomeScreen(
                                         buttonState.fold()
                                     }
                                 }
+
                                 HomePage.Schedule -> {
                                     if (isMultiSelecting) {
                                         scheduleColumnState.cancelMultiSelecting()
@@ -422,6 +444,7 @@ fun HomeScreen(
                                         buttonState.fold()
                                     }
                                 }
+
                                 HomePage.Notebook -> {
                                     if (isMultiSelecting) {
                                         noteColumnState.cancelMultiSelecting()
@@ -429,6 +452,7 @@ fun HomeScreen(
                                         buttonState.fold()
                                     }
                                 }
+
                                 else -> scope.launch {
                                     buttonState.fold()
                                 }
@@ -491,6 +515,9 @@ fun HomeScreen(
 
     TransactionDialog(
         state = transactionDialogState,
+        onNavigateToTransaction = {
+            onNavigateToTransaction(it, null)
+        },
         onDelete = accountViewModel::deleteTransaction
     )
 

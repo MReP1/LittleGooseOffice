@@ -1,10 +1,5 @@
 package little.goose.note.ui.note
 
-import android.content.Context
-import android.content.Intent
-import android.os.Bundle
-import androidx.activity.compose.setContent
-import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.runtime.Composable
@@ -16,43 +11,15 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
+import androidx.navigation.NavOptionsBuilder
 import androidx.navigation.NavType
 import androidx.navigation.navArgument
 import com.google.accompanist.navigation.animation.composable
-import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.android.awaitFrame
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
-import little.goose.design.system.theme.AccountTheme
 import little.goose.note.data.constants.KEY_NOTE_ID
 import little.goose.note.data.entities.NoteContentBlock
-
-@AndroidEntryPoint
-class NoteActivity : AppCompatActivity() {
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setContent {
-            AccountTheme {
-                NoteRoute(
-                    modifier = Modifier.fillMaxSize(),
-                    onBack = ::finish
-                )
-            }
-        }
-    }
-
-
-    companion object {
-        fun openEdit(context: Context, noteId: Long) {
-            val intent = Intent(context, NoteActivity::class.java).apply {
-                putExtra(KEY_NOTE_ID, noteId)
-            }
-            context.startActivity(intent)
-        }
-    }
-
-}
 
 @Stable
 sealed interface NoteRouteState {
@@ -65,9 +32,29 @@ sealed class NoteScreenEvent {
     data class AddNoteBlock(val noteContentBlock: NoteContentBlock) : NoteScreenEvent()
 }
 
-const val ROUTE_NOTE = "route_note"
+sealed class NoteNavigatingType {
+    object Add : NoteNavigatingType()
+    data class Edit(val noteId: Long) : NoteNavigatingType()
+}
 
-fun NavGraphBuilder.noteRoute(navController: NavController) {
+const val ROUTE_NOTE = "note"
+
+fun NavController.navigateToNote(
+    type: NoteNavigatingType
+) {
+    val config: NavOptionsBuilder.() -> Unit = { launchSingleTop = true }
+    when (type) {
+        NoteNavigatingType.Add -> {
+            navigate("$ROUTE_NOTE/-1", config)
+        }
+
+        is NoteNavigatingType.Edit -> {
+            navigate("$ROUTE_NOTE/${type.noteId}", config)
+        }
+    }
+}
+
+fun NavGraphBuilder.noteRoute(onBack: () -> Unit) {
     composable(
         route = "$ROUTE_NOTE/{$KEY_NOTE_ID}",
         arguments = listOf(
@@ -79,7 +66,7 @@ fun NavGraphBuilder.noteRoute(navController: NavController) {
     ) {
         NoteRoute(
             modifier = Modifier.fillMaxSize(),
-            onBack = navController::popBackStack
+            onBack = onBack
         )
     }
 }

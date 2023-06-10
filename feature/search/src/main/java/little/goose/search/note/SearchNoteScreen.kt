@@ -50,6 +50,7 @@ sealed interface SearchNoteEvent {
 @Composable
 fun SearchNoteRoute(
     modifier: Modifier = Modifier,
+    onNavigateToNote: (Long) -> Unit,
     onBack: () -> Unit
 ) {
     val context = LocalContext.current
@@ -72,6 +73,7 @@ fun SearchNoteRoute(
         modifier = modifier,
         state = searchNoteState,
         snackbarHostState = snackbarHostState,
+        onNavigateToNote = onNavigateToNote,
         onBack = onBack
     )
 }
@@ -81,6 +83,7 @@ fun SearchNoteScreen(
     modifier: Modifier = Modifier,
     state: SearchNoteState,
     snackbarHostState: SnackbarHostState,
+    onNavigateToNote: (Long) -> Unit,
     onBack: () -> Unit
 ) {
     Scaffold(
@@ -118,7 +121,8 @@ fun SearchNoteScreen(
                 is SearchNoteState.Success -> {
                     SearchNoteContent(
                         modifier = contentModifier,
-                        noteColumnState = state.data
+                        noteColumnState = state.data,
+                        onNavigateToNote = onNavigateToNote,
                     )
                 }
             }
@@ -141,6 +145,7 @@ private fun PreviewSearchNoteScreen() = AccountTheme {
             search = {}
         ),
         snackbarHostState = SnackbarHostState(),
+        onNavigateToNote = {},
         onBack = {}
     )
 }

@@ -1,11 +1,7 @@
 package little.goose.common.utils
 
-import android.os.Parcelable
-import kotlinx.parcelize.Parcelize
-
 @Suppress("NOTHING_TO_INLINE")
-@Parcelize
-enum class TimeType : Parcelable {
+enum class TimeType {
     DATE_TIME,   //代表年月日加上时间
     DATE,        //代表年月日
     TIME,        //仅代表时间

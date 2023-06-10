@@ -29,13 +29,13 @@ import little.goose.account.data.constants.MoneyType
 import little.goose.account.data.models.TimeMoney
 import little.goose.account.data.models.TransactionBalance
 import little.goose.account.data.models.TransactionPercent
-import little.goose.account.ui.TransactionExampleActivity
 import little.goose.account.ui.analysis.widget.TransactionAnalysisLineChartView
 import little.goose.account.ui.component.TransactionPercentCircleChart
 import little.goose.account.ui.component.TransactionPercentColumn
 import little.goose.common.collections.CircularLinkList
 import little.goose.common.utils.*
 import java.math.BigDecimal
+import java.util.Date
 
 data class TransactionAnalysisContentState(
     val timeType: TransactionAnalysisViewModel.TimeType = TransactionAnalysisViewModel.TimeType.MONTH,
@@ -59,7 +59,10 @@ data class TransactionAnalysisTimeState(
 fun TransactionAnalysisContent(
     modifier: Modifier = Modifier,
     state: TransactionAnalysisContentState,
-    pagerState: PagerState
+    pagerState: PagerState,
+    onNavigateToTransactionExample: (
+        time: Date, timeType: TimeType, moneyType: MoneyType, content: String?
+    ) -> Unit
 ) {
     HorizontalPager(
         pageCount = 3,
@@ -74,24 +77,29 @@ fun TransactionAnalysisContent(
                     timeType = state.timeType,
                     moneyType = MoneyType.EXPENSE,
                     timeMoneys = state.timeState.timeExpenses,
-                    transactionPercents = state.percentsState.expensePercents
+                    transactionPercents = state.percentsState.expensePercents,
+                    onNavigateToTransactionExample = onNavigateToTransactionExample
                 )
             }
+
             1 -> {
                 TransactionAnalysisCommonContent(
                     modifier = Modifier.fillMaxSize(),
                     timeType = state.timeType,
                     moneyType = MoneyType.INCOME,
                     timeMoneys = state.timeState.timeIncomes,
-                    transactionPercents = state.percentsState.incomePercents
+                    transactionPercents = state.percentsState.incomePercents,
+                    onNavigateToTransactionExample = onNavigateToTransactionExample
                 )
             }
+
             2 -> {
                 TransactionAnalysisBalanceContent(
                     modifier = Modifier.fillMaxSize(),
                     timeType = state.timeType,
                     timeMoneys = state.timeState.balances,
-                    transactionBalances = state.percentsState.balancePercents
+                    transactionBalances = state.percentsState.balancePercents,
+                    onNavigateToTransactionExample = onNavigateToTransactionExample
                 )
             }
         }
@@ -103,7 +111,10 @@ fun TransactionAnalysisBalanceContent(
     modifier: Modifier,
     timeType: TransactionAnalysisViewModel.TimeType,
     timeMoneys: List<TimeMoney>,
-    transactionBalances: List<TransactionBalance>
+    transactionBalances: List<TransactionBalance>,
+    onNavigateToTransactionExample: (
+        time: Date, timeType: TimeType, moneyType: MoneyType, content: String?
+    ) -> Unit
 ) {
     Surface(
         modifier = modifier
@@ -121,7 +132,8 @@ fun TransactionAnalysisBalanceContent(
                     .height(200.dp),
                 timeType = timeType,
                 moneyType = MoneyType.BALANCE,
-                timeMoneys = timeMoneys
+                timeMoneys = timeMoneys,
+                onNavigateToTransactionExample = onNavigateToTransactionExample
             )
             LazyColumn(modifier = Modifier.weight(1F)) {
                 item {
@@ -170,6 +182,7 @@ fun TransactionAnalysisBalanceContent(
                                         calendar.time = transactionBalance.time
                                         calendar.getDate().toString()
                                     }
+
                                     TransactionAnalysisViewModel.TimeType.YEAR -> {
                                         calendar.time = transactionBalance.time
                                         calendar.getMonth().toString()
@@ -207,7 +220,10 @@ fun TransactionAnalysisCommonContent(
     timeType: TransactionAnalysisViewModel.TimeType,
     moneyType: MoneyType,
     timeMoneys: List<TimeMoney>,
-    transactionPercents: List<TransactionPercent>
+    transactionPercents: List<TransactionPercent>,
+    onNavigateToTransactionExample: (
+        time: Date, timeType: TimeType, moneyType: MoneyType, content: String?
+    ) -> Unit
 ) {
     Surface(
         modifier = modifier
@@ -247,7 +263,8 @@ fun TransactionAnalysisCommonContent(
                     .height(200.dp),
                 timeType = timeType,
                 moneyType = moneyType,
-                timeMoneys = timeMoneys
+                timeMoneys = timeMoneys,
+                onNavigateToTransactionExample = onNavigateToTransactionExample
             )
 
             Spacer(modifier = Modifier.height(16.dp))
@@ -274,7 +291,10 @@ fun TransactionAnalysisLineChart(
     modifier: Modifier,
     timeType: TransactionAnalysisViewModel.TimeType,
     moneyType: MoneyType,
-    timeMoneys: List<TimeMoney>
+    timeMoneys: List<TimeMoney>,
+    onNavigateToTransactionExample: (
+        time: Date, timeType: TimeType, moneyType: MoneyType, content: String?
+    ) -> Unit
 ) {
     val context = LocalContext.current
     val colorScheme = MaterialTheme.colorScheme
@@ -341,8 +361,8 @@ fun TransactionAnalysisLineChart(
                             TransactionAnalysisViewModel.TimeType.MONTH -> TimeType.DATE
                             TransactionAnalysisViewModel.TimeType.YEAR -> TimeType.YEAR_MONTH
                         }
-                        TransactionExampleActivity.open(
-                            context, timeMoney.time, timeTypeTmp, moneyType
+                        onNavigateToTransactionExample(
+                            timeMoney.time, timeTypeTmp, moneyType, null
                         )
                     }
                 }

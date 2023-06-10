@@ -24,10 +24,6 @@ import little.goose.account.logic.GetTransactionByYearFlowWithKeyContentUseCase
 import little.goose.account.logic.GetTransactionByYearMonthFlowUseCase
 import little.goose.account.logic.GetTransactionByYearMonthFlowWithKeyContentUseCase
 import little.goose.account.ui.component.TransactionColumnState
-import little.goose.common.constants.KEY_CONTENT
-import little.goose.common.constants.KEY_MONEY_TYPE
-import little.goose.common.constants.KEY_TIME
-import little.goose.common.constants.KEY_TIME_TYPE
 import little.goose.common.utils.TimeType
 import little.goose.common.utils.getDate
 import little.goose.common.utils.getMonth
@@ -56,10 +52,12 @@ class TransactionExampleViewModel @Inject constructor(
         data class DeleteTransactions(val transactions: List<Transaction>) : Event()
     }
 
-    private val time: Date = savedStateHandle[KEY_TIME]!!
-    private val content: String? = savedStateHandle[KEY_CONTENT]
-    private val timeType: TimeType = savedStateHandle[KEY_TIME_TYPE]!!
-    private val moneyType: MoneyType = savedStateHandle[KEY_MONEY_TYPE]!!
+    private val args = TransactionExampleRouteArgs(savedStateHandle)
+
+    private val time: Date get() = args.time
+    private val content: String? get() = args.keyContent
+    private val timeType: TimeType get() = args.timeType
+    private val moneyType: MoneyType get() = args.moneyType
 
     val title = when (timeType) {
         TimeType.DATE -> time.toChineseYearMonthDay()
@@ -135,13 +133,13 @@ class TransactionExampleViewModel @Inject constructor(
             when (timeType) {
                 TimeType.YEAR -> {
                     getTransactionByYearFlowWithKeyContentUseCase(
-                        calendar.getYear(), content
+                        calendar.getYear(), content!!
                     )
                 }
 
                 TimeType.YEAR_MONTH -> {
                     getTransactionByYearMonthFlowWithKeyContentUseCase(
-                        calendar.getYear(), calendar.getMonth(), content
+                        calendar.getYear(), calendar.getMonth(), content!!
                     )
                 }
 

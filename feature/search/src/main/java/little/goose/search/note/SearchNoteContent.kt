@@ -13,7 +13,6 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import little.goose.design.system.component.MovableActionButton
 import little.goose.design.system.component.MovableActionButtonState
@@ -22,22 +21,19 @@ import little.goose.note.data.entities.Note
 import little.goose.note.data.entities.NoteContentBlock
 import little.goose.note.ui.NoteColumn
 import little.goose.note.ui.NoteColumnState
-import little.goose.note.ui.note.NoteActivity
 
 @Composable
 internal fun SearchNoteContent(
     modifier: Modifier = Modifier,
     noteColumnState: NoteColumnState,
+    onNavigateToNote: (Long) -> Unit
 ) {
-    val context = LocalContext.current
     if (noteColumnState.noteWithContents.isNotEmpty()) {
         NoteColumn(
             modifier = modifier.fillMaxSize(),
             state = noteColumnState,
             onNoteClick = { note ->
-                note.id?.let { noteId ->
-                    NoteActivity.openEdit(context, noteId)
-                }
+                note.id?.let { onNavigateToNote(it) }
             }
         )
     }
@@ -86,6 +82,7 @@ private fun PreviewSearchNoteContent() = AccountTheme {
             ),
             isMultiSelecting = false,
             multiSelectedNotes = emptySet()
-        )
+        ),
+        onNavigateToNote = {}
     )
 }

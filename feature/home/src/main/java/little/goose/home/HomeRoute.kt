@@ -1,4 +1,4 @@
-package little.goose.home.navigation
+package little.goose.home
 
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.pager.rememberPagerState
@@ -12,7 +12,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.datastore.preferences.core.edit
-import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import com.google.accompanist.navigation.animation.composable
 import little.goose.common.utils.getDataOrDefault
@@ -20,21 +19,28 @@ import little.goose.home.data.HOME
 import little.goose.home.ui.HomeScreen
 import little.goose.home.utils.KEY_PREF_PAGER
 import little.goose.home.utils.homeDataStore
-import little.goose.note.ui.note.ROUTE_NOTE
+import little.goose.search.SearchType
+import java.util.Date
 
 var isHomePageInit = true
 
 var homePage by mutableStateOf(-1)
 
-const val ROUTE_HOME = "route_home"
+const val ROUTE_HOME = "home"
 
-fun NavGraphBuilder.homeRoute(navController: NavController) {
+fun NavGraphBuilder.homeRoute(
+    onNavigateToNote: (noteId: Long?) -> Unit,
+    onNavigateToSearch: (SearchType) -> Unit,
+    onNavigateToTransaction: (id: Long?, time: Date?) -> Unit,
+    onNavigateToAccountAnalysis: () -> Unit
+) {
     composable(ROUTE_HOME) {
         HomeRoute(
             modifier = Modifier.fillMaxSize(),
-            onNavigateToNote = {
-                navController.navigate(if (it != null) "$ROUTE_NOTE/$it" else "$ROUTE_NOTE/-1")
-            }
+            onNavigateToNote = onNavigateToNote,
+            onNavigateToSearch = onNavigateToSearch,
+            onNavigateToTransaction = onNavigateToTransaction,
+            onNavigateToAccountAnalysis = onNavigateToAccountAnalysis
         )
     }
 }
@@ -47,7 +53,10 @@ sealed interface HomeRouteState {
 @Composable
 fun HomeRoute(
     modifier: Modifier = Modifier,
-    onNavigateToNote: (noteId: Long?) -> Unit
+    onNavigateToTransaction: (id: Long?, time: Date?) -> Unit,
+    onNavigateToNote: (noteId: Long?) -> Unit,
+    onNavigateToSearch: (SearchType) -> Unit,
+    onNavigateToAccountAnalysis: () -> Unit
 ) {
     val context = LocalContext.current
     val homeState = if (homePage >= 0) remember {
@@ -68,7 +77,10 @@ fun HomeRoute(
             HomeScreen(
                 modifier = modifier.fillMaxSize(),
                 pagerState = pagerState,
-                onNavigateToNote = onNavigateToNote
+                onNavigateToNote = onNavigateToNote,
+                onNavigateToSearch = onNavigateToSearch,
+                onNavigateToTransaction = onNavigateToTransaction,
+                onNavigateToAccountAnalysis = onNavigateToAccountAnalysis
             )
             LaunchedEffect(pagerState.currentPage) {
                 homePage = pagerState.currentPage

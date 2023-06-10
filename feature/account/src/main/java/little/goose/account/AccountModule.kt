@@ -18,6 +18,7 @@ import little.goose.account.logic.GetExpenseSumByYearUseCase
 import little.goose.account.logic.GetIncomeSumByYearMonthUseCase
 import little.goose.account.logic.GetIncomeSumByYearUseCase
 import little.goose.account.logic.GetTransactionByDateFlowUseCase
+import little.goose.account.logic.GetTransactionByIdFlowUseCase
 import little.goose.account.logic.GetTransactionByYearFlowWithKeyContentUseCase
 import little.goose.account.logic.GetTransactionByYearMonthFlowUseCase
 import little.goose.account.logic.GetTransactionByYearMonthFlowWithKeyContentUseCase
@@ -72,6 +73,14 @@ class AccountViewModelModule {
         accountRepository: AccountRepository
     ): InsertTransactionUseCase {
         return InsertTransactionUseCase(accountRepository)
+    }
+
+    @Provides
+    @ViewModelScoped
+    fun provideGetTransactionByIdFlowUseCase(
+        accountRepository: AccountRepository
+    ): GetTransactionByIdFlowUseCase {
+        return GetTransactionByIdFlowUseCase(accountRepository)
     }
 
     @Provides

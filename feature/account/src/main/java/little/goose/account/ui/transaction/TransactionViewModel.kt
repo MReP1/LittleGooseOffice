@@ -5,30 +5,41 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asSharedFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import little.goose.account.data.constants.AccountConstant.EXPENSE
 import little.goose.account.data.constants.AccountConstant.INCOME
 import little.goose.account.data.entities.Transaction
+import little.goose.account.logic.GetTransactionByIdFlowUseCase
 import little.goose.account.logic.InsertTransactionUseCase
 import little.goose.account.logic.UpdateTransactionUseCase
 import little.goose.account.ui.transaction.icon.TransactionIconHelper
-import little.goose.common.constants.KEY_TIME
-import little.goose.common.constants.KEY_TRANSACTION
-import little.goose.common.utils.*
-import java.util.*
+import little.goose.common.utils.getDate
+import little.goose.common.utils.getMonth
+import little.goose.common.utils.getYear
+import little.goose.common.utils.setDate
+import little.goose.common.utils.setMonth
+import little.goose.common.utils.setYear
+import java.util.Calendar
+import java.util.Date
 import javax.inject.Inject
 
 @HiltViewModel
 class TransactionViewModel @Inject constructor(
-    private val savedStateHandle: SavedStateHandle,
+    savedStateHandle: SavedStateHandle,
+    private val getTransactionByIdFlowUseCase: GetTransactionByIdFlowUseCase,
     private val insertTransactionUseCase: InsertTransactionUseCase,
     private val updateTransactionUseCase: UpdateTransactionUseCase
 ) : ViewModel() {
 
+    private val args = TransactionRouteArgs(savedStateHandle)
+
     private val defaultTransaction
         get() = Transaction(
-            time = savedStateHandle.get<Long>(KEY_TIME)?.let {
+            time = args.time?.let {
                 val time = Calendar.getInstance().apply { timeInMillis = it }
                 Calendar.getInstance().apply {
                     setYear(time.getYear())
@@ -47,10 +58,19 @@ class TransactionViewModel @Inject constructor(
     private val _event: MutableSharedFlow<Event> = MutableSharedFlow()
     val event = _event.asSharedFlow()
 
-    val transaction = savedStateHandle.getStateFlow(KEY_TRANSACTION, defaultTransaction)
+    private val _transaction = MutableStateFlow(defaultTransaction)
+    val transaction = _transaction.asStateFlow()
+
+    init {
+        viewModelScope.launch {
+            args.transactionId?.let { id ->
+                _transaction.value = getTransactionByIdFlowUseCase(id).first()
+            }
+        }
+    }
 
     fun setTransaction(transaction: Transaction) {
-        savedStateHandle[KEY_TRANSACTION] = transaction
+        _transaction.value = transaction
     }
 
     fun writeDatabase(transaction: Transaction, isAgain: Boolean) {

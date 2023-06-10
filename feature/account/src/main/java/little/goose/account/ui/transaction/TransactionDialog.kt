@@ -15,6 +15,8 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavGraphBuilder
+import androidx.navigation.compose.dialog
 import little.goose.account.data.entities.Transaction
 import little.goose.account.ui.transaction.icon.TransactionIconHelper
 import little.goose.common.utils.toChineseMonthDayTime
@@ -49,13 +51,15 @@ class TransactionDialogState(_isShow: Boolean = false) {
     }
 }
 
+const val ROUTE_DIALOG_TRANSACTION = "dialog_transaction"
+
 @Composable
 fun TransactionDialog(
     state: TransactionDialogState,
+    onNavigateToTransaction: (Long) -> Unit,
     onDelete: (Transaction) -> Unit
 ) {
     val deleteDialogState = remember { DeleteDialogState() }
-    val context = LocalContext.current
 
     NormalDialog(
         state = state.dialogState
@@ -68,8 +72,8 @@ fun TransactionDialog(
                     state.dismiss()
                 })
             },
-            onEditClick = {
-                TransactionActivity.openEdit(context, it)
+            onEditClick = { transaction ->
+                transaction.id?.let { id -> onNavigateToTransaction(id) }
                 state.dismiss()
             }
         )

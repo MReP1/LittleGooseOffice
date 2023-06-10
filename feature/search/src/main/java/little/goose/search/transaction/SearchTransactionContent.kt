@@ -20,17 +20,20 @@ import little.goose.account.ui.transaction.TransactionDialog
 import little.goose.account.ui.transaction.rememberTransactionDialogState
 import little.goose.design.system.component.MovableActionButton
 import little.goose.design.system.component.MovableActionButtonState
+import java.util.Date
 
 @Composable
 internal fun SearchTransactionContent(
     modifier: Modifier = Modifier,
     transactionColumnState: TransactionColumnState,
+    onNavigateToTransaction: (id: Long) -> Unit,
     onDeleteTransaction: (Transaction) -> Unit
 ) {
     val transactionDialogState = rememberTransactionDialogState()
 
     TransactionDialog(
         state = transactionDialogState,
+        onNavigateToTransaction = onNavigateToTransaction,
         onDelete = onDeleteTransaction
     )
 

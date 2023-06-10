@@ -19,6 +19,7 @@ fun AccountHome(
     accountTitleState: AccountTitleState,
     monthSelectorState: MonthSelectorState,
     transactionColumnState: TransactionColumnState,
+    onNavigateToTransaction: (Long) -> Unit,
     deleteTransaction: (Transaction) -> Unit
 ) {
     val transactionDialogState = rememberTransactionDialogState()
@@ -33,6 +34,7 @@ fun AccountHome(
 
     TransactionDialog(
         state = transactionDialogState,
+        onNavigateToTransaction = onNavigateToTransaction,
         onDelete = deleteTransaction
     )
 }

@@ -13,6 +13,14 @@ class InsertTransactionUseCase(
     }
 }
 
+class GetTransactionByIdFlowUseCase(
+    private val accountRepository: AccountRepository
+) {
+    operator fun invoke(id: Long): Flow<Transaction> {
+        return accountRepository.getTransactionByIdFlow(id)
+    }
+}
+
 class UpdateTransactionUseCase(
     private val accountRepository: AccountRepository
 ) {
@@ -121,7 +129,11 @@ class GetTransactionByYearMonthFlowWithKeyContentUseCase(
     operator fun invoke(
         year: Int, month: Int, keyContent: String
     ): Flow<List<Transaction>> {
-        return accountRepository.getTransactionByYearMonthFlowWithKeyContent(year, month, keyContent)
+        return accountRepository.getTransactionByYearMonthFlowWithKeyContent(
+            year,
+            month,
+            keyContent
+        )
     }
 }
 
