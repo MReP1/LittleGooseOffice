@@ -6,6 +6,7 @@ import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.FlowPreview
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.asStateFlow
@@ -48,17 +49,7 @@ class TransactionAnalysisViewModel @Inject constructor(
         calendar.apply { clear(); setYear(year.value); setMonth(month.value) }.time
     )
 
-
     init {
-        viewModelScope.launch {
-            combine(timeType, year, month) { type, year, month ->
-                updateData(type, year, month)
-                Pair(year, month)
-            }.flowOn(Dispatchers.IO).onEach { (year, month) ->
-                timeSelectorState.year = year
-                timeSelectorState.month = month
-            }.collect()
-        }
         viewModelScope.launch {
             combine(
                 snapshotFlow { timeSelectorState.year },
@@ -72,12 +63,21 @@ class TransactionAnalysisViewModel @Inject constructor(
                 }
             }
         }
-
     }
 
-    fun updateData() {
-        viewModelScope.launch(Dispatchers.IO) {
-            updateData(timeType.value, year.value, month.value)
+    // FIXME 待优化
+    private var collectJob: Job? = null
+
+    fun startUpdateDataJob() {
+        collectJob?.cancel()
+        collectJob = viewModelScope.launch {
+            combine(timeType, year, month) { type, year, month ->
+                updateData(type, year, month)
+                Pair(year, month)
+            }.flowOn(Dispatchers.IO).onEach { (year, month) ->
+                timeSelectorState.year = year
+                timeSelectorState.month = month
+            }.collect()
         }
     }
 

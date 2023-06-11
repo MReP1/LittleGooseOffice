@@ -4,10 +4,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.DefaultLifecycleObserver
-import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
@@ -50,21 +47,10 @@ fun AccountAnalysisRoute(
     val contentState by viewModel.contentState.collectAsStateWithLifecycle()
     val bottomBarState by viewModel.bottomBarState.collectAsStateWithLifecycle()
     val timeSelectorState = viewModel.timeSelectorState
-    val lifecycle = LocalLifecycleOwner.current
 
     DisposableEffect(Unit) {
-        val observer = object : DefaultLifecycleObserver {
-            var isFirstTime = true
-            override fun onStart(owner: LifecycleOwner) {
-                if (!isFirstTime) {
-                    viewModel.updateData()
-                } else {
-                    isFirstTime = false
-                }
-            }
-        }
-        lifecycle.lifecycle.addObserver(observer)
-        onDispose { lifecycle.lifecycle.removeObserver(observer) }
+        viewModel.startUpdateDataJob()
+        onDispose { }
     }
 
     TransactionAnalysisScreen(
