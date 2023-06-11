@@ -7,7 +7,6 @@ import dagger.hilt.InstallIn
 import dagger.hilt.android.components.ViewModelComponent
 import dagger.hilt.android.scopes.ViewModelScoped
 import dagger.hilt.components.SingletonComponent
-import little.goose.memorial.logic.DeleteMemorialUseCase
 import little.goose.memorial.logic.DeleteMemorialsUseCase
 import little.goose.memorial.logic.GetAllMemorialFlowUseCase
 import little.goose.memorial.logic.GetMemorialAtTopFlowUseCase
@@ -29,6 +28,15 @@ class MemorialModule {
     @Singleton
     fun provideMemorialRepository(application: Application): MemorialRepository {
         return MemorialRepository(application)
+    }
+
+
+    @Provides
+    @Singleton
+    fun provideDeleteMemorialsUseCase(
+        memorialRepository: MemorialRepository
+    ): DeleteMemorialsUseCase {
+        return DeleteMemorialsUseCase(memorialRepository)
     }
 
 }
@@ -67,22 +75,6 @@ class MemorialViewModelModule {
         memorialRepository: MemorialRepository
     ): UpdateMemorialsUseCase {
         return UpdateMemorialsUseCase(memorialRepository)
-    }
-
-    @Provides
-    @ViewModelScoped
-    fun provideDeleteMemorialUseCase(
-        memorialRepository: MemorialRepository
-    ): DeleteMemorialUseCase {
-        return DeleteMemorialUseCase(memorialRepository)
-    }
-
-    @Provides
-    @ViewModelScoped
-    fun provideDeleteMemorialsUseCase(
-        memorialRepository: MemorialRepository
-    ): DeleteMemorialsUseCase {
-        return DeleteMemorialsUseCase(memorialRepository)
     }
 
     @Provides

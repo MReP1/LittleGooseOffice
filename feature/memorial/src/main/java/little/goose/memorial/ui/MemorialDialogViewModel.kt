@@ -10,7 +10,7 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import little.goose.memorial.data.constants.KEY_MEMORIAL_ID
 import little.goose.memorial.data.entities.Memorial
-import little.goose.memorial.logic.DeleteMemorialUseCase
+import little.goose.memorial.logic.DeleteMemorialsUseCase
 import little.goose.memorial.logic.GetMemorialFlowUseCase
 import javax.inject.Inject
 
@@ -18,7 +18,7 @@ import javax.inject.Inject
 class MemorialDialogViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     getMemorialFlowUseCase: GetMemorialFlowUseCase,
-    private val deleteMemorialUseCase: DeleteMemorialUseCase
+    private val deleteMemorialsUseCase: DeleteMemorialsUseCase
 ) : ViewModel() {
 
     val memorial = getMemorialFlowUseCase(
@@ -32,7 +32,7 @@ class MemorialDialogViewModel @Inject constructor(
     fun deleteMemorial() {
         val memorial = memorial.value.takeIf { it.id != null } ?: return
         viewModelScope.launch(NonCancellable) {
-            deleteMemorialUseCase(memorial)
+            deleteMemorialsUseCase(listOf(memorial))
         }
     }
 

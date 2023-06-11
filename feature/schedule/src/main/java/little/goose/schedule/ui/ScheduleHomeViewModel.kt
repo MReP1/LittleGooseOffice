@@ -74,6 +74,7 @@ class ScheduleHomeViewModel @Inject constructor(
     private fun updateSchedule(schedule: Schedule) {
         viewModelScope.launch {
             updateScheduleUseCase(schedule)
+            cancelMultiSelecting()
         }
     }
 

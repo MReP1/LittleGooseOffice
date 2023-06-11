@@ -8,6 +8,8 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import little.goose.note.data.entities.Note
@@ -62,6 +64,12 @@ class NotebookViewModel @Inject constructor(
         )
     )
 
+    init {
+        deleteNotesAndItsBlocksUseCase.deleteNotesEvent.onEach {
+            _event.emit(Event.DeleteNotes(it))
+        }.launchIn(viewModelScope)
+    }
+
     private fun selectNote(note: Note, selected: Boolean) {
         multiSelectedNotes.value = multiSelectedNotes.value.toMutableSet().apply {
             if (selected) add(note) else remove(note)
@@ -79,7 +87,7 @@ class NotebookViewModel @Inject constructor(
     private fun deleteNotes(notes: List<Note>) {
         viewModelScope.launch {
             deleteNotesAndItsBlocksUseCase(notes)
-            _event.emit(Event.DeleteNotes(notes))
+            cancelMultiSelecting()
         }
     }
 

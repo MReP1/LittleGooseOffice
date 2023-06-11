@@ -187,6 +187,7 @@ class AccountHomeViewModel @Inject constructor(
     private fun deleteTransactions(transactions: List<Transaction>) {
         viewModelScope.launch {
             deleteTransactionsUseCase(transactions)
+            cancelMultiSelecting()
         }
     }
 

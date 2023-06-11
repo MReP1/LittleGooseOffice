@@ -6,7 +6,6 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import little.goose.memorial.data.entities.Memorial
-import little.goose.memorial.logic.DeleteMemorialUseCase
 import little.goose.memorial.logic.DeleteMemorialsUseCase
 import little.goose.memorial.logic.GetAllMemorialFlowUseCase
 import little.goose.memorial.logic.GetMemorialAtTopFlowUseCase
@@ -17,7 +16,6 @@ import javax.inject.Inject
 class MemorialViewModel @Inject constructor(
     getAllMemorialFlowUseCase: GetAllMemorialFlowUseCase,
     getMemorialAtTopFlowUseCase: GetMemorialAtTopFlowUseCase,
-    private val deleteMemorialUseCase: DeleteMemorialUseCase,
     private val deleteMemorialsUseCase: DeleteMemorialsUseCase
 ) : ViewModel() {
 
@@ -70,17 +68,16 @@ class MemorialViewModel @Inject constructor(
             initialValue = null
         )
 
-    fun deleteMemorial(memorial: Memorial) {
-        viewModelScope.launch {
-            deleteMemorialUseCase(memorial)
-            _event.emit(Event.DeleteMemorials(listOf(memorial)))
-        }
+    init {
+        deleteMemorialsUseCase.deleteMemorialsEvent.onEach {
+            _event.emit(Event.DeleteMemorials(it))
+        }.launchIn(viewModelScope)
     }
 
     private fun deleteMemorials(memorials: List<Memorial>) {
         viewModelScope.launch {
             deleteMemorialsUseCase(memorials)
-            _event.emit(Event.DeleteMemorials(memorials))
+            cancelMemorialsMultiSelecting()
         }
     }
 

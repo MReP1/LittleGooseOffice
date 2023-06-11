@@ -31,6 +31,14 @@ class NoteModule {
         return NoteRepository(application)
     }
 
+    @Provides
+    @Singleton
+    fun provideDeleteNotesAndItsBlocksUseCase(
+        noteRepository: NoteRepository
+    ): DeleteNotesAndItsBlocksUseCase {
+        return DeleteNotesAndItsBlocksUseCase(noteRepository)
+    }
+
 }
 
 @Module
@@ -67,14 +75,6 @@ class NoteViewModelModule {
         noteRepository: NoteRepository
     ): DeleteNoteAndItsBlocksUseCase {
         return DeleteNoteAndItsBlocksUseCase(noteRepository)
-    }
-
-    @Provides
-    @ViewModelScoped
-    fun provideDeleteNotesAndItsBlocksUseCase(
-        noteRepository: NoteRepository
-    ): DeleteNotesAndItsBlocksUseCase {
-        return DeleteNotesAndItsBlocksUseCase(noteRepository)
     }
 
     @Provides

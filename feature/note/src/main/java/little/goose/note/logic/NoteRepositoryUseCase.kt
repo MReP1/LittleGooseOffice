@@ -1,6 +1,8 @@
 package little.goose.note.logic
 
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import little.goose.note.data.entities.Note
 import little.goose.note.data.entities.NoteContentBlock
 import javax.inject.Inject
@@ -42,8 +44,12 @@ class DeleteNoteAndItsBlocksUseCase @Inject constructor(
 class DeleteNotesAndItsBlocksUseCase @Inject constructor(
     private val repository: NoteRepository
 ) {
+    private val _deleteNotesEvent = MutableSharedFlow<List<Note>>()
+    val deleteNotesEvent = _deleteNotesEvent.asSharedFlow()
+
     suspend operator fun invoke(notes: List<Note>) {
-        return repository.deleteNotesAndItsBlocks(notes)
+        repository.deleteNotesAndItsBlocks(notes)
+        _deleteNotesEvent.emit(notes)
     }
 }
 

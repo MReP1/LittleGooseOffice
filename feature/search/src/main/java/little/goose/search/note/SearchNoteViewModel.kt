@@ -12,6 +12,7 @@ import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import little.goose.note.data.entities.Note
 import little.goose.note.logic.DeleteNotesAndItsBlocksUseCase
@@ -35,6 +36,12 @@ class SearchNoteViewModel @Inject constructor(
     val searchNoteState: StateFlow<SearchNoteState> = _searchNoteState.asStateFlow()
 
     private var searchingJob: Job? = null
+
+    init {
+        deleteNotesAndItsBlocksUseCase.deleteNotesEvent.onEach {
+            _searchNoteEvent.emit(SearchNoteEvent.DeleteNotes(it))
+        }.launchIn(viewModelScope)
+    }
 
     fun search(keyword: String) {
         if (keyword.isBlank()) {
@@ -88,7 +95,7 @@ class SearchNoteViewModel @Inject constructor(
     private fun deleteNotes(notes: List<Note>) {
         viewModelScope.launch {
             deleteNotesAndItsBlocksUseCase(notes)
-            _searchNoteEvent.emit(SearchNoteEvent.DeleteNotes(notes))
+            cancelNotesMultiSelecting()
         }
     }
 

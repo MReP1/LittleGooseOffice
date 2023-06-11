@@ -107,6 +107,7 @@ class SearchScheduleViewModel @Inject constructor(
     private fun deleteSchedules(schedules: List<Schedule>) {
         viewModelScope.launch {
             deleteSchedulesUseCase(schedules)
+            cancelSchedulesMultiSelecting()
         }
     }
 

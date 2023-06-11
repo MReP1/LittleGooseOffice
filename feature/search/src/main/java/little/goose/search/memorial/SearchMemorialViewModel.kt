@@ -10,6 +10,7 @@ import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import little.goose.memorial.data.entities.Memorial
 import little.goose.memorial.logic.DeleteMemorialsUseCase
@@ -34,6 +35,12 @@ class SearchMemorialViewModel @Inject constructor(
     private val multiSelectedMemorials = MutableStateFlow(emptySet<Memorial>())
 
     private var searchingJob: Job? = null
+
+    init {
+        deleteMemorialsUseCase.deleteMemorialsEvent.onEach {
+            _searchMemorialEvent.emit(SearchMemorialEvent.DeleteMemorials(it))
+        }.launchIn(viewModelScope)
+    }
 
     private fun search(keyword: String) {
         if (keyword.isBlank()) {
@@ -83,7 +90,7 @@ class SearchMemorialViewModel @Inject constructor(
     private fun deleteMemorials(memorials: List<Memorial>) {
         viewModelScope.launch {
             deleteMemorialsUseCase(memorials)
-            _searchMemorialEvent.emit(SearchMemorialEvent.DeleteMemorials(memorials))
+            cancelMemorialsMultiSelecting()
         }
     }
 

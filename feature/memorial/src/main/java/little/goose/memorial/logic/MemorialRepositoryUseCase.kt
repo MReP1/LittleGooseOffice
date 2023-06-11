@@ -1,6 +1,8 @@
 package little.goose.memorial.logic
 
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import little.goose.memorial.data.entities.Memorial
 
 class InsertMemorialUseCase(
@@ -35,19 +37,19 @@ class UpdateMemorialsUseCase(
     }
 }
 
-class DeleteMemorialUseCase(
-    private val memorialRepository: MemorialRepository
-) {
-    suspend operator fun invoke(memorial: Memorial) {
-        return memorialRepository.deleteMemorial(memorial)
-    }
-}
-
 class DeleteMemorialsUseCase(
     private val memorialRepository: MemorialRepository
 ) {
+    private val _deleteMemorialsEvent = MutableSharedFlow<List<Memorial>>()
+    val deleteMemorialsEvent = _deleteMemorialsEvent.asSharedFlow()
+
     suspend operator fun invoke(memorials: List<Memorial>) {
-        return memorialRepository.deleteMemorials(memorials)
+        if (memorials.size == 1) {
+            memorialRepository.deleteMemorial(memorials[0])
+        } else {
+            memorialRepository.deleteMemorials(memorials)
+        }
+        _deleteMemorialsEvent.emit(memorials)
     }
 }
 
