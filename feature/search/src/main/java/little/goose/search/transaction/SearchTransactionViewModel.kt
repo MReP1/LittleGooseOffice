@@ -82,7 +82,6 @@ class SearchTransactionViewModel @Inject constructor(
     private fun deleteTransactions(transactions: List<Transaction>) {
         viewModelScope.launch {
             deleteTransactionsUseCase(transactions)
-            _searchTransactionEvent.emit(SearchTransactionEvent.DeleteTransactions(transactions))
         }
     }
 
