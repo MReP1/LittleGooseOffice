@@ -26,7 +26,7 @@ fun IconsBoard(
 ) {
     LazyVerticalGrid(
         modifier = modifier,
-        columns = GridCells.Fixed(6),
+        columns = GridCells.Fixed(5),
         contentPadding = PaddingValues(8.dp),
         reverseLayout = true
     ) {
