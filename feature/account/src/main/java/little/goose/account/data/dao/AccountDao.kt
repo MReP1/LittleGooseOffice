@@ -16,12 +16,6 @@ interface AccountDao {
     @Query("SELECT * FROM $TABLE_TRANSACTION where id = :id")
     fun getTransactionById(id: Long): Flow<Transaction>
 
-    @Query("SELECT * FROM $TABLE_TRANSACTION ORDER BY time DESC")
-    suspend fun getAllTransaction(): List<Transaction>
-
-    @Query("SELECT * FROM $TABLE_TRANSACTION WHERE time > :startTime and time < :endTime ORDER BY time DESC")
-    suspend fun getTransactionByTime(startTime: Long, endTime: Long): List<Transaction>
-
     @Query("SELECT * FROM $TABLE_TRANSACTION WHERE time > :startTime and time < :endTime ORDER BY time DESC")
     fun getTransactionByTimeFlow(startTime: Long, endTime: Long): Flow<List<Transaction>>
 

@@ -13,17 +13,17 @@ import little.goose.account.logic.DeleteTransactionsUseCase
 import little.goose.account.logic.GetAllTransactionExpenseSumFlowUseCase
 import little.goose.account.logic.GetAllTransactionFlowUseCase
 import little.goose.account.logic.GetAllTransactionIncomeSumFlowUseCase
-import little.goose.account.logic.GetExpenseSumByYearMonthUseCase
-import little.goose.account.logic.GetExpenseSumByYearUseCase
-import little.goose.account.logic.GetIncomeSumByYearMonthUseCase
-import little.goose.account.logic.GetIncomeSumByYearUseCase
+import little.goose.account.logic.GetExpenseSumFlowByYearMonthUseCase
+import little.goose.account.logic.GetExpenseSumFlowByYearUseCase
+import little.goose.account.logic.GetIncomeSumFlowByYearMonthUseCase
+import little.goose.account.logic.GetIncomeSumFlowByYearUseCase
 import little.goose.account.logic.GetTransactionByDateFlowUseCase
 import little.goose.account.logic.GetTransactionByIdFlowUseCase
 import little.goose.account.logic.GetTransactionByYearFlowWithKeyContentUseCase
 import little.goose.account.logic.GetTransactionByYearMonthFlowUseCase
 import little.goose.account.logic.GetTransactionByYearMonthFlowWithKeyContentUseCase
-import little.goose.account.logic.GetTransactionByYearUseCase
-import little.goose.account.logic.GetTransactionsByYearAndMonthUseCase
+import little.goose.account.logic.GetTransactionsFlowByYearAndMonthUseCase
+import little.goose.account.logic.GetTransactionsFlowByYearUseCase
 import little.goose.account.logic.InsertTransactionUseCase
 import little.goose.account.logic.SearchTransactionByMoneyFlowUseCase
 import little.goose.account.logic.SearchTransactionByTextFlowUseCase
@@ -50,20 +50,20 @@ class AccountViewModelModule {
     @Provides
     @ViewModelScoped
     fun provideAnalysisHelper(
-        getTransactionByYearUseCase: GetTransactionByYearUseCase,
-        getExpenseSumByYearUseCase: GetExpenseSumByYearUseCase,
-        getIncomeSumByYearUseCase: GetIncomeSumByYearUseCase,
-        getTransactionsByYearAndMonthUseCase: GetTransactionsByYearAndMonthUseCase,
-        getExpenseSumByYearMonthUseCase: GetExpenseSumByYearMonthUseCase,
-        getIncomeSumByYearMonthUseCase: GetIncomeSumByYearMonthUseCase
+        getTransactionsFlowByYearUseCase: GetTransactionsFlowByYearUseCase,
+        getExpenseSumFlowByYearUseCase: GetExpenseSumFlowByYearUseCase,
+        getIncomeSumFlowByYearUseCase: GetIncomeSumFlowByYearUseCase,
+        getTransactionsFlowByYearAndMonthUseCase: GetTransactionsFlowByYearAndMonthUseCase,
+        getExpenseSumFlowByYearMonthUseCase: GetExpenseSumFlowByYearMonthUseCase,
+        getIncomeSumFlowByYearMonthUseCase: GetIncomeSumFlowByYearMonthUseCase
     ): AnalysisHelper {
         return AnalysisHelper(
-            getTransactionByYearUseCase,
-            getExpenseSumByYearUseCase,
-            getIncomeSumByYearUseCase,
-            getTransactionsByYearAndMonthUseCase,
-            getExpenseSumByYearMonthUseCase,
-            getIncomeSumByYearMonthUseCase
+            getTransactionsFlowByYearUseCase,
+            getExpenseSumFlowByYearUseCase,
+            getIncomeSumFlowByYearUseCase,
+            getTransactionsFlowByYearAndMonthUseCase,
+            getExpenseSumFlowByYearMonthUseCase,
+            getIncomeSumFlowByYearMonthUseCase
         )
     }
 
@@ -111,48 +111,48 @@ class AccountViewModelModule {
     @ViewModelScoped
     fun provideGetTransactionsByYearAndMonthUseCase(
         accountRepository: AccountRepository
-    ): GetTransactionsByYearAndMonthUseCase {
-        return GetTransactionsByYearAndMonthUseCase(accountRepository)
+    ): GetTransactionsFlowByYearAndMonthUseCase {
+        return GetTransactionsFlowByYearAndMonthUseCase(accountRepository)
     }
 
     @Provides
     @ViewModelScoped
     fun provideGetExpenseSumByYearMonthUseCase(
         accountRepository: AccountRepository
-    ): GetExpenseSumByYearMonthUseCase {
-        return GetExpenseSumByYearMonthUseCase(accountRepository)
+    ): GetExpenseSumFlowByYearMonthUseCase {
+        return GetExpenseSumFlowByYearMonthUseCase(accountRepository)
     }
 
     @Provides
     @ViewModelScoped
     fun provideGetIncomeSumByYearMonthUseCase(
         accountRepository: AccountRepository
-    ): GetIncomeSumByYearMonthUseCase {
-        return GetIncomeSumByYearMonthUseCase(accountRepository)
+    ): GetIncomeSumFlowByYearMonthUseCase {
+        return GetIncomeSumFlowByYearMonthUseCase(accountRepository)
     }
 
     @Provides
     @ViewModelScoped
     fun provideGetTransactionByYearUseCase(
         accountRepository: AccountRepository
-    ): GetTransactionByYearUseCase {
-        return GetTransactionByYearUseCase(accountRepository)
+    ): GetTransactionsFlowByYearUseCase {
+        return GetTransactionsFlowByYearUseCase(accountRepository)
     }
 
     @Provides
     @ViewModelScoped
     fun provideGetExpenseSumByYearUseCase(
         accountRepository: AccountRepository
-    ): GetExpenseSumByYearUseCase {
-        return GetExpenseSumByYearUseCase(accountRepository)
+    ): GetExpenseSumFlowByYearUseCase {
+        return GetExpenseSumFlowByYearUseCase(accountRepository)
     }
 
     @Provides
     @ViewModelScoped
     fun provideGetIncomeSumByYearUseCase(
         accountRepository: AccountRepository
-    ): GetIncomeSumByYearUseCase {
-        return GetIncomeSumByYearUseCase(accountRepository)
+    ): GetIncomeSumFlowByYearUseCase {
+        return GetIncomeSumFlowByYearUseCase(accountRepository)
     }
 
     @Provides

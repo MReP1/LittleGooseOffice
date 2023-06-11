@@ -1,7 +1,6 @@
 package little.goose.account.ui.analysis
 
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -47,11 +46,6 @@ fun AccountAnalysisRoute(
     val contentState by viewModel.contentState.collectAsStateWithLifecycle()
     val bottomBarState by viewModel.bottomBarState.collectAsStateWithLifecycle()
     val timeSelectorState = viewModel.timeSelectorState
-
-    DisposableEffect(Unit) {
-        viewModel.startUpdateDataJob()
-        onDispose { }
-    }
 
     TransactionAnalysisScreen(
         modifier = modifier,

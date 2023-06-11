@@ -45,51 +45,51 @@ class DeleteTransactionsUseCase(
     }
 }
 
-class GetTransactionsByYearAndMonthUseCase(
+class GetTransactionsFlowByYearAndMonthUseCase(
     private val accountRepository: AccountRepository
 ) {
-    suspend operator fun invoke(year: Int, month: Int): List<Transaction> {
-        return accountRepository.getTransactionsByYearAndMonth(year, month)
+    operator fun invoke(year: Int, month: Int): Flow<List<Transaction>> {
+        return accountRepository.getTransactionsFlowByYearAndMonth(year, month)
     }
 }
 
-class GetExpenseSumByYearMonthUseCase(
+class GetExpenseSumFlowByYearMonthUseCase(
     private val accountRepository: AccountRepository
 ) {
-    suspend operator fun invoke(year: Int, month: Int): Double {
-        return accountRepository.getExpenseSumByYearMonth(year, month)
+    operator fun invoke(year: Int, month: Int): Flow<Double> {
+        return accountRepository.getExpenseSumFlowByYearMonth(year, month)
     }
 }
 
-class GetIncomeSumByYearMonthUseCase(
+class GetIncomeSumFlowByYearMonthUseCase(
     private val accountRepository: AccountRepository
 ) {
-    suspend operator fun invoke(year: Int, month: Int): Double {
-        return accountRepository.getIncomeSumByYearMonth(year, month)
+    operator fun invoke(year: Int, month: Int): Flow<Double> {
+        return accountRepository.getIncomeSumFlowByYearMonth(year, month)
     }
 }
 
-class GetTransactionByYearUseCase(
+class GetTransactionsFlowByYearUseCase(
     private val accountRepository: AccountRepository
 ) {
-    suspend operator fun invoke(year: Int): List<Transaction> {
-        return accountRepository.getTransactionByYear(year)
+    operator fun invoke(year: Int): Flow<List<Transaction>> {
+        return accountRepository.getTransactionByYearFlow(year)
     }
 }
 
-class GetExpenseSumByYearUseCase(
+class GetExpenseSumFlowByYearUseCase(
     private val accountRepository: AccountRepository
 ) {
-    suspend operator fun invoke(year: Int): Double {
-        return accountRepository.getExpenseSumByYear(year)
+    operator fun invoke(year: Int): Flow<Double> {
+        return accountRepository.getExpenseSumFlowByYear(year)
     }
 }
 
-class GetIncomeSumByYearUseCase(
+class GetIncomeSumFlowByYearUseCase(
     private val accountRepository: AccountRepository
 ) {
-    suspend operator fun invoke(year: Int): Double {
-        return accountRepository.getIncomeSumByYear(year)
+    operator fun invoke(year: Int): Flow<Double> {
+        return accountRepository.getIncomeSumFlowByYear(year)
     }
 }
 

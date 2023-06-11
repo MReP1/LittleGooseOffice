@@ -1,26 +1,34 @@
 package little.goose.account.ui.analysis
 
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.async
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.withContext
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.flowOn
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.zip
 import little.goose.account.data.constants.AccountConstant.EXPENSE
 import little.goose.account.data.constants.AccountConstant.INCOME
 import little.goose.account.data.entities.Transaction
 import little.goose.account.data.models.TimeMoney
 import little.goose.account.data.models.TransactionBalance
 import little.goose.account.data.models.TransactionPercent
-import little.goose.account.logic.GetExpenseSumByYearMonthUseCase
-import little.goose.account.logic.GetExpenseSumByYearUseCase
-import little.goose.account.logic.GetIncomeSumByYearMonthUseCase
-import little.goose.account.logic.GetIncomeSumByYearUseCase
-import little.goose.account.logic.GetTransactionByYearUseCase
-import little.goose.account.logic.GetTransactionsByYearAndMonthUseCase
+import little.goose.account.logic.GetExpenseSumFlowByYearMonthUseCase
+import little.goose.account.logic.GetExpenseSumFlowByYearUseCase
+import little.goose.account.logic.GetIncomeSumFlowByYearMonthUseCase
+import little.goose.account.logic.GetIncomeSumFlowByYearUseCase
+import little.goose.account.logic.GetTransactionsFlowByYearAndMonthUseCase
+import little.goose.account.logic.GetTransactionsFlowByYearUseCase
 import little.goose.common.utils.DateTimeUtils
+import little.goose.common.utils.getMonth
 import little.goose.common.utils.getRealDate
 import little.goose.common.utils.getRealMonth
 import little.goose.common.utils.getRoundTwo
+import little.goose.common.utils.getYear
 import little.goose.common.utils.setDate
 import little.goose.common.utils.setMonth
 import little.goose.common.utils.setYear
@@ -29,14 +37,25 @@ import java.util.Calendar
 import kotlin.math.min
 
 class AnalysisHelper(
-    private val getTransactionByYearUseCase: GetTransactionByYearUseCase,
-    private val getExpenseSumByYearUseCase: GetExpenseSumByYearUseCase,
-    private val getIncomeSumByYearUseCase: GetIncomeSumByYearUseCase,
-    private val getTransactionsByYearAndMonthUseCase: GetTransactionsByYearAndMonthUseCase,
-    private val getExpenseSumByYearMonthUseCase: GetExpenseSumByYearMonthUseCase,
-    private val getIncomeSumByYearMonthUseCase: GetIncomeSumByYearMonthUseCase
+    private val getTransactionsFlowByYearUseCase: GetTransactionsFlowByYearUseCase,
+    private val getExpenseSumFlowByYearUseCase: GetExpenseSumFlowByYearUseCase,
+    private val getIncomeSumFlowByYearUseCase: GetIncomeSumFlowByYearUseCase,
+    private val getTransactionsFlowByYearAndMonthUseCase: GetTransactionsFlowByYearAndMonthUseCase,
+    private val getExpenseSumFlowByYearMonthUseCase: GetExpenseSumFlowByYearMonthUseCase,
+    private val getIncomeSumFlowByYearMonthUseCase: GetIncomeSumFlowByYearMonthUseCase
 ) {
     private val calendar = Calendar.getInstance()
+
+    enum class TimeType { MONTH, YEAR }
+
+    private val _timeType = MutableStateFlow(TimeType.MONTH)
+    val timeType = _timeType.asStateFlow()
+
+    private val _year = MutableStateFlow(Calendar.getInstance().getYear())
+    val year = _year.asStateFlow()
+
+    private val _month = MutableStateFlow(Calendar.getInstance().getMonth())
+    val month = _month.asStateFlow()
 
     private val mapExpensePercent: HashMap<Int, TransactionPercent> = HashMap()
     private val _expensePercentList = MutableStateFlow(listOf<TransactionPercent>())
@@ -74,32 +93,51 @@ class AnalysisHelper(
     private val _balance = MutableStateFlow(BigDecimal(0))
     val balance = _balance.asStateFlow()
 
-    suspend fun updateTransactionListYear(
-        year: Int
-    ) = withContext(Dispatchers.IO) {
-        val listDeferred = async { getTransactionByYearUseCase(year) }
-        val expenseSumDeferred = async { getExpenseSumByYearUseCase(year) }
-        val incomeSumDeferred = async { getIncomeSumByYearUseCase(year) }
-        val list = listDeferred.await()
-        val expenseSum = expenseSumDeferred.await()
-        val incomeSum = incomeSumDeferred.await()
+    private val analysisFlow = combine(_timeType, _year, _month) { timeType, year, month ->
+        when (timeType) {
+            TimeType.MONTH -> getTransactionsFlowByYearAndMonthUseCase(year, month).zip(
+                getExpenseSumFlowByYearMonthUseCase(year, month).zip(
+                    getIncomeSumFlowByYearMonthUseCase(year, month)
+                ) { expenseSum, incomeSum -> expenseSum to incomeSum }
+            ) { transactions, pair ->
+                Triple(transactions, pair.first, pair.second)
+            }
+
+            TimeType.YEAR -> getTransactionsFlowByYearUseCase(year).zip(
+                getExpenseSumFlowByYearUseCase(year)
+                    .zip(getIncomeSumFlowByYearUseCase(year)
+                ) { expenseSum, incomeSum -> expenseSum to incomeSum }
+            ) { transactions, pair ->
+                Triple(transactions, pair.first, pair.second)
+            }
+        }
+    }.flatMapLatest { it }.onEach { (transactions, expenseSum, incomeSum) ->
         analyseTransactionList(
-            list, expenseSum, incomeSum, year, -1, TransactionAnalysisViewModel.TimeType.YEAR
+            transactions, expenseSum, incomeSum,
+            year.value, month.value, timeType.value
         )
+    }.flowOn(Dispatchers.IO)
+
+    private var analysisJob: Job? = null
+
+    internal fun bindCoroutineScope(coroutineScope: CoroutineScope) {
+        analysisJob?.cancel()
+        analysisJob = analysisFlow.launchIn(coroutineScope)
     }
 
-    suspend fun updateTransactionListMonth(
+    internal fun changeTimeType(type: TimeType) {
+        _timeType.value = type
+    }
+
+    internal fun changeYear(year: Int) {
+        _year.value = year
+    }
+
+    internal fun changeTime(
         year: Int, month: Int
-    ) = withContext(Dispatchers.IO) {
-        val listDeferred = async { getTransactionsByYearAndMonthUseCase(year, month) }
-        val expenseSumDeferred = async { getExpenseSumByYearMonthUseCase(year, month) }
-        val incomeSumDeferred = async { getIncomeSumByYearMonthUseCase(year, month) }
-        val list = listDeferred.await()
-        val expenseSum = expenseSumDeferred.await()
-        val incomeSum = incomeSumDeferred.await()
-        analyseTransactionList(
-            list, expenseSum, incomeSum, year, month, TransactionAnalysisViewModel.TimeType.MONTH
-        )
+    ) {
+        _year.value = year
+        _month.value = month
     }
 
     private fun analyseTransactionList(
@@ -108,7 +146,7 @@ class AnalysisHelper(
         incomeSum: Double,
         year: Int,
         month: Int,
-        type: TransactionAnalysisViewModel.TimeType
+        type: TimeType
     ) {
         mapExpensePercent.clear()
         mapIncomePercent.clear()
@@ -119,12 +157,12 @@ class AnalysisHelper(
         cachedTimeBalanceList.clear()
 
         when (type) {
-            TransactionAnalysisViewModel.TimeType.YEAR -> {
+            TimeType.YEAR -> {
                 initTimeListYear(year)
                 dealWithListYear(list)
             }
 
-            TransactionAnalysisViewModel.TimeType.MONTH -> {
+            TimeType.MONTH -> {
                 initTimeListMonth(year, month)
                 dealWithListMonth(list)
             }

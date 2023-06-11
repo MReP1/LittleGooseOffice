@@ -38,7 +38,7 @@ import java.math.BigDecimal
 import java.util.Date
 
 data class TransactionAnalysisContentState(
-    val timeType: TransactionAnalysisViewModel.TimeType = TransactionAnalysisViewModel.TimeType.MONTH,
+    val timeType: AnalysisHelper.TimeType = AnalysisHelper.TimeType.MONTH,
     val percentsState: TransactionAnalysisPercentsState = TransactionAnalysisPercentsState(),
     val timeState: TransactionAnalysisTimeState = TransactionAnalysisTimeState()
 )
@@ -109,7 +109,7 @@ fun TransactionAnalysisContent(
 @Composable
 fun TransactionAnalysisBalanceContent(
     modifier: Modifier,
-    timeType: TransactionAnalysisViewModel.TimeType,
+    timeType: AnalysisHelper.TimeType,
     timeMoneys: List<TimeMoney>,
     transactionBalances: List<TransactionBalance>,
     onNavigateToTransactionExample: (
@@ -178,12 +178,12 @@ fun TransactionAnalysisBalanceContent(
                         ) {
                             Text(
                                 text = when (timeType) {
-                                    TransactionAnalysisViewModel.TimeType.MONTH -> {
+                                    AnalysisHelper.TimeType.MONTH -> {
                                         calendar.time = transactionBalance.time
                                         calendar.getDate().toString()
                                     }
 
-                                    TransactionAnalysisViewModel.TimeType.YEAR -> {
+                                    AnalysisHelper.TimeType.YEAR -> {
                                         calendar.time = transactionBalance.time
                                         calendar.getMonth().toString()
                                     }
@@ -217,7 +217,7 @@ fun TransactionAnalysisBalanceContent(
 @Composable
 fun TransactionAnalysisCommonContent(
     modifier: Modifier,
-    timeType: TransactionAnalysisViewModel.TimeType,
+    timeType: AnalysisHelper.TimeType,
     moneyType: MoneyType,
     timeMoneys: List<TimeMoney>,
     transactionPercents: List<TransactionPercent>,
@@ -289,7 +289,7 @@ fun TransactionAnalysisCommonContent(
 @Composable
 fun TransactionAnalysisLineChart(
     modifier: Modifier,
-    timeType: TransactionAnalysisViewModel.TimeType,
+    timeType: AnalysisHelper.TimeType,
     moneyType: MoneyType,
     timeMoneys: List<TimeMoney>,
     onNavigateToTransactionExample: (
@@ -339,8 +339,8 @@ fun TransactionAnalysisLineChart(
         Text(
             text = currentTimeMoney?.let { timeMoney ->
                 val timeText = when (timeType) {
-                    TransactionAnalysisViewModel.TimeType.MONTH -> timeMoney.time.toChineseMonthDay()
-                    TransactionAnalysisViewModel.TimeType.YEAR -> timeMoney.time.toChineseMonth()
+                    AnalysisHelper.TimeType.MONTH -> timeMoney.time.toChineseMonthDay()
+                    AnalysisHelper.TimeType.YEAR -> timeMoney.time.toChineseMonth()
                 }
                 val typeText = if (timeMoney.money.signum() < 0) {
                     stringResource(id = R.string.expense)
@@ -358,8 +358,8 @@ fun TransactionAnalysisLineChart(
                 .clickable {
                     currentTimeMoney?.let { timeMoney ->
                         val timeTypeTmp = when (timeType) {
-                            TransactionAnalysisViewModel.TimeType.MONTH -> TimeType.DATE
-                            TransactionAnalysisViewModel.TimeType.YEAR -> TimeType.YEAR_MONTH
+                            AnalysisHelper.TimeType.MONTH -> TimeType.DATE
+                            AnalysisHelper.TimeType.YEAR -> TimeType.YEAR_MONTH
                         }
                         onNavigateToTransactionExample(
                             timeMoney.time, timeTypeTmp, moneyType, null

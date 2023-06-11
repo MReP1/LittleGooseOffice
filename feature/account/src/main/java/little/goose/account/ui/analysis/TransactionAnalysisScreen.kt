@@ -76,8 +76,8 @@ fun TransactionAnalysisScreen(
                         .align(Alignment.CenterHorizontally),
                     state = timeSelectorState,
                     timeType = when (bottomBarState.timeType) {
-                        TransactionAnalysisViewModel.TimeType.MONTH -> TimeType.YEAR_MONTH
-                        TransactionAnalysisViewModel.TimeType.YEAR -> TimeType.YEAR
+                        AnalysisHelper.TimeType.MONTH -> TimeType.YEAR_MONTH
+                        AnalysisHelper.TimeType.YEAR -> TimeType.YEAR
                     },
                     isShowConfirm = false
                 )

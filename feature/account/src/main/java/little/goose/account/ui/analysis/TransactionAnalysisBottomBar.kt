@@ -29,12 +29,12 @@ import little.goose.account.ui.component.YearSelector
 import little.goose.account.ui.component.YearSelectorState
 
 data class TransactionAnalysisBottomBarState(
-    val timeType: TransactionAnalysisViewModel.TimeType,
+    val timeType: AnalysisHelper.TimeType,
     val year: Int,
     val month: Int,
     val monthSelectorState: MonthSelectorState,
     val yearSelectorState: YearSelectorState,
-    val onTypeChange: (timeType: TransactionAnalysisViewModel.TimeType) -> Unit
+    val onTypeChange: (timeType: AnalysisHelper.TimeType) -> Unit
 )
 
 @Composable
@@ -57,7 +57,7 @@ fun TransactionAnalysisBottomBar(
                 .fillMaxWidth()
         }
 
-        if (state.timeType == TransactionAnalysisViewModel.TimeType.YEAR) {
+        if (state.timeType == AnalysisHelper.TimeType.YEAR) {
             YearSelector(
                 modifier = selectorModifier,
                 state = state.yearSelectorState,
@@ -82,8 +82,8 @@ fun TransactionAnalysisBottomBar(
             verticalAlignment = Alignment.CenterVertically
         ) {
             NavigationBarItem(
-                selected = state.timeType == TransactionAnalysisViewModel.TimeType.YEAR,
-                onClick = { state.onTypeChange(TransactionAnalysisViewModel.TimeType.YEAR) },
+                selected = state.timeType == AnalysisHelper.TimeType.YEAR,
+                onClick = { state.onTypeChange(AnalysisHelper.TimeType.YEAR) },
                 icon = {
                     Text(
                         text = "${state.year}" + stringResource(id = R.string.year),
@@ -92,11 +92,11 @@ fun TransactionAnalysisBottomBar(
                 }
             )
             NavigationBarItem(
-                selected = state.timeType == TransactionAnalysisViewModel.TimeType.MONTH,
-                onClick = { state.onTypeChange(TransactionAnalysisViewModel.TimeType.MONTH) },
+                selected = state.timeType == AnalysisHelper.TimeType.MONTH,
+                onClick = { state.onTypeChange(AnalysisHelper.TimeType.MONTH) },
                 icon = {
                     Text(
-                        text = if (state.timeType == TransactionAnalysisViewModel.TimeType.MONTH) {
+                        text = if (state.timeType == AnalysisHelper.TimeType.MONTH) {
                             "${state.month}" + stringResource(id = R.string.month)
                         } else stringResource(id = R.string.month),
                         Modifier.padding(6.dp)
@@ -114,7 +114,7 @@ private fun PreviewTransactionAnalysisBottomBar() {
     TransactionAnalysisBottomBar(
         modifier = Modifier.fillMaxSize(),
         state = TransactionAnalysisBottomBarState(
-            TransactionAnalysisViewModel.TimeType.YEAR, 0, 0,
+            AnalysisHelper.TimeType.YEAR, 0, 0,
             MonthSelectorState(0, 0) { _, _ -> },
             YearSelectorState(0) {}
         ) {},
