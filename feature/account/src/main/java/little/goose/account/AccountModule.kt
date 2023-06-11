@@ -8,7 +8,6 @@ import dagger.hilt.android.components.ViewModelComponent
 import dagger.hilt.android.scopes.ViewModelScoped
 import dagger.hilt.components.SingletonComponent
 import little.goose.account.logic.AccountRepository
-import little.goose.account.logic.DeleteTransactionUseCase
 import little.goose.account.logic.DeleteTransactionsUseCase
 import little.goose.account.logic.GetAllTransactionExpenseSumFlowUseCase
 import little.goose.account.logic.GetAllTransactionFlowUseCase
@@ -97,14 +96,6 @@ class AccountViewModelModule {
         accountRepository: AccountRepository
     ): UpdateTransactionUseCase {
         return UpdateTransactionUseCase(accountRepository)
-    }
-
-    @Provides
-    @ViewModelScoped
-    fun provideDeleteTransactionUseCase(
-        accountRepository: AccountRepository
-    ): DeleteTransactionUseCase {
-        return DeleteTransactionUseCase(accountRepository)
     }
 
     @Provides

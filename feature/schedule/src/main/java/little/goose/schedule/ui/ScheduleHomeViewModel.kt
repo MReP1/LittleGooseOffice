@@ -3,22 +3,17 @@ package little.goose.schedule.ui
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import little.goose.schedule.data.entities.Schedule
-import little.goose.schedule.logic.DeleteScheduleUseCase
 import little.goose.schedule.logic.DeleteSchedulesUseCase
 import little.goose.schedule.logic.GetAllScheduleFlowUseCase
-import little.goose.schedule.logic.InsertScheduleUseCase
 import little.goose.schedule.logic.UpdateScheduleUseCase
 import javax.inject.Inject
 
 @HiltViewModel
 class ScheduleHomeViewModel @Inject constructor(
-    private val insertScheduleUseCase: InsertScheduleUseCase,
     private val updateScheduleUseCase: UpdateScheduleUseCase,
-    private val deleteScheduleUseCase: DeleteScheduleUseCase,
     private val deleteSchedulesUseCase: DeleteSchedulesUseCase,
     getAllScheduleFlow: GetAllScheduleFlowUseCase
 ) : ViewModel() {
@@ -64,28 +59,20 @@ class ScheduleHomeViewModel @Inject constructor(
         )
     )
 
-    fun addSchedule(schedule: Schedule) {
-        viewModelScope.launch(Dispatchers.IO) {
-            insertScheduleUseCase(schedule)
-        }
-    }
-
-    fun deleteSchedule(schedule: Schedule) {
-        viewModelScope.launch {
-            deleteScheduleUseCase(schedule)
-            _event.emit(Event.DeleteSchedules(listOf(schedule)))
-        }
+    init {
+        deleteSchedulesUseCase.deleteSchedulesEvent.onEach {
+            _event.emit(Event.DeleteSchedules(it))
+        }.launchIn(viewModelScope)
     }
 
     private fun deleteSchedules(schedules: List<Schedule>) {
-        viewModelScope.launch(Dispatchers.IO) {
+        viewModelScope.launch {
             deleteSchedulesUseCase(schedules)
-            _event.emit(Event.DeleteSchedules(schedules))
         }
     }
 
-    fun updateSchedule(schedule: Schedule) {
-        viewModelScope.launch(Dispatchers.IO) {
+    private fun updateSchedule(schedule: Schedule) {
+        viewModelScope.launch {
             updateScheduleUseCase(schedule)
         }
     }

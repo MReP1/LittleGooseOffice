@@ -31,14 +31,6 @@ class UpdateTransactionUseCase(
     }
 }
 
-class DeleteTransactionUseCase(
-    private val accountRepository: AccountRepository
-) {
-    suspend operator fun invoke(transaction: Transaction) {
-        accountRepository.deleteTransaction(transaction)
-    }
-}
-
 class DeleteTransactionsUseCase(
     private val accountRepository: AccountRepository
 ) {
@@ -46,7 +38,11 @@ class DeleteTransactionsUseCase(
     val deleteTransactionEvent = _deleteTransactionEvent.asSharedFlow()
 
     suspend operator fun invoke(transactions: List<Transaction>) {
-        accountRepository.deleteTransactions(transactions)
+        if (transactions.size == 1) {
+            accountRepository.deleteTransaction(transactions[0])
+        } else {
+            accountRepository.deleteTransactions(transactions)
+        }
         _deleteTransactionEvent.emit(transactions)
     }
 }

@@ -36,7 +36,6 @@ sealed interface SearchScheduleState : SearchState {
 
     data class Success(
         val data: ScheduleColumnState,
-        val deleteSchedule: (Schedule) -> Unit,
         val addSchedule: (Schedule) -> Unit,
         val modifySchedule: (Schedule) -> Unit,
         override val search: (String) -> Unit
@@ -147,7 +146,6 @@ private fun PreviewSearchScheduleScreen() = AccountTheme {
             ),
             addSchedule = {},
             modifySchedule = {},
-            deleteSchedule = {},
             search = {}
         ),
         snackbarHostState = SnackbarHostState(),

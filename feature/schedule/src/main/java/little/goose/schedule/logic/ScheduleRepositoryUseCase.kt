@@ -1,6 +1,8 @@
 package little.goose.schedule.logic
 
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import little.goose.schedule.data.entities.Schedule
 
 class InsertScheduleUseCase(
@@ -27,19 +29,19 @@ class UpdateScheduleUseCase(
     }
 }
 
-class DeleteScheduleUseCase(
-    private val scheduleRepository: ScheduleRepository
-) {
-    suspend operator fun invoke(schedule: Schedule) {
-        return scheduleRepository.deleteSchedule(schedule)
-    }
-}
-
 class DeleteSchedulesUseCase(
     private val scheduleRepository: ScheduleRepository
 ) {
+    private val _deleteSchedulesEvent = MutableSharedFlow<List<Schedule>>()
+    val deleteSchedulesEvent = _deleteSchedulesEvent.asSharedFlow()
+
     suspend operator fun invoke(schedules: List<Schedule>) {
-        return scheduleRepository.deleteSchedules(schedules)
+        if (schedules.size == 1) {
+            scheduleRepository.deleteSchedule(schedules[0])
+        } else {
+            scheduleRepository.deleteSchedules(schedules)
+        }
+        _deleteSchedulesEvent.emit(schedules)
     }
 }
 

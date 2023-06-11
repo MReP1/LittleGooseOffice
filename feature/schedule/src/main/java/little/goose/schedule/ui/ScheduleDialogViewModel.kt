@@ -11,7 +11,7 @@ import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import little.goose.schedule.data.entities.Schedule
-import little.goose.schedule.logic.DeleteScheduleUseCase
+import little.goose.schedule.logic.DeleteSchedulesUseCase
 import little.goose.schedule.logic.GetScheduleByIdFlowUseCase
 import little.goose.schedule.logic.InsertScheduleUseCase
 import little.goose.schedule.logic.UpdateScheduleUseCase
@@ -22,7 +22,7 @@ import javax.inject.Inject
 class ScheduleDialogViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     getScheduleByIdFlowUseCase: GetScheduleByIdFlowUseCase,
-    private val deleteScheduleUseCase: DeleteScheduleUseCase,
+    private val deleteSchedulesUseCase: DeleteSchedulesUseCase,
     private val insertScheduleUseCase: InsertScheduleUseCase,
     private val updateScheduleUseCase: UpdateScheduleUseCase
 ) : ViewModel() {
@@ -41,7 +41,7 @@ class ScheduleDialogViewModel @Inject constructor(
     fun deleteSchedule() {
         val schedule = _schedule.value.takeIf { it.id != null } ?: return
         viewModelScope.launch(NonCancellable) {
-            deleteScheduleUseCase(schedule)
+            deleteSchedulesUseCase(listOf(schedule))
         }
     }
 

@@ -10,9 +10,9 @@ import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import little.goose.schedule.data.entities.Schedule
-import little.goose.schedule.logic.DeleteScheduleUseCase
 import little.goose.schedule.logic.DeleteSchedulesUseCase
 import little.goose.schedule.logic.InsertScheduleUseCase
 import little.goose.schedule.logic.SearchScheduleByTextFlowUseCase
@@ -24,7 +24,6 @@ import javax.inject.Inject
 class SearchScheduleViewModel @Inject constructor(
     private val insertScheduleUseCase: InsertScheduleUseCase,
     private val updateScheduleUseCase: UpdateScheduleUseCase,
-    private val deleteScheduleUseCase: DeleteScheduleUseCase,
     private val deleteSchedulesUseCase: DeleteSchedulesUseCase,
     private val searchScheduleByTextFlowUseCase: SearchScheduleByTextFlowUseCase
 ) : ViewModel() {
@@ -40,6 +39,12 @@ class SearchScheduleViewModel @Inject constructor(
     private var searchingJob: Job? = null
 
     private val multiSelectedSchedules = MutableStateFlow(emptySet<Schedule>())
+
+    init {
+        deleteSchedulesUseCase.deleteSchedulesEvent.onEach {
+            _searchNoteEvent.emit(SearchScheduleEvent.DeleteSchedules(it))
+        }.launchIn(viewModelScope)
+    }
 
     fun search(keyword: String) {
         if (keyword.isBlank()) {
@@ -66,7 +71,6 @@ class SearchScheduleViewModel @Inject constructor(
                         onCheckedChange = ::checkSchedule,
                         cancelMultiSelecting = ::cancelSchedulesMultiSelecting
                     ),
-                    deleteSchedule = ::deleteSchedule,
                     addSchedule = ::addSchedule,
                     modifySchedule = ::updateSchedule,
                     search = ::search
@@ -88,13 +92,6 @@ class SearchScheduleViewModel @Inject constructor(
         }
     }
 
-    private fun deleteSchedule(schedule: Schedule) {
-        viewModelScope.launch {
-            deleteScheduleUseCase(schedule)
-            _searchNoteEvent.emit(SearchScheduleEvent.DeleteSchedules(listOf(schedule)))
-        }
-    }
-
     private fun addSchedule(schedule: Schedule) {
         viewModelScope.launch {
             insertScheduleUseCase(schedule)
@@ -110,7 +107,6 @@ class SearchScheduleViewModel @Inject constructor(
     private fun deleteSchedules(schedules: List<Schedule>) {
         viewModelScope.launch {
             deleteSchedulesUseCase(schedules)
-            _searchNoteEvent.emit(SearchScheduleEvent.DeleteSchedules(schedules))
         }
     }
 
