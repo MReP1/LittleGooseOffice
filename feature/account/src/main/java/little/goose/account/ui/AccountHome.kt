@@ -4,14 +4,13 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
-import androidx.hilt.navigation.compose.hiltViewModel
 import little.goose.account.data.entities.Transaction
-import little.goose.account.ui.component.*
-import little.goose.account.ui.transaction.TransactionDialog
-import little.goose.account.ui.transaction.rememberTransactionDialogState
+import little.goose.account.ui.component.AccountTitle
+import little.goose.account.ui.component.AccountTitleState
+import little.goose.account.ui.component.MonthSelectorState
+import little.goose.account.ui.component.TransactionColumn
+import little.goose.account.ui.component.TransactionColumnState
 
 @Composable
 fun AccountHome(
@@ -19,23 +18,16 @@ fun AccountHome(
     accountTitleState: AccountTitleState,
     monthSelectorState: MonthSelectorState,
     transactionColumnState: TransactionColumnState,
-    onNavigateToTransaction: (Long) -> Unit,
-    deleteTransaction: (Transaction) -> Unit
+    onNavigateToTransactionDialog: (Long) -> Unit,
 ) {
-    val transactionDialogState = rememberTransactionDialogState()
-
     AccountScreen(
         modifier = modifier,
         transactionColumnState = transactionColumnState,
         accountTitleState = accountTitleState,
-        onTransactionClick = transactionDialogState::show,
+        onTransactionClick = { transaction ->
+            transaction.id?.run(onNavigateToTransactionDialog)
+        },
         monthSelectorState = monthSelectorState,
-    )
-
-    TransactionDialog(
-        state = transactionDialogState,
-        onNavigateToTransaction = onNavigateToTransaction,
-        onDelete = deleteTransaction
     )
 }
 

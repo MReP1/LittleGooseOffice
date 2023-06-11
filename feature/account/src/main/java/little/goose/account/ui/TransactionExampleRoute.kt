@@ -36,8 +36,6 @@ import little.goose.account.data.constants.MoneyType
 import little.goose.account.data.entities.Transaction
 import little.goose.account.ui.component.TransactionColumn
 import little.goose.account.ui.component.TransactionColumnState
-import little.goose.account.ui.transaction.TransactionDialog
-import little.goose.account.ui.transaction.rememberTransactionDialogState
 import little.goose.common.constants.KEY_CONTENT
 import little.goose.common.constants.KEY_MONEY_TYPE
 import little.goose.common.constants.KEY_TIME
@@ -81,7 +79,7 @@ fun NavController.navigateToTransactionExample(
 }
 
 fun NavGraphBuilder.transactionExampleRoute(
-    onNavigateToTransaction: (id: Long?, time: Date?) -> Unit,
+    onNavigateToTransactionDialog: (transactionId: Long) -> Unit,
     onBack: () -> Unit
 ) = composable(
     route = ROUTE_TRANSACTION_EXAMPLE +
@@ -109,7 +107,7 @@ fun NavGraphBuilder.transactionExampleRoute(
 ) {
     TransactionRoute(
         modifier = Modifier.fillMaxSize(),
-        onNavigateToTransaction = onNavigateToTransaction,
+        onNavigateToTransactionDialog = onNavigateToTransactionDialog,
         onBack = onBack
     )
 }
@@ -117,30 +115,23 @@ fun NavGraphBuilder.transactionExampleRoute(
 @Composable
 private fun TransactionRoute(
     modifier: Modifier,
-    onNavigateToTransaction: (id: Long?, time: Date?) -> Unit,
+    onNavigateToTransactionDialog: (transactionId: Long) -> Unit,
     onBack: () -> Unit
 ) {
     val viewModel = hiltViewModel<TransactionExampleViewModel>()
     val context = LocalContext.current
-    val transactionDialogState = rememberTransactionDialogState()
     val snackbarHostState = remember { SnackbarHostState() }
     val transactionColumnState by viewModel.transactionColumnState.collectAsState()
 
     TransactionTimeScreen(
         modifier = modifier.fillMaxSize(),
         title = viewModel.title,
-        onTransactionClick = transactionDialogState::show,
+        onTransactionClick = { transaction ->
+            transaction.id?.run(onNavigateToTransactionDialog)
+        },
         snackbarHostState = snackbarHostState,
         transactionColumnState = transactionColumnState,
         onBack = onBack
-    )
-
-    TransactionDialog(
-        state = transactionDialogState,
-        onNavigateToTransaction = {
-            onNavigateToTransaction(it, null)
-        },
-        onDelete = viewModel::deleteTransaction
     )
 
     if (transactionColumnState.isMultiSelecting) {

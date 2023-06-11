@@ -13,36 +13,23 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import little.goose.account.data.entities.Transaction
 import little.goose.account.ui.component.TransactionColumn
 import little.goose.account.ui.component.TransactionColumnState
-import little.goose.account.ui.transaction.TransactionDialog
-import little.goose.account.ui.transaction.rememberTransactionDialogState
 import little.goose.design.system.component.MovableActionButton
 import little.goose.design.system.component.MovableActionButtonState
-import java.util.Date
 
 @Composable
 internal fun SearchTransactionContent(
     modifier: Modifier = Modifier,
     transactionColumnState: TransactionColumnState,
-    onNavigateToTransaction: (id: Long) -> Unit,
-    onDeleteTransaction: (Transaction) -> Unit
+    onNavigateToTransactionDialog: (transactionId: Long) -> Unit
 ) {
-    val transactionDialogState = rememberTransactionDialogState()
-
-    TransactionDialog(
-        state = transactionDialogState,
-        onNavigateToTransaction = onNavigateToTransaction,
-        onDelete = onDeleteTransaction
-    )
-
     if (transactionColumnState.transactions.isNotEmpty()) {
         TransactionColumn(
             modifier = modifier.fillMaxSize(),
             state = transactionColumnState,
-            onTransactionClick = {
-                transactionDialogState.show(it)
+            onTransactionClick = { transaction ->
+                transaction.id?.run(onNavigateToTransactionDialog)
             }
         )
     }

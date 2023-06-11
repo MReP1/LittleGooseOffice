@@ -12,6 +12,7 @@ import little.goose.account.accountGraph
 import little.goose.account.ui.analysis.navigateToAccountAnalysis
 import little.goose.account.ui.navigateToTransactionExample
 import little.goose.account.ui.transaction.navigateToTransaction
+import little.goose.account.ui.transaction.navigateToTransactionDialog
 import little.goose.home.ROUTE_HOME
 import little.goose.home.homeRoute
 import little.goose.memorial.memorialGraph
@@ -54,6 +55,7 @@ internal fun MainScreen(
                     navController.navigateToTransaction(time)
                 }
             },
+            onNavigateToTransactionDialog = navController::navigateToTransactionDialog,
             onNavigateToMemorialAdd = {
                 navController.navigateToMemorial(MemorialScreenType.Add)
             },
@@ -71,13 +73,14 @@ internal fun MainScreen(
                 navController.navigateToNote(NoteNavigatingType.Edit(noteId))
             },
             onNavigateToMemorialDialog = navController::navigateToMemorialDialog,
-            onNavigateToTransaction = navController::navigateToTransaction,
+            onNavigateToTransactionDialog = navController::navigateToTransactionDialog,
             onNavigateToScheduleDialog = navController::navigateToScheduleDialog,
             onBack = navController::navigateUp
         )
 
         accountGraph(
             onNavigateToTransactionExample = navController::navigateToTransactionExample,
+            onNavigateToTransactionDialog = navController::navigateToTransactionDialog,
             onNavigateToTransaction = { id, time ->
                 if (id != null) {
                     navController.navigateToTransaction(id)

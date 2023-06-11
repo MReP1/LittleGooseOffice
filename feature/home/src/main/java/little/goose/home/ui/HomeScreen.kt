@@ -44,8 +44,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import little.goose.account.ui.AccountHome
 import little.goose.account.ui.AccountHomeViewModel
-import little.goose.account.ui.transaction.TransactionDialog
-import little.goose.account.ui.transaction.rememberTransactionDialogState
 import little.goose.design.system.component.MovableActionButton
 import little.goose.design.system.component.MovableActionButtonState
 import little.goose.design.system.component.dialog.DeleteDialog
@@ -73,6 +71,7 @@ fun HomeScreen(
     pagerState: PagerState,
     onNavigateToMemorialAdd: () -> Unit,
     onNavigateToMemorialDialog: (memorialId: Long) -> Unit,
+    onNavigateToTransactionDialog: (transactionId: Long) -> Unit,
     onNavigateToTransaction: (transactionId: Long?, date: Date?) -> Unit,
     onNavigateToNote: (noteId: Long?) -> Unit,
     onNavigateToSearch: (SearchType) -> Unit,
@@ -95,7 +94,6 @@ fun HomeScreen(
     val indexTopBarState by indexViewModel.indexTopBarState.collectAsState()
 
     val buttonState = remember { MovableActionButtonState() }
-    val transactionDialogState = rememberTransactionDialogState()
     val deleteDialogState = remember { DeleteDialogState() }
 
     val snackbarHostState = remember { SnackbarHostState() }
@@ -216,11 +214,15 @@ fun HomeScreen(
                             IndexHome(
                                 modifier = Modifier.fillMaxSize(),
                                 state = indexScreenState,
-                                onTransactionAdd = {
-                                    onNavigateToTransaction(null, it)
+                                onTransactionAdd = { time ->
+                                    onNavigateToTransaction(null, time)
                                 },
-                                onScheduleClick = { onNavigateToScheduleDialog(it.id) },
-                                onTransactionClick = transactionDialogState::show,
+                                onScheduleClick = { schedule ->
+                                    onNavigateToScheduleDialog(schedule.id)
+                                },
+                                onTransactionClick = { transaction ->
+                                    transaction.id?.run(onNavigateToTransactionDialog)
+                                },
                                 onMemorialClick = { memorial ->
                                     memorial.id?.let(onNavigateToMemorialDialog)
                                 }
@@ -243,10 +245,7 @@ fun HomeScreen(
                                 transactionColumnState = transactionColumnState,
                                 accountTitleState = accountTitleState,
                                 monthSelectorState = monthSelectorState,
-                                onNavigateToTransaction = {
-                                    onNavigateToTransaction(it, null)
-                                },
-                                deleteTransaction = accountViewModel::deleteTransaction
+                                onNavigateToTransactionDialog = onNavigateToTransactionDialog,
                             )
                         }
 
@@ -500,12 +499,4 @@ fun HomeScreen(
     )
 
     DeleteDialog(state = deleteDialogState)
-
-    TransactionDialog(
-        state = transactionDialogState,
-        onNavigateToTransaction = {
-            onNavigateToTransaction(it, null)
-        },
-        onDelete = accountViewModel::deleteTransaction
-    )
 }
