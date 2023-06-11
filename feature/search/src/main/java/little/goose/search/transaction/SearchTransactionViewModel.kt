@@ -11,6 +11,7 @@ import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import little.goose.account.data.entities.Transaction
 import little.goose.account.logic.DeleteTransactionsUseCase
@@ -37,6 +38,12 @@ class SearchTransactionViewModel @Inject constructor(
     val searchTransactionEvent = _searchTransactionEvent.asSharedFlow()
 
     private var searchingJob: Job? = null
+
+    init {
+        deleteTransactionsUseCase.deleteTransactionEvent.onEach {
+            _searchTransactionEvent.emit(SearchTransactionEvent.DeleteTransactions(it))
+        }.launchIn(viewModelScope)
+    }
 
     fun search(keyword: String) {
         if (keyword.isBlank()) {

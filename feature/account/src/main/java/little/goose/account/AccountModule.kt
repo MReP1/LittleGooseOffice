@@ -41,6 +41,14 @@ class AccountModule {
         return AccountRepository(application)
     }
 
+    @Provides
+    @Singleton
+    fun provideDeleteTransactionsUseCase(
+        accountRepository: AccountRepository
+    ): DeleteTransactionsUseCase {
+        return DeleteTransactionsUseCase(accountRepository)
+    }
+
 }
 
 @Module
@@ -97,14 +105,6 @@ class AccountViewModelModule {
         accountRepository: AccountRepository
     ): DeleteTransactionUseCase {
         return DeleteTransactionUseCase(accountRepository)
-    }
-
-    @Provides
-    @ViewModelScoped
-    fun provideDeleteTransactionsUseCase(
-        accountRepository: AccountRepository
-    ): DeleteTransactionsUseCase {
-        return DeleteTransactionsUseCase(accountRepository)
     }
 
     @Provides

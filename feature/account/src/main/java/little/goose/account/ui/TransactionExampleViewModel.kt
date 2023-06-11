@@ -11,12 +11,12 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import little.goose.account.data.constants.MoneyType
 import little.goose.account.data.entities.Transaction
-import little.goose.account.logic.DeleteTransactionUseCase
 import little.goose.account.logic.DeleteTransactionsUseCase
 import little.goose.account.logic.GetAllTransactionFlowUseCase
 import little.goose.account.logic.GetTransactionByDateFlowUseCase
@@ -44,8 +44,7 @@ class TransactionExampleViewModel @Inject constructor(
     private val getTransactionByYearFlowWithKeyContentUseCase: GetTransactionByYearFlowWithKeyContentUseCase,
     private val getTransactionByYearMonthFlowWithKeyContentUseCase: GetTransactionByYearMonthFlowWithKeyContentUseCase,
     private val getAllTransactionFlowUseCase: GetAllTransactionFlowUseCase,
-    private val deleteTransactionUseCase: DeleteTransactionUseCase,
-    private val deleteTransactionsUseCase: DeleteTransactionsUseCase
+    private val deleteTransactionsUseCase: DeleteTransactionsUseCase,
 ) : AndroidViewModel(application) {
 
     sealed class Event {
@@ -106,6 +105,12 @@ class TransactionExampleViewModel @Inject constructor(
         )
     )
 
+    init {
+        deleteTransactionsUseCase.deleteTransactionEvent
+            .onEach { _event.emit(Event.DeleteTransactions(it)) }
+            .launchIn(viewModelScope)
+    }
+
     private fun selectedTransaction(transaction: Transaction, selected: Boolean) {
         multiSelectedTransactions.value = multiSelectedTransactions.value.toMutableSet().apply {
             if (selected) add(transaction) else remove(transaction)
@@ -150,17 +155,9 @@ class TransactionExampleViewModel @Inject constructor(
         }
     }
 
-    fun deleteTransaction(transaction: Transaction) {
-        viewModelScope.launch {
-            deleteTransactionUseCase(transaction)
-            _event.emit(Event.DeleteTransactions(listOf(transaction)))
-        }
-    }
-
     private fun deleteTransactions(transactions: List<Transaction>) {
         viewModelScope.launch {
             deleteTransactionsUseCase(transactions)
-            _event.emit(Event.DeleteTransactions(transactions))
         }
     }
 

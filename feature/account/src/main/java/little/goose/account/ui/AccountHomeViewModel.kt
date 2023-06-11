@@ -12,13 +12,13 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOn
+import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import little.goose.account.data.constants.AccountConstant
 import little.goose.account.data.entities.Transaction
-import little.goose.account.logic.DeleteTransactionUseCase
 import little.goose.account.logic.DeleteTransactionsUseCase
 import little.goose.account.logic.GetAllTransactionExpenseSumFlowUseCase
 import little.goose.account.logic.GetAllTransactionIncomeSumFlowUseCase
@@ -38,8 +38,7 @@ class AccountHomeViewModel @Inject constructor(
     getAllTransactionExpenseSumFlowUseCase: GetAllTransactionExpenseSumFlowUseCase,
     getAllTransactionIncomeSumFlowUseCase: GetAllTransactionIncomeSumFlowUseCase,
     private val getTransactionByYearMonthFlowUseCase: GetTransactionByYearMonthFlowUseCase,
-    private val deleteTransactionUseCase: DeleteTransactionUseCase,
-    private val deleteTransactionsUseCase: DeleteTransactionsUseCase
+    private val deleteTransactionsUseCase: DeleteTransactionsUseCase,
 ) : ViewModel() {
 
     sealed class Event {
@@ -174,22 +173,20 @@ class AccountHomeViewModel @Inject constructor(
         MonthSelectorState(year.value, month.value, ::changeTime)
     )
 
+    init {
+        deleteTransactionsUseCase.deleteTransactionEvent
+            .onEach { _event.emit(Event.DeleteTransactions(it)) }
+            .launchIn(viewModelScope)
+    }
+
     private fun changeTime(year: Int, month: Int) {
         _year.value = year
         _month.value = month
     }
 
-    fun deleteTransaction(transaction: Transaction) {
-        viewModelScope.launch {
-            deleteTransactionUseCase(transaction)
-            _event.emit(Event.DeleteTransactions(listOf(transaction)))
-        }
-    }
-
     private fun deleteTransactions(transactions: List<Transaction>) {
         viewModelScope.launch {
             deleteTransactionsUseCase(transactions)
-            _event.emit(Event.DeleteTransactions(transactions))
         }
     }
 

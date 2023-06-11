@@ -17,7 +17,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.hilt.navigation.compose.hiltViewModel
-import kotlinx.coroutines.flow.collectLatest
 import little.goose.account.data.entities.Transaction
 import little.goose.account.ui.component.TransactionColumnState
 import little.goose.search.R
@@ -57,7 +56,7 @@ fun SearchTransactionRoute(
     val snackbarHostState = remember { SnackbarHostState() }
 
     LaunchedEffect(viewModel.searchTransactionEvent) {
-        viewModel.searchTransactionEvent.collectLatest { event ->
+        viewModel.searchTransactionEvent.collect { event ->
             when (event) {
                 is SearchTransactionEvent.DeleteTransactions -> {
                     snackbarHostState.showSnackbar(context.getString(R.string.deleted))

@@ -8,6 +8,7 @@ import little.goose.account.data.constants.AccountConstant.EXPENSE
 import little.goose.account.data.constants.AccountConstant.INCOME
 import little.goose.account.data.constants.MoneyType
 import little.goose.account.data.constants.TABLE_TRANSACTION
+import little.goose.account.data.database.AccountDatabase
 import little.goose.account.data.entities.Transaction
 import little.goose.common.utils.*
 import java.math.BigDecimal
@@ -17,9 +18,9 @@ class AccountRepository(
     context: Context
 ) {
 
-    private val database: little.goose.account.data.database.AccountDatabase = Room.databaseBuilder(
+    private val database: AccountDatabase = Room.databaseBuilder(
         context,
-        little.goose.account.data.database.AccountDatabase::class.java,
+        AccountDatabase::class.java,
         TABLE_TRANSACTION
     ).build()
     private val accountDao = database.accountDao()
@@ -34,7 +35,6 @@ class AccountRepository(
 
     suspend fun updateTransaction(transaction: Transaction) =
         accountDao.updateTransaction(transaction)
-
 
     suspend fun deleteTransaction(transaction: Transaction) =
         accountDao.deleteTransaction(transaction)

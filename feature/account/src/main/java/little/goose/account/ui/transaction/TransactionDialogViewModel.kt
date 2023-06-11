@@ -9,7 +9,7 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import little.goose.account.data.entities.Transaction
-import little.goose.account.logic.DeleteTransactionUseCase
+import little.goose.account.logic.DeleteTransactionsUseCase
 import little.goose.account.logic.GetTransactionByIdFlowUseCase
 import javax.inject.Inject
 
@@ -17,7 +17,7 @@ import javax.inject.Inject
 class TransactionDialogViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     getTransactionByIdFlowUseCase: GetTransactionByIdFlowUseCase,
-    private val deleteTransactionUseCase: DeleteTransactionUseCase
+    private val deleteTransactionsUseCase: DeleteTransactionsUseCase
 ) : ViewModel() {
 
     val transaction = getTransactionByIdFlowUseCase(
@@ -30,7 +30,7 @@ class TransactionDialogViewModel @Inject constructor(
 
     fun deleteTransaction(transaction: Transaction) {
         viewModelScope.launch(NonCancellable) {
-            deleteTransactionUseCase(transaction)
+            deleteTransactionsUseCase(listOf(transaction))
         }
     }
 
