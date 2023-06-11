@@ -13,10 +13,14 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.tooling.preview.Preview
 import little.goose.account.ui.component.TransactionColumn
 import little.goose.account.ui.component.TransactionColumnState
 import little.goose.design.system.component.MovableActionButton
 import little.goose.design.system.component.MovableActionButtonState
+import little.goose.design.system.component.dialog.DeleteDialog
+import little.goose.design.system.component.dialog.DeleteDialogState
+import little.goose.design.system.theme.AccountTheme
 
 @Composable
 internal fun SearchTransactionContent(
@@ -34,6 +38,8 @@ internal fun SearchTransactionContent(
         )
     }
 
+    val deleteDialogState = remember { DeleteDialogState() }
+
     if (transactionColumnState.isMultiSelecting) {
         val buttonState = remember { MovableActionButtonState() }
         LaunchedEffect(buttonState) { buttonState.expend() }
@@ -49,9 +55,11 @@ internal fun SearchTransactionContent(
                     Icon(imageVector = Icons.Rounded.Delete, contentDescription = "Delete")
                 },
                 onMainButtonClick = {
-                    transactionColumnState.deleteTransactions(
-                        transactionColumnState.multiSelectedTransactions.toList()
-                    )
+                    deleteDialogState.show(onConfirm = {
+                        transactionColumnState.deleteTransactions(
+                            transactionColumnState.multiSelectedTransactions.toList()
+                        )
+                    })
                 },
                 topSubButtonContent = {
                     Icon(imageVector = Icons.Rounded.DoneAll, contentDescription = "SelectAll")
@@ -68,4 +76,15 @@ internal fun SearchTransactionContent(
             )
         }
     }
+
+    DeleteDialog(state = deleteDialogState)
+}
+
+@Preview
+@Composable
+private fun PreviewSearchTransactionContent() = AccountTheme {
+    SearchTransactionContent(
+        modifier = Modifier.fillMaxSize(),
+        transactionColumnState = TransactionColumnState(),
+        onNavigateToTransactionDialog = {})
 }

@@ -16,6 +16,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import little.goose.design.system.component.MovableActionButton
 import little.goose.design.system.component.MovableActionButtonState
+import little.goose.design.system.component.dialog.DeleteDialog
+import little.goose.design.system.component.dialog.DeleteDialogState
 import little.goose.design.system.theme.AccountTheme
 import little.goose.schedule.data.entities.Schedule
 import little.goose.schedule.ui.ScheduleColumn
@@ -37,6 +39,8 @@ internal fun SearchScheduleContent(
         )
     }
 
+    val deleteDialogState = remember { DeleteDialogState() }
+
     if (scheduleColumnState.isMultiSelecting) {
         val buttonState = remember { MovableActionButtonState() }
         LaunchedEffect(buttonState) { buttonState.expend() }
@@ -52,9 +56,11 @@ internal fun SearchScheduleContent(
                     Icon(imageVector = Icons.Rounded.Delete, contentDescription = "Delete")
                 },
                 onMainButtonClick = {
-                    scheduleColumnState.deleteSchedules(
-                        scheduleColumnState.multiSelectedSchedules.toList()
-                    )
+                    deleteDialogState.show(onConfirm = {
+                        scheduleColumnState.deleteSchedules(
+                            scheduleColumnState.multiSelectedSchedules.toList()
+                        )
+                    })
                 },
                 topSubButtonContent = {
                     Icon(imageVector = Icons.Rounded.DoneAll, contentDescription = "SelectAll")
@@ -71,6 +77,8 @@ internal fun SearchScheduleContent(
             )
         }
     }
+
+    DeleteDialog(state = deleteDialogState)
 }
 
 @Preview

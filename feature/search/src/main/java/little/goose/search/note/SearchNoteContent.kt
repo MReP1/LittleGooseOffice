@@ -16,6 +16,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import little.goose.design.system.component.MovableActionButton
 import little.goose.design.system.component.MovableActionButtonState
+import little.goose.design.system.component.dialog.DeleteDialog
+import little.goose.design.system.component.dialog.DeleteDialogState
 import little.goose.design.system.theme.AccountTheme
 import little.goose.note.data.entities.Note
 import little.goose.note.data.entities.NoteContentBlock
@@ -38,6 +40,8 @@ internal fun SearchNoteContent(
         )
     }
 
+    val deleteDialogState = remember { DeleteDialogState() }
+
     if (noteColumnState.isMultiSelecting) {
         val buttonState = remember { MovableActionButtonState() }
         LaunchedEffect(buttonState) { buttonState.expend() }
@@ -53,7 +57,9 @@ internal fun SearchNoteContent(
                     Icon(imageVector = Icons.Rounded.Delete, contentDescription = "Delete")
                 },
                 onMainButtonClick = {
-                    noteColumnState.deleteNotes(noteColumnState.multiSelectedNotes.toList())
+                    deleteDialogState.show(onConfirm = {
+                        noteColumnState.deleteNotes(noteColumnState.multiSelectedNotes.toList())
+                    })
                 },
                 topSubButtonContent = {
                     Icon(imageVector = Icons.Rounded.DoneAll, contentDescription = "Select All")
@@ -70,6 +76,8 @@ internal fun SearchNoteContent(
             )
         }
     }
+
+    DeleteDialog(state = deleteDialogState)
 }
 
 @Preview
@@ -78,6 +86,8 @@ private fun PreviewSearchNoteContent() = AccountTheme {
     SearchNoteContent(
         noteColumnState = NoteColumnState(
             noteWithContents = mapOf(
+                Note() to listOf(NoteContentBlock(content = "Preview")),
+                Note() to listOf(NoteContentBlock(content = "Preview")),
                 Note() to listOf(NoteContentBlock(content = "Preview"))
             ),
             isMultiSelecting = false,

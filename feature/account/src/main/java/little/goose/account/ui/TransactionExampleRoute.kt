@@ -43,6 +43,8 @@ import little.goose.common.constants.KEY_TIME_TYPE
 import little.goose.common.utils.TimeType
 import little.goose.design.system.component.MovableActionButton
 import little.goose.design.system.component.MovableActionButtonState
+import little.goose.design.system.component.dialog.DeleteDialog
+import little.goose.design.system.component.dialog.DeleteDialogState
 import java.util.Date
 
 const val ROUTE_TRANSACTION_EXAMPLE = "transaction_example"
@@ -134,6 +136,8 @@ private fun TransactionRoute(
         onBack = onBack
     )
 
+    val deleteDialogState = remember { DeleteDialogState() }
+
     if (transactionColumnState.isMultiSelecting) {
         val buttonState = remember { MovableActionButtonState() }
         LaunchedEffect(buttonState) { buttonState.expend() }
@@ -152,9 +156,11 @@ private fun TransactionRoute(
                     )
                 },
                 onMainButtonClick = {
-                    transactionColumnState.deleteTransactions(
-                        transactionColumnState.multiSelectedTransactions.toList()
-                    )
+                    deleteDialogState.show(onConfirm = {
+                        transactionColumnState.deleteTransactions(
+                            transactionColumnState.multiSelectedTransactions.toList()
+                        )
+                    })
                 },
                 topSubButtonContent = {
                     Icon(
@@ -177,6 +183,8 @@ private fun TransactionRoute(
             )
         }
     }
+
+    DeleteDialog(state = deleteDialogState)
 
     LaunchedEffect(viewModel.event) {
         viewModel.event.collect { event ->

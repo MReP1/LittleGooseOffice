@@ -129,19 +129,19 @@ fun SearchMemorialScreen(
 
 @Preview
 @Composable
-private fun PreviewSearchMemorialContent() = AccountTheme {
-    SearchMemorialContent(
-        memorialColumnState = MemorialColumnState(
-            memorials = (0..5).map {
-                Memorial(id = it.toLong(), content = "Memorial$it")
-            },
-            isMultiSelecting = true,
-            multiSelectedMemorials = emptySet(),
-            onSelectMemorial = { _, _ -> },
-            selectAllMemorial = {},
-            cancelMultiSelecting = {},
-            deleteMemorials = {}
+fun PreviewSearchMemorialScreen() = AccountTheme {
+    SearchMemorialScreen(
+        state = SearchMemorialState.Success(
+            data = MemorialColumnState(
+                memorials = listOf(
+                    Memorial(id = 1, content = "纪念日"),
+                    Memorial(id = 2, content = "纪念日")
+                ),
+            ),
+            search = {}
         ),
-        onNavigateToMemorialDialog = {}
+        snackbarHostState = SnackbarHostState(),
+        onNavigateToMemorialDialog = {},
+        onBack = {}
     )
 }

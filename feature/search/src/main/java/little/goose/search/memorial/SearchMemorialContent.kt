@@ -13,8 +13,13 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.tooling.preview.Preview
 import little.goose.design.system.component.MovableActionButton
 import little.goose.design.system.component.MovableActionButtonState
+import little.goose.design.system.component.dialog.DeleteDialog
+import little.goose.design.system.component.dialog.DeleteDialogState
+import little.goose.design.system.theme.AccountTheme
+import little.goose.memorial.data.entities.Memorial
 import little.goose.memorial.ui.component.MemorialColumn
 import little.goose.memorial.ui.component.MemorialColumnState
 
@@ -34,6 +39,8 @@ internal fun SearchMemorialContent(
         )
     }
 
+    val deleteDialogState = remember { DeleteDialogState() }
+
     if (memorialColumnState.isMultiSelecting) {
         val buttonState = remember { MovableActionButtonState() }
         LaunchedEffect(buttonState) { buttonState.expend() }
@@ -49,9 +56,11 @@ internal fun SearchMemorialContent(
                     Icon(imageVector = Icons.Rounded.Delete, contentDescription = "Delete")
                 },
                 onMainButtonClick = {
-                    memorialColumnState.deleteMemorials(
-                        memorialColumnState.multiSelectedMemorials.toList()
-                    )
+                    deleteDialogState.show(onConfirm = {
+                        memorialColumnState.deleteMemorials(
+                            memorialColumnState.multiSelectedMemorials.toList()
+                        )
+                    })
                 },
                 topSubButtonContent = {
                     Icon(imageVector = Icons.Rounded.DoneAll, contentDescription = "Select All")
@@ -71,4 +80,25 @@ internal fun SearchMemorialContent(
             )
         }
     }
+
+    DeleteDialog(state = deleteDialogState)
+}
+
+@Preview
+@Composable
+private fun PreviewSearchMemorialContent() = AccountTheme {
+    SearchMemorialContent(
+        memorialColumnState = MemorialColumnState(
+            memorials = (0..5).map {
+                Memorial(id = it.toLong(), content = "Memorial$it")
+            },
+            isMultiSelecting = true,
+            multiSelectedMemorials = emptySet(),
+            onSelectMemorial = { _, _ -> },
+            selectAllMemorial = {},
+            cancelMultiSelecting = {},
+            deleteMemorials = {}
+        ),
+        onNavigateToMemorialDialog = {}
+    )
 }

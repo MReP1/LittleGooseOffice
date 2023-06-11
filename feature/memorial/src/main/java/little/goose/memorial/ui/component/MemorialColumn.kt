@@ -12,13 +12,13 @@ import little.goose.design.system.theme.AccountTheme
 import little.goose.memorial.data.entities.Memorial
 
 data class MemorialColumnState(
-    val memorials: List<Memorial>,
-    val isMultiSelecting: Boolean,
-    val multiSelectedMemorials: Set<Memorial>,
-    val onSelectMemorial: (item: Memorial, selected: Boolean) -> Unit,
-    val selectAllMemorial: () -> Unit,
-    val cancelMultiSelecting: () -> Unit,
-    val deleteMemorials: (memorials: List<Memorial>) -> Unit
+    val memorials: List<Memorial> = listOf(),
+    val isMultiSelecting: Boolean = false,
+    val multiSelectedMemorials: Set<Memorial> = emptySet(),
+    val onSelectMemorial: (item: Memorial, selected: Boolean) -> Unit = { _, _ -> },
+    val selectAllMemorial: () -> Unit = {},
+    val cancelMultiSelecting: () -> Unit = {},
+    val deleteMemorials: (memorials: List<Memorial>) -> Unit = {}
 )
 
 @Composable

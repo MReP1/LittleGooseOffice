@@ -12,13 +12,13 @@ import little.goose.account.data.constants.AccountConstant
 import little.goose.account.data.entities.Transaction
 
 data class TransactionColumnState(
-    val transactions: List<Transaction>,
-    val isMultiSelecting: Boolean,
-    val multiSelectedTransactions: Set<Transaction>,
-    val onTransactionSelected: (item: Transaction, selected: Boolean) -> Unit,
-    val selectAllTransactions: () -> Unit,
-    val cancelMultiSelecting: () -> Unit,
-    val deleteTransactions: (List<Transaction>) -> Unit
+    val transactions: List<Transaction> = emptyList(),
+    val isMultiSelecting: Boolean = false,
+    val multiSelectedTransactions: Set<Transaction> = emptySet(),
+    val onTransactionSelected: (item: Transaction, selected: Boolean) -> Unit = { _, _ -> },
+    val selectAllTransactions: () -> Unit = {},
+    val cancelMultiSelecting: () -> Unit = {},
+    val deleteTransactions: (List<Transaction>) -> Unit = {}
 )
 
 @Composable
