@@ -11,6 +11,7 @@ import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.launch
 import little.goose.note.data.constants.KEY_NOTE_ID
 import little.goose.note.logic.DeleteNoteContentBlockUseCase
+import little.goose.note.logic.DeleteNotesAndItsBlocksUseCase
 import little.goose.note.logic.GetNoteFlowUseCase
 import little.goose.note.logic.GetNoteWithContentMapFlowUseCase
 import little.goose.note.logic.InsertNoteContentBlockUseCase
@@ -31,6 +32,7 @@ class NoteViewModel @Inject constructor(
     deleteNoteContentBlock: DeleteNoteContentBlockUseCase,
     getNoteFlow: GetNoteFlowUseCase,
     insertNote: InsertNoteUseCase,
+    private val deleteNotesAndItsBlocksUseCase: DeleteNotesAndItsBlocksUseCase,
     private val updateNote: UpdateNoteUseCase
 ) : ViewModel() {
 
@@ -59,7 +61,11 @@ class NoteViewModel @Inject constructor(
         val noteState = noteScreenState.value as? NoteScreenState.State ?: return
         val note = noteState.scaffoldState.contentState.note.takeIf { it.id != null} ?: return
         viewModelScope.launch(NonCancellable) {
-            updateNote(note.copy(time = Date()))
+            if (noteState.scaffoldState.contentState.content.isEmpty()) {
+                deleteNotesAndItsBlocksUseCase(listOf(note))
+            } else {
+                updateNote(note.copy(time = Date()))
+            }
         }
     }
 }

@@ -1,8 +1,11 @@
 package little.goose.note.logic
 
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
+import kotlinx.coroutines.flow.flowOn
+import kotlinx.coroutines.flow.map
 import little.goose.note.data.entities.Note
 import little.goose.note.data.entities.NoteContentBlock
 import javax.inject.Inject
@@ -33,14 +36,6 @@ class UpdateNoteUseCase @Inject constructor(
     }
 }
 
-class DeleteNoteAndItsBlocksUseCase @Inject constructor(
-    private val repository: NoteRepository
-) {
-    suspend operator fun invoke(note: Note) {
-        return repository.deleteNoteAndItsBlocks(note)
-    }
-}
-
 class DeleteNotesAndItsBlocksUseCase @Inject constructor(
     private val repository: NoteRepository
 ) {
@@ -67,7 +62,9 @@ class GetNoteWithContentsMapFlowUseCase @Inject constructor(
     private val repository: NoteRepository
 ) {
     operator fun invoke(): Flow<Map<Note, List<NoteContentBlock>>> {
-        return repository.getNoteWithContentMapFlow()
+        return repository.getNoteWithContentMapFlow().map {
+            it.toSortedMap(compareByDescending { note -> note.time.time })
+        }.flowOn(Dispatchers.Default)
     }
 }
 
