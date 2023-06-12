@@ -22,7 +22,7 @@ import little.goose.home.utils.homeDataStore
 import little.goose.search.SearchType
 import java.util.Date
 
-var isHomePageInit = true
+var isHomePageInit = false
 
 var homePage by mutableStateOf(-1)
 
