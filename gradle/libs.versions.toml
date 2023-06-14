@@ -11,6 +11,7 @@ androidxCore = "1.9.0"
 androidxConstraintLayout = "2.1.4"
 androidxDataStore = "1.0.0"
 androidxComposeCompiler = "1.4.7"
+androidxGlance = "1.0.0-beta01"
 androidxTestExt = "1.1.5"
 androidxEspresso = "3.5.1"
 androidxStartUp = "1.1.1"
@@ -58,6 +59,8 @@ androidx-compose-ui-tooling = { group = "androidx.compose.ui", name = "ui-toolin
 androidx-compose-ui-testManifest = { group = "androidx.compose.ui", name = "ui-test-manifest" }
 androidx-constraintLayout = { group = "androidx.constraintlayout", name = "constraintlayout", version.ref = "androidxConstraintLayout" }
 androidx-dataStore-preferences = { group = "androidx.datastore", name = "datastore-preferences", version.ref = "androidxDataStore" }
+androidx-glance = { group = "androidx.glance", name = "glance", version.ref = "androidxGlance" }
+androidx-glance-appwidget = { group = "androidx.glance", name = "glance-appwidget", version.ref = "androidxGlance" }
 androidx-test-ext = { group = "androidx.test.ext", name = "junit-ktx", version.ref = "androidxTestExt" }
 androidx-test-espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "androidxEspresso" }
 androidx-startUp-runtime = { group = "androidx.startup", name = "startup-runtime", version.ref = "androidxStartUp" }
