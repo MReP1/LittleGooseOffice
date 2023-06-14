@@ -5,12 +5,15 @@ import android.content.Context
 import android.util.Log
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.glance.GlanceId
 import androidx.glance.GlanceModifier
 import androidx.glance.GlanceTheme
+import androidx.glance.LocalContext
 import androidx.glance.LocalSize
+import androidx.glance.action.Action
+import androidx.glance.action.ActionParameters
+import androidx.glance.action.actionParametersOf
 import androidx.glance.action.actionStartActivity
 import androidx.glance.action.clickable
 import androidx.glance.appwidget.GlanceAppWidget
@@ -27,6 +30,7 @@ import androidx.glance.layout.fillMaxWidth
 import androidx.glance.layout.padding
 import little.goose.appwidget.component.AppWidgetIcon
 import little.goose.appwidget.layout.AppWidgetSizeResponsive
+import little.goose.common.constants.KEY_HOME_PAGE
 
 class GooseAppWidget : GlanceAppWidget() {
 
@@ -37,11 +41,7 @@ class GooseAppWidget : GlanceAppWidget() {
     override suspend fun provideGlance(context: Context, id: GlanceId) {
         provideContent {
             GooseGlanceTheme {
-                CompositionLocalProvider(
-                    values = arrayOf(
-                        LocalContext provides context,
-                    )
-                ) {
+                CompositionLocalProvider(LocalContext provides context) {
                     GooseAppWidgetScreen(
                         modifier = GlanceModifier.fillMaxSize()
                     )
@@ -101,22 +101,34 @@ private fun VerticalRectangleAppWidget(
         AppWidgetIcon(
             drawableResId = R.drawable.icon_fact_check,
             contentDescription = "Schedule",
-            modifier = GlanceModifier.defaultWeight().fillMaxWidth()
+            modifier = GlanceModifier
+                .defaultWeight()
+                .fillMaxWidth()
+                .clickable(actionStartMainActivity(3))
         )
         AppWidgetIcon(
             drawableResId = R.drawable.icon_event,
             contentDescription = "Memorial",
-            modifier = GlanceModifier.defaultWeight().fillMaxWidth()
+            modifier = GlanceModifier
+                .defaultWeight()
+                .fillMaxWidth()
+                .clickable(actionStartMainActivity(4))
         )
         AppWidgetIcon(
             drawableResId = R.drawable.icon_edit_note,
             contentDescription = "Note",
-            modifier = GlanceModifier.defaultWeight().fillMaxWidth()
+            modifier = GlanceModifier
+                .defaultWeight()
+                .fillMaxWidth()
+                .clickable(actionStartMainActivity(1))
         )
         AppWidgetIcon(
             drawableResId = R.drawable.icon_savings,
             contentDescription = "Account",
-            modifier = GlanceModifier.defaultWeight().fillMaxWidth()
+            modifier = GlanceModifier
+                .defaultWeight()
+                .fillMaxWidth()
+                .clickable(actionStartMainActivity(2))
         )
     }
 }
@@ -144,22 +156,34 @@ private fun HorizontalRectangleAppWidget(
         AppWidgetIcon(
             drawableResId = R.drawable.icon_fact_check,
             contentDescription = "Schedule",
-            modifier = GlanceModifier.defaultWeight().fillMaxHeight()
+            modifier = GlanceModifier
+                .defaultWeight()
+                .fillMaxHeight()
+                .clickable(actionStartMainActivity(3))
         )
         AppWidgetIcon(
             drawableResId = R.drawable.icon_event,
             contentDescription = "Memorial",
-            modifier = GlanceModifier.defaultWeight().fillMaxHeight()
+            modifier = GlanceModifier
+                .defaultWeight()
+                .fillMaxHeight()
+                .clickable(actionStartMainActivity(4))
         )
         AppWidgetIcon(
             drawableResId = R.drawable.icon_edit_note,
             contentDescription = "Note",
-            modifier = GlanceModifier.defaultWeight().fillMaxHeight()
+            modifier = GlanceModifier
+                .defaultWeight()
+                .fillMaxHeight()
+                .clickable(actionStartMainActivity(1))
         )
         AppWidgetIcon(
             drawableResId = R.drawable.icon_savings,
             contentDescription = "Account",
-            modifier = GlanceModifier.defaultWeight().fillMaxHeight()
+            modifier = GlanceModifier
+                .defaultWeight()
+                .fillMaxHeight()
+                .clickable(actionStartMainActivity(2))
         )
     }
 }
@@ -172,15 +196,7 @@ private fun SquareAppWidget(
         modifier = modifier
             .cornerRadius(16.dp)
             .background(GlanceTheme.colors.primaryContainer)
-            .padding(8.dp)
-            .clickable(
-                actionStartActivity(
-                    ComponentName(
-                        "little.goose.account",
-                        "little.goose.office.MainActivity"
-                    )
-                )
-            ),
+            .padding(8.dp),
         verticalAlignment = Alignment.CenterVertically,
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
@@ -192,12 +208,18 @@ private fun SquareAppWidget(
             AppWidgetIcon(
                 drawableResId = R.drawable.icon_fact_check,
                 contentDescription = "Schedule",
-                modifier = GlanceModifier.defaultWeight().fillMaxHeight()
+                modifier = GlanceModifier
+                    .defaultWeight()
+                    .fillMaxHeight()
+                    .clickable(actionStartMainActivity(3))
             )
             AppWidgetIcon(
                 drawableResId = R.drawable.icon_event,
                 contentDescription = "Memorial",
-                modifier = GlanceModifier.defaultWeight().fillMaxHeight()
+                modifier = GlanceModifier
+                    .defaultWeight()
+                    .fillMaxHeight()
+                    .clickable(actionStartMainActivity(4))
             )
         }
         Row(
@@ -208,14 +230,31 @@ private fun SquareAppWidget(
             AppWidgetIcon(
                 drawableResId = R.drawable.icon_edit_note,
                 contentDescription = "Note",
-                modifier = GlanceModifier.defaultWeight().fillMaxHeight()
+                modifier = GlanceModifier
+                    .defaultWeight()
+                    .fillMaxHeight()
+                    .clickable(actionStartMainActivity(1))
             )
             AppWidgetIcon(
                 drawableResId = R.drawable.icon_savings,
                 contentDescription = "Account",
-                modifier = GlanceModifier.defaultWeight().fillMaxHeight()
+                modifier = GlanceModifier
+                    .defaultWeight()
+                    .fillMaxHeight()
+                    .clickable(actionStartMainActivity(2))
             )
         }
     }
 }
 
+private fun actionStartMainActivity(page: Int): Action {
+    return actionStartActivity(
+        componentName = ComponentName(
+            "little.goose.account",
+            "little.goose.office.MainActivity"
+        ),
+        parameters = actionParametersOf(
+            ActionParameters.Key<Int>(KEY_HOME_PAGE) to page
+        )
+    )
+}

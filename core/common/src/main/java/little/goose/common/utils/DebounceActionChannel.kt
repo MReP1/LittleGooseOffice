@@ -13,16 +13,16 @@ import kotlinx.coroutines.flow.onEach
 class DebounceActionChannel<T>(
     coroutineScope: CoroutineScope,
     debounceTime: Long = 500L,
-    preEach: suspend (T) -> Unit = {},
+    preEach: (suspend (T) -> Unit)? = null,
     action: suspend (T) -> Unit,
 ) : Channel<T> by Channel(
     capacity = 0,
     onBufferOverflow = BufferOverflow.DROP_OLDEST
 ) {
     init {
-        consumeAsFlow()
-            .onEach(preEach)
-            .debounce(debounceTime)
+        consumeAsFlow().run {
+            if (preEach != null) onEach(preEach) else this
+        }.debounce(debounceTime)
             .onEach(action)
             .launchIn(coroutineScope)
     }

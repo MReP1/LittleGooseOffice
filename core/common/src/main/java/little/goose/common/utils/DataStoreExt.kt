@@ -27,6 +27,6 @@ suspend inline fun <T> DataStore<Preferences>.getDataOrDefault(
     key: Preferences.Key<T>, default: T
 ): T = this.data.firstOrNull()?.get(key) ?: default
 
-suspend inline fun DataStore<Preferences>.initial() {
-    data.first()
+suspend inline fun DataStore<Preferences>.initial(): Preferences {
+    return data.first()
 }

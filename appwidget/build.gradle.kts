@@ -10,5 +10,5 @@ android {
 dependencies {
     implementation(libs.androidx.glance)
     implementation(libs.androidx.glance.appwidget)
-    implementation(libs.androidx.compose.material.iconsExtended)
+    implementation(project(":core:common"))
 }

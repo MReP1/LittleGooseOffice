@@ -30,7 +30,9 @@ import little.goose.search.searchRoute
 
 @Composable
 internal fun MainScreen(
-    modifier: Modifier
+    modifier: Modifier,
+    homePage: Int,
+    onHomePageUpdate: (Int) -> Unit,
 ) {
     val navController = rememberAnimatedNavController()
     LittleGooseAnimatedNavHost(
@@ -39,6 +41,8 @@ internal fun MainScreen(
         startDestination = ROUTE_HOME
     ) {
         homeRoute(
+            homePage = homePage,
+            onHomePageUpdate = onHomePageUpdate,
             onNavigateToNote = { noteId ->
                 val navigatingType = if (noteId != null) {
                     NoteNavigatingType.Edit(noteId)
