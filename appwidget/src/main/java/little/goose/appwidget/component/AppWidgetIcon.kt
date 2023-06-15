@@ -24,9 +24,9 @@ internal fun AppWidgetIcon(
         Image(
             provider = ImageProvider(drawableResId),
             contentDescription = contentDescription,
-            contentScale = ContentScale.Crop,
+            contentScale = ContentScale.Fit,
             colorFilter = ColorFilter.tint(colorProvider = GlanceTheme.colors.onPrimaryContainer),
-            modifier = GlanceModifier.fillMaxSize().padding(6.dp)
+            modifier = GlanceModifier.fillMaxSize().padding(5.dp)
         )
     }
 }

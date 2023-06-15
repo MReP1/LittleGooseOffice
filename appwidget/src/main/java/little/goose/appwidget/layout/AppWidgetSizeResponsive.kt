@@ -2,6 +2,7 @@ package little.goose.appwidget.layout
 
 import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.max
 import androidx.compose.ui.unit.min
 
 internal enum class AppWidgetSizeResponsive(internal val size: DpSize) {
@@ -22,3 +23,4 @@ internal enum class AppWidgetSizeResponsive(internal val size: DpSize) {
 }
 
 internal val DpSize.minSide get() = min(width, height)
+internal val DpSize.maxSide get() = max(width, height)
