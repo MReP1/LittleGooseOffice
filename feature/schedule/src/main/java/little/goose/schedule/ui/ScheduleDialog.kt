@@ -30,6 +30,7 @@ import androidx.navigation.compose.dialog
 import androidx.navigation.navArgument
 import androidx.navigation.navDeepLink
 import kotlinx.coroutines.launch
+import little.goose.common.constants.DEEP_LINK_THEME_AND_HOST
 import little.goose.common.utils.TimeType
 import little.goose.common.utils.toChineseStringWithYear
 import little.goose.design.system.component.dialog.DeleteDialog
@@ -44,8 +45,9 @@ const val KEY_SCHEDULE_ID = "schedule_id"
 
 const val ROUTE_DIALOG_SCHEDULE = "dialog_schedule"
 
-const val DEEP_LINK_URI_PATTERN_SCHEDULE_DIALOG = "little-goose://office/$ROUTE_DIALOG_SCHEDULE" +
-        "/$KEY_SCHEDULE_ID={$KEY_SCHEDULE_ID}"
+private const val DEEP_LINK_URI_PATTERN_SCHEDULE_DIALOG =
+    "$DEEP_LINK_THEME_AND_HOST/$ROUTE_DIALOG_SCHEDULE" +
+            "/$KEY_SCHEDULE_ID={$KEY_SCHEDULE_ID}"
 
 fun NavController.navigateToScheduleDialog(scheduleId: Long?) {
     navigate("$ROUTE_DIALOG_SCHEDULE/${scheduleId ?: -1}") {

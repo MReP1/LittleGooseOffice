@@ -10,6 +10,7 @@ import androidx.glance.action.ActionParameters
 import androidx.glance.action.actionParametersOf
 import androidx.glance.action.clickable
 import little.goose.appwidget.component.AppWidgetIcon
+import little.goose.common.constants.DEEP_LINK_THEME_AND_HOST
 import little.goose.common.constants.KEY_HOME_PAGE
 import java.util.Date
 
@@ -59,7 +60,7 @@ internal enum class GooseNav(
 internal fun actionStartScheduleScreen(): Action {
     return actionStartMainActivity(
         data = Uri.parse(
-            "little-goose://office/dialog_schedule" +
+            "$DEEP_LINK_THEME_AND_HOST/dialog_schedule" +
                     "/schedule_id=0"
         ),
         parameters = actionParametersOf(
@@ -71,7 +72,7 @@ internal fun actionStartScheduleScreen(): Action {
 internal fun actionStartNoteScreen(): Action {
     return actionStartMainActivity(
         data = Uri.parse(
-            "little-goose://office/note" +
+            "$DEEP_LINK_THEME_AND_HOST/note" +
                     "/note_id=-1"
         ),
         parameters = actionParametersOf(
@@ -83,7 +84,7 @@ internal fun actionStartNoteScreen(): Action {
 internal fun actionStartMemorialScreen(): Action {
     return actionStartMainActivity(
         data = Uri.parse(
-            "little-goose://office/graph_memorial/memorial" +
+            "$DEEP_LINK_THEME_AND_HOST/graph_memorial/memorial" +
                     "?type=Add" +
                     "?memorial_id=0"
         ),
@@ -96,7 +97,7 @@ internal fun actionStartMemorialScreen(): Action {
 internal fun actionStartTransactionScreen(): Action {
     return actionStartMainActivity(
         data = Uri.parse(
-            "little-goose://office/graph_account/transaction" +
+            "$DEEP_LINK_THEME_AND_HOST/graph_account/transaction" +
                     "?transaction_id=0" +
                     "?time=${Date().time}"
         ),

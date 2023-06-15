@@ -4,12 +4,10 @@ import androidx.navigation.NavGraphBuilder
 import androidx.navigation.navigation
 import little.goose.account.data.constants.MoneyType
 import little.goose.account.ui.analysis.accountAnalysisRoute
-import little.goose.account.ui.transaction.KEY_TRANSACTION_ID
-import little.goose.account.ui.transaction.ROUTE_TRANSACTION
+import little.goose.account.ui.transaction.FULL_ROUTE_TRANSACTION
 import little.goose.account.ui.transaction.transactionDialogRoute
 import little.goose.account.ui.transaction.transactionRoute
 import little.goose.account.ui.transactionExampleRoute
-import little.goose.common.constants.KEY_TIME
 import little.goose.common.utils.TimeType
 import java.util.Date
 
@@ -23,9 +21,7 @@ fun NavGraphBuilder.accountGraph(
     ) -> Unit,
     onBack: () -> Unit
 ) = navigation(
-    startDestination = ROUTE_TRANSACTION +
-            "?$KEY_TRANSACTION_ID={$KEY_TRANSACTION_ID}" +
-            "?$KEY_TIME={$KEY_TIME}",
+    startDestination = FULL_ROUTE_TRANSACTION,
     route = ROUTE_GRAPH_ACCOUNT
 ) {
     transactionRoute(onBack)

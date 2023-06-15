@@ -10,6 +10,7 @@ import androidx.navigation.navArgument
 import androidx.navigation.navDeepLink
 import com.google.accompanist.navigation.animation.composable
 import little.goose.account.ROUTE_GRAPH_ACCOUNT
+import little.goose.common.constants.DEEP_LINK_THEME_AND_HOST
 import little.goose.common.constants.KEY_TIME
 import java.util.Date
 
@@ -17,8 +18,12 @@ const val ROUTE_TRANSACTION = "transaction"
 
 const val KEY_TRANSACTION_ID = "transaction_id"
 
-const val DEEP_LINK_URI_PATTERN_TRANSACTION =
-    "little-goose://office/$ROUTE_GRAPH_ACCOUNT/$ROUTE_TRANSACTION" +
+const val FULL_ROUTE_TRANSACTION = ROUTE_TRANSACTION +
+        "?$KEY_TRANSACTION_ID={$KEY_TRANSACTION_ID}" +
+        "?$KEY_TIME={$KEY_TIME}"
+
+private const val DEEP_LINK_URI_PATTERN_TRANSACTION =
+    "$DEEP_LINK_THEME_AND_HOST/$ROUTE_GRAPH_ACCOUNT/$ROUTE_TRANSACTION" +
             "?${KEY_TRANSACTION_ID}={$KEY_TRANSACTION_ID}" +
             "?${KEY_TIME}={$KEY_TIME}"
 
@@ -50,9 +55,7 @@ fun NavController.navigateToTransaction(id: Long) {
 
 internal fun NavGraphBuilder.transactionRoute(onBack: () -> Unit) {
     composable(
-        route = ROUTE_TRANSACTION +
-                "?$KEY_TRANSACTION_ID={$KEY_TRANSACTION_ID}" +
-                "?$KEY_TIME={$KEY_TIME}",
+        route = FULL_ROUTE_TRANSACTION,
         deepLinks = listOf(
             navDeepLink {
                 uriPattern = DEEP_LINK_URI_PATTERN_TRANSACTION

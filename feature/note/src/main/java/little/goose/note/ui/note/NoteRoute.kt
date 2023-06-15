@@ -19,6 +19,7 @@ import com.google.accompanist.navigation.animation.composable
 import kotlinx.coroutines.android.awaitFrame
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
+import little.goose.common.constants.DEEP_LINK_THEME_AND_HOST
 import little.goose.note.data.constants.KEY_NOTE
 import little.goose.note.data.constants.KEY_NOTE_ID
 import little.goose.note.data.entities.NoteContentBlock
@@ -41,7 +42,7 @@ sealed class NoteNavigatingType {
 
 const val ROUTE_NOTE = "note"
 
-const val DEEP_LINK_URI_PATTERN_NOTE = "little-goose://office/$KEY_NOTE" +
+private const val DEEP_LINK_URI_PATTERN_NOTE = "$DEEP_LINK_THEME_AND_HOST/$KEY_NOTE" +
         "/$KEY_NOTE_ID={$KEY_NOTE_ID}"
 
 fun NavController.navigateToNote(

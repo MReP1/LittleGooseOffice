@@ -40,6 +40,7 @@ import androidx.navigation.navArgument
 import androidx.navigation.navDeepLink
 import com.google.accompanist.navigation.animation.composable
 import kotlinx.coroutines.launch
+import little.goose.common.constants.DEEP_LINK_THEME_AND_HOST
 import little.goose.common.constants.KEY_TYPE
 import little.goose.common.utils.TimeType
 import little.goose.common.utils.toChineseYearMonDayWeek
@@ -58,8 +59,12 @@ import java.util.Date
 
 const val ROUTE_MEMORIAL = "memorial"
 
-const val DEEP_LINK_URI_PATTERN_MEMORIAL =
-    "little-goose://office/$ROUTE_GRAPH_MEMORIAL/$ROUTE_MEMORIAL" +
+const val FULL_ROUTE_MEMORIAL = ROUTE_MEMORIAL +
+        "?$KEY_TYPE={$KEY_TYPE}" +
+        "?$KEY_MEMORIAL_ID={$KEY_MEMORIAL_ID}"
+
+private const val DEEP_LINK_URI_PATTERN_MEMORIAL =
+    "$DEEP_LINK_THEME_AND_HOST/$ROUTE_GRAPH_MEMORIAL/$ROUTE_MEMORIAL" +
             "?$KEY_TYPE={$KEY_TYPE}" +
             "?$KEY_MEMORIAL_ID={$KEY_MEMORIAL_ID}"
 
@@ -89,9 +94,7 @@ internal class MemorialScreenArgs private constructor(
 internal fun NavGraphBuilder.memorialRoute(
     onBack: () -> Unit
 ) = composable(
-    route = ROUTE_MEMORIAL +
-            "?$KEY_TYPE={$KEY_TYPE}" +
-            "?$KEY_MEMORIAL_ID={$KEY_MEMORIAL_ID}", 
+    route = FULL_ROUTE_MEMORIAL,
     deepLinks = listOf(
         navDeepLink {
             uriPattern = DEEP_LINK_URI_PATTERN_MEMORIAL
