@@ -1,7 +1,10 @@
 package little.goose.appwidget
 
+import android.app.PendingIntent
 import android.content.ComponentName
 import android.content.Context
+import android.content.Intent
+import android.net.Uri
 import android.util.Log
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
@@ -31,6 +34,7 @@ import androidx.glance.layout.padding
 import little.goose.appwidget.component.AppWidgetIcon
 import little.goose.appwidget.layout.AppWidgetSizeResponsive
 import little.goose.common.constants.KEY_HOME_PAGE
+import java.util.Date
 
 class GooseAppWidget : GlanceAppWidget() {
 
@@ -192,6 +196,7 @@ private fun HorizontalRectangleAppWidget(
 private fun SquareAppWidget(
     modifier: GlanceModifier = GlanceModifier
 ) {
+    val context = LocalContext.current
     Column(
         modifier = modifier
             .cornerRadius(16.dp)
@@ -245,6 +250,24 @@ private fun SquareAppWidget(
             )
         }
     }
+}
+
+private fun startANewTransaction(context: Context) {
+    PendingIntent.getActivity(
+        context, 0, Intent().apply {
+            action = Intent.ACTION_VIEW
+            data = Uri.parse(
+                "little-goose://office/graph_account/transaction" +
+                        "?transaction_id=0" +
+                        "?time=${Date().time}"
+            )
+            component = ComponentName(
+                "little.goose.account",
+                "little.goose.office.MainActivity"
+            )
+        },
+        PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+    ).send()
 }
 
 private fun actionStartMainActivity(page: Int): Action {

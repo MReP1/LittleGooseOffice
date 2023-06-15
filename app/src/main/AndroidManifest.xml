@@ -19,6 +19,12 @@
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+
+            <intent-filter>
+                <data
+                    android:scheme="little-goose"
+                    android:host="office" />
+            </intent-filter>
         </activity>
 
         <receiver
