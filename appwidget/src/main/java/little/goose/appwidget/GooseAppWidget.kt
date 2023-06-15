@@ -176,21 +176,15 @@ private fun SquareAppWidget(
             verticalAlignment = Alignment.CenterVertically,
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
-            AppWidgetIcon(
-                drawableResId = R.drawable.icon_edit_note,
-                contentDescription = "Note",
+            GooseNav.SCHEDULE.IconWidget(
                 modifier = GlanceModifier
                     .defaultWeight()
                     .fillMaxHeight()
-                    .clickable(actionStartMainActivity(1))
             )
-            AppWidgetIcon(
-                drawableResId = R.drawable.icon_savings,
-                contentDescription = "Account",
+            GooseNav.NOTE.IconWidget(
                 modifier = GlanceModifier
                     .defaultWeight()
                     .fillMaxHeight()
-                    .clickable(actionStartMainActivity(2))
             )
         }
         Row(
@@ -198,21 +192,15 @@ private fun SquareAppWidget(
             verticalAlignment = Alignment.CenterVertically,
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
-            AppWidgetIcon(
-                drawableResId = R.drawable.icon_fact_check,
-                contentDescription = "Schedule",
+            GooseNav.ACCOUNT.IconWidget(
                 modifier = GlanceModifier
                     .defaultWeight()
                     .fillMaxHeight()
-                    .clickable(actionStartMainActivity(3))
             )
-            AppWidgetIcon(
-                drawableResId = R.drawable.icon_event,
-                contentDescription = "Memorial",
+            GooseNav.MEMORIAL.IconWidget(
                 modifier = GlanceModifier
                     .defaultWeight()
                     .fillMaxHeight()
-                    .clickable(actionStartMainActivity(4))
             )
         }
     }

@@ -2,6 +2,8 @@ package little.goose.memorial
 
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.navigation
+import little.goose.common.constants.KEY_TYPE
+import little.goose.memorial.data.constants.KEY_MEMORIAL_ID
 import little.goose.memorial.ui.ROUTE_MEMORIAL
 import little.goose.memorial.ui.memorialDialogRoute
 import little.goose.memorial.ui.memorialRoute
@@ -15,7 +17,9 @@ fun NavGraphBuilder.memorialGraph(
     onNavigateToMemorialShow: (Long) -> Unit
 ) {
     navigation(
-        startDestination = ROUTE_MEMORIAL,
+        startDestination = ROUTE_MEMORIAL +
+                "?$KEY_TYPE={$KEY_TYPE}" +
+                "?$KEY_MEMORIAL_ID={$KEY_MEMORIAL_ID}",
         route = ROUTE_GRAPH_MEMORIAL
     ) {
         memorialRoute(

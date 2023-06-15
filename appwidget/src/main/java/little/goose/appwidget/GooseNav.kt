@@ -3,10 +3,13 @@ package little.goose.appwidget
 import android.content.ComponentName
 import android.content.Intent
 import android.net.Uri
+import androidx.compose.runtime.Composable
+import androidx.glance.GlanceModifier
 import androidx.glance.action.Action
 import androidx.glance.action.ActionParameters
 import androidx.glance.action.actionParametersOf
-import androidx.glance.action.actionStartActivity
+import androidx.glance.action.clickable
+import little.goose.appwidget.component.AppWidgetIcon
 import little.goose.common.constants.KEY_HOME_PAGE
 import java.util.Date
 
@@ -19,54 +22,111 @@ internal enum class GooseNav(
     NOTE(
         drawableResId = R.drawable.icon_edit_note,
         contentDescription = "Note",
-        homePageAction = actionStartMainActivity(1),
-        addAction = actionStartMainActivity(1)
+        homePageAction = actionStartHomeScreen(1),
+        addAction = actionStartNoteScreen()
     ),
     ACCOUNT(
         drawableResId = R.drawable.icon_savings,
         contentDescription = "Account",
-        homePageAction = actionStartMainActivity(2),
-        addAction = actionStartMainActivity(2)
+        homePageAction = actionStartHomeScreen(2),
+        addAction = actionStartTransactionScreen()
     ),
     SCHEDULE(
         drawableResId = R.drawable.icon_fact_check,
         contentDescription = "Schedule",
-        homePageAction = actionStartMainActivity(3),
-        addAction = actionStartMainActivity(3)
+        homePageAction = actionStartHomeScreen(3),
+        addAction = actionStartScheduleScreen()
     ),
     MEMORIAL(
         drawableResId = R.drawable.icon_event,
         contentDescription = "Memorial",
-        homePageAction = actionStartMainActivity(4),
-        addAction = actionStartMainActivity(4)
+        homePageAction = actionStartHomeScreen(4),
+        addAction = actionStartMemorialScreen()
     );
+
+    @Composable
+    internal fun IconWidget(
+        modifier: GlanceModifier
+    ) {
+        AppWidgetIcon(
+            drawableResId = this.drawableResId,
+            contentDescription = this.contentDescription,
+            modifier = modifier.clickable(homePageAction)
+        )
+    }
+}
+
+internal fun actionStartScheduleScreen(): Action {
+    return actionStartMainActivity(
+        data = Uri.parse(
+            "little-goose://office/dialog_schedule" +
+                    "/schedule_id=0"
+        ),
+        parameters = actionParametersOf(
+            ActionParameters.Key<Int>(KEY_HOME_PAGE) to 3
+        )
+    )
+}
+
+internal fun actionStartNoteScreen(): Action {
+    return actionStartMainActivity(
+        data = Uri.parse(
+            "little-goose://office/note" +
+                    "/note_id=-1"
+        ),
+        parameters = actionParametersOf(
+            ActionParameters.Key<Int>(KEY_HOME_PAGE) to 1
+        )
+    )
+}
+
+internal fun actionStartMemorialScreen(): Action {
+    return actionStartMainActivity(
+        data = Uri.parse(
+            "little-goose://office/graph_memorial/memorial" +
+                    "?type=Add" +
+                    "?memorial_id=0"
+        ),
+        parameters = actionParametersOf(
+            ActionParameters.Key<Int>(KEY_HOME_PAGE) to 4
+        )
+    )
 }
 
 internal fun actionStartTransactionScreen(): Action {
+    return actionStartMainActivity(
+        data = Uri.parse(
+            "little-goose://office/graph_account/transaction" +
+                    "?transaction_id=0" +
+                    "?time=${Date().time}"
+        ),
+        parameters = actionParametersOf(
+            ActionParameters.Key<Int>(KEY_HOME_PAGE) to 2
+        )
+    )
+}
+
+internal fun actionStartHomeScreen(page: Int): Action {
+    return actionStartMainActivity(
+        parameters = actionParametersOf(
+            ActionParameters.Key<Int>(KEY_HOME_PAGE) to page
+        )
+    )
+}
+
+internal fun actionStartMainActivity(
+    data: Uri? = null,
+    parameters: ActionParameters? = null
+): Action {
     return androidx.glance.appwidget.action.actionStartActivity(
         Intent().apply {
             action = Intent.ACTION_VIEW
-            data = Uri.parse(
-                "little-goose://office/graph_account/transaction" +
-                        "?transaction_id=0" +
-                        "?time=${Date().time}"
-            )
+            this.data = data
             component = ComponentName(
                 "little.goose.account",
                 "little.goose.office.MainActivity"
             )
-        }
-    )
-}
-
-internal fun actionStartMainActivity(page: Int): Action {
-    return actionStartActivity(
-        componentName = ComponentName(
-            "little.goose.account",
-            "little.goose.office.MainActivity"
-        ),
-        parameters = actionParametersOf(
-            ActionParameters.Key<Int>(KEY_HOME_PAGE) to page
-        )
+        },
+        parameters = parameters ?: actionParametersOf()
     )
 }

@@ -37,6 +37,7 @@ import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavType
 import androidx.navigation.navArgument
+import androidx.navigation.navDeepLink
 import com.google.accompanist.navigation.animation.composable
 import kotlinx.coroutines.launch
 import little.goose.common.constants.KEY_TYPE
@@ -47,6 +48,7 @@ import little.goose.design.system.component.dialog.TimeSelectorCenterDialog
 import little.goose.design.system.component.dialog.rememberBottomSheetDialogState
 import little.goose.design.system.component.dialog.rememberDialogState
 import little.goose.memorial.R
+import little.goose.memorial.ROUTE_GRAPH_MEMORIAL
 import little.goose.memorial.data.constants.KEY_MEMORIAL_ID
 import little.goose.memorial.data.entities.Memorial
 import little.goose.memorial.ui.component.MemorialText
@@ -56,13 +58,18 @@ import java.util.Date
 
 const val ROUTE_MEMORIAL = "memorial"
 
+const val DEEP_LINK_URI_PATTERN_MEMORIAL =
+    "little-goose://office/$ROUTE_GRAPH_MEMORIAL/$ROUTE_MEMORIAL" +
+            "?$KEY_TYPE={$KEY_TYPE}" +
+            "?$KEY_MEMORIAL_ID={$KEY_MEMORIAL_ID}"
+
 fun NavController.navigateToMemorial(
     type: MemorialScreenType,
     memorialId: Long? = null
 ) {
     navigate(
         route = ROUTE_MEMORIAL +
-                "/$KEY_TYPE=$type" +
+                "?$KEY_TYPE=$type" +
                 if (memorialId != null) "?$KEY_MEMORIAL_ID=$memorialId" else ""
     ) {
         launchSingleTop = true
@@ -83,11 +90,17 @@ internal fun NavGraphBuilder.memorialRoute(
     onBack: () -> Unit
 ) = composable(
     route = ROUTE_MEMORIAL +
-            "/$KEY_TYPE={$KEY_TYPE}" +
-            "?$KEY_MEMORIAL_ID={$KEY_MEMORIAL_ID}",
+            "?$KEY_TYPE={$KEY_TYPE}" +
+            "?$KEY_MEMORIAL_ID={$KEY_MEMORIAL_ID}", 
+    deepLinks = listOf(
+        navDeepLink {
+            uriPattern = DEEP_LINK_URI_PATTERN_MEMORIAL
+        }
+    ),
     arguments = listOf(
         navArgument(KEY_TYPE) {
             type = NavType.StringType
+            defaultValue = MemorialScreenType.Add.toString()
         },
         navArgument(KEY_MEMORIAL_ID) {
             type = NavType.LongType

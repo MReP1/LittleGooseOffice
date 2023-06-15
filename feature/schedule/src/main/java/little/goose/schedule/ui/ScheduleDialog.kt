@@ -28,6 +28,7 @@ import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavType
 import androidx.navigation.compose.dialog
 import androidx.navigation.navArgument
+import androidx.navigation.navDeepLink
 import kotlinx.coroutines.launch
 import little.goose.common.utils.TimeType
 import little.goose.common.utils.toChineseStringWithYear
@@ -43,6 +44,9 @@ const val KEY_SCHEDULE_ID = "schedule_id"
 
 const val ROUTE_DIALOG_SCHEDULE = "dialog_schedule"
 
+const val DEEP_LINK_URI_PATTERN_SCHEDULE_DIALOG = "little-goose://office/$ROUTE_DIALOG_SCHEDULE" +
+        "/$KEY_SCHEDULE_ID={$KEY_SCHEDULE_ID}"
+
 fun NavController.navigateToScheduleDialog(scheduleId: Long?) {
     navigate("$ROUTE_DIALOG_SCHEDULE/${scheduleId ?: -1}") {
         launchSingleTop = true
@@ -54,6 +58,11 @@ fun NavGraphBuilder.scheduleRoute(
 ) {
     dialog(
         route = "$ROUTE_DIALOG_SCHEDULE/{$KEY_SCHEDULE_ID}",
+        deepLinks = listOf(
+            navDeepLink {
+                uriPattern = DEEP_LINK_URI_PATTERN_SCHEDULE_DIALOG
+            }
+        ),
         arguments = listOf(
             navArgument(KEY_SCHEDULE_ID) {
                 type = NavType.LongType

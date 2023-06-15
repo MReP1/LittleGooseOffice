@@ -14,10 +14,12 @@ import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavOptionsBuilder
 import androidx.navigation.NavType
 import androidx.navigation.navArgument
+import androidx.navigation.navDeepLink
 import com.google.accompanist.navigation.animation.composable
 import kotlinx.coroutines.android.awaitFrame
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
+import little.goose.note.data.constants.KEY_NOTE
 import little.goose.note.data.constants.KEY_NOTE_ID
 import little.goose.note.data.entities.NoteContentBlock
 
@@ -39,6 +41,9 @@ sealed class NoteNavigatingType {
 
 const val ROUTE_NOTE = "note"
 
+const val DEEP_LINK_URI_PATTERN_NOTE = "little-goose://office/$KEY_NOTE" +
+        "/$KEY_NOTE_ID={$KEY_NOTE_ID}"
+
 fun NavController.navigateToNote(
     type: NoteNavigatingType
 ) {
@@ -57,6 +62,11 @@ fun NavController.navigateToNote(
 fun NavGraphBuilder.noteRoute(onBack: () -> Unit) {
     composable(
         route = "$ROUTE_NOTE/{$KEY_NOTE_ID}",
+        deepLinks = listOf(
+            navDeepLink {
+                uriPattern = DEEP_LINK_URI_PATTERN_NOTE
+            }
+        ),
         arguments = listOf(
             navArgument(KEY_NOTE_ID) {
                 type = NavType.LongType
