@@ -8,6 +8,7 @@ import androidx.glance.GlanceModifier
 import androidx.glance.GlanceTheme
 import androidx.glance.Image
 import androidx.glance.ImageProvider
+import androidx.glance.appwidget.cornerRadius
 import androidx.glance.layout.Alignment
 import androidx.glance.layout.Box
 import androidx.glance.layout.ContentScale
@@ -20,7 +21,7 @@ internal fun AppWidgetIcon(
     @DrawableRes drawableResId: Int,
     contentDescription: String
 ) {
-    Box(modifier = modifier, contentAlignment = Alignment.Center) {
+    Box(modifier = modifier.cornerRadius(88.dp), contentAlignment = Alignment.Center) {
         Image(
             provider = ImageProvider(drawableResId),
             contentDescription = contentDescription,
