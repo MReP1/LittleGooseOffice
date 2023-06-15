@@ -1,11 +1,14 @@
 package little.goose.home
 
+import android.app.Activity
 import android.content.Intent
 import androidx.activity.ComponentActivity
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.produceState
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -19,6 +22,7 @@ import com.google.accompanist.navigation.animation.composable
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import little.goose.common.constants.KEY_HOME_PAGE
+import little.goose.common.utils.log
 import little.goose.home.ui.HomeScreen
 import little.goose.home.ui.HomeViewModel
 import little.goose.search.SearchType
@@ -55,9 +59,13 @@ fun NavGraphBuilder.homeRoute(
             }
         )
     ) {
+        val context = LocalContext.current
         HomeRoute(
             modifier = Modifier.fillMaxSize(),
-            initHomePage = it.arguments?.getInt(KEY_INIT_HOME_PAGE, -1) ?: -1,
+            initHomePage = it.arguments?.getInt(KEY_INIT_HOME_PAGE, -1)
+                .takeIf { hp -> hp != -1 }
+                ?: (context as? Activity)?.intent?.getIntExtra(KEY_HOME_PAGE, -1)
+                ?: -1,
             onNavigateToMemorialAdd = onNavigateToMemorialAdd,
             onNavigateToMemorialDialog = onNavigateToMemorialDialog,
             onNavigateToNote = onNavigateToNote,
@@ -84,10 +92,16 @@ fun HomeRoute(
     onNavigateToScheduleDialog: (Long?) -> Unit
 ) {
     val viewModel = hiltViewModel<HomeViewModel>()
-    if (initHomePage == -1) {
+    val homePage by produceState(initialValue = initHomePage) {
+        log(initHomePage)
+        if (initHomePage == -1) {
+            value = viewModel.getDataStoreHomePage()
+        }
+    }
+    if (homePage == -1) {
         LittleGooseEmptyScreen(modifier = modifier)
     } else {
-        val pagerState = rememberPagerState(initialPage = initHomePage)
+        val pagerState = rememberPagerState(initialPage = homePage)
         HomeScreen(
             modifier = modifier.fillMaxSize(),
             pagerState = pagerState,

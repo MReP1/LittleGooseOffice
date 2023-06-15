@@ -3,9 +3,7 @@ package little.goose.office
 import androidx.compose.animation.AnimatedContentScope
 import androidx.compose.animation.core.tween
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
-import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
 import com.google.accompanist.navigation.animation.AnimatedNavHost
@@ -18,7 +16,6 @@ import little.goose.account.ui.transaction.navigateToTransactionDialog
 import little.goose.home.KEY_INIT_HOME_PAGE
 import little.goose.home.ROUTE_HOME
 import little.goose.home.homeRoute
-import little.goose.home.navigateToHome
 import little.goose.memorial.memorialGraph
 import little.goose.memorial.ui.MemorialScreenType
 import little.goose.memorial.ui.navigateToMemorial
@@ -36,13 +33,7 @@ import little.goose.search.searchRoute
 internal fun MainScreen(
     modifier: Modifier,
 ) {
-    val viewModel = hiltViewModel<MainViewModel>()
     val navController = rememberAnimatedNavController()
-    LaunchedEffect(viewModel.initHomePage) {
-        viewModel.initHomePage.collect {
-            navController.navigateToHome(it)
-        }
-    }
     LittleGooseAnimatedNavHost(
         modifier = modifier,
         navController = navController,
