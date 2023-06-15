@@ -3,7 +3,9 @@ package little.goose.office
 import androidx.compose.animation.AnimatedContentScope
 import androidx.compose.animation.core.tween
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
 import com.google.accompanist.navigation.animation.AnimatedNavHost
@@ -13,8 +15,10 @@ import little.goose.account.ui.analysis.navigateToAccountAnalysis
 import little.goose.account.ui.navigateToTransactionExample
 import little.goose.account.ui.transaction.navigateToTransaction
 import little.goose.account.ui.transaction.navigateToTransactionDialog
+import little.goose.home.KEY_INIT_HOME_PAGE
 import little.goose.home.ROUTE_HOME
 import little.goose.home.homeRoute
+import little.goose.home.navigateToHome
 import little.goose.memorial.memorialGraph
 import little.goose.memorial.ui.MemorialScreenType
 import little.goose.memorial.ui.navigateToMemorial
@@ -31,18 +35,20 @@ import little.goose.search.searchRoute
 @Composable
 internal fun MainScreen(
     modifier: Modifier,
-    homePage: Int,
-    onHomePageUpdate: (Int) -> Unit,
 ) {
+    val viewModel = hiltViewModel<MainViewModel>()
     val navController = rememberAnimatedNavController()
+    LaunchedEffect(viewModel.initHomePage) {
+        viewModel.initHomePage.collect {
+            navController.navigateToHome(it)
+        }
+    }
     LittleGooseAnimatedNavHost(
         modifier = modifier,
         navController = navController,
-        startDestination = ROUTE_HOME
+        startDestination = "$ROUTE_HOME/{$KEY_INIT_HOME_PAGE}"
     ) {
         homeRoute(
-            homePage = homePage,
-            onHomePageUpdate = onHomePageUpdate,
             onNavigateToNote = { noteId ->
                 val navigatingType = if (noteId != null) {
                     NoteNavigatingType.Edit(noteId)

@@ -12,7 +12,7 @@ import kotlinx.coroutines.flow.onEach
 @OptIn(FlowPreview::class)
 class DebounceActionChannel<T>(
     coroutineScope: CoroutineScope,
-    debounceTime: Long = 500L,
+    debounceTimeMillis: Long = 500L,
     preEach: (suspend (T) -> Unit)? = null,
     action: suspend (T) -> Unit,
 ) : Channel<T> by Channel(
@@ -22,7 +22,7 @@ class DebounceActionChannel<T>(
     init {
         consumeAsFlow().run {
             if (preEach != null) onEach(preEach) else this
-        }.debounce(debounceTime)
+        }.debounce(debounceTimeMillis)
             .onEach(action)
             .launchIn(coroutineScope)
     }
