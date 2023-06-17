@@ -60,12 +60,12 @@ import java.util.Date
 const val ROUTE_MEMORIAL = "memorial"
 
 const val FULL_ROUTE_MEMORIAL = ROUTE_MEMORIAL +
-        "?$KEY_TYPE={$KEY_TYPE}" +
+        "/$KEY_TYPE={$KEY_TYPE}" +
         "?$KEY_MEMORIAL_ID={$KEY_MEMORIAL_ID}"
 
 private const val DEEP_LINK_URI_PATTERN_MEMORIAL =
     "$DEEP_LINK_THEME_AND_HOST/$ROUTE_GRAPH_MEMORIAL/$ROUTE_MEMORIAL" +
-            "?$KEY_TYPE={$KEY_TYPE}" +
+            "/$KEY_TYPE={$KEY_TYPE}" +
             "?$KEY_MEMORIAL_ID={$KEY_MEMORIAL_ID}"
 
 fun NavController.navigateToMemorial(
@@ -74,7 +74,7 @@ fun NavController.navigateToMemorial(
 ) {
     navigate(
         route = ROUTE_MEMORIAL +
-                "?$KEY_TYPE=$type" +
+                "/$KEY_TYPE=$type" +
                 if (memorialId != null) "?$KEY_MEMORIAL_ID=$memorialId" else ""
     ) {
         launchSingleTop = true

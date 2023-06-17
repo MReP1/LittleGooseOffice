@@ -85,7 +85,7 @@ internal fun actionStartMemorialScreen(): Action {
     return actionStartMainActivity(
         data = Uri.parse(
             "$DEEP_LINK_THEME_AND_HOST/graph_memorial/memorial" +
-                    "?type=Add" +
+                    "/type=Add" +
                     "?memorial_id=0"
         ),
         parameters = actionParametersOf(
