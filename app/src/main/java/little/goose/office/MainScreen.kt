@@ -38,11 +38,7 @@ sealed interface AppState {
 }
 
 @Composable
-internal fun MainScreen(
-    modifier: Modifier,
-    themeConfig: ThemeConfig,
-    onThemeConfigChange: (ThemeConfig) -> Unit,
-) {
+internal fun MainScreen(modifier: Modifier) {
     val navController = rememberAnimatedNavController()
     LittleGooseAnimatedNavHost(
         modifier = modifier,
@@ -116,15 +112,7 @@ internal fun MainScreen(
         )
 
         settingsRoute(
-            onBack = navController::navigateUp,
-            isDynamicColor = themeConfig.isDynamicColor,
-            onDynamicColorChange = {
-                onThemeConfigChange(themeConfig.copy(isDynamicColor = it))
-            },
-            themeType = themeConfig.themeType,
-            onThemeTypeChange = {
-                onThemeConfigChange(themeConfig.copy(themeType = it))
-            }
+            onBack = navController::navigateUp
         )
     }
 }

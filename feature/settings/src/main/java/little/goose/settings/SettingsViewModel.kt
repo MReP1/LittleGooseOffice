@@ -23,8 +23,8 @@ class SettingsViewModel @Inject constructor(
             SettingsState.Success(
                 isDynamicColor = themeConfig.isDynamicColor,
                 themeType = themeConfig.themeType,
-                onThemeTypeChange = {},
-                onDynamicColorChange = {}
+                onThemeTypeChange = ::setThemeType,
+                onDynamicColorChange = ::setIsDynamicColor
             )
         }.stateIn(viewModelScope, SharingStarted.Eagerly, SettingsState.Loading)
 

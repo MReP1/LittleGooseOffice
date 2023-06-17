@@ -40,9 +40,7 @@ class MainActivity : AppCompatActivity() {
                     val themeConfig = state.themeConfig
                     AccountTheme(themeConfig) {
                         MainScreen(
-                            modifier = Modifier.fillMaxSize(),
-                            themeConfig = themeConfig,
-                            onThemeConfigChange = viewModel::setThemeConfig
+                            modifier = Modifier.fillMaxSize()
                         )
                     }
                 }

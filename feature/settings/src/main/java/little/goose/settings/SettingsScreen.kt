@@ -44,22 +44,19 @@ import androidx.compose.ui.unit.dp
 import little.goose.design.system.theme.ThemeType
 
 sealed interface SettingsState {
-    object Loading: SettingsState
+    object Loading : SettingsState
     data class Success(
         val isDynamicColor: Boolean,
         val onDynamicColorChange: (Boolean) -> Unit,
         val themeType: ThemeType,
         val onThemeTypeChange: (ThemeType) -> Unit
-    ): SettingsState
+    ) : SettingsState
 }
 
 @Composable
 internal fun SettingsScreen(
     modifier: Modifier = Modifier,
-    isDynamicColor: Boolean,
-    onDynamicColorChange: (Boolean) -> Unit,
-    themeType: ThemeType,
-    onThemeTypeChange: (ThemeType) -> Unit,
+    settingsState: SettingsState,
     onBack: () -> Unit
 ) {
     Scaffold(
@@ -75,7 +72,7 @@ internal fun SettingsScreen(
                     }
                 },
                 title = {
-                    Text(text = stringResource(id = R.string.settings_screen))
+                    Text(text = stringResource(id = R.string.settings))
                 }
             )
         },
@@ -198,7 +195,8 @@ internal fun SettingsScreen(
                                 contentAlignment = Alignment.TopCenter
                             ) {
                                 val rotation by animateFloatAsState(
-                                    targetValue = if (isExpanded) 180f else 0f
+                                    targetValue = if (isExpanded) 180f else 0f,
+                                    label = "Arrow Rotation"
                                 )
                                 Icon(
                                     modifier = Modifier.rotate(rotation),
@@ -213,24 +211,28 @@ internal fun SettingsScreen(
                                     .fillMaxWidth()
                                     .animateContentSize()
                             ) {
-                                if (isExpanded) {
+                                if (isExpanded && settingsState is SettingsState.Success) {
                                     Spacer(modifier = Modifier.height(8.dp))
                                     Row(
                                         verticalAlignment = Alignment.CenterVertically,
                                         modifier = Modifier.clickable {
-                                            onDynamicColorChange(!isDynamicColor)
+                                            settingsState.onDynamicColorChange(
+                                                !settingsState.isDynamicColor
+                                            )
                                         }
                                     ) {
                                         Switch(
-                                            checked = isDynamicColor,
-                                            onCheckedChange = onDynamicColorChange
+                                            checked = settingsState.isDynamicColor,
+                                            onCheckedChange = settingsState.onDynamicColorChange
                                         )
                                         Spacer(modifier = Modifier.width(8.dp))
                                         Text(text = stringResource(id = R.string.dynamic_color))
                                     }
 
                                     val changeThemeType: (ThemeType) -> Unit = {
-                                        if (themeType != it) onThemeTypeChange(it)
+                                        if (settingsState.themeType != it) settingsState.onThemeTypeChange(
+                                            it
+                                        )
                                     }
                                     Row(
                                         verticalAlignment = Alignment.CenterVertically,
@@ -239,7 +241,7 @@ internal fun SettingsScreen(
                                         }
                                     ) {
                                         Checkbox(
-                                            checked = themeType == ThemeType.FOLLOW_SYSTEM,
+                                            checked = settingsState.themeType == ThemeType.FOLLOW_SYSTEM,
                                             onCheckedChange = {
                                                 changeThemeType(ThemeType.FOLLOW_SYSTEM)
                                             }
@@ -254,7 +256,7 @@ internal fun SettingsScreen(
                                         }
                                     ) {
                                         Checkbox(
-                                            checked = themeType == ThemeType.LIGHT,
+                                            checked = settingsState.themeType == ThemeType.LIGHT,
                                             onCheckedChange = { changeThemeType(ThemeType.LIGHT) }
                                         )
                                         Text(text = stringResource(id = R.string.light_mode))
@@ -267,7 +269,7 @@ internal fun SettingsScreen(
                                         }
                                     ) {
                                         Checkbox(
-                                            checked = themeType == ThemeType.DART,
+                                            checked = settingsState.themeType == ThemeType.DART,
                                             onCheckedChange = { changeThemeType(ThemeType.DART) }
                                         )
                                         Text(text = stringResource(id = R.string.dart_mode))
