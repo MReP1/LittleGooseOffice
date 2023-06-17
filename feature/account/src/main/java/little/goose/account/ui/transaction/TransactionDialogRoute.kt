@@ -117,13 +117,13 @@ private fun TransactionDialogScreen(
             Spacer(modifier = Modifier.height(12.dp))
             DialogButtonGroup(
                 startButtonContent = {
-                    Text(text = stringResource(id = little.goose.account.R.string.delete))
+                    Text(text = stringResource(id = little.goose.common.R.string.delete))
                 },
                 onStartButtonClick = {
                     onDeleteClick(transaction)
                 },
                 endButtonContent = {
-                    Text(text = stringResource(id = little.goose.account.R.string.edit))
+                    Text(text = stringResource(id = little.goose.common.R.string.edit))
                 },
                 onEndButtonClick = {
                     onEditClick(transaction)

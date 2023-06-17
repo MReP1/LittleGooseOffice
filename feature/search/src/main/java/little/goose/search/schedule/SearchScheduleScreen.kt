@@ -22,7 +22,6 @@ import kotlinx.coroutines.flow.collectLatest
 import little.goose.design.system.theme.AccountTheme
 import little.goose.schedule.data.entities.Schedule
 import little.goose.schedule.ui.ScheduleColumnState
-import little.goose.search.R
 import little.goose.search.SearchState
 import little.goose.search.component.SearchTopAppBar
 import little.goose.ui.screen.LittleGooseEmptyScreen
@@ -65,7 +64,9 @@ fun SearchScheduleRoute(
         viewModel.searchScheduleEvent.collectLatest { event ->
             when (event) {
                 is SearchScheduleEvent.DeleteSchedules -> {
-                    snackbarHostState.showSnackbar(message = context.getString(R.string.deleted))
+                    snackbarHostState.showSnackbar(
+                        message = context.getString(little.goose.common.R.string.deleted)
+                    )
                 }
             }
         }
@@ -75,7 +76,7 @@ fun SearchScheduleRoute(
         modifier = modifier,
         state = searchScheduleState,
         snackbarHostState = snackbarHostState,
-        onNavigateToScheduleDialog= onNavigateToScheduleDialog,
+        onNavigateToScheduleDialog = onNavigateToScheduleDialog,
         onBack = onBack
     )
 }

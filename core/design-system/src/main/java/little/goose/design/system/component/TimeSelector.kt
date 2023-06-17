@@ -30,7 +30,6 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 import little.goose.common.utils.DateTimeUtils
 import little.goose.common.utils.TimeType
-import little.goose.design.system.R
 import java.util.Calendar
 import java.util.Date
 
@@ -73,7 +72,7 @@ fun TimeSelector(
                     .fillMaxWidth()
                     .height(48.dp)
             ) {
-                Text(text = stringResource(id = R.string.confirm))
+                Text(text = stringResource(id = little.goose.common.R.string.confirm))
             }
         }
         Row(
@@ -104,7 +103,7 @@ fun TimeSelector(
                     onItemSelected = { _, y -> state.year = y.toInt() }
                 )
                 Text(
-                    text = stringResource(id = R.string.year),
+                    text = stringResource(id = little.goose.common.R.string.year),
                     style = MaterialTheme.typography.bodySmall,
                     modifier = Modifier.padding(start = 10.dp, end = 8.dp)
                 )
@@ -130,7 +129,7 @@ fun TimeSelector(
                     onItemSelected = { _, m -> state.month = m.toInt() }
                 )
                 Text(
-                    text = stringResource(id = R.string.month),
+                    text = stringResource(id = little.goose.common.R.string.month),
                     style = MaterialTheme.typography.bodySmall,
                     modifier = Modifier.padding(start = 6.dp, end = 8.dp)
                 )
@@ -156,7 +155,7 @@ fun TimeSelector(
                     onItemSelected = { _, d -> state.day = d.toInt() }
                 )
                 Text(
-                    text = stringResource(id = R.string.day),
+                    text = stringResource(id = little.goose.common.R.string.day),
                     style = MaterialTheme.typography.bodySmall,
                     modifier = Modifier.padding(start = 6.dp, end = 8.dp)
                 )
@@ -182,7 +181,7 @@ fun TimeSelector(
                     onItemSelected = { _, h -> state.hour = h.toInt() }
                 )
                 Text(
-                    text = stringResource(id = R.string.hour),
+                    text = stringResource(id = little.goose.common.R.string.hour),
                     style = MaterialTheme.typography.bodySmall,
                     modifier = Modifier.padding(start = 6.dp, end = 8.dp)
                 )
@@ -206,7 +205,7 @@ fun TimeSelector(
                     onItemSelected = { _, m -> state.minute = m.toInt() }
                 )
                 Text(
-                    text = stringResource(id = R.string.minute),
+                    text = stringResource(id = little.goose.common.R.string.minute),
                     style = MaterialTheme.typography.bodySmall,
                     modifier = Modifier.padding(start = 6.dp, end = 8.dp)
                 )
@@ -220,7 +219,7 @@ fun TimeSelector(
                     .fillMaxWidth()
                     .height(48.dp)
             ) {
-                Text(text = stringResource(id = R.string.confirm))
+                Text(text = stringResource(id = little.goose.common.R.string.confirm))
             }
         }
     }

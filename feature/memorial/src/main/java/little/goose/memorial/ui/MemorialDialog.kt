@@ -1,10 +1,16 @@
 package little.goose.memorial.ui
 
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.Text
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.RectangleShape
@@ -17,8 +23,8 @@ import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavType
 import androidx.navigation.compose.dialog
 import androidx.navigation.navArgument
-import little.goose.design.system.component.dialog.*
-import little.goose.memorial.R
+import little.goose.design.system.component.dialog.DeleteDialog
+import little.goose.design.system.component.dialog.DeleteDialogState
 import little.goose.memorial.data.constants.KEY_MEMORIAL_ID
 import little.goose.memorial.data.entities.Memorial
 import little.goose.memorial.ui.component.MemorialCard
@@ -82,7 +88,7 @@ fun MemorialDialogScreen(
                 onClick = onDelete,
                 shape = RectangleShape
             ) {
-                Text(text = stringResource(id = R.string.delete))
+                Text(text = stringResource(id = little.goose.common.R.string.delete))
             }
             Button(
                 modifier = Modifier
@@ -91,7 +97,7 @@ fun MemorialDialogScreen(
                 onClick = onEdit,
                 shape = RectangleShape
             ) {
-                Text(text = stringResource(id = R.string.edit))
+                Text(text = stringResource(id = little.goose.common.R.string.edit))
             }
         }
     }

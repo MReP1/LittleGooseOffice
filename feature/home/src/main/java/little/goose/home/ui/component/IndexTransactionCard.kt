@@ -44,9 +44,9 @@ internal fun IndexTransactionCard(
                     .fillMaxWidth()
                     .padding(start = 12.dp, end = 12.dp, top = 8.dp, bottom = 10.dp)
             ) {
-                Text(text = stringResource(id = little.goose.home.R.string.income) + " ${state.income}")
+                Text(text = stringResource(id = little.goose.account.R.string.income) + " ${state.income}")
                 Spacer(modifier = Modifier.weight(1F))
-                Text(text = stringResource(id = little.goose.home.R.string.expense) + " -${state.expense}")
+                Text(text = stringResource(id = little.goose.account.R.string.expense) + " -${state.expense}")
             }
             IndexTransactionColumn(
                 modifier = Modifier
@@ -57,12 +57,12 @@ internal fun IndexTransactionCard(
         } else {
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Spacer(modifier = Modifier.width(16.dp))
-                Text(text = stringResource(id = little.goose.home.R.string.today_no_transaction))
+                Text(text = stringResource(id = little.goose.account.R.string.today_no_transaction))
                 Spacer(modifier = Modifier.weight(1F))
                 TextButton(onClick = {
                     onTransactionAdd(state.currentTime.toDate())
                 }) {
-                    Text(text = stringResource(id = little.goose.home.R.string.take_a_transaction))
+                    Text(text = stringResource(id = little.goose.account.R.string.take_a_transaction))
                 }
             }
         }

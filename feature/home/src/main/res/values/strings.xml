@@ -1,12 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="some_month_date">%s月%s日</string>
     <string name="home">主页</string>
-
-    <string name="today_no_transaction">今天没有记账</string>
-    <string name="income">收入</string>
-    <string name="expense">支出</string>
-    <string name="take_a_transaction">记一笔</string>
-    <string name="deleted">已删除</string>
-
 </resources>

@@ -23,7 +23,6 @@ import little.goose.design.system.theme.AccountTheme
 import little.goose.note.data.entities.Note
 import little.goose.note.data.entities.NoteContentBlock
 import little.goose.note.ui.NoteColumnState
-import little.goose.search.R
 import little.goose.search.SearchState
 import little.goose.search.component.SearchTopAppBar
 import little.goose.ui.screen.LittleGooseEmptyScreen
@@ -64,7 +63,9 @@ fun SearchNoteRoute(
         viewModel.searchNoteEvent.collectLatest { event ->
             when (event) {
                 is SearchNoteEvent.DeleteNotes -> {
-                    snackbarHostState.showSnackbar(message = context.getString(R.string.deleted))
+                    snackbarHostState.showSnackbar(
+                        message = context.getString(little.goose.common.R.string.deleted)
+                    )
                 }
             }
         }

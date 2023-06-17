@@ -48,7 +48,6 @@ import little.goose.design.system.component.MovableActionButton
 import little.goose.design.system.component.MovableActionButtonState
 import little.goose.design.system.component.dialog.DeleteDialog
 import little.goose.design.system.component.dialog.DeleteDialogState
-import little.goose.home.R
 import little.goose.home.data.ACCOUNT
 import little.goose.home.data.HOME
 import little.goose.home.data.HomePage
@@ -124,7 +123,7 @@ fun HomeScreen(
             when (event) {
                 is ScheduleHomeViewModel.Event.DeleteSchedules -> {
                     snackbarHostState.showSnackbar(
-                        message = context.getString(R.string.deleted),
+                        message = context.getString(little.goose.common.R.string.deleted),
                         withDismissAction = true
                     )
                 }
@@ -137,7 +136,7 @@ fun HomeScreen(
             when (event) {
                 is AccountHomeViewModel.Event.DeleteTransactions -> {
                     snackbarHostState.showSnackbar(
-                        message = context.getString(R.string.deleted),
+                        message = context.getString(little.goose.common.R.string.deleted),
                         withDismissAction = true
                     )
                 }
@@ -150,7 +149,7 @@ fun HomeScreen(
             when (event) {
                 is MemorialViewModel.Event.DeleteMemorials -> {
                     snackbarHostState.showSnackbar(
-                        message = context.getString(R.string.deleted),
+                        message = context.getString(little.goose.common.R.string.deleted),
                         withDismissAction = true
                     )
                 }
@@ -163,7 +162,7 @@ fun HomeScreen(
             when (event) {
                 is NotebookViewModel.Event.DeleteNotes -> {
                     snackbarHostState.showSnackbar(
-                        message = context.getString(R.string.deleted),
+                        message = context.getString(little.goose.common.R.string.deleted),
                         withDismissAction = true
                     )
                 }

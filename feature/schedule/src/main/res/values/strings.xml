@@ -6,7 +6,4 @@
     <string name="schedule_title_tag">事务</string>
     <string name="schedule_content_tag">描述</string>
     <string name="schedule_cant_be_blank">事务不能为空</string>
-
-    <string name="cancel">取消</string>
-    <string name="delete">删除</string>
 </resources>

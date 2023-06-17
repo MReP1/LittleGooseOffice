@@ -79,12 +79,12 @@ private fun InputDialogScreen(
                 horizontalArrangement = Arrangement.End
             ) {
                 TextButton(onClick = onCancel) {
-                    Text(text = stringResource(id = little.goose.design.system.R.string.cancel))
+                    Text(text = stringResource(id = little.goose.common.R.string.cancel))
                 }
                 TextButton(onClick = {
                     onConfirm(content.text)
                 }) {
-                    Text(text = stringResource(id = little.goose.design.system.R.string.confirm))
+                    Text(text = stringResource(id = little.goose.common.R.string.confirm))
                 }
             }
             TextField(

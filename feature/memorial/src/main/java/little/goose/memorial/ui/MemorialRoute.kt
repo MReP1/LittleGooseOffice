@@ -274,7 +274,7 @@ private fun MemorialScreen(
                         .height(64.dp),
                     shape = RectangleShape
                 ) {
-                    Text(text = stringResource(id = R.string.confirm))
+                    Text(text = stringResource(id = little.goose.common.R.string.confirm))
                 }
             }
         }

@@ -191,7 +191,7 @@ private fun TransactionRoute(
             when (event) {
                 is TransactionExampleViewModel.Event.DeleteTransactions -> {
                     snackbarHostState.showSnackbar(
-                        message = context.getString(little.goose.account.R.string.deleted),
+                        message = context.getString(little.goose.common.R.string.deleted),
                         withDismissAction = true,
                     )
                 }

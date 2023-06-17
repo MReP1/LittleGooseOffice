@@ -22,7 +22,6 @@ import kotlinx.coroutines.flow.collectLatest
 import little.goose.design.system.theme.AccountTheme
 import little.goose.memorial.data.entities.Memorial
 import little.goose.memorial.ui.component.MemorialColumnState
-import little.goose.search.R
 import little.goose.search.SearchState
 import little.goose.search.component.SearchTopAppBar
 import little.goose.ui.screen.LittleGooseEmptyScreen
@@ -61,7 +60,9 @@ fun SearchMemorialRoute(
         viewModel.searchMemorialEvent.collectLatest { event ->
             when (event) {
                 is SearchMemorialEvent.DeleteMemorials -> {
-                    snackbarHostState.showSnackbar(message = context.getString(R.string.deleted))
+                    snackbarHostState.showSnackbar(
+                        message = context.getString(little.goose.common.R.string.deleted)
+                    )
                 }
             }
         }

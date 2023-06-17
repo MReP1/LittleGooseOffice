@@ -26,4 +26,8 @@
     <string name="saturday_z">周六</string>
     <string name="sunday_z">周日</string>
 
+    <string name="deleted">已删除</string>
+    <string name="delete">删除</string>
+    <string name="edit">编辑</string>
+
 </resources>

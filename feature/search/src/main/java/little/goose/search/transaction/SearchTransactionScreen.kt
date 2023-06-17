@@ -19,7 +19,6 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.hilt.navigation.compose.hiltViewModel
 import little.goose.account.data.entities.Transaction
 import little.goose.account.ui.component.TransactionColumnState
-import little.goose.search.R
 import little.goose.search.SearchState
 import little.goose.search.component.SearchTopAppBar
 import little.goose.ui.screen.LittleGooseEmptyScreen
@@ -59,7 +58,9 @@ fun SearchTransactionRoute(
         viewModel.searchTransactionEvent.collect { event ->
             when (event) {
                 is SearchTransactionEvent.DeleteTransactions -> {
-                    snackbarHostState.showSnackbar(context.getString(R.string.deleted))
+                    snackbarHostState.showSnackbar(
+                        message = context.getString(little.goose.common.R.string.deleted)
+                    )
                 }
             }
         }
