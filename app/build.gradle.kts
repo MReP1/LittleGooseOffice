@@ -58,7 +58,7 @@ dependencies {
     implementation(libs.androidx.lifecycle.viewModel.ktx)
 
     implementation(project(":core:common"))
-
+    implementation(project(":feature:settings"))
     implementation(project(":appwidget"))
 
 }

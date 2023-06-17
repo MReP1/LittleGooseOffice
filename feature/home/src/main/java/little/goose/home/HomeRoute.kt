@@ -40,6 +40,7 @@ fun NavController.navigateToHome(initPage: Int) {
 }
 
 fun NavGraphBuilder.homeRoute(
+    onNavigateToSettings: () -> Unit,
     onNavigateToMemorialAdd: () -> Unit,
     onNavigateToMemorialDialog: (memorialId: Long) -> Unit,
     onNavigateToNote: (noteId: Long?) -> Unit,
@@ -65,6 +66,7 @@ fun NavGraphBuilder.homeRoute(
                 .takeIf { hp -> hp != -1 }
                 ?: (context as? Activity)?.intent?.getIntExtra(KEY_HOME_PAGE, -1)
                 ?: -1,
+            onNavigateToSettings = onNavigateToSettings,
             onNavigateToMemorialAdd = onNavigateToMemorialAdd,
             onNavigateToMemorialDialog = onNavigateToMemorialDialog,
             onNavigateToNote = onNavigateToNote,
@@ -81,6 +83,7 @@ fun NavGraphBuilder.homeRoute(
 fun HomeRoute(
     modifier: Modifier = Modifier,
     initHomePage: Int,
+    onNavigateToSettings: () -> Unit,
     onNavigateToMemorialAdd: () -> Unit,
     onNavigateToMemorialDialog: (memorialId: Long) -> Unit,
     onNavigateToTransactionDialog: (transactionId: Long) -> Unit,
@@ -103,6 +106,7 @@ fun HomeRoute(
         HomeScreen(
             modifier = modifier.fillMaxSize(),
             pagerState = pagerState,
+            onNavigateToSettings = onNavigateToSettings,
             onNavigateToNote = onNavigateToNote,
             onNavigateToSearch = onNavigateToSearch,
             onNavigateToTransaction = onNavigateToTransaction,

@@ -6,7 +6,6 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsFocusedAsState
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -16,6 +15,7 @@ import androidx.compose.material.icons.rounded.Delete
 import androidx.compose.material3.DismissDirection
 import androidx.compose.material3.DismissValue
 import androidx.compose.material3.Icon
+import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.SwipeToDismiss
@@ -100,12 +100,12 @@ fun NoteContentBlockItem(
             }
         },
         dismissContent = {
-            Row(
-                modifier = Modifier.background(backgroundColor),
-                verticalAlignment = Alignment.CenterVertically
+            Surface(
+                modifier = Modifier,
+                color = backgroundColor
             ) {
                 NoteContentBlockTextField(
-                    modifier = Modifier.weight(1F),
+                    modifier = Modifier.fillMaxWidth(),
                     value = value,
                     onValueChange = onValueChange,
                     interactionSource = interactionSource,
@@ -132,6 +132,9 @@ fun NoteContentBlockTextField(
         value = value,
         onValueChange = onValueChange,
         interactionSource = interactionSource,
+        textStyle = MaterialTheme.typography.bodyMedium.copy(
+            color = LocalContentColor.current
+        ),
         decorationBox = { innerTextField ->
             Box(
                 modifier = Modifier

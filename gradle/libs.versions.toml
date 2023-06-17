@@ -24,6 +24,7 @@ composeCalendar = "2.3.0"
 composeMarkdown = "0.6.1"
 junit4 = "4.13.2"
 kotlin = "1.8.21"
+protobuf = "3.23.0"
 
 hilt = "2.46.1"
 hiltCompose = "1.0.0"
@@ -31,6 +32,7 @@ kotlinxCoroutines = "1.7.1"
 ksp = "1.8.21-1.0.11"
 recyclerView = "1.3.0"
 room = "2.5.1"
+protobufPlugin = "0.9.3"
 
 [libraries]
 accompanist-navigation-animation = { group = "com.google.accompanist", name = "accompanist-navigation-animation", version.ref = "accompanistVersion" }
@@ -58,6 +60,7 @@ androidx-compose-ui-test = { group = "androidx.compose.ui", name = "ui-test-juni
 androidx-compose-ui-tooling = { group = "androidx.compose.ui", name = "ui-tooling" }
 androidx-compose-ui-testManifest = { group = "androidx.compose.ui", name = "ui-test-manifest" }
 androidx-constraintLayout = { group = "androidx.constraintlayout", name = "constraintlayout", version.ref = "androidxConstraintLayout" }
+androidx-datasotre = { group = "androidx.datastore", name = "datastore", version.ref = "androidxDataStore" }
 androidx-dataStore-preferences = { group = "androidx.datastore", name = "datastore-preferences", version.ref = "androidxDataStore" }
 androidx-glance = { group = "androidx.glance", name = "glance", version.ref = "androidxGlance" }
 androidx-glance-appwidget = { group = "androidx.glance", name = "glance-appwidget", version.ref = "androidxGlance" }
@@ -66,6 +69,8 @@ androidx-test-espresso-core = { group = "androidx.test.espresso", name = "espres
 androidx-startUp-runtime = { group = "androidx.startup", name = "startup-runtime", version.ref = "androidxStartUp" }
 compose-calendar = { group = "com.kizitonwose.calendar", name = "compose", version.ref = "composeCalendar" }
 compose-markdown = { group = "com.mikepenz", name = "multiplatform-markdown-renderer-android", version.ref = "composeMarkdown" }
+protobuf-kotlin-lite = { group = "com.google.protobuf", name = "protobuf-kotlin-lite", version.ref = "protobuf" }
+protobuf-protoc = { group = "com.google.protobuf", name = "protoc", version.ref = "protobuf" }
 google-android-material = { group = "com.google.android.material", name = "material", version.ref = "androidMaterial" }
 hilt-android = { group = "com.google.dagger", name = "hilt-android", version.ref = "hilt" }
 hilt-compiler = { group = "com.google.dagger", name = "hilt-android-compiler", version.ref = "hilt" }
@@ -85,3 +90,4 @@ android-application = { id = "com.android.application", version.ref = "androidGr
 android-library = { id = "com.android.library", version.ref = "androidGradlePlugin" }
 hilt = { id = "com.google.dagger.hilt.android", version.ref = "hilt" }
 ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
+protobuf = { id = "com.google.protobuf", version.ref = "protobufPlugin" }

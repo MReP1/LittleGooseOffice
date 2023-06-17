@@ -4,10 +4,7 @@ import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
-import kotlinx.coroutines.CoroutineExceptionHandler
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.SupervisorJob
+import little.goose.design.system.state.DesignSystemStateHolder
 import javax.inject.Singleton
 
 @Module
@@ -16,10 +13,8 @@ class AppModule {
 
     @Provides
     @Singleton
-    fun provideAppCoroutineScope() = CoroutineScope(
-        SupervisorJob() + Dispatchers.IO + CoroutineExceptionHandler { _, throwable ->
-            throwable.printStackTrace()
-        }
-    )
+    fun provideAppStateHolder(designSystemStateHolder: DesignSystemStateHolder): AppStateHolder {
+        return AppStateHolder(designSystemStateHolder)
+    }
 
 }

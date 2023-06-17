@@ -13,6 +13,7 @@ import little.goose.account.ui.analysis.navigateToAccountAnalysis
 import little.goose.account.ui.navigateToTransactionExample
 import little.goose.account.ui.transaction.navigateToTransaction
 import little.goose.account.ui.transaction.navigateToTransactionDialog
+import little.goose.design.system.theme.ThemeConfig
 import little.goose.home.KEY_INIT_HOME_PAGE
 import little.goose.home.ROUTE_HOME
 import little.goose.home.homeRoute
@@ -28,10 +29,19 @@ import little.goose.schedule.ui.navigateToScheduleDialog
 import little.goose.schedule.ui.scheduleRoute
 import little.goose.search.navigateToSearch
 import little.goose.search.searchRoute
+import little.goose.settings.navigateToSettings
+import little.goose.settings.settingsRoute
+
+sealed interface AppState {
+    object Loading : AppState
+    data class Success(val themeConfig: ThemeConfig) : AppState
+}
 
 @Composable
 internal fun MainScreen(
     modifier: Modifier,
+    themeConfig: ThemeConfig,
+    onThemeConfigChange: (ThemeConfig) -> Unit,
 ) {
     val navController = rememberAnimatedNavController()
     LittleGooseAnimatedNavHost(
@@ -40,6 +50,7 @@ internal fun MainScreen(
         startDestination = "$ROUTE_HOME/{$KEY_INIT_HOME_PAGE}"
     ) {
         homeRoute(
+            onNavigateToSettings = navController::navigateToSettings,
             onNavigateToNote = { noteId ->
                 val navigatingType = if (noteId != null) {
                     NoteNavigatingType.Edit(noteId)
@@ -102,6 +113,18 @@ internal fun MainScreen(
 
         scheduleRoute(
             onDismissRequest = navController::navigateUp
+        )
+
+        settingsRoute(
+            onBack = navController::navigateUp,
+            isDynamicColor = themeConfig.isDynamicColor,
+            onDynamicColorChange = {
+                onThemeConfigChange(themeConfig.copy(isDynamicColor = it))
+            },
+            themeType = themeConfig.themeType,
+            onThemeTypeChange = {
+                onThemeConfigChange(themeConfig.copy(themeType = it))
+            }
         )
     }
 }

@@ -17,10 +17,12 @@ import androidx.compose.material.icons.rounded.DoneAll
 import androidx.compose.material.icons.rounded.DonutSmall
 import androidx.compose.material.icons.rounded.RemoveDone
 import androidx.compose.material.icons.rounded.Search
+import androidx.compose.material.icons.rounded.Settings
 import androidx.compose.material.icons.rounded.SubdirectoryArrowRight
 import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Snackbar
@@ -68,6 +70,7 @@ import java.util.Date
 fun HomeScreen(
     modifier: Modifier,
     pagerState: PagerState,
+    onNavigateToSettings: () -> Unit,
     onNavigateToMemorialAdd: () -> Unit,
     onNavigateToMemorialDialog: (memorialId: Long) -> Unit,
     onNavigateToTransactionDialog: (transactionId: Long) -> Unit,
@@ -185,6 +188,16 @@ fun HomeScreen(
                         .wrapContentHeight(),
                     title = {
                         Text(text = stringResource(id = currentHomePage.labelRes))
+                    },
+                    actions = {
+                        IconButton(onClick = onNavigateToSettings) {
+                            Icon(
+                                imageVector = Icons.Rounded.Settings,
+                                contentDescription = stringResource(
+                                    id = little.goose.settings.R.string.settings
+                                )
+                            )
+                        }
                     }
                 )
             } else {

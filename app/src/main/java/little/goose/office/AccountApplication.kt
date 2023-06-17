@@ -4,6 +4,7 @@ import android.app.Application
 import dagger.hilt.android.HiltAndroidApp
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
+import little.goose.common.di.AppCoroutineScope
 import little.goose.common.utils.initial
 import little.goose.home.utils.homeDataStore
 import javax.inject.Inject
@@ -12,6 +13,7 @@ import javax.inject.Inject
 class AccountApplication : Application() {
 
     @Inject
+    @AppCoroutineScope
     lateinit var appScope: CoroutineScope
 
     override fun onCreate() {

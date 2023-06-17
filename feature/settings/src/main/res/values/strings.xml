@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="developer">开发者</string>
+    <string name="settings">设置</string>
+    <string name="settings_screen">设置页</string>
+    <string name="long_click_to_copy">长按复制</string>
+    <string name="copied">已复制</string>
+    <string name="open_source_link">开源链接</string>
+    <string name="contact_way">联系方式</string>
+    <string name="configure_theme">设置主题</string>
+    <string name="no_email_app">没有可用的邮件应用</string>
+    <string name="dynamic_color">动态配色</string>
+    <string name="dart_mode">夜间模式</string>
+    <string name="light_mode">日间模式</string>
+    <string name="follow_system">跟随系统</string>
+    <string name="click_to_crash">再按%d次让应用闪退！</string>
+
+</resources>

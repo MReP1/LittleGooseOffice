@@ -1,5 +1,6 @@
 plugins {
     id("goose.android.library")
+    id("goose.android.hilt")
     alias(libs.plugins.ksp)
 }
 

@@ -25,28 +25,25 @@ private val DarkColorScheme = darkColorScheme(
 private val LightColorScheme = lightColorScheme(
 )
 
-// TODO 等架构成熟，放到架构中去
-var globalThemeConfig by mutableStateOf(ThemeConfig())
-
 @Stable
 data class ThemeConfig(
     val isDynamicColor: Boolean = true,
-    val themeType: ThemeType = ThemeType.FollowSystem
+    val themeType: ThemeType = ThemeType.FOLLOW_SYSTEM
 ) {
     @Composable
     fun isDarkTheme() = when (themeType) {
-        ThemeType.Light -> false
-        ThemeType.Dart -> true
-        ThemeType.FollowSystem -> isSystemInDarkTheme()
+        ThemeType.LIGHT -> false
+        ThemeType.DART -> true
+        ThemeType.FOLLOW_SYSTEM -> isSystemInDarkTheme()
     }
 
     @Composable
     fun getColorScheme(context: Context): ColorScheme {
         return if (isDynamicColor && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
             when (themeType) {
-                ThemeType.Light -> dynamicLightColorScheme(context)
-                ThemeType.Dart -> dynamicDarkColorScheme(context)
-                ThemeType.FollowSystem -> if (isSystemInDarkTheme()) {
+                ThemeType.LIGHT -> dynamicLightColorScheme(context)
+                ThemeType.DART -> dynamicDarkColorScheme(context)
+                ThemeType.FOLLOW_SYSTEM -> if (isSystemInDarkTheme()) {
                     dynamicDarkColorScheme(context)
                 } else {
                     dynamicLightColorScheme(context)
@@ -54,9 +51,9 @@ data class ThemeConfig(
             }
         } else {
             when (themeType) {
-                ThemeType.Light -> LightColorScheme
-                ThemeType.Dart -> DarkColorScheme
-                ThemeType.FollowSystem -> if (isSystemInDarkTheme()) {
+                ThemeType.LIGHT -> LightColorScheme
+                ThemeType.DART -> DarkColorScheme
+                ThemeType.FOLLOW_SYSTEM -> if (isSystemInDarkTheme()) {
                     DarkColorScheme
                 } else {
                     LightColorScheme
@@ -67,12 +64,12 @@ data class ThemeConfig(
 }
 
 enum class ThemeType {
-    Light, Dart, FollowSystem
+    LIGHT, DART, FOLLOW_SYSTEM
 }
 
 @Composable
 fun AccountTheme(
-    themeConfig: ThemeConfig = globalThemeConfig,
+    themeConfig: ThemeConfig = remember { ThemeConfig() },
     content: @Composable () -> Unit
 ) {
     val context = LocalContext.current
