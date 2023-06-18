@@ -16,7 +16,7 @@ import little.goose.common.di.Dispatcher
 import little.goose.common.di.GooseDispatchers
 import little.goose.design.system.data.DesignPreference
 import little.goose.design.system.data.serializer.DesignPreferenceSerializer
-import little.goose.design.system.state.DesignSystemStateHolder
+import little.goose.design.system.state.DesignSystemDataHolder
 import javax.inject.Singleton
 
 @Module
@@ -41,10 +41,10 @@ class DesignSystemModule {
 
     @Provides
     @Singleton
-    fun provideDesignSystemStateHolder(
+    fun provideDesignSystemDataHolder(
         designPreference: DataStore<DesignPreference>
-    ): DesignSystemStateHolder {
-        return DesignSystemStateHolder(designPreference)
+    ): DesignSystemDataHolder {
+        return DesignSystemDataHolder(designPreference)
     }
 
 }

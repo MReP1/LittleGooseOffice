@@ -10,10 +10,10 @@ import javax.inject.Inject
 
 @HiltViewModel
 class MainViewModel @Inject constructor(
-    appStateHolder: AppStateHolder
+    appDataHolder: AppDataHolder
 ) : ViewModel() {
 
-    val appState = appStateHolder.designSystemStateHolder.themeConfig.map {
+    val appState = appDataHolder.designSystemDataHolder.themeConfig.map {
         AppState.Success(it)
     }.stateIn(viewModelScope, SharingStarted.Eagerly, AppState.Loading)
 

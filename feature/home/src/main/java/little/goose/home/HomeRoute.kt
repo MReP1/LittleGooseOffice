@@ -8,7 +8,8 @@ import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.produceState
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -22,6 +23,7 @@ import com.google.accompanist.navigation.animation.composable
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import little.goose.common.constants.KEY_HOME_PAGE
+import little.goose.common.utils.log
 import little.goose.home.ui.HomeScreen
 import little.goose.home.ui.HomeViewModel
 import little.goose.search.SearchType
@@ -60,12 +62,13 @@ fun NavGraphBuilder.homeRoute(
         )
     ) {
         val context = LocalContext.current
+        val initHomePage = it.arguments?.getInt(KEY_INIT_HOME_PAGE, -1)
+            .takeIf { hp -> hp != -1 } // 1. 从路由参数中获取
+            ?: (context as? Activity)?.intent?.getIntExtra(KEY_HOME_PAGE, -1) // 2. 从 intent 中获取
+            ?: -1 // 3. 默认值
         HomeRoute(
             modifier = Modifier.fillMaxSize(),
-            initHomePage = it.arguments?.getInt(KEY_INIT_HOME_PAGE, -1)
-                .takeIf { hp -> hp != -1 }
-                ?: (context as? Activity)?.intent?.getIntExtra(KEY_HOME_PAGE, -1)
-                ?: -1,
+            initHomePage = initHomePage,
             onNavigateToSettings = onNavigateToSettings,
             onNavigateToMemorialAdd = onNavigateToMemorialAdd,
             onNavigateToMemorialDialog = onNavigateToMemorialDialog,
@@ -94,10 +97,11 @@ fun HomeRoute(
     onNavigateToScheduleDialog: (Long?) -> Unit
 ) {
     val viewModel = hiltViewModel<HomeViewModel>()
-    val homePage by produceState(initialValue = initHomePage) {
-        if (initHomePage == -1) {
-            value = viewModel.getDataStoreHomePage()
-        }
+    log("HomeRoute")
+    val homePage by remember(initHomePage) {
+        mutableStateOf(
+            initHomePage.takeIf { it != -1 } ?: viewModel.dataStoreHomePage
+        )
     }
     if (homePage == -1) {
         LittleGooseEmptyScreen(modifier = modifier)

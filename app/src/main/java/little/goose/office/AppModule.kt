@@ -4,7 +4,7 @@ import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
-import little.goose.design.system.state.DesignSystemStateHolder
+import little.goose.design.system.state.DesignSystemDataHolder
 import javax.inject.Singleton
 
 @Module
@@ -13,8 +13,8 @@ class AppModule {
 
     @Provides
     @Singleton
-    fun provideAppStateHolder(designSystemStateHolder: DesignSystemStateHolder): AppStateHolder {
-        return AppStateHolder(designSystemStateHolder)
+    fun provideAppStateHolder(designSystemDataHolder: DesignSystemDataHolder): AppDataHolder {
+        return AppDataHolder(designSystemDataHolder)
     }
 
 }

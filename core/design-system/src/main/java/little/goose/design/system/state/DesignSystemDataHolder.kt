@@ -10,7 +10,7 @@ import little.goose.design.system.data.copy
 import little.goose.design.system.theme.ThemeConfig
 import little.goose.design.system.theme.ThemeType
 
-class DesignSystemStateHolder(
+class DesignSystemDataHolder(
     private val designPreference: DataStore<DesignPreference>
 ) {
     val themeConfig = designPreference.data.map { designPreference ->
