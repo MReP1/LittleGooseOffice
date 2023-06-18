@@ -3,8 +3,7 @@ syntax = "proto3";
 option java_package = "little.goose.design.system.data";
 option java_multiple_files = true;
 
-enum ThemeTypeProto {
-  FOLLOW_SYSTEM = 0;
-  LIGHT = 1;
-  DARK = 2;
+enum ColorTypeProto {
+  DYNAMIC = 0;
+  CUSTOM = 1;
 }
