@@ -53,7 +53,7 @@ fun AccountTitle(
 
     Card(
         onClick = { showTotal = !showTotal },
-        modifier = modifier.padding(16.dp),
+        modifier = modifier.padding(vertical = 12.dp, horizontal = 16.dp),
     ) {
         Spacer(modifier = Modifier.height(12.dp))
         Row(modifier = Modifier.fillMaxWidth()) {

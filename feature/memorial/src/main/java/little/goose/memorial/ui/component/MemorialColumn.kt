@@ -1,7 +1,7 @@
 package little.goose.memorial.ui.component
 
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.runtime.Composable
@@ -29,14 +29,15 @@ fun MemorialColumn(
 ) {
     LazyColumn(
         modifier = modifier,
-        contentPadding = PaddingValues(horizontal = 16.dp, vertical = 4.dp)
+        contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
+        verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
         items(
             items = state.memorials,
             key = { it.id ?: it }
         ) { memorial ->
             MemorialItem(
-                modifier = Modifier.padding(vertical = 4.dp),
+                modifier = Modifier,
                 memorial = memorial,
                 isMultiSelecting = state.isMultiSelecting,
                 selected = state.multiSelectedMemorials.contains(memorial),

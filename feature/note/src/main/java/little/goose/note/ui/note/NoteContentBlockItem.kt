@@ -50,7 +50,7 @@ fun NoteContentBlockItem(
         targetValue = if (isFocused) {
             MaterialTheme.colorScheme.surfaceVariant
         } else {
-            MaterialTheme.colorScheme.surface
+            MaterialTheme.colorScheme.background
         }
     )
     val dismissState = rememberDismissState()

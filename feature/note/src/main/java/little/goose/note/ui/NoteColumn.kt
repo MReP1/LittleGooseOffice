@@ -37,7 +37,8 @@ fun NoteColumn(
     val notes = remember(state.noteWithContents) { state.noteWithContents.notes }
     LazyColumn(
         modifier = modifier,
-        contentPadding = PaddingValues(horizontal = 16.dp, vertical = 4.dp),
+        contentPadding = PaddingValues(horizontal = 16.dp, vertical = 12.dp),
+        verticalArrangement = Arrangement.spacedBy(8.dp),
         content = {
             items(
                 count = notes.size,
@@ -46,9 +47,7 @@ fun NoteColumn(
                     val note = notes[it]
                     val noteContentBlocks = state.noteWithContents[note] ?: emptyList()
                     NoteItem(
-                        modifier = Modifier
-                            .padding(horizontal = 0.dp, vertical = 4.dp)
-                            .fillMaxWidth(),
+                        modifier = Modifier.fillMaxWidth(),
                         note = note,
                         noteContentBlocks = noteContentBlocks,
                         isMultiSelecting = state.isMultiSelecting,
