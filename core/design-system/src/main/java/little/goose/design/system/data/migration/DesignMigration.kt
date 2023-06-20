@@ -19,7 +19,7 @@ class DynamicColorMigration : DataMigration<DesignPreference> {
             } else {
                 ColorTypeProto.CUSTOM
             }
-            deprecatedIsDynamicColor = true
+            isMigrateColorType = true
         }
     }
 
