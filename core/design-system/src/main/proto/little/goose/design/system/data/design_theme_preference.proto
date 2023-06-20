@@ -6,7 +6,7 @@ import "little/goose/design/system/data/theme_type.proto";
 option java_package = "little.goose.design.system.data";
 option java_multiple_files = true;
 
-message DesignPreference {
+message DesignThemePreference {
   reserved 1;
   ThemeTypeProto theme_type = 2;
   ColorTypeProto color_type = 3;

@@ -21,6 +21,3 @@
 #-renamesourcefileattribute SourceFile
 
 # keep protobuf generated classes
--keepclassmembers class * extends com.google.protobuf.GeneratedMessageLite* {
-   <fields>;
-}

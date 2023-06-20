@@ -14,7 +14,7 @@ import kotlinx.coroutines.CoroutineScope
 import little.goose.common.di.AppCoroutineScope
 import little.goose.common.di.Dispatcher
 import little.goose.common.di.GooseDispatchers
-import little.goose.design.system.data.DesignPreference
+import little.goose.design.system.data.DesignThemePreference
 import little.goose.design.system.data.serializer.DesignPreferenceSerializer
 import little.goose.design.system.state.DesignSystemDataHolder
 import javax.inject.Singleton
@@ -30,19 +30,19 @@ class DesignSystemModule {
         @Dispatcher(GooseDispatchers.IO) ioDispatcher: CoroutineDispatcher,
         @AppCoroutineScope coroutineScope: CoroutineScope,
         designPreferenceSerializer: DesignPreferenceSerializer,
-    ): DataStore<DesignPreference> {
+    ): DataStore<DesignThemePreference> {
         return DataStoreFactory.create(
             serializer = designPreferenceSerializer,
             scope = CoroutineScope(coroutineScope.coroutineContext + ioDispatcher)
         ) {
-            context.dataStoreFile("design_preference_v2.pb")
+            context.dataStoreFile("design_theme_preference.pb")
         }
     }
 
     @Provides
     @Singleton
     fun provideDesignSystemDataHolder(
-        designPreference: DataStore<DesignPreference>
+        designPreference: DataStore<DesignThemePreference>
     ): DesignSystemDataHolder {
         return DesignSystemDataHolder(designPreference)
     }

@@ -6,6 +6,11 @@ plugins {
 }
 
 android {
+
+    defaultConfig {
+        consumerProguardFiles("consumer-proguard-rules.pro")
+    }
+
     namespace = "little.goose.design.system"
 }
 

@@ -4,14 +4,14 @@ import android.util.Log
 import androidx.datastore.core.DataStore
 import kotlinx.coroutines.flow.map
 import little.goose.design.system.data.ColorTypeProto
-import little.goose.design.system.data.DesignPreference
+import little.goose.design.system.data.DesignThemePreference
 import little.goose.design.system.data.ThemeTypeProto
 import little.goose.design.system.data.copy
 import little.goose.design.system.theme.ThemeConfig
 import little.goose.design.system.theme.ThemeType
 
 class DesignSystemDataHolder(
-    private val designPreference: DataStore<DesignPreference>
+    private val designPreference: DataStore<DesignThemePreference>
 ) {
     val themeConfig = designPreference.data.map { designPreference ->
         val themeType = when (designPreference.themeType) {
