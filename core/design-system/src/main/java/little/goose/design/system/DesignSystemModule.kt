@@ -35,7 +35,7 @@ class DesignSystemModule {
             serializer = designPreferenceSerializer,
             scope = CoroutineScope(coroutineScope.coroutineContext + ioDispatcher)
         ) {
-            context.dataStoreFile("design_preference.pb")
+            context.dataStoreFile("design_preference_v2.pb")
         }
     }
 
