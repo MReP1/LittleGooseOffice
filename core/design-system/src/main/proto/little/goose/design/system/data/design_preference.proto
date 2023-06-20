@@ -7,8 +7,7 @@ option java_package = "little.goose.design.system.data";
 option java_multiple_files = true;
 
 message DesignPreference {
-  bool deprecated_is_dynamic_color = 1;
+  reserved 1;
   ThemeTypeProto theme_type = 2;
-  bool is_migrate_color_type = 3;
-  ColorTypeProto color_type = 4;
+  ColorTypeProto color_type = 3;
 }

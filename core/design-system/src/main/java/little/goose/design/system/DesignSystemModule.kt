@@ -15,7 +15,6 @@ import little.goose.common.di.AppCoroutineScope
 import little.goose.common.di.Dispatcher
 import little.goose.common.di.GooseDispatchers
 import little.goose.design.system.data.DesignPreference
-import little.goose.design.system.data.migration.DynamicColorMigration
 import little.goose.design.system.data.serializer.DesignPreferenceSerializer
 import little.goose.design.system.state.DesignSystemDataHolder
 import javax.inject.Singleton
@@ -34,8 +33,7 @@ class DesignSystemModule {
     ): DataStore<DesignPreference> {
         return DataStoreFactory.create(
             serializer = designPreferenceSerializer,
-            scope = CoroutineScope(coroutineScope.coroutineContext + ioDispatcher),
-            migrations = listOf(DynamicColorMigration())
+            scope = CoroutineScope(coroutineScope.coroutineContext + ioDispatcher)
         ) {
             context.dataStoreFile("design_preference.pb")
         }
