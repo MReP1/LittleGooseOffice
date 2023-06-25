@@ -95,10 +95,18 @@ fun TransactionCard(
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         Spacer(modifier = Modifier.width(20.dp))
-                        Text(
-                            text = transaction.time.toChineseMonthDayTime(),
-                            style = MaterialTheme.typography.bodySmall,
-                        )
+                        Column {
+                            if (transaction.description.isNotBlank()) {
+                                Text(
+                                    text = transaction.description,
+                                    style = MaterialTheme.typography.bodySmall
+                                )
+                            }
+                            Text(
+                                text = transaction.time.toChineseMonthDayTime(),
+                                style = MaterialTheme.typography.labelSmall,
+                            )
+                        }
                         Spacer(modifier = Modifier.weight(1F))
                         IconButton(onClick = { onTransactionEdit(transaction) }) {
                             Icon(imageVector = Icons.Rounded.Edit, contentDescription = "Edit")
