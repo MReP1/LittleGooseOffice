@@ -46,7 +46,7 @@ sealed interface SearchTransactionEvent {
 @Composable
 fun SearchTransactionRoute(
     modifier: Modifier = Modifier,
-    onNavigateToTransactionDialog: (Long) -> Unit,
+    onNavigateToTransactionScreen: (Long) -> Unit,
     onBack: () -> Unit
 ) {
     val viewModel = hiltViewModel<SearchTransactionViewModel>()
@@ -70,7 +70,7 @@ fun SearchTransactionRoute(
         modifier = modifier,
         searchTransactionState = searchTransactionState,
         snackbarHostState = snackbarHostState,
-        onNavigateToTransactionDialog = onNavigateToTransactionDialog,
+        onNavigateToTransactionScreen = onNavigateToTransactionScreen,
         onBack = onBack
     )
 }
@@ -80,7 +80,7 @@ fun SearchTransactionScreen(
     modifier: Modifier = Modifier,
     searchTransactionState: SearchTransactionState,
     snackbarHostState: SnackbarHostState,
-    onNavigateToTransactionDialog: (Long) -> Unit,
+    onNavigateToTransactionScreen: (Long) -> Unit,
     onBack: () -> Unit
 ) {
     Scaffold(
@@ -118,7 +118,7 @@ fun SearchTransactionScreen(
                     SearchTransactionContent(
                         modifier = contentModifier,
                         transactionColumnState = searchTransactionState.data,
-                        onNavigateToTransactionDialog = onNavigateToTransactionDialog
+                        onNavigateToTransactionScreen = onNavigateToTransactionScreen
                     )
                 }
             }

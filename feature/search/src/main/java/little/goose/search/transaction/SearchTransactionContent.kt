@@ -26,14 +26,14 @@ import little.goose.design.system.theme.AccountTheme
 internal fun SearchTransactionContent(
     modifier: Modifier = Modifier,
     transactionColumnState: TransactionColumnState,
-    onNavigateToTransactionDialog: (transactionId: Long) -> Unit
+    onNavigateToTransactionScreen: (transactionId: Long) -> Unit
 ) {
     if (transactionColumnState.transactions.isNotEmpty()) {
         TransactionColumn(
             modifier = modifier.fillMaxSize(),
             state = transactionColumnState,
-            onTransactionClick = { transaction ->
-                transaction.id?.run(onNavigateToTransactionDialog)
+            onTransactionEdit = { transaction ->
+                transaction.id?.run(onNavigateToTransactionScreen)
             }
         )
     }
@@ -86,5 +86,6 @@ private fun PreviewSearchTransactionContent() = AccountTheme {
     SearchTransactionContent(
         modifier = Modifier.fillMaxSize(),
         transactionColumnState = TransactionColumnState(),
-        onNavigateToTransactionDialog = {})
+        onNavigateToTransactionScreen = {}
+    )
 }

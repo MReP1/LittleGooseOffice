@@ -12,7 +12,6 @@ import little.goose.account.accountGraph
 import little.goose.account.ui.analysis.navigateToAccountAnalysis
 import little.goose.account.ui.navigateToTransactionExample
 import little.goose.account.ui.transaction.navigateToTransaction
-import little.goose.account.ui.transaction.navigateToTransactionDialog
 import little.goose.design.system.theme.ThemeConfig
 import little.goose.home.KEY_INIT_HOME_PAGE
 import little.goose.home.ROUTE_HOME
@@ -63,7 +62,7 @@ internal fun MainScreen(modifier: Modifier) {
                     navController.navigateToTransaction(time)
                 }
             },
-            onNavigateToTransactionDialog = navController::navigateToTransactionDialog,
+            onNavigateToTransactionScreen = navController::navigateToTransaction,
             onNavigateToMemorialAdd = {
                 navController.navigateToMemorial(MemorialScreenType.Add)
             },
@@ -81,21 +80,14 @@ internal fun MainScreen(modifier: Modifier) {
                 navController.navigateToNote(NoteNavigatingType.Edit(noteId))
             },
             onNavigateToMemorialDialog = navController::navigateToMemorialDialog,
-            onNavigateToTransactionDialog = navController::navigateToTransactionDialog,
+            onNavigateToTransactionScreen = navController::navigateToTransaction,
             onNavigateToScheduleDialog = navController::navigateToScheduleDialog,
             onBack = navController::navigateUp
         )
 
         accountGraph(
             onNavigateToTransactionExample = navController::navigateToTransactionExample,
-            onNavigateToTransactionDialog = navController::navigateToTransactionDialog,
-            onNavigateToTransaction = { id, time ->
-                if (id != null) {
-                    navController.navigateToTransaction(id)
-                } else if (time != null) {
-                    navController.navigateToTransaction(time)
-                }
-            },
+            onNavigateToTransactionScreen = navController::navigateToTransaction,
             onBack = navController::navigateUp
         )
 

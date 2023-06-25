@@ -6,10 +6,16 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import little.goose.account.data.constants.AccountConstant
 import little.goose.account.data.entities.Transaction
+import little.goose.design.system.component.dialog.DeleteDialog
+import little.goose.design.system.component.dialog.DeleteDialogState
 
 data class TransactionColumnState(
     val transactions: List<Transaction> = emptyList(),
@@ -25,8 +31,10 @@ data class TransactionColumnState(
 fun TransactionColumn(
     modifier: Modifier,
     state: TransactionColumnState,
-    onTransactionClick: (Transaction) -> Unit
+    onTransactionEdit: (Transaction) -> Unit
 ) {
+    val deleteDialogState = remember { DeleteDialogState() }
+
     LazyColumn(
         modifier = modifier,
         contentPadding = PaddingValues(16.dp, 16.dp),
@@ -37,16 +45,27 @@ fun TransactionColumn(
             key = { it.id ?: it }
         ) { transaction ->
             if (transaction.type == AccountConstant.TIME) {
-                Text(text = transaction.description)
+                Text(text = transaction.description, modifier = Modifier.animateItemPlacement())
             } else {
+                var isExpended by remember { mutableStateOf(false) }
                 TransactionCard(
+                    modifier = modifier.animateItemPlacement(),
                     transaction = transaction,
+                    isExpended = isExpended,
                     isMultiSelecting = state.isMultiSelecting,
                     selected = state.multiSelectedTransactions.contains(transaction),
-                    onTransactionClick = onTransactionClick,
+                    onTransactionClick = { isExpended = !isExpended },
+                    onTransactionEdit = onTransactionEdit,
+                    onTransactionDelete = {
+                        deleteDialogState.show {
+                            state.deleteTransactions(listOf(it))
+                        }
+                    },
                     onSelectTransaction = state.onTransactionSelected
                 )
             }
         }
     }
+
+    DeleteDialog(state = deleteDialogState)
 }

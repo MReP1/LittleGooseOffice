@@ -25,7 +25,7 @@ fun NavController.navigateToSearch(type: SearchType) {
 fun NavGraphBuilder.searchRoute(
     onNavigateToNote: (noteId: Long) -> Unit,
     onNavigateToMemorialDialog: (memorialId: Long) -> Unit,
-    onNavigateToTransactionDialog: (transactionId: Long) -> Unit,
+    onNavigateToTransactionScreen: (transactionId: Long) -> Unit,
     onNavigateToScheduleDialog: (scheduleId: Long) -> Unit,
     onBack: () -> Unit
 ) = composable(
@@ -41,7 +41,7 @@ fun NavGraphBuilder.searchRoute(
         modifier = Modifier.fillMaxSize(),
         onNavigateToNote = onNavigateToNote,
         onNavigateToMemorialDialog = onNavigateToMemorialDialog,
-        onNavigateToTransactionDialog = onNavigateToTransactionDialog,
+        onNavigateToTransactionScreen = onNavigateToTransactionScreen,
         onNavigateToScheduleDialog = onNavigateToScheduleDialog,
         onBack = onBack
     )
@@ -51,7 +51,7 @@ fun NavGraphBuilder.searchRoute(
 fun SearchRoute(
     modifier: Modifier = Modifier,
     onNavigateToMemorialDialog: (memorialId: Long) -> Unit,
-    onNavigateToTransactionDialog: (transactionId: Long) -> Unit,
+    onNavigateToTransactionScreen: (transactionId: Long) -> Unit,
     onNavigateToNote: (noteId: Long) -> Unit,
     onNavigateToScheduleDialog: (Long) -> Unit,
     onBack: () -> Unit
@@ -78,7 +78,7 @@ fun SearchRoute(
 
         SearchType.Transaction -> SearchTransactionRoute(
             modifier = modifier,
-            onNavigateToTransactionDialog = onNavigateToTransactionDialog,
+            onNavigateToTransactionScreen = onNavigateToTransactionScreen,
             onBack = onBack
         )
     }

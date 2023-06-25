@@ -18,16 +18,16 @@ fun AccountHome(
     accountTitleState: AccountTitleState,
     monthSelectorState: MonthSelectorState,
     transactionColumnState: TransactionColumnState,
-    onNavigateToTransactionDialog: (Long) -> Unit,
+    onNavigateToTransactionScreen: (Long) -> Unit
 ) {
     AccountScreen(
         modifier = modifier,
         transactionColumnState = transactionColumnState,
         accountTitleState = accountTitleState,
-        onTransactionClick = { transaction ->
-            transaction.id?.run(onNavigateToTransactionDialog)
+        onTransactionEdit = { transaction ->
+            transaction.id?.run(onNavigateToTransactionScreen)
         },
-        monthSelectorState = monthSelectorState,
+        monthSelectorState = monthSelectorState
     )
 }
 
@@ -35,7 +35,7 @@ fun AccountHome(
 fun AccountScreen(
     modifier: Modifier = Modifier,
     transactionColumnState: TransactionColumnState,
-    onTransactionClick: (Transaction) -> Unit,
+    onTransactionEdit: (Transaction) -> Unit,
     accountTitleState: AccountTitleState,
     monthSelectorState: MonthSelectorState
 ) {
@@ -50,7 +50,7 @@ fun AccountScreen(
         TransactionColumn(
             modifier = Modifier.weight(1F),
             state = transactionColumnState,
-            onTransactionClick = onTransactionClick
+            onTransactionEdit = onTransactionEdit
         )
     }
 }

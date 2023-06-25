@@ -46,7 +46,7 @@ fun NavGraphBuilder.homeRoute(
     onNavigateToMemorialDialog: (memorialId: Long) -> Unit,
     onNavigateToNote: (noteId: Long?) -> Unit,
     onNavigateToSearch: (SearchType) -> Unit,
-    onNavigateToTransactionDialog: (transactionId: Long) -> Unit,
+    onNavigateToTransactionScreen: (transactionId: Long) -> Unit,
     onNavigateToTransaction: (id: Long?, time: Date?) -> Unit,
     onNavigateToAccountAnalysis: () -> Unit,
     onNavigateToScheduleDialog: (Long?) -> Unit
@@ -73,7 +73,7 @@ fun NavGraphBuilder.homeRoute(
             onNavigateToMemorialDialog = onNavigateToMemorialDialog,
             onNavigateToNote = onNavigateToNote,
             onNavigateToSearch = onNavigateToSearch,
-            onNavigateToTransactionDialog = onNavigateToTransactionDialog,
+            onNavigateToTransactionScreen = onNavigateToTransactionScreen,
             onNavigateToTransaction = onNavigateToTransaction,
             onNavigateToAccountAnalysis = onNavigateToAccountAnalysis,
             onNavigateToScheduleDialog = onNavigateToScheduleDialog
@@ -88,7 +88,7 @@ fun HomeRoute(
     onNavigateToSettings: () -> Unit,
     onNavigateToMemorialAdd: () -> Unit,
     onNavigateToMemorialDialog: (memorialId: Long) -> Unit,
-    onNavigateToTransactionDialog: (transactionId: Long) -> Unit,
+    onNavigateToTransactionScreen: (transactionId: Long) -> Unit,
     onNavigateToTransaction: (id: Long?, time: Date?) -> Unit,
     onNavigateToNote: (noteId: Long?) -> Unit,
     onNavigateToSearch: (SearchType) -> Unit,
@@ -115,7 +115,7 @@ fun HomeRoute(
             onNavigateToMemorialAdd = onNavigateToMemorialAdd,
             onNavigateToMemorialDialog = onNavigateToMemorialDialog,
             onNavigateToAccountAnalysis = onNavigateToAccountAnalysis,
-            onNavigateToTransactionDialog = onNavigateToTransactionDialog,
+            onNavigateToTransactionScreen = onNavigateToTransactionScreen,
             onNavigateToScheduleDialog = onNavigateToScheduleDialog
         )
 

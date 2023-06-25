@@ -81,7 +81,7 @@ fun NavController.navigateToTransactionExample(
 }
 
 fun NavGraphBuilder.transactionExampleRoute(
-    onNavigateToTransactionDialog: (transactionId: Long) -> Unit,
+    onNavigateToTransactionScreen: (transactionId: Long) -> Unit,
     onBack: () -> Unit
 ) = composable(
     route = ROUTE_TRANSACTION_EXAMPLE +
@@ -109,7 +109,7 @@ fun NavGraphBuilder.transactionExampleRoute(
 ) {
     TransactionRoute(
         modifier = Modifier.fillMaxSize(),
-        onNavigateToTransactionDialog = onNavigateToTransactionDialog,
+        onNavigateToTransactionScreen = onNavigateToTransactionScreen,
         onBack = onBack
     )
 }
@@ -117,7 +117,7 @@ fun NavGraphBuilder.transactionExampleRoute(
 @Composable
 private fun TransactionRoute(
     modifier: Modifier,
-    onNavigateToTransactionDialog: (transactionId: Long) -> Unit,
+    onNavigateToTransactionScreen: (transactionId: Long) -> Unit,
     onBack: () -> Unit
 ) {
     val viewModel = hiltViewModel<TransactionExampleViewModel>()
@@ -128,8 +128,8 @@ private fun TransactionRoute(
     TransactionTimeScreen(
         modifier = modifier.fillMaxSize(),
         title = viewModel.title,
-        onTransactionClick = { transaction ->
-            transaction.id?.run(onNavigateToTransactionDialog)
+        onTransactionEdit = { transaction ->
+            transaction.id?.run(onNavigateToTransactionScreen)
         },
         snackbarHostState = snackbarHostState,
         transactionColumnState = transactionColumnState,
@@ -206,7 +206,7 @@ private fun TransactionTimeScreen(
     title: String,
     transactionColumnState: TransactionColumnState,
     snackbarHostState: SnackbarHostState,
-    onTransactionClick: (Transaction) -> Unit,
+    onTransactionEdit: (Transaction) -> Unit,
     onBack: () -> Unit
 ) {
     Scaffold(
@@ -234,7 +234,7 @@ private fun TransactionTimeScreen(
         TransactionColumn(
             modifier = Modifier.padding(paddingValues),
             state = transactionColumnState,
-            onTransactionClick = onTransactionClick
+            onTransactionEdit = onTransactionEdit
         )
     }
 }

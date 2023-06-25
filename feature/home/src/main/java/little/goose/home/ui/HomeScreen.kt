@@ -73,7 +73,7 @@ fun HomeScreen(
     onNavigateToSettings: () -> Unit,
     onNavigateToMemorialAdd: () -> Unit,
     onNavigateToMemorialDialog: (memorialId: Long) -> Unit,
-    onNavigateToTransactionDialog: (transactionId: Long) -> Unit,
+    onNavigateToTransactionScreen: (transactionId: Long) -> Unit,
     onNavigateToTransaction: (transactionId: Long?, date: Date?) -> Unit,
     onNavigateToNote: (noteId: Long?) -> Unit,
     onNavigateToSearch: (SearchType) -> Unit,
@@ -233,7 +233,7 @@ fun HomeScreen(
                                     onNavigateToScheduleDialog(schedule.id)
                                 },
                                 onTransactionClick = { transaction ->
-                                    transaction.id?.run(onNavigateToTransactionDialog)
+                                    transaction.id?.run(onNavigateToTransactionScreen)
                                 },
                                 onMemorialClick = { memorial ->
                                     memorial.id?.let(onNavigateToMemorialDialog)
@@ -257,7 +257,7 @@ fun HomeScreen(
                                 transactionColumnState = transactionColumnState,
                                 accountTitleState = accountTitleState,
                                 monthSelectorState = monthSelectorState,
-                                onNavigateToTransactionDialog = onNavigateToTransactionDialog,
+                                onNavigateToTransactionScreen = onNavigateToTransactionScreen
                             )
                         }
 
