@@ -10,8 +10,8 @@ import androidx.compose.animation.core.updateTransition
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.background
+import androidx.compose.foundation.basicMarquee
 import androidx.compose.foundation.combinedClickable
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -42,7 +42,9 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import little.goose.common.utils.DateTimeUtils
+import little.goose.common.utils.toChineseYearMonDayWeek
 import little.goose.memorial.data.entities.Memorial
+import little.goose.memorial.utils.appendTimePrefix
 import little.goose.memorial.utils.appendTimeSuffix
 import java.util.Calendar
 import java.util.Date
@@ -219,18 +221,29 @@ fun MemorialItem(
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .height(42.dp),
-                            horizontalArrangement = Arrangement.End
+                            verticalAlignment = Alignment.CenterVertically
                         ) {
-                            IconButton(onClick = { onMemorialDelete(memorial) }) {
-                                Icon(
-                                    imageVector = Icons.Rounded.Delete,
-                                    contentDescription = "Delete"
-                                )
-                            }
+                            Spacer(modifier = Modifier.width(16.dp))
+                            Text(
+                                text = memorial.time
+                                    .toChineseYearMonDayWeek(context)
+                                    .appendTimePrefix(memorial.time, context),
+                                style = MaterialTheme.typography.bodyMedium,
+                                maxLines = 1,
+                                modifier = Modifier
+                                    .weight(1F)
+                                    .basicMarquee()
+                            )
                             IconButton(onClick = { onMemorialEdit(memorial) }) {
                                 Icon(
                                     imageVector = Icons.Rounded.Edit,
                                     contentDescription = "Edit"
+                                )
+                            }
+                            IconButton(onClick = { onMemorialDelete(memorial) }) {
+                                Icon(
+                                    imageVector = Icons.Rounded.Delete,
+                                    contentDescription = "Delete"
                                 )
                             }
                         }
