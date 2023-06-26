@@ -72,7 +72,7 @@ fun HomeScreen(
     pagerState: PagerState,
     onNavigateToSettings: () -> Unit,
     onNavigateToMemorialAdd: () -> Unit,
-    onNavigateToMemorialDialog: (memorialId: Long) -> Unit,
+    onNavigateToMemorialShow: (memorialId: Long) -> Unit,
     onNavigateToTransactionScreen: (transactionId: Long) -> Unit,
     onNavigateToTransaction: (transactionId: Long?, date: Date?) -> Unit,
     onNavigateToNote: (noteId: Long?) -> Unit,
@@ -236,7 +236,7 @@ fun HomeScreen(
                                     transaction.id?.run(onNavigateToTransactionScreen)
                                 },
                                 onMemorialClick = { memorial ->
-                                    memorial.id?.let(onNavigateToMemorialDialog)
+                                    memorial.id?.let(onNavigateToMemorialShow)
                                 }
                             )
                         }
@@ -275,7 +275,7 @@ fun HomeScreen(
                                 modifier = Modifier.fillMaxSize(),
                                 topMemorial = topMemorial,
                                 memorialColumnState = memorialColumnState,
-                                onNavigateToMemorialDialog = onNavigateToMemorialDialog
+                                onNavigateToMemorialShow = onNavigateToMemorialShow
                             )
                         }
                     }

@@ -19,14 +19,14 @@ fun MemorialHome(
     modifier: Modifier,
     topMemorial: Memorial?,
     memorialColumnState: MemorialColumnState,
-    onNavigateToMemorialDialog: (Long) -> Unit,
+    onNavigateToMemorialShow: (Long) -> Unit,
 ) {
     MemorialScreen(
         modifier = modifier,
         memorialColumnState = memorialColumnState,
         topMemorial = topMemorial,
-        onMemorialClick = { memorial ->
-            memorial.id?.run(onNavigateToMemorialDialog)
+        onMemorialEdit = { memorial ->
+            memorial.id?.run(onNavigateToMemorialShow)
         }
     )
 }
@@ -36,7 +36,7 @@ private fun MemorialScreen(
     modifier: Modifier,
     memorialColumnState: MemorialColumnState,
     topMemorial: Memorial?,
-    onMemorialClick: (Memorial) -> Unit
+    onMemorialEdit: (Memorial) -> Unit
 ) {
     Surface(
         modifier = modifier,
@@ -56,7 +56,7 @@ private fun MemorialScreen(
                     .weight(1F)
                     .fillMaxWidth(),
                 state = memorialColumnState,
-                onMemorialClick = onMemorialClick
+                onMemorialEdit = onMemorialEdit
             )
         }
     }
