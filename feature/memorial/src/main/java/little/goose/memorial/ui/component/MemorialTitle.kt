@@ -1,5 +1,6 @@
 package little.goose.memorial.ui.component
 
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
@@ -7,6 +8,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
@@ -20,6 +22,7 @@ import little.goose.common.utils.DateTimeUtils
 import little.goose.memorial.utils.appendTimePrefix
 import little.goose.memorial.utils.appendTimeSuffix
 import little.goose.common.utils.toChineseYearMonDayWeek
+import little.goose.design.system.component.AutoResizedText
 import little.goose.memorial.R
 import java.util.*
 
@@ -58,6 +61,7 @@ fun MemorialTitle(
                 text = memorial.time
                     .toChineseYearMonDayWeek(context)
                     .appendTimePrefix(memorial.time, context),
+                style = MaterialTheme.typography.bodySmall,
                 modifier = Modifier.constrainAs(oriTime) {
                     bottom.linkTo(parent.bottom)
                     start.linkTo(parent.start, 24.dp)
@@ -70,16 +74,21 @@ fun MemorialTitle(
                 Calendar.getInstance().apply { setTime(memorial.time) }
             }
 
-            Text(
-                text = DateTimeUtils.getBetweenDay(curCalendar, memCalendar).toString(),
-                style = MaterialTheme.typography.displayLarge,
+            Box(
                 modifier = Modifier.constrainAs(time) {
                     top.linkTo(parent.top)
                     bottom.linkTo(parent.bottom)
                     end.linkTo(day.start)
-                    start.linkTo(barrier, margin = 16.dp)
-                }
-            )
+                    start.linkTo(barrier, margin = 8.dp)
+                    width = Dimension.fillToConstraints
+                },
+                contentAlignment = Alignment.Center
+            ) {
+                AutoResizedText(
+                    text = DateTimeUtils.getBetweenDay(curCalendar, memCalendar).toString(),
+                    style = MaterialTheme.typography.displayLarge
+                )
+            }
 
             Text(
                 text = stringResource(id = R.string.sky),
@@ -96,6 +105,9 @@ fun MemorialTitle(
 @Composable
 private fun PreviewMemorialTitle() {
     MemorialTitle(
-        memorial = Memorial(id = null, "HelloWorld", isTop = true, Date())
+        memorial = Memorial(
+            id = null, "HelloWorld",
+            isTop = true, Date().apply { time - 1000 * 60 * 60 * 24 * 3 * 4 }
+        )
     )
 }
