@@ -8,8 +8,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.tooling.preview.Preview
 import little.goose.account.R
 import little.goose.account.logic.MoneyCalculatorLogic
+import little.goose.design.system.theme.AccountTheme
 
 @Composable
 fun Calculator(
@@ -173,4 +175,16 @@ private fun Cell(
             content = content
         )
     }
+}
+
+@Preview(heightDp = 380)
+@Composable
+fun PreviewCalculator() = AccountTheme {
+    Calculator(
+        onNumClick = {},
+        onAgainClick = {},
+        onDoneClick = {},
+        onOperatorClick = {},
+        isContainOperator = false
+    )
 }
