@@ -49,6 +49,9 @@ import little.goose.memorial.utils.appendTimeSuffix
 import java.util.Calendar
 import java.util.Date
 
+private const val TOTAL_ANIM_MILLIS = 266
+private const val DELAY_ANIM_MILLIS = 82
+
 @Composable
 fun MemorialItem(
     modifier: Modifier = Modifier,
@@ -91,8 +94,8 @@ fun MemorialItem(
             val contentHeight by transition.animateDp(
                 transitionSpec = {
                     tween(
-                        durationMillis = 200,
-                        delayMillis = if (targetState) 100 else 0,
+                        durationMillis = TOTAL_ANIM_MILLIS,
+                        delayMillis = if (targetState) DELAY_ANIM_MILLIS else 0,
                         easing = FastOutSlowInEasing
                     )
                 },
@@ -111,8 +114,8 @@ fun MemorialItem(
                     val titleBackgroundColor by transition.animateColor(
                         transitionSpec = {
                             tween(
-                                durationMillis = 200,
-                                delayMillis = if (targetState) 0 else 100,
+                                durationMillis = TOTAL_ANIM_MILLIS,
+                                delayMillis = if (targetState) 0 else DELAY_ANIM_MILLIS,
                                 easing = FastOutSlowInEasing
                             )
                         },
@@ -131,7 +134,7 @@ fun MemorialItem(
                     ) {
                         val spacerWidth by transition.animateFloat(
                             transitionSpec = {
-                                tween(durationMillis = 300, easing = FastOutSlowInEasing)
+                                tween(durationMillis = TOTAL_ANIM_MILLIS, easing = FastOutSlowInEasing)
                             },
                             label = "spacer width"
                         ) {
@@ -140,7 +143,7 @@ fun MemorialItem(
                         Spacer(modifier = Modifier.weight(spacerWidth))
                         val textColor by transition.animateColor(
                             transitionSpec = {
-                                tween(durationMillis = 300, easing = FastOutSlowInEasing)
+                                tween(durationMillis = TOTAL_ANIM_MILLIS, easing = FastOutSlowInEasing)
                             },
                             label = "text color"
                         ) {
@@ -164,7 +167,7 @@ fun MemorialItem(
 
                     val boxWidth by transition.animateDp(
                         transitionSpec = {
-                            tween(durationMillis = 300, easing = FastOutSlowInEasing)
+                            tween(durationMillis = TOTAL_ANIM_MILLIS, easing = FastOutSlowInEasing)
                         },
                         label = "box width"
                     ) {
