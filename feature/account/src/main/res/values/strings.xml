@@ -14,4 +14,10 @@
     <string name="year">年</string>
     <string name="month">月</string>
     <string name="day">日</string>
+    <string name="total_income">总收入</string>
+    <string name="current_month_income">本月收入</string>
+    <string name="total_expense">总支出</string>
+    <string name="current_month_expense">本月支出</string>
+    <string name="total_balance">总结余</string>
+    <string name="current_month_balance">本月结余</string>
 </resources>

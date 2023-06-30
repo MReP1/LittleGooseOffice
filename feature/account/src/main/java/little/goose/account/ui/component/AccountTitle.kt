@@ -6,8 +6,10 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.RectangleShape
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import little.goose.account.R
 import little.goose.common.utils.TimeType
 import little.goose.common.utils.calendar
 import little.goose.common.utils.getMonth
@@ -61,14 +63,24 @@ fun AccountTitle(
                 modifier = Modifier.weight(1F),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                Text(text = if (showTotal) "总收入" else "本月收入")
+                Text(
+                    text = stringResource(
+                        id = if (showTotal) R.string.total_income
+                        else R.string.current_month_income
+                    )
+                )
                 Text(text = incomeMoney)
             }
             Column(
                 modifier = Modifier.weight(1F),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                Text(text = if (showTotal) "总支出" else "本月支出")
+                Text(
+                    text = stringResource(
+                        id = if (showTotal) R.string.total_expense
+                        else R.string.current_month_expense
+                    )
+                )
                 Text(text = expenseMoney)
             }
         }
@@ -77,7 +89,12 @@ fun AccountTitle(
             modifier = Modifier.fillMaxWidth(),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Text(text = if (showTotal) "总结余" else "本月结余")
+            Text(
+                text = stringResource(
+                    id = if (showTotal) R.string.total_balance
+                    else R.string.current_month_balance
+                )
+            )
             Text(text = balanceMoney, style = MaterialTheme.typography.displaySmall)
         }
         Spacer(modifier = Modifier.height(8.dp))
