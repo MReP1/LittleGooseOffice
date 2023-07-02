@@ -16,6 +16,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.EditNote
 import androidx.compose.material.icons.rounded.FormatListBulleted
 import androidx.compose.material.icons.rounded.FormatListNumbered
+import androidx.compose.material.icons.rounded.FormatQuote
 import androidx.compose.material.icons.rounded.Preview
 import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.BottomAppBarDefaults
@@ -25,7 +26,9 @@ import androidx.compose.material3.IconButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Stable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import little.goose.design.system.theme.AccountTheme
 import little.goose.note.logic.FormatType
 import little.goose.note.ui.component.FormatHeaderIcon
 
@@ -81,6 +84,16 @@ internal fun NoteBottomBar(
                         contentDescription = "OrderedList"
                     )
                 }
+                IconButton(
+                    onClick = {
+                        state.onFormat(FormatType.Quote)
+                    }
+                ) {
+                    Icon(
+                        imageVector = Icons.Rounded.FormatQuote,
+                        contentDescription = "Quote"
+                    )
+                }
             }
 
             FloatingActionButton(
@@ -103,5 +116,13 @@ internal fun NoteBottomBar(
             }
             Spacer(modifier = Modifier.width(12.dp))
         }
+    )
+}
+
+@Preview
+@Composable
+private fun PreviewNoteBottomBar() = AccountTheme {
+    NoteBottomBar(
+        state = NoteBottomBarState()
     )
 }

@@ -19,6 +19,7 @@ sealed class FormatType(val value: String) {
         data class Ordered(private val num: Int) : List("$num. ")
     }
 
+    object Quote : FormatType("> ")
 }
 
 fun TextFieldValue.format(
@@ -31,6 +32,10 @@ fun TextFieldValue.format(
 
         is FormatType.List -> {
             formatList(type)
+        }
+
+        else -> {
+            formatNormal(type)
         }
     }
 }
@@ -115,6 +120,22 @@ private fun TextFieldValue.formatList(
                 this.selection.start + listType.value.length,
                 this.selection.end + listType.value.length
             )
+        )
+    }
+}
+
+private fun TextFieldValue.formatNormal(
+    formatType: FormatType
+): TextFieldValue {
+    return if (text.startsWith(formatType.value)) {
+        copy(
+            text = text.substring(2),
+            selection = TextRange(start = selection.start - 2, end = selection.end - 2)
+        )
+    } else {
+        copy(
+            text = formatType.value + text,
+            selection = TextRange(start = selection.start + 2, end = selection.end + 2)
         )
     }
 }
