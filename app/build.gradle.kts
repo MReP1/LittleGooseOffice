@@ -61,4 +61,7 @@ dependencies {
     implementation(project(":feature:settings"))
     implementation(project(":appwidget"))
 
+    // Metrics
+    implementation(libs.androidx.metrics)
+
 }

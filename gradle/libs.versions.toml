@@ -19,6 +19,7 @@ androidMaterial = "1.9.0"
 accompanistVersion = "0.30.1"
 androidxHiltNavigationCompose = "1.0.0"
 androidxConstraintLayoutCompose = "1.0.1"
+androidxMetrics = "1.0.0-alpha03"
 androidLifecycle = "2.6.1"
 composeCalendar = "2.3.0"
 composeMarkdown = "0.6.1"
@@ -64,6 +65,7 @@ androidx-datasotre = { group = "androidx.datastore", name = "datastore", version
 androidx-dataStore-preferences = { group = "androidx.datastore", name = "datastore-preferences", version.ref = "androidxDataStore" }
 androidx-glance = { group = "androidx.glance", name = "glance", version.ref = "androidxGlance" }
 androidx-glance-appwidget = { group = "androidx.glance", name = "glance-appwidget", version.ref = "androidxGlance" }
+androidx-metrics = { group = "androidx.metrics", name = "metrics-performance", version.ref = "androidxMetrics" }
 androidx-test-ext = { group = "androidx.test.ext", name = "junit-ktx", version.ref = "androidxTestExt" }
 androidx-test-espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "androidxEspresso" }
 androidx-startUp-runtime = { group = "androidx.startup", name = "startup-runtime", version.ref = "androidxStartUp" }
