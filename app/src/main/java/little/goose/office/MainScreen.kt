@@ -2,6 +2,8 @@ package little.goose.office
 
 import androidx.compose.animation.AnimatedContentScope
 import androidx.compose.animation.core.tween
+import androidx.compose.animation.scaleIn
+import androidx.compose.animation.scaleOut
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavGraphBuilder
@@ -128,18 +130,10 @@ fun LittleGooseAnimatedNavHost(
             )
         },
         exitTransition = {
-            slideOutOfContainer(
-                towards = AnimatedContentScope.SlideDirection.Start,
-                animationSpec = tween(defaultDurationMillis),
-                targetOffset = { it }
-            )
+            scaleOut(animationSpec = tween(defaultDurationMillis), targetScale = 0.96F)
         },
         popEnterTransition = {
-            slideIntoContainer(
-                towards = AnimatedContentScope.SlideDirection.End,
-                animationSpec = tween(defaultDurationMillis),
-                initialOffset = { it }
-            )
+            scaleIn(animationSpec = tween(defaultDurationMillis), initialScale = 0.96F)
         },
         popExitTransition = {
             slideOutOfContainer(
