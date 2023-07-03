@@ -1,6 +1,15 @@
 package little.goose.memorial.ui
 
+import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutVertically
+import androidx.compose.animation.with
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -10,10 +19,14 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.ArrowBack
-import androidx.compose.material3.Button
+import androidx.compose.material.icons.rounded.Preview
+import androidx.compose.material.icons.rounded.Save
+import androidx.compose.material3.BottomAppBar
+import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
@@ -23,10 +36,12 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -52,6 +67,7 @@ import little.goose.memorial.R
 import little.goose.memorial.ROUTE_GRAPH_MEMORIAL
 import little.goose.memorial.data.constants.KEY_MEMORIAL_ID
 import little.goose.memorial.data.entities.Memorial
+import little.goose.memorial.ui.component.MemorialCard
 import little.goose.memorial.ui.component.MemorialText
 import little.goose.memorial.utils.appendTimeSuffix
 import little.goose.ui.screen.LittleGooseLoadingScreen
@@ -186,12 +202,30 @@ private fun MemorialScreen(
     onConfirmClick: () -> Unit
 ) {
     val context = LocalContext.current
+    var isPreview by remember { mutableStateOf(false) }
     Scaffold(
         modifier = modifier,
         topBar = {
             TopAppBar(
                 title = {
-                    Text(text = memorial.content.appendTimeSuffix(memorial.time, context))
+                    AnimatedVisibility(
+                        visible = !isPreview,
+                        enter = fadeIn(
+                            animationSpec = tween(200, delayMillis = 60)
+                        ) + slideInVertically(
+                            animationSpec = tween(200, delayMillis = 60),
+                            initialOffsetY = { it / 2 }
+                        ),
+                        exit = fadeOut(
+                            animationSpec = tween(120)
+                        ) + slideOutVertically(
+                            animationSpec = tween(120),
+                            targetOffsetY = { it / 2 }
+                        ),
+                        label = "Memorial Title"
+                    ) {
+                        Text(text = memorial.content.appendTimeSuffix(memorial.time, context))
+                    }
                 },
                 navigationIcon = {
                     IconButton(onClick = onBack) {
@@ -204,81 +238,146 @@ private fun MemorialScreen(
             )
         },
         content = { paddingValues ->
-            val state = rememberScrollState()
-            Column(
-                Modifier
-                    .fillMaxSize()
-                    .padding(paddingValues)
-                    .verticalScroll(state),
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-
-                MemorialText(
-                    memorial = memorial,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(200.dp)
-                        .padding(24.dp)
-                )
-
-                Row(
-                    modifier = Modifier
-                        .height(54.dp)
-                        .fillMaxWidth()
-                        .clickable(onClick = onChangeTimeClick),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Spacer(modifier = Modifier.width(32.dp))
-                    Text(text = stringResource(id = R.string.date))
-                    Spacer(modifier = Modifier.weight(1f))
-                    Text(text = memorial.time.toChineseYearMonDayWeek(context))
-                    Spacer(modifier = Modifier.width(32.dp))
-                }
-
-                Row(
-                    modifier = Modifier
-                        .height(54.dp)
-                        .fillMaxWidth()
-                        .clickable(onClick = onContentClick),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Spacer(modifier = Modifier.width(32.dp))
-                    Text(text = stringResource(id = R.string.content))
-                    Spacer(modifier = Modifier.weight(1f))
-                    Text(text = memorial.content)
-                    Spacer(modifier = Modifier.width(32.dp))
-                }
-
-                Row(
-                    modifier = Modifier
-                        .height(54.dp)
-                        .fillMaxWidth(),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Spacer(modifier = Modifier.width(32.dp))
-                    Text(text = stringResource(id = R.string.to_top))
-                    Spacer(modifier = Modifier.weight(1f))
-                    Switch(
-                        checked = memorial.isTop,
-                        onCheckedChange = onTopCheckedChange
+            AnimatedContent(
+                modifier = Modifier.padding(paddingValues),
+                targetState = isPreview,
+                label = "Memorial content",
+                transitionSpec = {
+                    fadeIn(
+                        animationSpec = tween(durationMillis = 200, delayMillis = 60)
+                    ) + slideInVertically(
+                        animationSpec = tween(durationMillis = 200, delayMillis = 60),
+                        initialOffsetY = { (if (targetState) -it else it) / 24 }
+                    ) with fadeOut(
+                        animationSpec = tween(durationMillis = 120)
+                    ) + slideOutVertically(
+                        animationSpec = tween(durationMillis = 120),
+                        targetOffsetY = { (if (targetState) it else -it) / 24 }
                     )
-                    Spacer(modifier = Modifier.width(32.dp))
                 }
-
-                Spacer(modifier = Modifier.height(24.dp))
-
-                Button(
-                    onClick = onConfirmClick,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(64.dp),
-                    shape = RectangleShape
-                ) {
-                    Text(text = stringResource(id = little.goose.common.R.string.confirm))
+            ) { preview ->
+                if (!preview) {
+                    MemorialEditContent(
+                        memorial = memorial,
+                        onChangeTimeClick = onChangeTimeClick,
+                        onContentClick = onContentClick,
+                        onTopCheckedChange = onTopCheckedChange
+                    )
+                } else {
+                    MemorialPreviewContent(
+                        memorial = memorial
+                    )
                 }
             }
+        },
+        bottomBar = {
+            BottomAppBar(
+                modifier = Modifier.fillMaxWidth(),
+                floatingActionButton = {
+                    FloatingActionButton(
+                        onClick = { isPreview = !isPreview }
+                    ) {
+                        Icon(imageVector = Icons.Rounded.Preview, contentDescription = "Preview")
+                    }
+                },
+                actions = {
+                    Spacer(modifier = Modifier.width(8.dp))
+                    IconButton(onClick = onConfirmClick) {
+                        Icon(imageVector = Icons.Rounded.Save, contentDescription = "Save")
+                    }
+                }
+            )
         }
     )
+}
+
+@Composable
+private fun MemorialEditContent(
+    modifier: Modifier = Modifier,
+    memorial: Memorial,
+    onChangeTimeClick: () -> Unit,
+    onContentClick: () -> Unit,
+    onTopCheckedChange: (Boolean) -> Unit
+) {
+    val state = rememberScrollState()
+    val context = LocalContext.current
+    Column(
+        modifier
+            .fillMaxSize()
+            .verticalScroll(state),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+
+        MemorialText(
+            memorial = memorial,
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(200.dp)
+                .padding(24.dp)
+        )
+
+        Row(
+            modifier = Modifier
+                .height(54.dp)
+                .fillMaxWidth()
+                .clickable(onClick = onChangeTimeClick),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Spacer(modifier = Modifier.width(32.dp))
+            Text(text = stringResource(id = R.string.date))
+            Spacer(modifier = Modifier.weight(1f))
+            Text(text = memorial.time.toChineseYearMonDayWeek(context))
+            Spacer(modifier = Modifier.width(32.dp))
+        }
+
+        Row(
+            modifier = Modifier
+                .height(54.dp)
+                .fillMaxWidth()
+                .clickable(onClick = onContentClick),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Spacer(modifier = Modifier.width(32.dp))
+            Text(text = stringResource(id = R.string.content))
+            Spacer(modifier = Modifier.weight(1f))
+            Text(text = memorial.content)
+            Spacer(modifier = Modifier.width(32.dp))
+        }
+
+        Row(
+            modifier = Modifier
+                .height(54.dp)
+                .fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Spacer(modifier = Modifier.width(32.dp))
+            Text(text = stringResource(id = R.string.to_top))
+            Spacer(modifier = Modifier.weight(1f))
+            Switch(
+                checked = memorial.isTop,
+                onCheckedChange = onTopCheckedChange
+            )
+            Spacer(modifier = Modifier.width(32.dp))
+        }
+    }
+}
+
+@Composable
+private fun MemorialPreviewContent(
+    modifier: Modifier = Modifier,
+    memorial: Memorial,
+) {
+    Box(
+        modifier = modifier.fillMaxSize()
+    ) {
+        MemorialCard(
+            memorial = memorial,
+            shape = RoundedCornerShape(24.dp),
+            modifier = Modifier
+                .width(280.dp)
+                .align(Alignment.Center)
+        )
+    }
 }
 
 @Preview

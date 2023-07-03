@@ -19,7 +19,6 @@ import little.goose.home.homeRoute
 import little.goose.memorial.memorialGraph
 import little.goose.memorial.ui.MemorialScreenType
 import little.goose.memorial.ui.navigateToMemorial
-import little.goose.memorial.ui.navigateToMemorialShow
 import little.goose.note.ui.note.NoteNavigatingType
 import little.goose.note.ui.note.navigateToNote
 import little.goose.note.ui.note.noteRoute
@@ -65,7 +64,9 @@ internal fun MainScreen(modifier: Modifier) {
             onNavigateToMemorialAdd = {
                 navController.navigateToMemorial(MemorialScreenType.Add)
             },
-            onNavigateToMemorialShow = navController::navigateToMemorialShow,
+            onNavigateToMemorialShow = {
+                navController.navigateToMemorial(MemorialScreenType.Modify, memorialId = it)
+            },
             onNavigateToAccountAnalysis = navController::navigateToAccountAnalysis,
             onNavigateToScheduleDialog = navController::navigateToScheduleDialog
         )
@@ -78,7 +79,9 @@ internal fun MainScreen(modifier: Modifier) {
             onNavigateToNote = { noteId ->
                 navController.navigateToNote(NoteNavigatingType.Edit(noteId))
             },
-            onNavigateToMemorialShow = navController::navigateToMemorialShow,
+            onNavigateToMemorialShow = {
+                navController.navigateToMemorial(MemorialScreenType.Modify, memorialId = it)
+            },
             onNavigateToTransactionScreen = navController::navigateToTransaction,
             onNavigateToScheduleDialog = navController::navigateToScheduleDialog,
             onBack = navController::navigateUp
@@ -91,10 +94,7 @@ internal fun MainScreen(modifier: Modifier) {
         )
 
         memorialGraph(
-            onBack = navController::navigateUp,
-            onNavigateToMemorial = {
-                navController.navigateToMemorial(MemorialScreenType.Modify, memorialId = it)
-            }
+            onBack = navController::navigateUp
         )
 
         scheduleRoute(
