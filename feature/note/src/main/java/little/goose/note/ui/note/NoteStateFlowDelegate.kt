@@ -6,7 +6,6 @@ import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.lifecycle.ViewModel
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -23,7 +22,6 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
-import kotlinx.coroutines.withContext
 import little.goose.note.data.entities.Note
 import little.goose.note.data.entities.NoteContentBlock
 import little.goose.note.logic.DeleteNoteContentBlockUseCase
@@ -215,23 +213,21 @@ class NoteRouteStateFlowDelegate(
     private fun deleteContentBlock(block: NoteContentBlock) {
         coroutineScope.launchWithWritingMutex {
             val nwc = noteWithContent.value ?: return@launchWithWritingMutex
-            val newBlocks = withContext(Dispatchers.Default) {
-                buildList {
-                    val movingBlocks = mutableListOf<NoteContentBlock>()
-                    nwc.content.forEachIndexed { index, noteContentBlock ->
-                        if (noteContentBlock.id == block.id) {
-                            deleteNoteContentBlock(noteContentBlock)
-                        } else if (index < block.index) {
-                            add(noteContentBlock)
-                        } else {
-                            noteContentBlock.copy(index = index - 1).also {
-                                add(it)
-                                movingBlocks.add(it)
-                            }
+            val newBlocks = buildList {
+                val movingBlocks = mutableListOf<NoteContentBlock>()
+                nwc.content.forEachIndexed { index, noteContentBlock ->
+                    if (noteContentBlock.id == block.id) {
+                        deleteNoteContentBlock(noteContentBlock)
+                    } else if (index < block.index) {
+                        add(noteContentBlock)
+                    } else {
+                        noteContentBlock.copy(index = index - 1).also {
+                            add(it)
+                            movingBlocks.add(it)
                         }
                     }
-                    updateNoteContentBlocks(movingBlocks)
                 }
+                updateNoteContentBlocks(movingBlocks)
             }
             noteWithContent.value = buildMap { put(nwc.note, newBlocks) }
         }
@@ -255,7 +251,7 @@ class NoteRouteStateFlowDelegate(
         val newBlocks = if (nwc.content.size == newBlock.index) {
             // Add to the end
             nwc.content + newBlock
-        } else withContext(Dispatchers.Default) {
+        } else {
             buildList {
                 val movingBlocks = mutableListOf<NoteContentBlock>()
                 nwc.content.forEachIndexed { index, noteContentBlock ->
