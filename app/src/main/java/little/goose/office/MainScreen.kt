@@ -5,6 +5,7 @@ import androidx.compose.animation.core.tween
 import androidx.compose.animation.scaleIn
 import androidx.compose.animation.scaleOut
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.Stable
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
@@ -15,6 +16,7 @@ import little.goose.account.ui.analysis.navigateToAccountAnalysis
 import little.goose.account.ui.navigateToTransactionExample
 import little.goose.account.ui.transaction.navigateToTransaction
 import little.goose.design.system.theme.ThemeConfig
+import little.goose.design.system.theme.ThemeType
 import little.goose.home.KEY_INIT_HOME_PAGE
 import little.goose.home.ROUTE_HOME
 import little.goose.home.homeRoute
@@ -31,9 +33,22 @@ import little.goose.search.searchRoute
 import little.goose.settings.navigateToSettings
 import little.goose.settings.settingsRoute
 
+@Stable
 sealed interface AppState {
-    object Loading : AppState
-    data class Success(val themeConfig: ThemeConfig) : AppState
+
+    object Loading : AppState {
+        override val themeConfig: ThemeConfig
+            get() = ThemeConfig(
+                isDynamicColor = true,
+                themeType = ThemeType.FOLLOW_SYSTEM
+            )
+    }
+
+    data class Success(
+        override val themeConfig: ThemeConfig
+    ) : AppState
+
+    val themeConfig: ThemeConfig
 }
 
 @Composable

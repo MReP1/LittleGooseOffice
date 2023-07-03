@@ -8,7 +8,6 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
-import androidx.core.view.WindowCompat
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.metrics.performance.JankStats
 import dagger.hilt.android.AndroidEntryPoint
@@ -27,23 +26,16 @@ class MainActivity : AppCompatActivity() {
         splashScreen.setKeepOnScreenCondition { !isAppInit }
         super.onCreate(savedInstanceState)
 
-        if (window != null) {
-            window.statusBarColor = android.graphics.Color.TRANSPARENT
-            window.navigationBarColor = android.graphics.Color.TRANSPARENT
-            WindowCompat.setDecorFitsSystemWindows(window, false)
-        }
-
         setContent {
             val viewModel = hiltViewModel<MainViewModel>()
-            val appState by viewModel.appState.collectAsState()
-            when (val state = appState) {
-                is AppState.Loading -> {
-                    LittleGooseEmptyScreen(modifier = Modifier.fillMaxSize())
-                }
+            val appState: AppState by viewModel.appState.collectAsState()
+            AccountTheme(appState.themeConfig) {
+                when (appState) {
+                    is AppState.Loading -> {
+                        LittleGooseEmptyScreen(modifier = Modifier.fillMaxSize())
+                    }
 
-                is AppState.Success -> {
-                    val themeConfig = state.themeConfig
-                    AccountTheme(themeConfig) {
+                    is AppState.Success -> {
                         MainScreen(
                             modifier = Modifier.fillMaxSize()
                         )
