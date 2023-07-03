@@ -27,14 +27,14 @@ import little.goose.memorial.ui.component.MemorialColumnState
 internal fun SearchMemorialContent(
     modifier: Modifier = Modifier,
     memorialColumnState: MemorialColumnState,
-    onNavigateToMemorialShow: (Long) -> Unit
+    onNavigateToMemorial: (Long) -> Unit
 ) {
     if (memorialColumnState.memorials.isNotEmpty()) {
         MemorialColumn(
             modifier = modifier.fillMaxSize(),
             state = memorialColumnState,
             onMemorialEdit = { memorial ->
-                memorial.id?.run(onNavigateToMemorialShow)
+                memorial.id?.run(onNavigateToMemorial)
             }
         )
     }
@@ -99,6 +99,6 @@ private fun PreviewSearchMemorialContent() = AccountTheme {
             cancelMultiSelecting = {},
             deleteMemorials = {}
         ),
-        onNavigateToMemorialShow = {}
+        onNavigateToMemorial = {}
     )
 }

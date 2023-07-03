@@ -119,7 +119,7 @@ fun SearchMemorialScreen(
                     SearchMemorialContent(
                         modifier = contentModifier,
                         memorialColumnState = state.data,
-                        onNavigateToMemorialShow = onNavigateToMemorialDialog
+                        onNavigateToMemorial = onNavigateToMemorialDialog
                     )
                 }
             }

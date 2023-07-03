@@ -64,7 +64,7 @@ internal fun MainScreen(modifier: Modifier) {
             onNavigateToMemorialAdd = {
                 navController.navigateToMemorial(MemorialScreenType.Add)
             },
-            onNavigateToMemorialShow = {
+            onNavigateToMemorial = {
                 navController.navigateToMemorial(MemorialScreenType.Modify, memorialId = it)
             },
             onNavigateToAccountAnalysis = navController::navigateToAccountAnalysis,
@@ -79,7 +79,7 @@ internal fun MainScreen(modifier: Modifier) {
             onNavigateToNote = { noteId ->
                 navController.navigateToNote(NoteNavigatingType.Edit(noteId))
             },
-            onNavigateToMemorialShow = {
+            onNavigateToMemorial = {
                 navController.navigateToMemorial(MemorialScreenType.Modify, memorialId = it)
             },
             onNavigateToTransactionScreen = navController::navigateToTransaction,

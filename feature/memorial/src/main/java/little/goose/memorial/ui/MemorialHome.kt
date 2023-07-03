@@ -19,14 +19,14 @@ fun MemorialHome(
     modifier: Modifier,
     topMemorial: Memorial?,
     memorialColumnState: MemorialColumnState,
-    onNavigateToMemorialShow: (Long) -> Unit,
+    onNavigateToMemorial: (Long) -> Unit,
 ) {
     MemorialScreen(
         modifier = modifier,
         memorialColumnState = memorialColumnState,
         topMemorial = topMemorial,
         onMemorialEdit = { memorial ->
-            memorial.id?.run(onNavigateToMemorialShow)
+            memorial.id?.run(onNavigateToMemorial)
         }
     )
 }
