@@ -1,6 +1,5 @@
 package little.goose.search.component
 
-import android.view.ViewTreeObserver
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.BasicTextField
@@ -16,7 +15,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
-import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import little.goose.design.system.theme.AccountTheme
@@ -49,20 +47,9 @@ internal fun SearchTopAppBar(
                     .focusRequester(focusRequester),
                 maxLines = 1
             )
-            val view = LocalView.current
             DisposableEffect(focusRequester) {
-                val listener = object : ViewTreeObserver.OnWindowFocusChangeListener {
-                    override fun onWindowFocusChanged(hasFocus: Boolean) {
-                        if (hasFocus) {
-                            focusRequester.requestFocus()
-                            view.viewTreeObserver.removeOnWindowFocusChangeListener(this)
-                        }
-                    }
-                }
-                view.viewTreeObserver.addOnWindowFocusChangeListener(listener)
-                onDispose {
-                    view.viewTreeObserver.removeOnWindowFocusChangeListener(listener)
-                }
+                focusRequester.requestFocus()
+                onDispose {}
             }
         },
         actions = {
