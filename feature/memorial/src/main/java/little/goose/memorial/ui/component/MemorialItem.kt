@@ -214,7 +214,8 @@ fun MemorialItem(
                         Box(
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .height(contentHeight - 102.dp),
+                                .height(contentHeight - 102.dp)
+                                .padding(horizontal = 18.dp),
                             contentAlignment = Alignment.Center
                         ) {
                             MemorialText(memorial = memorial)
