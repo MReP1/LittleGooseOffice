@@ -13,8 +13,10 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalView
 import androidx.core.util.Consumer
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.metrics.performance.PerformanceMetricsState
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavType
@@ -136,6 +138,24 @@ fun HomeRoute(
             activity.addOnNewIntentListener(listener)
             onDispose {
                 activity.removeOnNewIntentListener(listener)
+            }
+        }
+
+        val view = LocalView.current
+        val stateHolder = remember(view) {
+            PerformanceMetricsState.getHolderForHierarchy(view)
+        }
+        DisposableEffect(pagerState.isScrollInProgress) {
+            val key = "home_pager_scroll"
+            if (pagerState.isScrollInProgress) {
+                val msg = "current page: ${pagerState.currentPage}, " +
+                        "offset: ${pagerState.currentPageOffsetFraction}"
+                stateHolder.state?.putState(key, msg)
+            } else {
+                stateHolder.state?.removeState(key)
+            }
+            onDispose {
+                stateHolder.state?.removeState(key)
             }
         }
 
