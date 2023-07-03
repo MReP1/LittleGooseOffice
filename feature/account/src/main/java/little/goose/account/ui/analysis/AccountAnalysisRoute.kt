@@ -1,8 +1,11 @@
 package little.goose.account.ui.analysis
 
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
@@ -27,7 +30,9 @@ fun NavGraphBuilder.accountAnalysisRoute(
     onBack: () -> Unit
 ) = composable(ROUTE_ACCOUNT_ANALYSIS) {
     AccountAnalysisRoute(
-        modifier = Modifier,
+        modifier = Modifier
+            .fillMaxSize()
+            .shadow(36.dp, clip = false),
         onNavigateToTransactionExample = onNavigateToTransactionExample,
         onBack = onBack
     )

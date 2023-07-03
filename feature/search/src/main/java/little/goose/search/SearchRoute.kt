@@ -3,6 +3,8 @@ package little.goose.search
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
@@ -38,7 +40,9 @@ fun NavGraphBuilder.searchRoute(
     )
 ) {
     SearchRoute(
-        modifier = Modifier.fillMaxSize(),
+        modifier = Modifier
+            .fillMaxSize()
+            .shadow(36.dp, clip = false),
         onNavigateToNote = onNavigateToNote,
         onNavigateToMemorial = onNavigateToMemorial,
         onNavigateToTransactionScreen = onNavigateToTransactionScreen,
@@ -59,13 +63,13 @@ fun SearchRoute(
     val viewModel = hiltViewModel<SearchViewModel>()
     when (viewModel.searchType) {
         SearchType.Memorial -> SearchMemorialRoute(
-            modifier = modifier.fillMaxSize(),
+            modifier = modifier,
             onNavigateToMemorialDialog = onNavigateToMemorial,
             onBack = onBack
         )
 
         SearchType.Note -> SearchNoteRoute(
-            modifier = modifier.fillMaxSize(),
+            modifier = modifier,
             onNavigateToNote = onNavigateToNote,
             onBack = onBack
         )

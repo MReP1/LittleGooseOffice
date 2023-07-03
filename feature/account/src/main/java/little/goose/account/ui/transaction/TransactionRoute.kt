@@ -2,6 +2,8 @@ package little.goose.account.ui.transaction
 
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.unit.dp
 import androidx.lifecycle.SavedStateHandle
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
@@ -73,7 +75,9 @@ internal fun NavGraphBuilder.transactionRoute(onBack: () -> Unit) {
         )
     ) {
         TransactionScreen(
-            modifier = Modifier.fillMaxSize(),
+            modifier = Modifier
+                .fillMaxSize()
+                .shadow(36.dp, clip = false),
             onFinished = onBack
         )
     }
