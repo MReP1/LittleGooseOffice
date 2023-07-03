@@ -142,20 +142,20 @@ fun HomeRoute(
         }
 
         val view = LocalView.current
-        val stateHolder = remember(view) {
+        val hierarchyStateHolder = remember(view) {
             PerformanceMetricsState.getHolderForHierarchy(view)
         }
-        DisposableEffect(pagerState.isScrollInProgress) {
+        DisposableEffect(hierarchyStateHolder, pagerState.isScrollInProgress) {
             val key = "home_pager_scroll"
             if (pagerState.isScrollInProgress) {
                 val msg = "current page: ${pagerState.currentPage}, " +
                         "offset: ${pagerState.currentPageOffsetFraction}"
-                stateHolder.state?.putState(key, msg)
+                hierarchyStateHolder.state?.putState(key, msg)
             } else {
-                stateHolder.state?.removeState(key)
+                hierarchyStateHolder.state?.removeState(key)
             }
             onDispose {
-                stateHolder.state?.removeState(key)
+                hierarchyStateHolder.state?.removeState(key)
             }
         }
 
