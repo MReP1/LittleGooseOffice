@@ -1,6 +1,5 @@
 package little.goose.home.ui
 
-import android.os.Trace
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
@@ -94,54 +93,42 @@ class IndexViewModel @Inject constructor(
                 firstVisibleMonth.flatMapLatest {
                     getTransactionByYearMonthFlowUseCase(it.year, it.month.value)
                 }.collect { transactions: List<Transaction> ->
-                    Trace.beginSection("updateTransactions")
                     updateTransactions(transactions, firstVisibleMonth.value)
-                    Trace.endSection()
                 }
             }
             launch {
                 lastVisibleMonth.flatMapLatest {
                     getTransactionByYearMonthFlowUseCase(it.year, it.month.value)
                 }.collect { transactions: List<Transaction> ->
-                    Trace.beginSection("updateTransactions")
                     updateTransactions(transactions, lastVisibleMonth.value)
-                    Trace.endSection()
                 }
             }
             launch {
                 firstVisibleMonth.flatMapLatest {
                     getScheduleByYearMonthFlowUseCase(it.year, it.month.value)
                 }.collect { schedules ->
-                    Trace.beginSection("updateSchedules")
                     updateSchedules(schedules, firstVisibleMonth.value)
-                    Trace.endSection()
                 }
             }
             launch {
                 lastVisibleMonth.flatMapLatest {
                     getScheduleByYearMonthFlowUseCase(it.year, it.month.value)
                 }.collect { schedules ->
-                    Trace.beginSection("updateSchedules")
                     updateSchedules(schedules, lastVisibleMonth.value)
-                    Trace.endSection()
                 }
             }
             launch {
                 firstVisibleMonth.flatMapLatest {
                     getMemorialByYearMonthFlowUseCase(it.year, it.month.value)
                 }.collect { memorials ->
-                    Trace.beginSection("updateMemorials")
                     updateMemorials(memorials, firstVisibleMonth.value)
-                    Trace.endSection()
                 }
             }
             launch {
                 lastVisibleMonth.flatMapLatest {
                     getMemorialByYearMonthFlowUseCase(it.year, it.month.value)
                 }.collect { memorials ->
-                    Trace.beginSection("updateMemorials")
                     updateMemorials(memorials, lastVisibleMonth.value)
-                    Trace.endSection()
                 }
             }
         }
