@@ -1,11 +1,35 @@
 package little.goose.home.ui
 
 import androidx.compose.animation.animateContentSize
-import androidx.compose.foundation.*
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.wrapContentHeight
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.Stable
+import androidx.compose.runtime.State
+import androidx.compose.runtime.derivedStateOf
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberUpdatedState
+import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -13,8 +37,12 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.kizitonwose.calendar.compose.HorizontalCalendar
 import com.kizitonwose.calendar.compose.rememberCalendarState
-import com.kizitonwose.calendar.core.*
-import kotlinx.coroutines.Dispatchers
+import com.kizitonwose.calendar.core.CalendarDay
+import com.kizitonwose.calendar.core.DayPosition
+import com.kizitonwose.calendar.core.OutDateStyle
+import com.kizitonwose.calendar.core.atStartOfMonth
+import com.kizitonwose.calendar.core.daysOfWeek
+import com.kizitonwose.calendar.core.yearMonth
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.launch
 import little.goose.account.data.entities.Transaction
@@ -29,7 +57,8 @@ import little.goose.schedule.data.entities.Schedule
 import java.time.LocalDate
 import java.time.YearMonth
 import java.time.format.TextStyle
-import java.util.*
+import java.util.Date
+import java.util.Locale
 
 @Stable
 data class IndexScreenState(
@@ -68,7 +97,7 @@ fun IndexHome(
 
     var visibleMonth by remember(calendarState) { mutableStateOf(calendarState.firstVisibleMonth) }
     LaunchedEffect(calendarState) {
-        launch(Dispatchers.Default) {
+        launch {
             snapshotFlow { calendarState.isScrollInProgress }
                 .filter { scrolling -> !scrolling }
                 .collect {
@@ -80,7 +109,7 @@ fun IndexHome(
                     }
                 }
         }
-        launch(Dispatchers.Default) {
+        launch {
             snapshotFlow { calendarState.firstVisibleMonth }.collect {
                 state.updateMonth(
                     calendarState.firstVisibleMonth.yearMonth,
