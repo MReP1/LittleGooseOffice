@@ -97,17 +97,17 @@ private fun ScheduleScreen(
                         pullDelta
                     },
                     onRelease = { flingVelocity ->
+                        if (
+                            offsetY.value > 64.dp
+                            || (offsetY.value > 12.dp
+                                    && (offsetY.value.value + flingVelocity / 100) > 64)
+                        ) {
+                            vibrator.vibrate(
+                                VibrationEffect.createOneShot(36L, 180)
+                            )
+                            onNavigateToSearch()
+                        }
                         scope.launch {
-                            if (
-                                offsetY.value > 64.dp
-                                || (offsetY.value > 12.dp
-                                        && (offsetY.value.value + flingVelocity / 100) > 64)
-                            ) {
-                                vibrator.vibrate(
-                                    VibrationEffect.createOneShot(36L, 180)
-                                )
-                                onNavigateToSearch()
-                            }
                             offsetY.animateTo(0.dp, tween(200))
                         }
                     }
