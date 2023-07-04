@@ -1,10 +1,12 @@
 package little.goose.search
 
+import androidx.compose.animation.AnimatedContentScope
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.shadow
-import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
@@ -37,12 +39,28 @@ fun NavGraphBuilder.searchRoute(
             type = NavType.IntType
             defaultValue = 0
         }
-    )
+    ),
+    enterTransition = {
+        fadeIn(
+            animationSpec = tween(140)
+        ) + slideIntoContainer(
+            towards = AnimatedContentScope.SlideDirection.Down,
+            animationSpec = tween(200),
+            initialOffset = { it / 6 }
+        )
+    },
+    exitTransition = {
+        fadeOut(
+            animationSpec = tween(140)
+        ) + slideOutOfContainer(
+            towards = AnimatedContentScope.SlideDirection.Up,
+            animationSpec = tween(200),
+            targetOffset = { it / 6 }
+        )
+    }
 ) {
     SearchRoute(
-        modifier = Modifier
-            .fillMaxSize()
-            .shadow(36.dp, clip = false),
+        modifier = Modifier.fillMaxSize(),
         onNavigateToNote = onNavigateToNote,
         onNavigateToMemorial = onNavigateToMemorial,
         onNavigateToTransactionScreen = onNavigateToTransactionScreen,

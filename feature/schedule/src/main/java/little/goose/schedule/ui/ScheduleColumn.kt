@@ -13,9 +13,9 @@ import little.goose.design.system.theme.AccountTheme
 import little.goose.schedule.data.entities.Schedule
 
 data class ScheduleColumnState(
-    val schedules: List<Schedule>,
-    val isMultiSelecting: Boolean,
-    val multiSelectedSchedules: Set<Schedule>,
+    val schedules: List<Schedule> = emptyList(),
+    val isMultiSelecting: Boolean = false,
+    val multiSelectedSchedules: Set<Schedule> = emptySet(),
     val onSelectSchedule: (item: Schedule, selected: Boolean) -> Unit = {_, _ -> },
     val onCheckedChange: (Schedule, Boolean) -> Unit = {_, _ -> },
     val selectAllSchedules: () -> Unit = {},

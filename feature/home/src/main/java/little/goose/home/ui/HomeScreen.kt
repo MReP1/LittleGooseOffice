@@ -265,6 +265,7 @@ fun HomeScreen(
                             ScheduleHome(
                                 modifier = Modifier.fillMaxSize(),
                                 scheduleColumnState = scheduleColumnState,
+                                onNavigateToSearch = { onNavigateToSearch(SearchType.Schedule) },
                                 onNavigateToScheduleDialog = onNavigateToScheduleDialog
                             )
                         }
