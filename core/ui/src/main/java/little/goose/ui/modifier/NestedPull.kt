@@ -20,7 +20,7 @@ fun Modifier.nestedPull(
     enabled: Boolean = true
 ) = composed {
     val density = LocalDensity.current
-    val connection = remember(threshold) {
+    val connection = remember(density, threshold, enabled) {
         PullNestedScrollConnection(
             with(density) { threshold.toPx() }, passThreshold, onPull, onRelease, enabled
         )
