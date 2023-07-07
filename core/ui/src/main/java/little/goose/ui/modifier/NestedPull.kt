@@ -48,11 +48,7 @@ class PullNestedScrollConnection(
 
         // 向上滑动，父布局先处理（收回偏移），走 onPull 回调，并根据处理结果返回被消费掉的 Offset
         source == NestedScrollSource.Drag && available.y < 0 -> {
-            if (offsetY > 0) {
-                handleAvailableOffset(available)
-            } else {
-                Offset.Zero
-            }
+            handleAvailableOffset(available)
         }
 
         else -> Offset.Zero

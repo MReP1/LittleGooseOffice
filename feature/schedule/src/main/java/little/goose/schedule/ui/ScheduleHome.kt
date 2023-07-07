@@ -81,7 +81,7 @@ private fun ScheduleScreen(
         Surface(
             modifier = Modifier
                 .fillMaxSize()
-                .offset(y = maxOf(0.dp, offsetY.value))
+                .offset(y = offsetY.value)
                 .nestedPull(
                     threshold = 64.dp,
                     passThreshold = {
@@ -90,11 +90,14 @@ private fun ScheduleScreen(
                         )
                     },
                     onPull = { pullDelta ->
+                        val newOffsetY = maxOf(
+                            0.dp,
+                            with(density) { offsetY.value + pullDelta.toDp() }
+                        )
                         scope.launch(Dispatchers.Main.immediate) {
-                            val newOffsetY = with(density) { offsetY.value + pullDelta.toDp() }
                             offsetY.snapTo(newOffsetY)
                         }
-                        pullDelta
+                        if (newOffsetY.value > 0) pullDelta else 0f
                     },
                     onRelease = { flingVelocity ->
                         if (
