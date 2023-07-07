@@ -28,6 +28,8 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.max
+import androidx.compose.ui.unit.min
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import little.goose.design.system.theme.AccountTheme
@@ -75,7 +77,7 @@ private fun ScheduleScreen(
             modifier = Modifier
                 .align(Alignment.TopCenter)
                 .padding(top = 12.dp)
-                .size(minOf(48.dp, 24.dp + (offsetY.value / 3)))
+                .size(min(48.dp, 24.dp + (offsetY.value / 3)))
                 .alpha(alpha)
         )
         Surface(
@@ -90,7 +92,7 @@ private fun ScheduleScreen(
                         )
                     },
                     onPull = { pullDelta ->
-                        val newOffsetY = maxOf(
+                        val newOffsetY = max(
                             0.dp,
                             with(density) { offsetY.value + pullDelta.toDp() }
                         )
