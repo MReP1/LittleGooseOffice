@@ -13,7 +13,7 @@ import androidx.compose.ui.unit.Velocity
 import androidx.compose.ui.unit.dp
 
 fun Modifier.nestedPull(
-    onPull: (pullDelta: Float) -> Float,
+    onPull: (pullDelta: Float, threshold: Float) -> Float,
     threshold: Dp = 64.dp,
     passThreshold: () -> Unit,
     onRelease: suspend (flingVelocity: Float) -> Unit,
@@ -31,7 +31,7 @@ fun Modifier.nestedPull(
 class PullNestedScrollConnection(
     private val threshold: Float,
     private val passThreshold: () -> Unit,
-    private val onPull: (pullDelta: Float) -> Float,
+    private val onPull: (pullDelta: Float, threshold: Float) -> Float,
     private val onRelease: suspend (flingVelocity: Float) -> Unit,
     private val enabled: Boolean
 ) : NestedScrollConnection {
@@ -78,7 +78,7 @@ class PullNestedScrollConnection(
             isExceedThreshold = false
             passThreshold()
         }
-        return Offset(0f, onPull(available.y)) // Swiping up
+        return Offset(0f, onPull(available.y, threshold)) // Swiping up
     }
 
     override suspend fun onPreFling(available: Velocity): Velocity {

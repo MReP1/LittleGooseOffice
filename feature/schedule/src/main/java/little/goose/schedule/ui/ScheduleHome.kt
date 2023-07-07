@@ -3,9 +3,6 @@ package little.goose.schedule.ui
 import android.os.VibrationEffect
 import android.os.Vibrator
 import androidx.compose.animation.core.Animatable
-import androidx.compose.animation.core.VectorConverter
-import androidx.compose.animation.core.animateFloatAsState
-import androidx.compose.animation.core.tween
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.offset
@@ -17,16 +14,13 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.max
 import androidx.compose.ui.unit.min
@@ -60,30 +54,24 @@ private fun ScheduleScreen(
     onNavigateToSearch: () -> Unit,
     onScheduleClick: (Schedule) -> Unit
 ) {
-    val density = LocalDensity.current
     val context = LocalContext.current
-    val offsetY = remember { Animatable(0.dp, Dp.VectorConverter) }
+    val progress = remember { Animatable(0F) }
     val scope = rememberCoroutineScope()
     val vibrator = remember(context) { context.getSystemService(Vibrator::class.java) }
     Box(modifier = modifier) {
-        val alpha by animateFloatAsState(
-            targetValue = if (offsetY.value > 64.dp) 1F else 0.62F,
-            animationSpec = tween(200),
-            label = "search icon alpha"
-        )
         Icon(
             imageVector = Icons.Rounded.Search,
             contentDescription = "Search",
             modifier = Modifier
                 .align(Alignment.TopCenter)
                 .padding(top = 12.dp)
-                .size(min(48.dp, 24.dp + (offsetY.value / 3)))
-                .alpha(alpha)
+                .size(min(48.dp, 24.dp + 24.dp * progress.value))
+                .alpha(kotlin.math.max(1F - progress.value, 0.62F))
         )
         Surface(
             modifier = Modifier
                 .fillMaxSize()
-                .offset(y = offsetY.value)
+                .offset(y = max(64.dp * progress.value, 0.dp))
                 .nestedPull(
                     threshold = 64.dp,
                     passThreshold = {
@@ -91,29 +79,26 @@ private fun ScheduleScreen(
                             VibrationEffect.createOneShot(28L, 140)
                         )
                     },
-                    onPull = { pullDelta ->
-                        val newOffsetY = max(
-                            0.dp,
-                            with(density) { offsetY.value + pullDelta.toDp() }
+                    onPull = { pullDelta, threshold ->
+                        val newProgress = kotlin.math.max(
+                            progress.value + pullDelta / threshold, 0F
                         )
                         scope.launch(Dispatchers.Main.immediate) {
-                            offsetY.snapTo(newOffsetY)
+                            progress.snapTo(newProgress)
                         }
-                        if (newOffsetY.value > 0) pullDelta else 0f
+                        if (newProgress > 0) pullDelta else 0f
                     },
                     onRelease = { flingVelocity ->
-                        if (
-                            offsetY.value > 64.dp
-                            || (offsetY.value > 12.dp
-                                    && (offsetY.value.value + flingVelocity / 100) > 64)
-                        ) {
+                        // 取值可能会上锁，所以取一次存在本地复用
+                        val p = progress.value
+                        if (p == 1F || (p > 0.32F && (p + flingVelocity / 4711) > 1F)) {
                             vibrator.vibrate(
                                 VibrationEffect.createOneShot(36L, 180)
                             )
                             onNavigateToSearch()
                         }
                         scope.launch {
-                            offsetY.animateTo(0.dp, tween(200))
+                            progress.animateTo(0F)
                         }
                     }
                 ),
