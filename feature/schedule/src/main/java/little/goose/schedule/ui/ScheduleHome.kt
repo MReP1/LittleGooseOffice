@@ -66,7 +66,7 @@ private fun ScheduleScreen(
                 .align(Alignment.TopCenter)
                 .padding(top = 12.dp)
                 .size(min(48.dp, 24.dp + 24.dp * progress.value))
-                .alpha(kotlin.math.max(1F - progress.value, 0.62F))
+                .alpha(progress.value.coerceIn(0.62F, 1F))
         )
         Surface(
             modifier = Modifier
