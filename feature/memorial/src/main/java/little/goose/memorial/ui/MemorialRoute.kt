@@ -2,6 +2,7 @@ package little.goose.memorial.ui
 
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -20,6 +21,9 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.ArrowBack
@@ -34,17 +38,24 @@ import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.TextRange
+import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -55,14 +66,11 @@ import androidx.navigation.NavType
 import androidx.navigation.navArgument
 import androidx.navigation.navDeepLink
 import com.google.accompanist.navigation.animation.composable
-import kotlinx.coroutines.launch
 import little.goose.common.constants.DEEP_LINK_THEME_AND_HOST
 import little.goose.common.constants.KEY_TYPE
 import little.goose.common.utils.TimeType
 import little.goose.common.utils.toChineseYearMonDayWeek
-import little.goose.design.system.component.dialog.InputDialog
 import little.goose.design.system.component.dialog.TimeSelectorCenterDialog
-import little.goose.design.system.component.dialog.rememberBottomSheetDialogState
 import little.goose.design.system.component.dialog.rememberDialogState
 import little.goose.memorial.R
 import little.goose.memorial.ROUTE_GRAPH_MEMORIAL
@@ -148,8 +156,6 @@ private fun MemorialRoute(
 ) {
     val viewModel: MemorialScreenViewModel = hiltViewModel()
     val timeSelectorDialogState = rememberDialogState()
-    val inputTextDialogState = rememberBottomSheetDialogState()
-    val scope = rememberCoroutineScope()
 
     val memorialScreenState by viewModel.memorialScreenState.collectAsState()
     when (val state = memorialScreenState) {
@@ -160,8 +166,8 @@ private fun MemorialRoute(
                 modifier = modifier,
                 memorial = memorial,
                 onChangeTimeClick = timeSelectorDialogState::show,
-                onContentClick = {
-                    scope.launch { inputTextDialogState.open() }
+                onContentChange = {
+                    viewModel.updateMemorial(memorial = memorial.copy(content = it))
                 },
                 onTopCheckedChange = { isTop ->
                     viewModel.isChangeTop = true
@@ -182,14 +188,6 @@ private fun MemorialRoute(
                     viewModel.updateMemorial(memorial = memorial.copy(time = it))
                 }
             )
-
-            InputDialog(
-                state = inputTextDialogState,
-                text = memorial.content,
-                onConfirm = {
-                    viewModel.updateMemorial(memorial = memorial.copy(content = it))
-                }
-            )
         }
     }
 }
@@ -199,7 +197,7 @@ private fun MemorialScreen(
     modifier: Modifier = Modifier,
     memorial: Memorial,
     onChangeTimeClick: () -> Unit,
-    onContentClick: () -> Unit,
+    onContentChange: (String) -> Unit,
     onTopCheckedChange: (Boolean) -> Unit,
     onBack: () -> Unit,
     onConfirmClick: () -> Unit
@@ -263,7 +261,7 @@ private fun MemorialScreen(
                     MemorialEditContent(
                         memorial = memorial,
                         onChangeTimeClick = onChangeTimeClick,
-                        onContentClick = onContentClick,
+                        onContentChange = onContentChange,
                         onTopCheckedChange = onTopCheckedChange
                     )
                 } else {
@@ -294,12 +292,13 @@ private fun MemorialScreen(
     )
 }
 
+@OptIn(ExperimentalComposeUiApi::class)
 @Composable
 private fun MemorialEditContent(
     modifier: Modifier = Modifier,
     memorial: Memorial,
     onChangeTimeClick: () -> Unit,
-    onContentClick: () -> Unit,
+    onContentChange: (String) -> Unit,
     onTopCheckedChange: (Boolean) -> Unit
 ) {
     val state = rememberScrollState()
@@ -319,6 +318,114 @@ private fun MemorialEditContent(
                 .padding(24.dp)
         )
 
+        val durationMillis = 200
+        var isContentExpended by remember { mutableStateOf(false) }
+        val contentHeight by animateDpAsState(
+            targetValue = if (isContentExpended) 108.dp else 54.dp,
+            animationSpec = tween(durationMillis),
+            label = "content height"
+        )
+        val keyboard = LocalSoftwareKeyboardController.current
+        DisposableEffect(isContentExpended) {
+            if (!isContentExpended) {
+                keyboard?.hide()
+            }
+            onDispose { }
+        }
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(contentHeight)
+                .clickable {
+                    isContentExpended = !isContentExpended
+                }
+        ) {
+            Row(
+                modifier = Modifier
+                    .height(54.dp)
+                    .fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Spacer(modifier = Modifier.width(32.dp))
+                Text(text = stringResource(id = R.string.content))
+                Spacer(modifier = Modifier.weight(1f))
+                AnimatedVisibility(
+                    visible = !isContentExpended,
+                    enter = fadeIn(
+                        animationSpec = tween(durationMillis)
+                    ) + slideInVertically(
+                        animationSpec = tween(durationMillis),
+                        initialOffsetY = { it / 2 }
+                    ),
+                    exit = fadeOut(
+                        animationSpec = tween(durationMillis)
+                    ) + slideOutVertically(
+                        animationSpec = tween(durationMillis),
+                        targetOffsetY = { it / 2 }
+                    )
+                ) {
+                    Text(text = memorial.content)
+                }
+                Spacer(modifier = Modifier.width(32.dp))
+            }
+            AnimatedVisibility(
+                visible = isContentExpended,
+                enter = fadeIn(
+                    animationSpec = tween(durationMillis)
+                ) + slideInVertically(
+                    animationSpec = tween(durationMillis)
+                ),
+                exit = fadeOut(
+                    animationSpec = tween(durationMillis)
+                ) + slideOutVertically(
+                    animationSpec = tween(durationMillis)
+                )
+            ) {
+                var content by remember {
+                    mutableStateOf(
+                        TextFieldValue(
+                            text = memorial.content,
+                            selection = TextRange(start = 0, end = memorial.content.length)
+                        )
+                    )
+                }
+
+                val focusRequester = remember { FocusRequester() }
+                DisposableEffect(focusRequester) {
+                    focusRequester.requestFocus()
+                    onDispose {}
+                }
+
+                DisposableEffect(memorial.content) {
+                    if (content.text != memorial.content) {
+                        content = content.copy(text = memorial.content)
+                    }
+                    onDispose { }
+                }
+
+                BasicTextField(
+                    modifier = Modifier
+                        .padding(
+                            start = 32.dp, end = 32.dp,
+                            top = 8.dp, bottom = 16.dp
+                        )
+                        .weight(1F)
+                        .fillMaxWidth()
+                        .focusRequester(focusRequester),
+                    value = content,
+                    onValueChange = {
+                        content = it
+                        onContentChange(it.text)
+                    },
+                    maxLines = 1,
+                    keyboardActions = KeyboardActions(
+                        onDone = { isContentExpended = false }
+                    ),
+                    keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done)
+                )
+            }
+        }
+
         Row(
             modifier = Modifier
                 .height(54.dp)
@@ -330,20 +437,6 @@ private fun MemorialEditContent(
             Text(text = stringResource(id = R.string.date))
             Spacer(modifier = Modifier.weight(1f))
             Text(text = memorial.time.toChineseYearMonDayWeek(context))
-            Spacer(modifier = Modifier.width(32.dp))
-        }
-
-        Row(
-            modifier = Modifier
-                .height(54.dp)
-                .fillMaxWidth()
-                .clickable(onClick = onContentClick),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Spacer(modifier = Modifier.width(32.dp))
-            Text(text = stringResource(id = R.string.content))
-            Spacer(modifier = Modifier.weight(1f))
-            Text(text = memorial.content)
             Spacer(modifier = Modifier.width(32.dp))
         }
 
@@ -389,7 +482,7 @@ private fun PreviewMemorialScreen() {
     MemorialScreen(
         memorial = Memorial(null, "纪念日", true, Date()),
         onChangeTimeClick = {},
-        onContentClick = {},
+        onContentChange = {},
         onBack = {},
         onTopCheckedChange = {},
         onConfirmClick = {}

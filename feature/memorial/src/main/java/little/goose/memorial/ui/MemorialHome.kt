@@ -21,23 +21,6 @@ fun MemorialHome(
     memorialColumnState: MemorialColumnState,
     onNavigateToMemorial: (Long) -> Unit,
 ) {
-    MemorialScreen(
-        modifier = modifier,
-        memorialColumnState = memorialColumnState,
-        topMemorial = topMemorial,
-        onMemorialEdit = { memorial ->
-            memorial.id?.run(onNavigateToMemorial)
-        }
-    )
-}
-
-@Composable
-private fun MemorialScreen(
-    modifier: Modifier,
-    memorialColumnState: MemorialColumnState,
-    topMemorial: Memorial?,
-    onMemorialEdit: (Memorial) -> Unit
-) {
     Surface(
         modifier = modifier,
         color = MaterialTheme.colorScheme.background
@@ -56,7 +39,9 @@ private fun MemorialScreen(
                     .weight(1F)
                     .fillMaxWidth(),
                 state = memorialColumnState,
-                onMemorialEdit = onMemorialEdit
+                onMemorialEdit = { memorial ->
+                    memorial.id?.run(onNavigateToMemorial)
+                }
             )
         }
     }
