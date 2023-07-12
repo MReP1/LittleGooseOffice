@@ -1,13 +1,14 @@
 package little.goose.account.ui
 
+import androidx.compose.foundation.gestures.Orientation
+import androidx.compose.foundation.gestures.rememberScrollableState
+import androidx.compose.foundation.gestures.scrollable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentHeight
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Search
 import androidx.compose.material3.Icon
@@ -51,7 +52,10 @@ fun AccountHome(
             Column(
                 modifier = Modifier
                     .fillMaxSize()
-                    .verticalScroll(rememberScrollState())
+                    .scrollable(
+                        rememberScrollableState(consumeScrollDelta = { 0F }),
+                        Orientation.Vertical
+                    ) // 由于父布局使用了嵌套滑动，此处图方便加了一个不消费的滑动
             ) {
                 AccountTitle(
                     modifier = Modifier
