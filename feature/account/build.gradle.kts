@@ -16,6 +16,7 @@ dependencies {
 
     implementation(project(":core:design-system"))
     implementation(project(":core:common"))
+    implementation(project(":core:ui"))
 
     implementation(libs.androidx.fragment.ktx)
     implementation(libs.google.android.material)

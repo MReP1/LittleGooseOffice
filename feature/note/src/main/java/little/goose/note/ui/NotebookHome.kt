@@ -1,35 +1,48 @@
 package little.goose.note.ui
 
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.Search
+import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import little.goose.note.data.entities.Note
+import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.min
+import little.goose.ui.surface.NestedPullSurface
 
 @Composable
 fun NotebookHome(
     modifier: Modifier = Modifier,
     noteColumnState: NoteColumnState,
-    onNavigateToNote: (noteId: Long) -> Unit
+    onNavigateToNote: (noteId: Long) -> Unit,
+    onNavigateToSearch: () -> Unit
 ) {
-    NotebookScreen(
+    NestedPullSurface(
         modifier = modifier,
-        noteColumnState = noteColumnState,
-        onNoteClick = { note ->
-            note.id?.let { noteId ->
-                onNavigateToNote(noteId)
-            }
+        onPull = onNavigateToSearch,
+        backgroundContent = { progress ->
+            Icon(
+                imageVector = Icons.Rounded.Search,
+                contentDescription = "Search",
+                modifier = Modifier
+                    .align(Alignment.TopCenter)
+                    .padding(top = 12.dp)
+                    .size(min(48.dp, 24.dp + 24.dp * progress))
+                    .alpha(progress.coerceIn(0.62F, 1F))
+            )
+        },
+        content = {
+            NoteColumn(
+                modifier = Modifier.fillMaxSize(),
+                state = noteColumnState,
+                onNoteClick = { note ->
+                    note.id?.run(onNavigateToNote)
+                }
+            )
         }
-    )
-}
-
-@Composable
-fun NotebookScreen(
-    modifier: Modifier = Modifier,
-    noteColumnState: NoteColumnState,
-    onNoteClick: (Note) -> Unit
-) {
-    NoteColumn(
-        modifier = modifier,
-        state = noteColumnState,
-        onNoteClick = onNoteClick
     )
 }

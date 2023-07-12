@@ -15,7 +15,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.min
 import little.goose.design.system.theme.AccountTheme
 import little.goose.schedule.data.entities.Schedule
-import little.goose.ui.surface.PullSurface
+import little.goose.ui.surface.NestedPullSurface
 
 @Composable
 fun ScheduleHome(
@@ -24,24 +24,7 @@ fun ScheduleHome(
     onNavigateToSearch: () -> Unit,
     onNavigateToScheduleDialog: (Long) -> Unit
 ) {
-    ScheduleScreen(
-        modifier = modifier.fillMaxSize(),
-        scheduleColumnState = scheduleColumnState,
-        onNavigateToSearch = onNavigateToSearch,
-        onScheduleClick = { schedule ->
-            schedule.id?.let { id -> onNavigateToScheduleDialog(id) }
-        }
-    )
-}
-
-@Composable
-private fun ScheduleScreen(
-    modifier: Modifier = Modifier,
-    scheduleColumnState: ScheduleColumnState,
-    onNavigateToSearch: () -> Unit,
-    onScheduleClick: (Schedule) -> Unit
-) {
-    PullSurface(
+    NestedPullSurface(
         modifier = modifier,
         onPull = onNavigateToSearch,
         backgroundContent = { progress ->
@@ -59,7 +42,9 @@ private fun ScheduleScreen(
             ScheduleColumn(
                 modifier = Modifier.fillMaxSize(),
                 state = scheduleColumnState,
-                onScheduleClick = onScheduleClick
+                onScheduleClick = { schedule ->
+                    schedule.id?.let { id -> onNavigateToScheduleDialog(id) }
+                }
             )
         }
     )

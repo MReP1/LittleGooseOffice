@@ -24,7 +24,7 @@ import little.goose.ui.modifier.nestedPull
 import kotlin.math.max
 
 @Composable
-fun PullSurface(
+fun NestedPullSurface(
     modifier: Modifier = Modifier,
     onPull: () -> Unit,
     surfaceColor: Color = MaterialTheme.colorScheme.background,

@@ -246,6 +246,7 @@ fun HomeScreen(
                                 modifier = Modifier.fillMaxSize(),
                                 noteColumnState = noteColumnState,
                                 onNavigateToNote = onNavigateToNote,
+                                onNavigateToSearch = { onNavigateToSearch(SearchType.Note) }
                             )
                         }
 
@@ -257,7 +258,8 @@ fun HomeScreen(
                                 transactionColumnState = transactionColumnState,
                                 accountTitleState = accountTitleState,
                                 monthSelectorState = monthSelectorState,
-                                onNavigateToTransactionScreen = onNavigateToTransactionScreen
+                                onNavigateToTransactionScreen = onNavigateToTransactionScreen,
+                                onNavigateToSearch = { onNavigateToSearch(SearchType.Transaction) }
                             )
                         }
 
@@ -276,7 +278,8 @@ fun HomeScreen(
                                 modifier = Modifier.fillMaxSize(),
                                 topMemorial = topMemorial,
                                 memorialColumnState = memorialColumnState,
-                                onNavigateToMemorial = onNavigateToMemorial
+                                onNavigateToMemorial = onNavigateToMemorial,
+                                onNavigateToSearch = { onNavigateToSearch(SearchType.Memorial) }
                             )
                         }
                     }
