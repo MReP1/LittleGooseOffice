@@ -33,7 +33,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import little.goose.design.system.theme.AccountTheme
 import little.goose.ui.modifier.nestedPull
-import kotlin.math.max
 
 @Composable
 fun PullSurface(
@@ -41,11 +40,16 @@ fun PullSurface(
     onPull: () -> Unit,
     surfaceColor: Color = MaterialTheme.colorScheme.background,
     backgroundContent: @Composable BoxScope.(progress: Float) -> Unit,
+    reverseDirection: Boolean = false,
     content: @Composable () -> Unit
 ) {
     Box(
         modifier = modifier,
-        contentAlignment = Alignment.TopCenter
+        contentAlignment = if (!reverseDirection) {
+            Alignment.TopCenter
+        } else {
+            Alignment.BottomCenter
+        }
     ) {
         val context = LocalContext.current
         val progress = remember { Animatable(0F) }
@@ -55,11 +59,21 @@ fun PullSurface(
                 context.getSystemService(Vibrator::class.java)
             }.getOrNull()
         }
-        backgroundContent(progress.value)
+
+        backgroundContent(
+            progress = if (!reverseDirection) progress.value else -progress.value
+        )
+
         Surface(
             Modifier
                 .fillMaxSize()
-                .offset(y = max(64.dp * progress.value, 0.dp))
+                .offset(
+                    y = if (!reverseDirection) {
+                        max(64.dp * progress.value, 0.dp)
+                    } else {
+                        min(64.dp * progress.value, 0.dp)
+                    }
+                )
                 .nestedPull(
                     threshold = 64.dp,
                     passThreshold = {
@@ -68,18 +82,26 @@ fun PullSurface(
                         )
                     },
                     onPull = { pullDelta, threshold ->
-                        val newProgress = max(
+                        val newProgress = if (!reverseDirection) kotlin.math.max(
+                            progress.value + pullDelta / threshold, 0F
+                        ) else kotlin.math.min(
                             progress.value + pullDelta / threshold, 0F
                         )
                         scope.launch(Dispatchers.Main.immediate) {
                             progress.snapTo(newProgress)
                         }
-                        if (newProgress > 0) pullDelta else 0f
+                        if (!reverseDirection && newProgress > 0
+                            || reverseDirection && newProgress < 0
+                        ) pullDelta else 0f
                     },
+                    reverseDirection = reverseDirection,
                     onRelease = { flingVelocity ->
                         // 取值可能会上锁，所以取一次存在本地复用
                         val p = progress.value
-                        if (p == 1F || (p > 0.32F && (p + flingVelocity / 4711) > 1F)) {
+                        if (
+                            (!reverseDirection && p >= 1F || (p > 0.32F && (p + flingVelocity / 4711) > 1F))
+                            || (reverseDirection && p <= -1F || (p < -0.32F && (p + flingVelocity / 4711) < -1F))
+                        ) {
                             vibrator?.vibrate(
                                 VibrationEffect.createOneShot(36L, 180)
                             )
@@ -88,6 +110,9 @@ fun PullSurface(
                         scope.launch {
                             progress.animateTo(0F)
                         }
+                        if (!reverseDirection && p > 0) flingVelocity
+                        else if (reverseDirection && p < 0) -flingVelocity
+                        else 0F
                     }
                 ),
             color = surfaceColor,

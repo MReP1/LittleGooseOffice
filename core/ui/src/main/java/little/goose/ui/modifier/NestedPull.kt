@@ -16,13 +16,15 @@ fun Modifier.nestedPull(
     onPull: (pullDelta: Float, threshold: Float) -> Float,
     threshold: Dp = 64.dp,
     passThreshold: () -> Unit,
-    onRelease: suspend (flingVelocity: Float) -> Unit,
+    onRelease: suspend (flingVelocity: Float) -> Float,
+    reverseDirection: Boolean = false,
     enabled: Boolean = true
 ) = composed {
     val density = LocalDensity.current
-    val connection = remember(density, threshold, enabled) {
+    val connection = remember(density, threshold, enabled, reverseDirection) {
         PullNestedScrollConnection(
-            with(density) { threshold.toPx() }, passThreshold, onPull, onRelease, enabled
+            with(density) { threshold.toPx() },
+            passThreshold, onPull, onRelease, reverseDirection, enabled
         )
     }
     nestedScroll(connection)
@@ -32,7 +34,8 @@ class PullNestedScrollConnection(
     private val threshold: Float,
     private val passThreshold: () -> Unit,
     private val onPull: (pullDelta: Float, threshold: Float) -> Float,
-    private val onRelease: suspend (flingVelocity: Float) -> Unit,
+    private val onRelease: suspend (flingVelocity: Float) -> Float,
+    private val reverseDirection: Boolean,
     private val enabled: Boolean
 ) : NestedScrollConnection {
 
@@ -47,7 +50,9 @@ class PullNestedScrollConnection(
         !enabled -> Offset.Zero
 
         // 向上滑动，父布局先处理（收回偏移），走 onPull 回调，并根据处理结果返回被消费掉的 Offset
-        source == NestedScrollSource.Drag && available.y < 0 -> {
+        source == NestedScrollSource.Drag &&
+                ((!reverseDirection && available.y < 0)
+                        || (reverseDirection && available.y > 0)) -> {
             handleAvailableOffset(available)
         }
 
@@ -62,7 +67,10 @@ class PullNestedScrollConnection(
         !enabled -> Offset.Zero
 
         // 向下滑动，如果子布局处理完了还有剩余（拉到顶了还往下拉），就展示偏移
-        source == NestedScrollSource.Drag && available.y > 0 -> {
+        source == NestedScrollSource.Drag && (
+                (!reverseDirection && available.y > 0)
+                        || (reverseDirection && available.y < 0)
+                ) -> {
             handleAvailableOffset(available)
         }
 
@@ -70,7 +78,7 @@ class PullNestedScrollConnection(
     }
 
     private fun handleAvailableOffset(available: Offset): Offset {
-        offsetY += available.y
+        offsetY += if (!reverseDirection) available.y else -available.y
         if (offsetY >= threshold && !isExceedThreshold) {
             isExceedThreshold = true
             passThreshold()
@@ -84,7 +92,6 @@ class PullNestedScrollConnection(
     override suspend fun onPreFling(available: Velocity): Velocity {
         isExceedThreshold = false
         offsetY = 0F
-        onRelease(available.y)
-        return Velocity.Zero
+        return available.copy(y = onRelease(available.y))
     }
 }
