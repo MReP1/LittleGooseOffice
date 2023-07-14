@@ -153,6 +153,7 @@ private fun TransactionRoute(
             MovableActionButton(
                 modifier = Modifier.align(Alignment.BottomEnd),
                 state = buttonState,
+                needToExpand = true,
                 mainButtonContent = {
                     Icon(
                         imageVector = Icons.Rounded.Delete,

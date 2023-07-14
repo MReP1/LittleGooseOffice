@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.PagerState
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.DonutSmall
 import androidx.compose.material.icons.rounded.Add
 import androidx.compose.material.icons.rounded.Delete
 import androidx.compose.material.icons.rounded.DoneAll
@@ -190,6 +191,14 @@ fun HomeScreen(
                         Text(text = stringResource(id = currentHomePage.labelRes))
                     },
                     actions = {
+                        if (currentHomePage == HomePage.ACCOUNT) {
+                            IconButton(onClick = onNavigateToAccountAnalysis) {
+                                Icon(
+                                    imageVector = Icons.Outlined.DonutSmall,
+                                    contentDescription = "Analysis"
+                                )
+                            }
+                        }
                         IconButton(onClick = onNavigateToSettings) {
                             Icon(
                                 imageVector = Icons.Rounded.Settings,
@@ -288,6 +297,7 @@ fun HomeScreen(
                     MovableActionButton(
                         modifier = Modifier.align(Alignment.BottomEnd),
                         state = buttonState,
+                        needToExpand = isMultiSelecting,
                         mainButtonContent = {
                             Icon(
                                 imageVector = if (isMultiSelecting) {
