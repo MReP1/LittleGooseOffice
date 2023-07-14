@@ -1,8 +1,5 @@
 package little.goose.account.ui
 
-import androidx.compose.foundation.gestures.Orientation
-import androidx.compose.foundation.gestures.rememberScrollableState
-import androidx.compose.foundation.gestures.scrollable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -23,7 +20,7 @@ import little.goose.account.ui.component.AccountTitleState
 import little.goose.account.ui.component.MonthSelectorState
 import little.goose.account.ui.component.TransactionColumn
 import little.goose.account.ui.component.TransactionColumnState
-import little.goose.ui.surface.NestedPullSurface
+import little.goose.ui.surface.PullSurface
 
 @Composable
 fun AccountHome(
@@ -34,7 +31,7 @@ fun AccountHome(
     onNavigateToTransactionScreen: (Long) -> Unit,
     onNavigateToSearch: () -> Unit
 ) {
-    NestedPullSurface(
+    PullSurface(
         modifier = modifier,
         onPull = onNavigateToSearch,
         backgroundContent = { progress ->
@@ -49,14 +46,7 @@ fun AccountHome(
             )
         },
         content = {
-            Column(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .scrollable(
-                        rememberScrollableState(consumeScrollDelta = { 0F }),
-                        Orientation.Vertical
-                    ) // 由于父布局使用了嵌套滑动，此处图方便加了一个不消费的滑动
-            ) {
+            Column(modifier = Modifier.fillMaxSize()) {
                 AccountTitle(
                     modifier = Modifier
                         .fillMaxWidth()

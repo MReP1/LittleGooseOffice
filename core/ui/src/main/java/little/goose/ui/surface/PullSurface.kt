@@ -3,6 +3,9 @@ package little.goose.ui.surface
 import android.os.VibrationEffect
 import android.os.Vibrator
 import androidx.compose.animation.core.Animatable
+import androidx.compose.foundation.gestures.Orientation
+import androidx.compose.foundation.gestures.rememberScrollableState
+import androidx.compose.foundation.gestures.scrollable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.fillMaxSize
@@ -24,7 +27,7 @@ import little.goose.ui.modifier.nestedPull
 import kotlin.math.max
 
 @Composable
-fun NestedPullSurface(
+fun PullSurface(
     modifier: Modifier = Modifier,
     onPull: () -> Unit,
     surfaceColor: Color = MaterialTheme.colorScheme.background,
@@ -75,7 +78,18 @@ fun NestedPullSurface(
                     }
                 ),
             color = surfaceColor,
-            content = content
+            content = {
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .scrollable(
+                            rememberScrollableState(consumeScrollDelta = { 0F }),
+                            Orientation.Vertical
+                        )
+                ) {
+                    content()
+                }
+            }
         )
     }
 }

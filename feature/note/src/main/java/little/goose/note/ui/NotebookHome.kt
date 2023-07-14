@@ -12,7 +12,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.min
-import little.goose.ui.surface.NestedPullSurface
+import little.goose.ui.surface.PullSurface
 
 @Composable
 fun NotebookHome(
@@ -21,7 +21,7 @@ fun NotebookHome(
     onNavigateToNote: (noteId: Long) -> Unit,
     onNavigateToSearch: () -> Unit
 ) {
-    NestedPullSurface(
+    PullSurface(
         modifier = modifier,
         onPull = onNavigateToSearch,
         backgroundContent = { progress ->

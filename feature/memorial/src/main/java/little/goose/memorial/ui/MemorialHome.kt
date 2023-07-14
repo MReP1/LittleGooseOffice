@@ -1,8 +1,5 @@
 package little.goose.memorial.ui
 
-import androidx.compose.foundation.gestures.Orientation
-import androidx.compose.foundation.gestures.rememberScrollableState
-import androidx.compose.foundation.gestures.scrollable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -22,7 +19,7 @@ import little.goose.memorial.data.entities.Memorial
 import little.goose.memorial.ui.component.MemorialColumn
 import little.goose.memorial.ui.component.MemorialColumnState
 import little.goose.memorial.ui.component.MemorialTitle
-import little.goose.ui.surface.NestedPullSurface
+import little.goose.ui.surface.PullSurface
 
 @Composable
 fun MemorialHome(
@@ -32,7 +29,7 @@ fun MemorialHome(
     onNavigateToMemorial: (Long) -> Unit,
     onNavigateToSearch: () -> Unit
 ) {
-    NestedPullSurface(
+    PullSurface(
         modifier = modifier,
         onPull = onNavigateToSearch,
         backgroundContent = { progress ->
@@ -47,14 +44,7 @@ fun MemorialHome(
             )
         },
         content = {
-            Column(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .scrollable(
-                        rememberScrollableState(consumeScrollDelta = { 0F }),
-                        Orientation.Vertical
-                    ) // 由于父布局使用了嵌套滑动，此处图方便加了一个不消费的滑动
-            ) {
+            Column(modifier = Modifier.fillMaxSize()) {
                 if (topMemorial != null) {
                     MemorialTitle(
                         modifier = Modifier
