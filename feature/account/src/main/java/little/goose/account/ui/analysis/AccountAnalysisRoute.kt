@@ -1,5 +1,9 @@
 package little.goose.account.ui.analysis
 
+import androidx.compose.animation.AnimatedContentScope
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -28,7 +32,27 @@ fun NavGraphBuilder.accountAnalysisRoute(
         time: Date, timeType: TimeType, moneyType: MoneyType, content: String?
     ) -> Unit,
     onBack: () -> Unit
-) = composable(ROUTE_ACCOUNT_ANALYSIS) {
+) = composable(
+    route = ROUTE_ACCOUNT_ANALYSIS,
+    enterTransition = {
+        fadeIn(
+            animationSpec = tween(140)
+        ) + slideIntoContainer(
+            towards = AnimatedContentScope.SlideDirection.Up,
+            animationSpec = tween(200),
+            initialOffset = { it / 6 }
+        )
+    },
+    exitTransition = {
+        fadeOut(
+            animationSpec = tween(140)
+        ) + slideOutOfContainer(
+            towards = AnimatedContentScope.SlideDirection.Down,
+            animationSpec = tween(200),
+            targetOffset = { it / 6 }
+        )
+    }
+) {
     AccountAnalysisRoute(
         modifier = Modifier
             .fillMaxSize()

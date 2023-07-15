@@ -66,7 +66,6 @@ fun PullSurface(
 
         Surface(
             Modifier
-                .fillMaxSize()
                 .offset(
                     y = if (!reverseDirection) {
                         max(64.dp * progress.value, 0.dp)
@@ -90,8 +89,8 @@ fun PullSurface(
                         scope.launch(Dispatchers.Main.immediate) {
                             progress.snapTo(newProgress)
                         }
-                        if (!reverseDirection && newProgress > 0
-                            || reverseDirection && newProgress < 0
+                        if ((!reverseDirection && newProgress > 0)
+                            || (reverseDirection && newProgress < 0)
                         ) pullDelta else 0f
                     },
                     reverseDirection = reverseDirection,
@@ -118,12 +117,10 @@ fun PullSurface(
             color = surfaceColor,
             content = {
                 Box(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .scrollable(
-                            rememberScrollableState(consumeScrollDelta = { 0F }),
-                            Orientation.Vertical
-                        )
+                    modifier = Modifier.scrollable(
+                        rememberScrollableState(consumeScrollDelta = { 0F }),
+                        Orientation.Vertical
+                    )
                 ) {
                     content()
                 }

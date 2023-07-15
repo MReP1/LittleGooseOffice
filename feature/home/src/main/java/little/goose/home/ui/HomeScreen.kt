@@ -268,7 +268,8 @@ fun HomeScreen(
                                 accountTitleState = accountTitleState,
                                 monthSelectorState = monthSelectorState,
                                 onNavigateToTransactionScreen = onNavigateToTransactionScreen,
-                                onNavigateToSearch = { onNavigateToSearch(SearchType.Transaction) }
+                                onNavigateToSearch = { onNavigateToSearch(SearchType.Transaction) },
+                                onNavigateToAccountAnalysis = onNavigateToAccountAnalysis
                             )
                         }
 

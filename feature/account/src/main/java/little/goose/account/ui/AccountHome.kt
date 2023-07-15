@@ -6,7 +6,9 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentHeight
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.DonutSmall
 import androidx.compose.material.icons.rounded.Search
 import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
@@ -28,7 +30,8 @@ fun AccountHome(
     monthSelectorState: MonthSelectorState,
     transactionColumnState: TransactionColumnState,
     onNavigateToTransactionScreen: (Long) -> Unit,
-    onNavigateToSearch: () -> Unit
+    onNavigateToSearch: () -> Unit,
+    onNavigateToAccountAnalysis: () -> Unit
 ) {
     PullSurface(
         modifier = modifier,
@@ -45,12 +48,29 @@ fun AccountHome(
         },
         content = {
             Column(modifier = Modifier.fillMaxSize()) {
-                AccountTitle(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .wrapContentHeight(),
-                    accountTitleState = accountTitleState,
-                    monthSelectorState = monthSelectorState
+                PullSurface(
+                    modifier = Modifier.wrapContentSize(),
+                    onPull = onNavigateToAccountAnalysis,
+                    reverseDirection = true,
+                    backgroundContent = { progress ->
+                        Icon(
+                            imageVector = Icons.Outlined.DonutSmall,
+                            contentDescription = "Analysis",
+                            modifier = Modifier
+                                .padding(bottom = 12.dp)
+                                .size(min(48.dp, 24.dp + 24.dp * progress))
+                                .alpha(progress.coerceIn(0.62F, 1F))
+                        )
+                    },
+                    content = {
+                        AccountTitle(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .wrapContentHeight(),
+                            accountTitleState = accountTitleState,
+                            monthSelectorState = monthSelectorState
+                        )
+                    }
                 )
                 TransactionColumn(
                     modifier = Modifier.weight(1F),
