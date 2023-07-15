@@ -192,7 +192,7 @@ fun TransactionContentEditBar(
         val dateScale by isDescriptionEditUpdateTransition.animateFloat(
             label = "date scale",
             transitionSpec = { tween(200) }
-        ) { if (it) 0.86F else 1F }
+        ) { if (it) 0.88F else 1F }
         Surface(
             modifier = Modifier
                 .align(Alignment.CenterStart)
@@ -211,7 +211,7 @@ fun TransactionContentEditBar(
                 modifier = Modifier
                     .fillMaxSize()
                     .scale(dateScale)
-                    .alpha(dateScale.pow(6))
+                    .alpha(dateScale.pow(5))
                     .padding(top = 8.dp, bottom = 8.dp, start = 20.dp, end = 4.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
