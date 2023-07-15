@@ -49,7 +49,8 @@ fun NavGraphBuilder.searchRoute(
             initialOffset = { it / 6 }
         )
     },
-    exitTransition = {
+    exitTransition = null,
+    popExitTransition = {
         fadeOut(
             animationSpec = tween(140)
         ) + slideOutOfContainer(
@@ -57,7 +58,8 @@ fun NavGraphBuilder.searchRoute(
             animationSpec = tween(200),
             targetOffset = { it / 6 }
         )
-    }
+    },
+    popEnterTransition = null
 ) {
     SearchRoute(
         modifier = Modifier.fillMaxSize(),

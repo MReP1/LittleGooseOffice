@@ -43,7 +43,8 @@ fun NavGraphBuilder.accountAnalysisRoute(
             initialOffset = { it / 6 }
         )
     },
-    exitTransition = {
+    exitTransition = null,
+    popExitTransition = {
         fadeOut(
             animationSpec = tween(140)
         ) + slideOutOfContainer(
@@ -51,7 +52,8 @@ fun NavGraphBuilder.accountAnalysisRoute(
             animationSpec = tween(200),
             targetOffset = { it / 6 }
         )
-    }
+    },
+    popEnterTransition = null
 ) {
     AccountAnalysisRoute(
         modifier = Modifier
