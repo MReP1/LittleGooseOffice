@@ -1,5 +1,6 @@
 package little.goose.account.ui.component
 
+import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.animateDp
 import androidx.compose.animation.core.animateFloat
 import androidx.compose.animation.core.tween
@@ -18,7 +19,6 @@ import androidx.compose.foundation.layout.isImeVisible
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material.icons.Icons
@@ -95,7 +95,7 @@ internal fun TransactionEditSurface(
         }
     }
 
-    Column(modifier = modifier.wrapContentHeight()) {
+    Column(modifier = modifier.animateContentSize(animationSpec = tween(200))) {
         Surface(
             modifier = Modifier
                 .fillMaxWidth(),
