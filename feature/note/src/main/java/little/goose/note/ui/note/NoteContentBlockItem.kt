@@ -51,7 +51,8 @@ fun NoteContentBlockItem(
             MaterialTheme.colorScheme.surfaceVariant
         } else {
             MaterialTheme.colorScheme.background
-        }
+        },
+        label = "item background color"
     )
     val dismissState = rememberDismissState()
 
@@ -81,13 +82,15 @@ fun NoteContentBlockItem(
                     targetValue = if (
                         targetValue == DismissValue.DismissedToEnd
                         || currentValue == DismissValue.DismissedToEnd
-                    ) 1F else 0.5F
+                    ) 1F else 0.5F,
+                    label = "delete icon alpha"
                 )
                 val scale by animateFloatAsState(
                     targetValue = if (
                         targetValue == DismissValue.DismissedToEnd
                         || currentValue == DismissValue.DismissedToEnd
-                    ) 1F else 0.72F
+                    ) 1F else 0.72F,
+                    label = "delete icon scale"
                 )
                 Icon(
                     modifier = Modifier
@@ -139,7 +142,7 @@ fun NoteContentBlockTextField(
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(vertical = 8.dp, horizontal = 16.dp),
+                    .padding(vertical = 10.dp, horizontal = 16.dp),
                 contentAlignment = Alignment.CenterStart,
             ) {
                 innerTextField()
