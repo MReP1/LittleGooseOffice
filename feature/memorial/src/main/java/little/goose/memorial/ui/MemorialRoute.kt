@@ -72,6 +72,7 @@ import little.goose.common.utils.TimeType
 import little.goose.common.utils.toChineseYearMonDayWeek
 import little.goose.design.system.component.dialog.TimeSelectorCenterDialog
 import little.goose.design.system.component.dialog.rememberDialogState
+import little.goose.design.system.theme.AccountTheme
 import little.goose.memorial.R
 import little.goose.memorial.ROUTE_GRAPH_MEMORIAL
 import little.goose.memorial.data.constants.KEY_MEMORIAL_ID
@@ -235,6 +236,13 @@ private fun MemorialScreen(
                             contentDescription = ""
                         )
                     }
+                },
+                actions = {
+                    IconButton(
+                        onClick = { isPreview = !isPreview }
+                    ) {
+                        Icon(imageVector = Icons.Rounded.Preview, contentDescription = "Preview")
+                    }
                 }
             )
         },
@@ -276,16 +284,12 @@ private fun MemorialScreen(
                 modifier = Modifier.fillMaxWidth(),
                 floatingActionButton = {
                     FloatingActionButton(
-                        onClick = { isPreview = !isPreview }
+                        onClick = onConfirmClick
                     ) {
-                        Icon(imageVector = Icons.Rounded.Preview, contentDescription = "Preview")
+                        Icon(imageVector = Icons.Rounded.Save, contentDescription = "Save")
                     }
                 },
                 actions = {
-                    Spacer(modifier = Modifier.width(8.dp))
-                    IconButton(onClick = onConfirmClick) {
-                        Icon(imageVector = Icons.Rounded.Save, contentDescription = "Save")
-                    }
                 }
             )
         }
@@ -478,7 +482,7 @@ private fun MemorialPreviewContent(
 
 @Preview
 @Composable
-private fun PreviewMemorialScreen() {
+private fun PreviewMemorialScreen() = AccountTheme {
     MemorialScreen(
         memorial = Memorial(null, "纪念日", true, Date()),
         onChangeTimeClick = {},
