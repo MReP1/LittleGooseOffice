@@ -16,7 +16,7 @@ import little.goose.design.system.component.TimeSelector
 import little.goose.design.system.component.TimeSelectorState
 import little.goose.design.system.theme.RoundedCorner24
 import little.goose.design.system.theme.TopRoundedCorner24
-import java.util.*
+import java.util.Date
 
 @Composable
 fun TimeSelectorCenterDialog(
@@ -63,7 +63,7 @@ fun TimeSelectorBottomDialog(
                 state = selectorState,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(240.dp),
+                    .height(if (type.containTime()) 400.dp else 240.dp),
                 onConfirm = { time ->
                     scope.launch(Dispatchers.Main.immediate) {
                         onConfirm(time)

@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.Button
+import androidx.compose.material3.Divider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -49,7 +50,7 @@ class TimeSelectorState(
     val hourList = DateTimeUtils.getHoursList()
     val minuteList = DateTimeUtils.getMinuteList()
 
-    val time by derivedStateOf {
+    val time: Date by derivedStateOf {
         calendar.apply { set(year, month - 1, day, hour, minute) }.time
     }
 }
@@ -75,140 +76,159 @@ fun TimeSelector(
                 Text(text = stringResource(id = little.goose.common.R.string.confirm))
             }
         }
-        Row(
+        Column(
             modifier = modifier
                 .weight(1F)
-                .padding(horizontal = 24.dp),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.Center
+                .padding(horizontal = 24.dp)
         ) {
-            if (timeType.containYear()) {
-                val yearSelectorState = rememberLazyListState(
-                    initialFirstVisibleItemIndex = state.yearList.indexOf(state.year.toString())
-                )
-                LaunchedEffect(yearSelectorState, state) {
-                    snapshotFlow { state.year }.map {
-                        state.yearList.indexOf(it.toString())
-                    }.filter {
-                        yearSelectorState.firstVisibleItemIndex != it
-                    }.onEach {
-                        yearSelectorState.animateScrollToItem(it)
-                    }.launchIn(this)
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(176.dp),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.Center
+            ) {
+                if (timeType.containYear()) {
+                    val yearSelectorState = rememberLazyListState(
+                        initialFirstVisibleItemIndex = state.yearList.indexOf(state.year.toString())
+                    )
+                    LaunchedEffect(yearSelectorState, state) {
+                        snapshotFlow { state.year }.map {
+                            state.yearList.indexOf(it.toString())
+                        }.filter {
+                            yearSelectorState.firstVisibleItemIndex != it
+                        }.onEach {
+                            yearSelectorState.animateScrollToItem(it)
+                        }.launchIn(this)
+                    }
+                    ScrollSelector(
+                        modifier = Modifier
+                            .fillMaxHeight(),
+                        items = state.yearList,
+                        state = yearSelectorState,
+                        onItemSelected = { _, y -> state.year = y.toInt() }
+                    )
+                    Text(
+                        text = stringResource(id = little.goose.common.R.string.year),
+                        style = MaterialTheme.typography.bodySmall,
+                        modifier = Modifier.padding(start = 10.dp, end = 8.dp)
+                    )
                 }
-                ScrollSelector(
-                    modifier = Modifier
-                        .fillMaxHeight(),
-                    items = state.yearList,
-                    state = yearSelectorState,
-                    onItemSelected = { _, y -> state.year = y.toInt() }
-                )
-                Text(
-                    text = stringResource(id = little.goose.common.R.string.year),
-                    style = MaterialTheme.typography.bodySmall,
-                    modifier = Modifier.padding(start = 10.dp, end = 8.dp)
-                )
-            }
-            if (timeType.containMonth()) {
-                val monthSelectorState = rememberLazyListState(
-                    initialFirstVisibleItemIndex = state.monthList.indexOf(state.month.toString())
-                )
-                LaunchedEffect(monthSelectorState, state) {
-                    snapshotFlow { state.month }.map {
-                        state.monthList.indexOf(it.toString())
-                    }.filter {
-                        monthSelectorState.firstVisibleItemIndex != it
-                    }.onEach {
-                        monthSelectorState.animateScrollToItem(it)
-                    }.launchIn(this)
+                if (timeType.containMonth()) {
+                    val monthSelectorState = rememberLazyListState(
+                        initialFirstVisibleItemIndex = state.monthList.indexOf(state.month.toString())
+                    )
+                    LaunchedEffect(monthSelectorState, state) {
+                        snapshotFlow { state.month }.map {
+                            state.monthList.indexOf(it.toString())
+                        }.filter {
+                            monthSelectorState.firstVisibleItemIndex != it
+                        }.onEach {
+                            monthSelectorState.animateScrollToItem(it)
+                        }.launchIn(this)
+                    }
+                    ScrollSelector(
+                        modifier = Modifier
+                            .fillMaxHeight(),
+                        items = state.monthList,
+                        state = monthSelectorState,
+                        onItemSelected = { _, m -> state.month = m.toInt() }
+                    )
+                    Text(
+                        text = stringResource(id = little.goose.common.R.string.month),
+                        style = MaterialTheme.typography.bodySmall,
+                        modifier = Modifier.padding(start = 6.dp, end = 8.dp)
+                    )
                 }
-                ScrollSelector(
-                    modifier = Modifier
-                        .fillMaxHeight(),
-                    items = state.monthList,
-                    state = monthSelectorState,
-                    onItemSelected = { _, m -> state.month = m.toInt() }
-                )
-                Text(
-                    text = stringResource(id = little.goose.common.R.string.month),
-                    style = MaterialTheme.typography.bodySmall,
-                    modifier = Modifier.padding(start = 6.dp, end = 8.dp)
-                )
-            }
-            if (timeType.containDay()) {
-                val daySelectorState = rememberLazyListState(
-                    initialFirstVisibleItemIndex = state.dayList.indexOf(state.day.toString())
-                )
-                LaunchedEffect(daySelectorState, state) {
-                    snapshotFlow { state.day }.map {
-                        state.dayList.indexOf(it.toString())
-                    }.filter {
-                        daySelectorState.firstVisibleItemIndex != it
-                    }.onEach {
-                        daySelectorState.animateScrollToItem(it)
-                    }.launchIn(this)
+                if (timeType.containDay()) {
+                    val daySelectorState = rememberLazyListState(
+                        initialFirstVisibleItemIndex = state.dayList.indexOf(state.day.toString())
+                    )
+                    LaunchedEffect(daySelectorState, state) {
+                        snapshotFlow { state.day }.map {
+                            state.dayList.indexOf(it.toString())
+                        }.filter {
+                            daySelectorState.firstVisibleItemIndex != it
+                        }.onEach {
+                            daySelectorState.animateScrollToItem(it)
+                        }.launchIn(this)
+                    }
+                    ScrollSelector(
+                        modifier = Modifier
+                            .fillMaxHeight(),
+                        items = state.dayList,
+                        state = daySelectorState,
+                        onItemSelected = { _, d -> state.day = d.toInt() }
+                    )
+                    Text(
+                        text = stringResource(id = little.goose.common.R.string.day),
+                        style = MaterialTheme.typography.bodySmall,
+                        modifier = Modifier.padding(start = 6.dp, end = 8.dp)
+                    )
                 }
-                ScrollSelector(
-                    modifier = Modifier
-                        .fillMaxHeight(),
-                    items = state.dayList,
-                    state = daySelectorState,
-                    onItemSelected = { _, d -> state.day = d.toInt() }
-                )
-                Text(
-                    text = stringResource(id = little.goose.common.R.string.day),
-                    style = MaterialTheme.typography.bodySmall,
-                    modifier = Modifier.padding(start = 6.dp, end = 8.dp)
-                )
             }
             if (timeType.containTime()) {
-                val hourSelectorStable = rememberLazyListState(
-                    initialFirstVisibleItemIndex = state.hourList.indexOf(state.hour.toString())
-                )
-                LaunchedEffect(hourSelectorStable, state) {
-                    snapshotFlow { state.hour }.map {
-                        state.hourList.indexOf(it.toString())
-                    }.filter {
-                        hourSelectorStable.firstVisibleItemIndex != it
-                    }.onEach {
-                        hourSelectorStable.animateScrollToItem(it)
-                    }.launchIn(this)
-                }
-                ScrollSelector(
+                Divider(
                     modifier = Modifier
-                        .fillMaxHeight(),
-                    items = state.hourList,
-                    state = hourSelectorStable,
-                    onItemSelected = { _, h -> state.hour = h.toInt() }
+                        .fillMaxWidth()
+                        .padding(horizontal = 32.dp)
                 )
-                Text(
-                    text = stringResource(id = little.goose.common.R.string.hour),
-                    style = MaterialTheme.typography.bodySmall,
-                    modifier = Modifier.padding(start = 6.dp, end = 8.dp)
-                )
-                val minuteSelectorState = rememberLazyListState(
-                    initialFirstVisibleItemIndex = state.minuteList.indexOf(state.minute.toString())
-                )
-                LaunchedEffect(minuteSelectorState, state) {
-                    snapshotFlow { state.minute }.map {
-                        state.minuteList.indexOf(it.toString())
-                    }.filter {
-                        minuteSelectorState.firstVisibleItemIndex != it
-                    }.onEach {
-                        minuteSelectorState.animateScrollToItem(it)
-                    }.launchIn(this)
-                }
-                ScrollSelector(
+                Row(
                     modifier = Modifier
-                        .fillMaxHeight(),
-                    items = state.minuteList,
-                    state = minuteSelectorState,
-                    onItemSelected = { _, m -> state.minute = m.toInt() }
-                )
-                Text(
-                    text = stringResource(id = little.goose.common.R.string.minute),
-                    style = MaterialTheme.typography.bodySmall,
-                    modifier = Modifier.padding(start = 6.dp, end = 8.dp)
-                )
+                        .fillMaxWidth()
+                        .height(168.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.Center
+                ) {
+                    val hourSelectorStable = rememberLazyListState(
+                        initialFirstVisibleItemIndex = state.hourList.indexOf(state.hour.toString())
+                    )
+                    LaunchedEffect(hourSelectorStable, state) {
+                        snapshotFlow { state.hour }.map {
+                            state.hourList.indexOf(it.toString())
+                        }.filter {
+                            hourSelectorStable.firstVisibleItemIndex != it
+                        }.onEach {
+                            hourSelectorStable.animateScrollToItem(it)
+                        }.launchIn(this)
+                    }
+                    ScrollSelector(
+                        modifier = Modifier
+                            .fillMaxHeight(),
+                        items = state.hourList,
+                        state = hourSelectorStable,
+                        onItemSelected = { _, h -> state.hour = h.toInt() }
+                    )
+                    Text(
+                        text = stringResource(id = little.goose.common.R.string.hour),
+                        style = MaterialTheme.typography.bodySmall,
+                        modifier = Modifier.padding(start = 6.dp, end = 8.dp)
+                    )
+                    val minuteSelectorState = rememberLazyListState(
+                        initialFirstVisibleItemIndex = state.minuteList.indexOf(state.minute.toString())
+                    )
+                    LaunchedEffect(minuteSelectorState, state) {
+                        snapshotFlow { state.minute }.map {
+                            state.minuteList.indexOf(it.toString())
+                        }.filter {
+                            minuteSelectorState.firstVisibleItemIndex != it
+                        }.onEach {
+                            minuteSelectorState.animateScrollToItem(it)
+                        }.launchIn(this)
+                    }
+                    ScrollSelector(
+                        modifier = Modifier
+                            .fillMaxHeight(),
+                        items = state.minuteList,
+                        state = minuteSelectorState,
+                        onItemSelected = { _, m -> state.minute = m.toInt() }
+                    )
+                    Text(
+                        text = stringResource(id = little.goose.common.R.string.minute),
+                        style = MaterialTheme.typography.bodySmall,
+                        modifier = Modifier.padding(start = 6.dp, end = 8.dp)
+                    )
+                }
             }
         }
         if (isConfirmBottom && isShowConfirm) {
