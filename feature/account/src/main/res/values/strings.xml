@@ -20,4 +20,5 @@
     <string name="current_month_expense">本月支出</string>
     <string name="total_balance">总结余</string>
     <string name="current_month_balance">本月结余</string>
+    <string name="money_cant_be_zero">金额不能为空</string>
 </resources>

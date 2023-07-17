@@ -23,6 +23,7 @@ import little.goose.common.utils.getYear
 import little.goose.common.utils.setDate
 import little.goose.common.utils.setMonth
 import little.goose.common.utils.setYear
+import java.math.BigDecimal
 import java.util.Calendar
 import java.util.Date
 import javax.inject.Inject
@@ -52,7 +53,8 @@ class TransactionViewModel @Inject constructor(
         )
 
     enum class Event {
-        WriteSuccess
+        WriteSuccess,
+        CantBeZero
     }
 
     private val _event: MutableSharedFlow<Event> = MutableSharedFlow()
@@ -74,20 +76,32 @@ class TransactionViewModel @Inject constructor(
     }
 
     fun writeDatabase(transaction: Transaction, isAgain: Boolean) {
+        // 检查金额是否为空
+        if (transaction.money == BigDecimal.ZERO) {
+            viewModelScope.launch { _event.emit(Event.CantBeZero) }
+            return
+        }
+
+        // 根据类型将金额调整为对应正负，支出对应负值，收入对应正值
         val tra = if (transaction.type == INCOME && transaction.money.signum() == -1) {
             transaction.copy(money = transaction.money.abs())
         } else if (transaction.type == EXPENSE && transaction.money.signum() == 1) {
             transaction.copy(money = transaction.money.negate())
         } else transaction
+
         viewModelScope.launch {
+            // 写入数据库
             if (tra.id == null) {
                 insertTransactionUseCase(tra)
             } else {
                 updateTransactionUseCase(tra)
             }
+
             if (!isAgain) {
+                // 若点击完成，则结束记账
                 _event.emit(Event.WriteSuccess)
             } else {
+                // 若点击下一笔，则需要重置Transaction
                 setTransaction(defaultTransaction)
             }
         }
