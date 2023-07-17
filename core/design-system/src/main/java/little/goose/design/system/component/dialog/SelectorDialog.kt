@@ -38,7 +38,7 @@ fun SelectorDialog(
                     },
                     colors = ButtonDefaults.textButtonColors(
                         contentColor = MaterialTheme.colorScheme.secondary.copy(
-                            alpha = 0.54F
+                            alpha = 0.58F
                         )
                     )
                 ) {

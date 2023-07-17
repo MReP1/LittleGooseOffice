@@ -1,25 +1,30 @@
 package little.goose.schedule.ui
 
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -37,9 +42,9 @@ import little.goose.design.system.component.dialog.DeleteDialog
 import little.goose.design.system.component.dialog.DeleteDialogState
 import little.goose.design.system.component.dialog.TimeSelectorBottomDialog
 import little.goose.design.system.component.dialog.rememberBottomSheetDialogState
+import little.goose.design.system.theme.AccountTheme
 import little.goose.schedule.R
 import little.goose.schedule.data.entities.Schedule
-
 
 const val KEY_SCHEDULE_ID = "schedule_id"
 
@@ -180,11 +185,13 @@ private fun ScheduleDialogScreen(
                     Text(text = stringResource(id = R.string.schedule_content_tag))
                 }
             )
-
-            Spacer(modifier = Modifier.height(30.dp))
-
-            Row(modifier = Modifier.fillMaxWidth()) {
-                Button(
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(24.dp),
+                horizontalArrangement = Arrangement.End
+            ) {
+                TextButton(
                     onClick = {
                         if (isAdd) {
                             onCancelClick()
@@ -192,10 +199,13 @@ private fun ScheduleDialogScreen(
                             onDeleteClick()
                         }
                     },
-                    modifier = Modifier
-                        .weight(1F)
-                        .height(58.dp),
-                    shape = RectangleShape
+                    colors = ButtonDefaults.textButtonColors(
+                        contentColor = if (isAdd) {
+                            MaterialTheme.colorScheme.secondary.copy(alpha = 0.58F)
+                        } else {
+                            MaterialTheme.colorScheme.tertiary.copy(alpha = 0.68F)
+                        }
+                    )
                 ) {
                     Text(
                         text = stringResource(
@@ -205,16 +215,29 @@ private fun ScheduleDialogScreen(
                     )
                 }
 
-                Button(
+                Spacer(modifier = Modifier.width(8.dp))
+
+                TextButton(
                     onClick = onConfirmClick,
                     modifier = Modifier
-                        .weight(1F)
-                        .height(58.dp),
-                    shape = RectangleShape
                 ) {
                     Text(text = stringResource(id = little.goose.common.R.string.confirm))
                 }
             }
         }
     }
+}
+
+@Preview
+@Composable
+fun PreviewScheduleDialog() = AccountTheme {
+    ScheduleDialogScreen(
+        schedule = Schedule(),
+        onTitleChange = {},
+        onContentChange = {},
+        onCancelClick = {},
+        onConfirmClick = {},
+        onDeleteClick = {},
+        onChangeTimeClick = {}
+    )
 }
