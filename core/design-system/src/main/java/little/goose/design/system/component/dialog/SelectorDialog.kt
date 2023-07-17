@@ -1,52 +1,53 @@
 package little.goose.design.system.component.dialog
 
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.ColumnScope
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Surface
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
-import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.unit.dp
 
 @Composable
 fun SelectorDialog(
     state: DialogState,
     onCancel: () -> Unit,
     onConfirm: () -> Unit,
-    content: @Composable ColumnScope.() -> Unit
+    title: (@Composable () -> Unit)? = null,
+    icon: (@Composable () -> Unit)? = null,
+    text: (@Composable () -> Unit)? = null
 ) {
-    NormalDialog(
-        state = state
-    ) {
-        Surface(
-            modifier = Modifier,
-            shape = RoundedCornerShape(24.dp)
-        ) {
-            Column(
-                Modifier.fillMaxWidth(),
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                Spacer(modifier = Modifier.height(24.dp))
-                content()
-                Spacer(modifier = Modifier.height(16.dp))
-
-                DialogButtonGroup(
-                    startButtonContent = {
-                        Text(text = stringResource(id = little.goose.common.R.string.cancel))
+    if (state.isShow) {
+        AlertDialog(
+            onDismissRequest = state::dismiss,
+            confirmButton = {
+                TextButton(
+                    onClick = {
+                        onConfirm()
+                        state.dismiss()
+                    }
+                ) {
+                    Text(text = stringResource(id = little.goose.common.R.string.confirm))
+                }
+            },
+            dismissButton = {
+                TextButton(
+                    onClick = {
+                        onCancel()
+                        state.dismiss()
                     },
-                    onStartButtonClick = onCancel,
-                    endButtonContent = {
-                        Text(text = stringResource(id = little.goose.common.R.string.confirm))
-                    },
-                    onEndButtonClick = onConfirm
-                )
-            }
-        }
+                    colors = ButtonDefaults.textButtonColors(
+                        contentColor = MaterialTheme.colorScheme.secondary.copy(
+                            alpha = 0.54F
+                        )
+                    )
+                ) {
+                    Text(text = stringResource(id = little.goose.common.R.string.cancel))
+                }
+            },
+            text = text,
+            icon = icon,
+            title = title
+        )
     }
 }

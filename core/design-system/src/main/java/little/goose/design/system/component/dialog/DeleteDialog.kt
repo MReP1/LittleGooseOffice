@@ -1,10 +1,15 @@
 package little.goose.design.system.component.dialog
 
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.Delete
+import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Stable
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.tooling.preview.Preview
 import little.goose.design.system.R
+import little.goose.design.system.theme.AccountTheme
 
 @Stable
 class DeleteDialogState {
@@ -42,8 +47,17 @@ fun DeleteDialog(
         onConfirm = {
             state.onConfirm?.invoke()
             state.dismiss()
+        },
+        icon = {
+            Icon(imageVector = Icons.Rounded.Delete, contentDescription = "Delete")
         }
     ) {
         Text(text = stringResource(id = R.string.confirm_delete))
     }
+}
+
+@Preview
+@Composable
+private fun PreviewDeleteDialog() = AccountTheme {
+    DeleteDialog(state = DeleteDialogState().apply { show() })
 }
