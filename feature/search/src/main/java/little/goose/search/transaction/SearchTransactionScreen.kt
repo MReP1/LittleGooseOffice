@@ -1,10 +1,15 @@
 package little.goose.search.transaction
 
+import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.AnimatedContentScope
+import androidx.compose.animation.core.Spring
+import androidx.compose.animation.core.spring
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.with
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Snackbar
-import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -20,7 +25,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import little.goose.account.data.entities.Transaction
 import little.goose.account.ui.component.TransactionColumnState
 import little.goose.search.SearchState
-import little.goose.search.component.SearchTopAppBar
+import little.goose.search.component.SearchScaffold
 import little.goose.ui.screen.LittleGooseEmptyScreen
 import little.goose.ui.screen.LittleGooseLoadingScreen
 
@@ -44,7 +49,7 @@ sealed interface SearchTransactionEvent {
 }
 
 @Composable
-fun SearchTransactionRoute(
+internal fun SearchTransactionRoute(
     modifier: Modifier = Modifier,
     onNavigateToTransactionScreen: (Long) -> Unit,
     onBack: () -> Unit
@@ -68,7 +73,7 @@ fun SearchTransactionRoute(
 
     SearchTransactionScreen(
         modifier = modifier,
-        searchTransactionState = searchTransactionState,
+        state = searchTransactionState,
         snackbarHostState = snackbarHostState,
         onNavigateToTransactionScreen = onNavigateToTransactionScreen,
         onBack = onBack
@@ -78,50 +83,68 @@ fun SearchTransactionRoute(
 @Composable
 fun SearchTransactionScreen(
     modifier: Modifier = Modifier,
-    searchTransactionState: SearchTransactionState,
+    state: SearchTransactionState,
     snackbarHostState: SnackbarHostState,
     onNavigateToTransactionScreen: (Long) -> Unit,
     onBack: () -> Unit
 ) {
-    Scaffold(
+    var keyword by rememberSaveable { mutableStateOf("") }
+    SearchScaffold(
         modifier = modifier,
-        snackbarHost = {
-            SnackbarHost(hostState = snackbarHostState) { snackbarData ->
-                Snackbar(snackbarData)
-            }
+        snackbarHostState = snackbarHostState,
+        keyword = keyword,
+        onKeywordChange = {
+            keyword = it
+            state.search(it)
         },
-        topBar = {
-            var keyword by rememberSaveable { mutableStateOf("") }
-            SearchTopAppBar(
-                keyword = keyword,
-                onKeywordChange = {
-                    keyword = it
-                    searchTransactionState.search(it)
-                },
-                onBack = onBack
-            )
-        },
-        content = { paddingValues ->
-            val contentModifier = Modifier
+        onBack = onBack
+    ) {
+        AnimatedContent(
+            modifier = Modifier
                 .fillMaxSize()
-                .padding(paddingValues)
-            when (searchTransactionState) {
+                .padding(it),
+            transitionSpec = {
+                val durationMillis = 320
+                fadeIn(
+                    animationSpec = tween(durationMillis)
+                ) + slideIntoContainer(
+                    towards = if (targetState is SearchTransactionState.Success)
+                        AnimatedContentScope.SlideDirection.Down
+                    else AnimatedContentScope.SlideDirection.Up,
+                    animationSpec = spring(
+                        dampingRatio = Spring.DampingRatioLowBouncy,
+                        stiffness = Spring.StiffnessMediumLow
+                    ),
+                    initialOffset = { offset -> offset / 2 }
+                ) with fadeOut(
+                    animationSpec = tween(durationMillis)
+                ) + slideOutOfContainer(
+                    towards = if (targetState is SearchTransactionState.Success)
+                        AnimatedContentScope.SlideDirection.Down
+                    else AnimatedContentScope.SlideDirection.Up,
+                    animationSpec = tween(durationMillis),
+                    targetOffset = { offset -> offset / 2 }
+                )
+            },
+            targetState = state
+        ) { state ->
+            when (state) {
                 is SearchTransactionState.Empty -> {
-                    LittleGooseEmptyScreen(modifier = contentModifier)
+                    LittleGooseEmptyScreen(modifier = Modifier.fillMaxSize())
                 }
 
                 is SearchTransactionState.Loading -> {
-                    LittleGooseLoadingScreen(modifier = contentModifier)
+                    LittleGooseLoadingScreen(modifier = Modifier.fillMaxSize())
                 }
 
                 is SearchTransactionState.Success -> {
                     SearchTransactionContent(
-                        modifier = contentModifier,
-                        transactionColumnState = searchTransactionState.data,
+                        modifier = Modifier.fillMaxSize(),
+                        transactionColumnState = state.data,
                         onNavigateToTransactionScreen = onNavigateToTransactionScreen
                     )
                 }
             }
         }
-    )
+    }
 }

@@ -1,10 +1,15 @@
 package little.goose.search.schedule
 
+import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.AnimatedContentScope
+import androidx.compose.animation.core.Spring
+import androidx.compose.animation.core.spring
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.with
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Snackbar
-import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -23,7 +28,7 @@ import little.goose.design.system.theme.AccountTheme
 import little.goose.schedule.data.entities.Schedule
 import little.goose.schedule.ui.ScheduleColumnState
 import little.goose.search.SearchState
-import little.goose.search.component.SearchTopAppBar
+import little.goose.search.component.SearchScaffold
 import little.goose.ui.screen.LittleGooseEmptyScreen
 import little.goose.ui.screen.LittleGooseLoadingScreen
 
@@ -50,7 +55,7 @@ sealed interface SearchScheduleEvent {
 }
 
 @Composable
-fun SearchScheduleRoute(
+internal fun SearchScheduleRoute(
     modifier: Modifier = Modifier,
     onNavigateToScheduleDialog: (Long) -> Unit,
     onBack: () -> Unit
@@ -89,47 +94,65 @@ fun SearchScheduleScreen(
     onNavigateToScheduleDialog: (Long) -> Unit,
     onBack: () -> Unit
 ) {
-    Scaffold(
+    var keyword by rememberSaveable { mutableStateOf("") }
+    SearchScaffold(
         modifier = modifier,
-        snackbarHost = {
-            SnackbarHost(hostState = snackbarHostState) { snackbarData ->
-                Snackbar(snackbarData)
-            }
+        snackbarHostState = snackbarHostState,
+        keyword = keyword,
+        onKeywordChange = {
+            keyword = it
+            state.search(it)
         },
-        topBar = {
-            var keyword by rememberSaveable { mutableStateOf("") }
-            SearchTopAppBar(
-                keyword = keyword,
-                onKeywordChange = {
-                    keyword = it
-                    state.search(it)
-                },
-                onBack = onBack
-            )
-        },
-        content = {
-            val contentModifier = Modifier
+        onBack = onBack
+    ) {
+        AnimatedContent(
+            modifier = Modifier
                 .fillMaxSize()
-                .padding(it)
+                .padding(it),
+            transitionSpec = {
+                val durationMillis = 320
+                fadeIn(
+                    animationSpec = tween(durationMillis)
+                ) + slideIntoContainer(
+                    towards = if (targetState is SearchScheduleState.Success)
+                        AnimatedContentScope.SlideDirection.Down
+                    else AnimatedContentScope.SlideDirection.Up,
+                    animationSpec = spring(
+                        dampingRatio = Spring.DampingRatioLowBouncy,
+                        stiffness = Spring.StiffnessMediumLow
+                    ),
+                    initialOffset = { offset -> offset / 2 }
+                ) with fadeOut(
+                    animationSpec = tween(durationMillis)
+                ) + slideOutOfContainer(
+                    towards = if (targetState is SearchScheduleState.Success)
+                        AnimatedContentScope.SlideDirection.Down
+                    else AnimatedContentScope.SlideDirection.Up,
+                    animationSpec = tween(durationMillis),
+                    targetOffset = { offset -> offset / 2 }
+                )
+            },
+            targetState = state
+        ) { state ->
             when (state) {
                 is SearchScheduleState.Empty -> {
-                    LittleGooseEmptyScreen(modifier = contentModifier)
+                    LittleGooseEmptyScreen(modifier = Modifier.fillMaxSize())
                 }
 
                 is SearchScheduleState.Loading -> {
-                    LittleGooseLoadingScreen(modifier = contentModifier)
+                    LittleGooseLoadingScreen(modifier = Modifier.fillMaxSize())
                 }
 
                 is SearchScheduleState.Success -> {
                     SearchScheduleContent(
-                        modifier = contentModifier,
+                        modifier = Modifier.fillMaxSize(),
                         scheduleColumnState = state.data,
                         onNavigateToScheduleDialog = onNavigateToScheduleDialog
                     )
                 }
             }
         }
-    )
+    }
 }
 
 @Preview
