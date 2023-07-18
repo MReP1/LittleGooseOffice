@@ -1,12 +1,15 @@
 package little.goose.office
 
 import androidx.compose.animation.AnimatedContentScope
+import androidx.compose.animation.EnterTransition
+import androidx.compose.animation.ExitTransition
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.scaleIn
 import androidx.compose.animation.scaleOut
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Stable
 import androidx.compose.ui.Modifier
+import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
 import com.google.accompanist.navigation.animation.AnimatedNavHost
@@ -138,25 +141,43 @@ fun LittleGooseAnimatedNavHost(
         navController = navController,
         startDestination = startDestination,
         enterTransition = {
-            slideIntoContainer(
-                towards = AnimatedContentScope.SlideDirection.Start,
-                animationSpec = tween(defaultDurationMillis),
-                initialOffset = { it }
-            )
+            activityEnterTransition()
         },
         exitTransition = {
-            scaleOut(animationSpec = tween(defaultDurationMillis), targetScale = 0.96F)
+            activityExitTransition()
         },
         popEnterTransition = {
-            scaleIn(animationSpec = tween(defaultDurationMillis), initialScale = 0.96F)
+            activityPopEnterTransition()
         },
         popExitTransition = {
-            slideOutOfContainer(
-                towards = AnimatedContentScope.SlideDirection.End,
-                animationSpec = tween(defaultDurationMillis),
-                targetOffset = { it }
-            )
+            activityPopExitTransition()
         },
         builder = builder
+    )
+}
+
+private fun AnimatedContentScope<NavBackStackEntry>.activityEnterTransition(): EnterTransition {
+    return slideIntoContainer(
+        towards = AnimatedContentScope.SlideDirection.Start,
+        animationSpec = tween(defaultDurationMillis),
+        initialOffset = { it }
+    )
+}
+
+@Suppress("UnusedReceiverParameter")
+private fun AnimatedContentScope<NavBackStackEntry>.activityExitTransition(): ExitTransition {
+    return scaleOut(animationSpec = tween(defaultDurationMillis), targetScale = 0.96F)
+}
+
+@Suppress("UnusedReceiverParameter")
+private fun AnimatedContentScope<NavBackStackEntry>.activityPopEnterTransition(): EnterTransition {
+    return scaleIn(animationSpec = tween(defaultDurationMillis), initialScale = 0.96F)
+}
+
+private fun AnimatedContentScope<NavBackStackEntry>.activityPopExitTransition(): ExitTransition {
+    return slideOutOfContainer(
+        towards = AnimatedContentScope.SlideDirection.End,
+        animationSpec = tween(defaultDurationMillis),
+        targetOffset = { it }
     )
 }
