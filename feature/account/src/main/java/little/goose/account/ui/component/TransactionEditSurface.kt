@@ -11,11 +11,13 @@ import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.exclude
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.imeAnimationTarget
 import androidx.compose.foundation.layout.isImeVisible
+import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -50,6 +52,7 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.input.TextFieldValue
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
@@ -135,8 +138,8 @@ internal fun TransactionEditSurface(
                 .fillMaxWidth()
                 .height(if (WindowInsets.isImeVisible && isDescriptionEdit) {
                     with(density) {
-                        val insert = WindowInsets.imeAnimationTarget
-                        val bottom = insert
+                        val bottom = WindowInsets.imeAnimationTarget
+                            .exclude(WindowInsets.navigationBars)
                             .getBottom(density)
                             .toDp()
                         if (bottom > 0.dp) bottom else 288.dp
@@ -182,7 +185,9 @@ fun TransactionContentEditBar(
     )
     val contentBarHeight by isDescriptionEditUpdateTransition.animateDp(
         label = "content bar height",
-        transitionSpec = { tween(200) }
+        transitionSpec = {
+            tween(60, delayMillis = if (targetState) 140 else 0)
+        }
     ) { if (it) 84.dp else 42.dp }
     Box(
         modifier = modifier
@@ -191,7 +196,7 @@ fun TransactionContentEditBar(
     ) {
         val dateScale by isDescriptionEditUpdateTransition.animateFloat(
             label = "date scale",
-            transitionSpec = { tween(200) }
+            transitionSpec = { tween(140) }
         ) { if (it) 0.88F else 1F }
         Surface(
             modifier = Modifier
@@ -227,7 +232,7 @@ fun TransactionContentEditBar(
         val configuration = LocalConfiguration.current
         val descriptionWidth by isDescriptionEditUpdateTransition.animateDp(
             label = "description width",
-            transitionSpec = { tween(200) }
+            transitionSpec = { tween(140) }
         ) { if (it) configuration.screenWidthDp.dp else (configuration.screenWidthDp / 2).dp }
         Surface(
             modifier = Modifier
@@ -245,7 +250,9 @@ fun TransactionContentEditBar(
                 if (!isDescriptionEdit) {
                     Text(
                         text = transaction.description.ifBlank { "Description..." },
-                        style = MaterialTheme.typography.bodySmall
+                        style = MaterialTheme.typography.bodySmall,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis
                     )
                 } else {
                     val focusRequester = remember { FocusRequester() }
@@ -262,7 +269,9 @@ fun TransactionContentEditBar(
                     }
 
                     BasicTextField(
-                        modifier = Modifier.focusRequester(focusRequester),
+                        modifier = Modifier
+                            .focusRequester(focusRequester)
+                            .padding(end = 32.dp),
                         value = textFieldValue,
                         textStyle = MaterialTheme.typography.bodySmall,
                         onValueChange = {
