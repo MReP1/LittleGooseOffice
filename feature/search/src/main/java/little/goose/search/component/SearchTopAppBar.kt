@@ -53,6 +53,7 @@ internal fun SearchTopAppBar(
                     disabledIndicatorColor = Color.Transparent,
                 ),
                 maxLines = 1,
+                singleLine = true,
                 modifier = Modifier
                     .padding(end = 8.dp)
                     .fillMaxWidth()
