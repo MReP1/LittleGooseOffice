@@ -78,13 +78,22 @@ class PullNestedScrollConnection(
     }
 
     private fun handleAvailableOffset(available: Offset): Offset {
+        val lastOffset = offsetY
         offsetY += if (!reverseDirection) available.y else -available.y
-        if (offsetY >= threshold && !isExceedThreshold) {
-            isExceedThreshold = true
-            passThreshold()
-        } else if (offsetY < threshold && isExceedThreshold) {
-            isExceedThreshold = false
-            passThreshold()
+        when {
+            offsetY >= threshold && !isExceedThreshold -> {
+                isExceedThreshold = true
+                passThreshold()
+            }
+
+            offsetY < threshold && isExceedThreshold -> {
+                isExceedThreshold = false
+                passThreshold()
+            }
+
+            (lastOffset >= 0 && offsetY < 0) || (lastOffset <= 0 && offsetY > 0) -> {
+                isExceedThreshold = false
+            }
         }
         return Offset(0f, onPull(available.y, threshold)) // Swiping up
     }
