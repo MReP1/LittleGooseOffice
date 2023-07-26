@@ -14,14 +14,14 @@ class ComposeConventionPlugin : Plugin<Project> {
     override fun apply(project: Project) {
         with(project) {
             val libs = extensions.getByType<VersionCatalogsExtension>().named("libs")
-            applyAndroid<CommonExtension<*, *, *, *>> {
+            applyAndroid<CommonExtension<*, *, *, *, *>> {
                 configureCompose(libs)
             }
             applyDependencies(libs)
         }
     }
 
-    private fun CommonExtension<*, *, *, *>.configureCompose(libs: VersionCatalog) {
+    private fun CommonExtension<*, *, *, *, *>.configureCompose(libs: VersionCatalog) {
         buildFeatures {
             compose = true
         }

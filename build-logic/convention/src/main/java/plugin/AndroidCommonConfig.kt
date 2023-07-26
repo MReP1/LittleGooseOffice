@@ -8,7 +8,7 @@ import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 fun Project.configureKotlin(
-    commonExtension: CommonExtension<*, *, *, *>
+    commonExtension: CommonExtension<*, *, *, *, *>
 ) {
     with(commonExtension) {
         compileOptions {
@@ -41,7 +41,7 @@ fun Project.configureKotlin(
 
 }
 
-fun CommonExtension<*, *, *, *>.configureAndroidCommon() {
+fun CommonExtension<*, *, *, *, *>.configureAndroidCommon() {
     compileSdk = AndroidConfigConventions.COMPILE_SDK_VERSION
 
     defaultConfig {
