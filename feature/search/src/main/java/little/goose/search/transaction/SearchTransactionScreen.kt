@@ -126,7 +126,8 @@ fun SearchTransactionScreen(
                     targetOffset = { offset -> offset / 2 }
                 )
             },
-            targetState = state
+            targetState = state,
+            label = "search transaction content"
         ) { state ->
             when (state) {
                 is SearchTransactionState.Empty -> {

@@ -132,7 +132,8 @@ fun SearchScheduleScreen(
                     targetOffset = { offset -> offset / 2 }
                 )
             },
-            targetState = state
+            targetState = state,
+            label = "search schedule content"
         ) { state ->
             when (state) {
                 is SearchScheduleState.Empty -> {

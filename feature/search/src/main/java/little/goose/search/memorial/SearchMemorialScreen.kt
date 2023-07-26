@@ -126,7 +126,8 @@ fun SearchMemorialScreen(
                     targetOffset = { offset -> offset / 2 }
                 )
             },
-            targetState = state
+            targetState = state,
+            label = "search memorial content"
         ) { state ->
             when (state) {
                 is SearchMemorialState.Empty -> {

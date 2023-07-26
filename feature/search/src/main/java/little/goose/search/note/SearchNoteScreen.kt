@@ -131,7 +131,8 @@ fun SearchNoteScreen(
                     targetOffset = { offset -> offset / 2 }
                 )
             },
-            targetState = state
+            targetState = state,
+            label = "search note content"
         ) { state ->
             when (state) {
                 is SearchNoteState.Empty -> {
