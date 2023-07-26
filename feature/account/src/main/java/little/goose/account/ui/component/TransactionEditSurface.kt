@@ -1,10 +1,16 @@
 package little.goose.account.ui.component
 
+import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.AnimatedContentScope
 import androidx.compose.animation.animateContentSize
+import androidx.compose.animation.core.LinearOutSlowInEasing
 import androidx.compose.animation.core.animateDp
 import androidx.compose.animation.core.animateFloat
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.core.updateTransition
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.with
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
@@ -99,30 +105,15 @@ internal fun TransactionEditSurface(
     }
 
     Column(modifier = modifier.animateContentSize(animationSpec = tween(200))) {
-        Surface(
-            modifier = Modifier
-                .fillMaxWidth(),
-            shape = RoundedCornerShape(topStart = 24.dp, topEnd = 24.dp)
-        ) {
-            Row(
-                modifier = Modifier
-                    .padding(start = 16.dp, end = 24.dp, top = 12.dp, bottom = 12.dp)
-                    .fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Icon(
-                    modifier = Modifier.size(32.dp),
-                    painter = painterResource(
-                        id = TransactionIconHelper.getIconPath(transaction.icon_id)
-                    ),
-                    contentDescription = transaction.content
-                )
-                Spacer(modifier = Modifier.width(12.dp))
-                Text(text = transaction.content, modifier = Modifier.weight(1F))
-                Spacer(modifier = Modifier.weight(1f))
-                Text(text = money, style = MaterialTheme.typography.titleLarge)
-            }
+
+        val iconAndContent = remember(transaction.icon_id, transaction.content) {
+            IconAndContent(transaction.icon_id, transaction.content)
         }
+        TransactionContentItem(
+            modifier = Modifier.fillMaxWidth(),
+            iconAndContent = iconAndContent,
+            money = money
+        )
 
         val (isDescriptionEdit, onIsDescriptionEditChange) = remember { mutableStateOf(false) }
         TransactionContentEditBar(
@@ -163,8 +154,78 @@ internal fun TransactionEditSurface(
     }
 }
 
+private data class IconAndContent(
+    val iconId: Int,
+    val content: String
+)
+
 @Composable
-fun TransactionContentEditBar(
+private fun TransactionContentItem(
+    modifier: Modifier = Modifier,
+    iconAndContent: IconAndContent,
+    money: String
+) {
+    Surface(
+        modifier = modifier,
+        shape = RoundedCornerShape(topStart = 24.dp, topEnd = 24.dp)
+    ) {
+        Row(
+            modifier = Modifier
+                .padding(start = 16.dp, end = 24.dp, top = 12.dp, bottom = 12.dp)
+                .fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            AnimatedContent(
+                targetState = iconAndContent,
+                transitionSpec = {
+                    val inDurationMillis = 180
+                    val outDurationMillis = 160
+                    fadeIn(
+                        animationSpec = tween(
+                            durationMillis = inDurationMillis,
+                            delayMillis = 36,
+                            easing = LinearOutSlowInEasing
+                        )
+                    ) + slideIntoContainer(
+                        towards = AnimatedContentScope.SlideDirection.Down,
+                        animationSpec = tween(
+                            durationMillis = inDurationMillis,
+                            delayMillis = 36,
+                            easing = LinearOutSlowInEasing
+                        ),
+                        initialOffset = { it / 2 }
+                    ) with fadeOut(
+                        animationSpec = tween(outDurationMillis, easing = LinearOutSlowInEasing)
+                    ) + slideOutOfContainer(
+                        towards = AnimatedContentScope.SlideDirection.Down,
+                        animationSpec = tween(outDurationMillis, easing = LinearOutSlowInEasing),
+                        targetOffset = { it / 2 }
+                    )
+                },
+                label = "transaction content item"
+            ) { iac ->
+                Row(
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Icon(
+                        modifier = Modifier.size(32.dp),
+                        painter = painterResource(
+                            id = TransactionIconHelper.getIconPath(iac.iconId)
+                        ),
+                        contentDescription = iac.content
+                    )
+                    Spacer(modifier = Modifier.width(12.dp))
+                    Text(text = iac.content)
+                }
+            }
+            Spacer(modifier = Modifier.weight(1f))
+            Text(text = money, style = MaterialTheme.typography.titleLarge)
+        }
+    }
+}
+
+@Composable
+private fun TransactionContentEditBar(
     modifier: Modifier = Modifier,
     isDescriptionEdit: Boolean,
     onIsDescriptionEditChange: (Boolean) -> Unit,
