@@ -9,11 +9,11 @@ import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.DonutSmall
-import androidx.compose.material.icons.rounded.Search
 import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.draw.scale
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.min
 import little.goose.account.ui.component.AccountTitle
@@ -21,6 +21,8 @@ import little.goose.account.ui.component.AccountTitleState
 import little.goose.account.ui.component.MonthSelectorState
 import little.goose.account.ui.component.TransactionColumn
 import little.goose.account.ui.component.TransactionColumnState
+import little.goose.common.utils.progressWith
+import little.goose.ui.icon.PullToSearchIcon
 import little.goose.ui.surface.PullSurface
 
 @Composable
@@ -37,13 +39,14 @@ fun AccountHome(
         modifier = modifier,
         onPull = onNavigateToSearch,
         backgroundContent = { progress ->
-            Icon(
-                imageVector = Icons.Rounded.Search,
-                contentDescription = "Search",
+            PullToSearchIcon(
                 modifier = Modifier
-                    .padding(top = 12.dp)
-                    .size(min(48.dp, 24.dp + 24.dp * progress))
-                    .alpha(progress.coerceIn(0.62F, 1F))
+                    .padding(top = 6.dp)
+                    .size(48.dp)
+                    .scale(progress.coerceIn(0.75F, 1F))
+                    .alpha(progress.coerceIn(0.75F, 1F)),
+                progress = progress.progressWith(0.66F, 0F, 1F),
+                contentDescription = "Search",
             )
         },
         content = {
