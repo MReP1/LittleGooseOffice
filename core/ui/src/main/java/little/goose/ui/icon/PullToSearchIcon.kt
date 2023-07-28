@@ -45,7 +45,7 @@ fun PullToSearchIcon(
     if (progress == 1F && !cacheCurrentState.state) {
         cacheCurrentState.state = true
     } else if (cacheCurrentState.state && progress == 0F) {
-        cacheCurrentState.state =  false
+        cacheCurrentState.state = false
     }
 
     val semantics = if (contentDescription != null) {
@@ -54,26 +54,6 @@ fun PullToSearchIcon(
             this.role = Role.Image
         }
     } else Modifier
-
-    val arcProgress = if (cacheCurrentState.state) {
-        if (progress < 0.22F) 0F else {
-            ((progress - 0.22F) / 0.78F).coerceAtMost(1F)
-        }
-    } else progress
-
-    val lineProgress = if (cacheCurrentState.state) {
-        if (progress < 0.16F) 0F else ((progress - 0.16F) / 0.72F).coerceAtMost(1F)
-    } else {
-        if (progress < 0.12F) 0F else ((progress - 0.12F) / 0.72F).coerceAtMost(1F)
-    }
-
-    val arrowProgress = 1F - if (cacheCurrentState.state) {
-        (progress / 0.36F).coerceAtMost(1F)
-    } else {
-        if (progress < 0.12F) 0F else {
-            ((progress - 0.12F) / 0.36F).coerceAtMost(1F)
-        }
-    }
 
     val drawCache = remember {
         PullToSearchIconDrawCache(
@@ -88,6 +68,26 @@ fun PullToSearchIcon(
             .defaultMinSize(minWidth = 48.dp, minHeight = 48.dp)
             .then(semantics)
     ) {
+        val arcProgress = if (cacheCurrentState.state) {
+            if (progress < 0.22F) 0F else {
+                ((progress - 0.22F) / 0.78F).coerceAtMost(1F)
+            }
+        } else progress
+
+        val lineProgress = if (cacheCurrentState.state) {
+            if (progress < 0.16F) 0F else ((progress - 0.16F) / 0.72F).coerceAtMost(1F)
+        } else {
+            if (progress < 0.12F) 0F else ((progress - 0.12F) / 0.72F).coerceAtMost(1F)
+        }
+
+        val arrowProgress = 1F - if (cacheCurrentState.state) {
+            (progress / 0.36F).coerceAtMost(1F)
+        } else {
+            if (progress < 0.12F) 0F else {
+                ((progress - 0.12F) / 0.36F).coerceAtMost(1F)
+            }
+        }
+
         val minSide = min(size.width, size.height)
         val strokeWidth = minSide / 12
         val pathStyle = Stroke(
