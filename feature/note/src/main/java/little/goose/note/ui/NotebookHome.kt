@@ -1,6 +1,7 @@
 package little.goose.note.ui
 
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.runtime.Composable
@@ -27,6 +28,7 @@ fun NotebookHome(
                 modifier = Modifier
                     .padding(top = 6.dp)
                     .size(48.dp)
+                    .offset(y = 32.dp * (progress - 1F))
                     .scale(progress.coerceIn(0.75F, 1F))
                     .alpha(progress.coerceIn(0.75F, 1F)),
                 progress = progress.progressWith(0.66F, 0F, 1F),
