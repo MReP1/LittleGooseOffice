@@ -31,7 +31,7 @@ fun NotebookHome(
                     .offset(y = 32.dp * (progress - 1F))
                     .scale(progress.coerceIn(0.75F, 1F))
                     .alpha(progress.coerceIn(0.75F, 1F)),
-                progress = progress.progressWith(0.66F, 0F, 1F),
+                progress = progress.progressWith(0.52F, 0F, 1F),
                 contentDescription = "Search",
             )
         },
