@@ -3,6 +3,8 @@ package little.goose.office
 import androidx.compose.animation.AnimatedContentScope
 import androidx.compose.animation.EnterTransition
 import androidx.compose.animation.ExitTransition
+import androidx.compose.animation.core.FastOutLinearInEasing
+import androidx.compose.animation.core.LinearOutSlowInEasing
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.scaleIn
 import androidx.compose.animation.scaleOut
@@ -127,7 +129,8 @@ internal fun MainScreen(modifier: Modifier) {
     }
 }
 
-private const val defaultDurationMillis = 400
+private const val DEFAULT_ENTER_DURATION = 300
+private const val DEFAULT_EXIT_DURATION = 220
 
 @Composable
 fun LittleGooseAnimatedNavHost(
@@ -159,25 +162,31 @@ fun LittleGooseAnimatedNavHost(
 private fun AnimatedContentScope<NavBackStackEntry>.activityEnterTransition(): EnterTransition {
     return slideIntoContainer(
         towards = AnimatedContentScope.SlideDirection.Start,
-        animationSpec = tween(defaultDurationMillis),
+        animationSpec = tween(DEFAULT_ENTER_DURATION, easing = LinearOutSlowInEasing),
         initialOffset = { it }
     )
 }
 
 @Suppress("UnusedReceiverParameter")
 private fun AnimatedContentScope<NavBackStackEntry>.activityExitTransition(): ExitTransition {
-    return scaleOut(animationSpec = tween(defaultDurationMillis), targetScale = 0.96F)
+    return scaleOut(
+        animationSpec = tween(DEFAULT_ENTER_DURATION),
+        targetScale = 0.96F
+    )
 }
 
 @Suppress("UnusedReceiverParameter")
 private fun AnimatedContentScope<NavBackStackEntry>.activityPopEnterTransition(): EnterTransition {
-    return scaleIn(animationSpec = tween(defaultDurationMillis), initialScale = 0.96F)
+    return scaleIn(
+        animationSpec = tween(DEFAULT_EXIT_DURATION),
+        initialScale = 0.96F
+    )
 }
 
 private fun AnimatedContentScope<NavBackStackEntry>.activityPopExitTransition(): ExitTransition {
     return slideOutOfContainer(
         towards = AnimatedContentScope.SlideDirection.End,
-        animationSpec = tween(defaultDurationMillis),
+        animationSpec = tween(DEFAULT_EXIT_DURATION, easing = FastOutLinearInEasing),
         targetOffset = { it }
     )
 }
