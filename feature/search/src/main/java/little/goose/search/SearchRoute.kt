@@ -1,6 +1,8 @@
 package little.goose.search
 
 import androidx.compose.animation.AnimatedContentScope
+import androidx.compose.animation.core.FastOutLinearInEasing
+import androidx.compose.animation.core.LinearOutSlowInEasing
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -42,20 +44,20 @@ fun NavGraphBuilder.searchRoute(
     ),
     enterTransition = {
         fadeIn(
-            animationSpec = tween(140)
+            animationSpec = tween(200, easing = LinearOutSlowInEasing)
         ) + slideIntoContainer(
             towards = AnimatedContentScope.SlideDirection.Down,
-            animationSpec = tween(200),
+            animationSpec = tween(200, easing = LinearOutSlowInEasing),
             initialOffset = { it / 6 }
         )
     },
     exitTransition = null,
     popExitTransition = {
         fadeOut(
-            animationSpec = tween(140)
+            animationSpec = tween(200, easing = FastOutLinearInEasing)
         ) + slideOutOfContainer(
             towards = AnimatedContentScope.SlideDirection.Up,
-            animationSpec = tween(200),
+            animationSpec = tween(200, easing = FastOutLinearInEasing),
             targetOffset = { it / 6 }
         )
     },
