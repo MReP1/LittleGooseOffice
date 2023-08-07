@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
@@ -72,8 +73,12 @@ fun TransactionCard(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Icon(
-                        modifier = Modifier.padding(18.dp, 0.dp, 12.dp, 0.dp),
-                        painter = painterResource(id = TransactionIconHelper.getIconPath(transaction.icon_id)),
+                        modifier = Modifier
+                            .padding(18.dp, 1.dp, 12.dp, 1.dp)
+                            .size(30.dp),
+                        painter = painterResource(
+                            id = TransactionIconHelper.getIconPath(transaction.icon_id)
+                        ),
                         tint = MaterialTheme.colorScheme.primary,
                         contentDescription = null
                     )
