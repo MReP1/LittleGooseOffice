@@ -177,15 +177,17 @@ fun NoteEditContent(
             )
 
             // Fix bug: 第一次创建 block 有概率无法 focus
-            DisposableEffect(focusRequester) {
-                if (block.index == 0 && state.content.size == 1) {
-                    runCatching {
-                        focusRequester.requestFocus()
-                    }.onFailure {
-                        focusRequester.requestFocus()
+            if (block.index == 0) {
+                DisposableEffect(focusRequester) {
+                    if (state.content.size == 1) {
+                        runCatching {
+                            focusRequester.requestFocus()
+                        }.onFailure {
+                            focusRequester.requestFocus()
+                        }
                     }
+                    onDispose { }
                 }
-                onDispose { }
             }
 
         }
