@@ -18,6 +18,7 @@ import androidx.navigation.NavType
 import androidx.navigation.navArgument
 import androidx.navigation.navDeepLink
 import com.google.accompanist.navigation.animation.composable
+import kotlinx.coroutines.android.awaitFrame
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
 import little.goose.common.constants.DEEP_LINK_THEME_AND_HOST
@@ -127,15 +128,16 @@ fun NoteRoute(
                     }
                     // 为新增的 Block 申请焦点
                     var tryTime = 0
+                    val focusRequester = noteContentState.focusRequesters[event.noteContentBlock.id]
+                        ?: return@collectLatest
                     do {
                         tryTime++
                         val result = runCatching {
-                            noteContentState.focusRequesters[event.noteContentBlock.id]
-                                ?.requestFocus()
+                            focusRequester.requestFocus()
                         }.onFailure {
-                            delay(600L)
+                            awaitFrame()
                         }
-                    } while (result.isFailure && tryTime < 4)
+                    } while (result.isFailure && tryTime < 10)
                 }
             }
         }

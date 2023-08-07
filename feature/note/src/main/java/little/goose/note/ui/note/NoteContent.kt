@@ -20,6 +20,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.produceState
 import androidx.compose.ui.Modifier
@@ -157,12 +158,13 @@ fun NoteEditContent(
             key = { state.content[it].id ?: 0 }
         ) { index ->
             val block = state.content[index]
+            val focusRequester = state.focusRequesters[block.id]!!
             NoteContentBlockItem(
                 modifier = Modifier
                     .fillMaxWidth()
                     .animateItemPlacement(),
                 value = state.textFieldValues[block.id]!!,
-                focusRequester = state.focusRequesters[block.id]!!,
+                focusRequester = focusRequester,
                 interactionSource = state.interactions[block.id]!!,
                 onValueChange = { value ->
                     block.id?.let { blockId ->
@@ -173,6 +175,19 @@ fun NoteEditContent(
                     state.onBlockDelete(block)
                 }
             )
+
+            // Fix bug: 第一次创建 block 有概率无法 focus
+            DisposableEffect(focusRequester) {
+                if (block.index == 0 && state.content.size == 1) {
+                    runCatching {
+                        focusRequester.requestFocus()
+                    }.onFailure {
+                        focusRequester.requestFocus()
+                    }
+                }
+                onDispose { }
+            }
+
         }
 
         item {
