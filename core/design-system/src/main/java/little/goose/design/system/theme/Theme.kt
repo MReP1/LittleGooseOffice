@@ -4,9 +4,25 @@ import android.app.Activity
 import android.content.Context
 import android.os.Build
 import androidx.compose.foundation.isSystemInDarkTheme
-import androidx.compose.foundation.layout.*
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ColumnScope
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.height
+import androidx.compose.material3.ColorScheme
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
+import androidx.compose.material3.darkColorScheme
+import androidx.compose.material3.dynamicDarkColorScheme
+import androidx.compose.material3.dynamicLightColorScheme
+import androidx.compose.material3.lightColorScheme
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.Stable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
@@ -19,7 +35,7 @@ import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.doOnAttach
 import kotlin.math.abs
 
-private val LightColorScheme = lightColorScheme(
+private val gooseLightColorScheme = lightColorScheme(
     primary = md_theme_light_primary,
     onPrimary = md_theme_light_onPrimary,
     primaryContainer = md_theme_light_primaryContainer,
@@ -49,10 +65,10 @@ private val LightColorScheme = lightColorScheme(
     onSurface = md_theme_light_onSurface,
     surfaceVariant = md_theme_light_surfaceVariant,
     onSurfaceVariant = md_theme_light_onSurfaceVariant,
-)
+).adjustmentColor()
 
 
-private val DarkColorScheme = darkColorScheme(
+private val gooseDarkColorScheme = darkColorScheme(
     primary = md_theme_dark_primary,
     onPrimary = md_theme_dark_onPrimary,
     primaryContainer = md_theme_dark_primaryContainer,
@@ -82,7 +98,7 @@ private val DarkColorScheme = darkColorScheme(
     onSurface = md_theme_dark_onSurface,
     surfaceVariant = md_theme_dark_surfaceVariant,
     onSurfaceVariant = md_theme_dark_onSurfaceVariant,
-)
+).adjustmentColor()
 
 @Stable
 data class ThemeConfig(
@@ -107,15 +123,15 @@ data class ThemeConfig(
                 } else {
                     dynamicLightColorScheme(context)
                 }
-            }
+            }.adjustmentColor()
         } else {
             when (themeType) {
-                ThemeType.LIGHT -> LightColorScheme
-                ThemeType.DART -> DarkColorScheme
+                ThemeType.LIGHT -> gooseLightColorScheme
+                ThemeType.DART -> gooseDarkColorScheme
                 ThemeType.FOLLOW_SYSTEM -> if (isSystemInDarkTheme()) {
-                    DarkColorScheme
+                    gooseDarkColorScheme
                 } else {
-                    LightColorScheme
+                    gooseLightColorScheme
                 }
             }
         }
@@ -158,6 +174,14 @@ fun AccountTheme(
         colorScheme = themeConfig.getColorScheme(context = context),
         typography = Typography,
         content = content
+    )
+}
+
+private fun ColorScheme.adjustmentColor(): ColorScheme {
+    return this.copy(
+        surfaceVariant = surfaceVariant.copy(
+            alpha = 0.74F
+        )
     )
 }
 
