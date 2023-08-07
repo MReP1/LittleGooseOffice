@@ -180,7 +180,7 @@ fun AccountTheme(
 private fun ColorScheme.adjustmentColor(): ColorScheme {
     return this.copy(
         surfaceVariant = surfaceVariant.copy(
-            alpha = 0.74F
+            // TODO 调暗卡片颜色
         )
     )
 }
