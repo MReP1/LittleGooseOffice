@@ -1,12 +1,22 @@
 package little.goose.account
 
 import android.app.Application
+import android.content.Context
+import androidx.datastore.core.DataStore
+import androidx.datastore.core.DataStoreFactory
+import androidx.datastore.dataStoreFile
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.components.ViewModelComponent
+import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.android.scopes.ViewModelScoped
 import dagger.hilt.components.SingletonComponent
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.CoroutineScope
+import little.goose.account.data.holder.AccountConfigDataHolder
+import little.goose.account.data.model.AccountPreference
+import little.goose.account.data.serializer.AccountPreferenceSerializer
 import little.goose.account.logic.AccountRepository
 import little.goose.account.logic.DeleteTransactionsUseCase
 import little.goose.account.logic.GetAllTransactionExpenseSumFlowUseCase
@@ -28,6 +38,9 @@ import little.goose.account.logic.SearchTransactionByMoneyFlowUseCase
 import little.goose.account.logic.SearchTransactionByTextFlowUseCase
 import little.goose.account.logic.UpdateTransactionUseCase
 import little.goose.account.ui.analysis.AnalysisHelper
+import little.goose.common.di.AppCoroutineScope
+import little.goose.common.di.Dispatcher
+import little.goose.common.di.GooseDispatchers
 import javax.inject.Singleton
 
 @Module
@@ -46,6 +59,30 @@ class AccountModule {
         accountRepository: AccountRepository
     ): DeleteTransactionsUseCase {
         return DeleteTransactionsUseCase(accountRepository)
+    }
+
+    @Provides
+    @Singleton
+    fun provideAccountPreferenceDataStore(
+        @ApplicationContext context: Context,
+        @Dispatcher(GooseDispatchers.IO) ioDispatcher: CoroutineDispatcher,
+        @AppCoroutineScope coroutineScope: CoroutineScope,
+        accountPreferenceSerializer: AccountPreferenceSerializer
+    ): DataStore<AccountPreference> {
+        return DataStoreFactory.create(
+            serializer = accountPreferenceSerializer,
+            scope = CoroutineScope(coroutineScope.coroutineContext + ioDispatcher)
+        ) {
+            context.dataStoreFile("account_preference.pb")
+        }
+    }
+
+    @Provides
+    @Singleton
+    fun provideAccountConfigDataHolder(
+        accountPreferenceDataStore: DataStore<AccountPreference>
+    ): AccountConfigDataHolder {
+        return AccountConfigDataHolder(accountPreferenceDataStore)
     }
 
 }

@@ -1,0 +1,9 @@
+syntax = "proto3";
+
+option java_package = "little.goose.account.data.model";
+option java_multiple_files = true;
+
+enum IconDisplayTypeProto {
+  ICON_CONTENT = 0;
+  ICON_ONLY = 1;
+}

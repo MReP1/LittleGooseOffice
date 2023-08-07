@@ -39,7 +39,7 @@ dependencies {
     api(libs.androidx.compose.material3)
     api(libs.androidx.compose.material.iconsExtended)
     implementation(libs.protobuf.kotlin.lite)
-    implementation(libs.androidx.datasotre)
+    implementation(libs.androidx.datastore)
     implementation(libs.androidx.appcompat)
     implementation(project(":core:common"))
 }

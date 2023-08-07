@@ -6,13 +6,18 @@ import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import little.goose.account.data.constants.AccountConstant.EXPENSE
 import little.goose.account.data.constants.AccountConstant.INCOME
 import little.goose.account.data.entities.Transaction
+import little.goose.account.data.holder.AccountConfigDataHolder
+import little.goose.account.data.models.IconDisplayType
 import little.goose.account.logic.GetTransactionByIdFlowUseCase
 import little.goose.account.logic.InsertTransactionUseCase
 import little.goose.account.logic.UpdateTransactionUseCase
@@ -31,12 +36,17 @@ import javax.inject.Inject
 @HiltViewModel
 class TransactionViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
+    private val accountConfigDataHolder: AccountConfigDataHolder,
     private val getTransactionByIdFlowUseCase: GetTransactionByIdFlowUseCase,
     private val insertTransactionUseCase: InsertTransactionUseCase,
     private val updateTransactionUseCase: UpdateTransactionUseCase
 ) : ViewModel() {
 
     private val args = TransactionRouteArgs(savedStateHandle)
+
+    val iconDisplayType = accountConfigDataHolder.accountConfig
+        .map { it.transactionConfig.iconDisplayType }
+        .stateIn(scope = viewModelScope, SharingStarted.Eagerly, IconDisplayType.ICON_CONTENT)
 
     private val defaultTransaction
         get() = Transaction(
@@ -68,6 +78,12 @@ class TransactionViewModel @Inject constructor(
             args.transactionId?.let { id ->
                 _transaction.value = getTransactionByIdFlowUseCase(id).first()
             }
+        }
+    }
+
+    fun setIconDisplayType(iconDisplayType: IconDisplayType) {
+        viewModelScope.launch {
+            accountConfigDataHolder.setIconDisplayType(iconDisplayType)
         }
     }
 

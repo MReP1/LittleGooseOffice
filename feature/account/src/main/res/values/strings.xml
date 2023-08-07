@@ -21,4 +21,7 @@
     <string name="total_balance">总结余</string>
     <string name="current_month_balance">本月结余</string>
     <string name="money_cant_be_zero">金额不能为空</string>
+    <string name="icon_display_type">图标展示样式</string>
+    <string name="icon_content">图标和内容</string>
+    <string name="icon_only">仅图标</string>
 </resources>

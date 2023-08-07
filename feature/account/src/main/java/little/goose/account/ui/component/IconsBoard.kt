@@ -1,6 +1,14 @@
 package little.goose.account.ui.component
 
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.ColumnScope
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.aspectRatio
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
@@ -8,12 +16,14 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import little.goose.account.data.models.IconDisplayType
 import little.goose.account.data.models.TransactionIcon
 import little.goose.account.ui.transaction.icon.TransactionIconHelper
 
@@ -22,7 +32,8 @@ fun IconsBoard(
     modifier: Modifier,
     icons: List<TransactionIcon>,
     onIconClick: (TransactionIcon) -> Unit,
-    selectedIcon: TransactionIcon
+    selectedIcon: TransactionIcon,
+    iconDisplayType: IconDisplayType
 ) {
     LazyVerticalGrid(
         modifier = modifier,
@@ -47,14 +58,49 @@ fun IconsBoard(
                         containerColor = if (selectedIcon == transactionIcon) MaterialTheme.colorScheme.surfaceTint else MaterialTheme.colorScheme.surfaceVariant
                     )
                 ) {
-                    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                        Icon(
-                            painter = painterResource(id = transactionIcon.path),
-                            contentDescription = transactionIcon.name
-                        )
-                    }
+                    TransactionIcon(
+                        transactionIcon = transactionIcon,
+                        iconDisplayType = iconDisplayType
+                    )
                 }
             }
+        }
+    }
+}
+
+@Composable
+private fun ColumnScope.TransactionIcon(
+    transactionIcon: TransactionIcon,
+    iconDisplayType: IconDisplayType
+) {
+    when (iconDisplayType) {
+        IconDisplayType.ICON_CONTENT -> {
+            Spacer(modifier = Modifier.weight(1F))
+            Icon(
+                painter = painterResource(id = transactionIcon.path),
+                contentDescription = transactionIcon.name,
+                modifier = Modifier
+                    .size(32.dp)
+                    .align(Alignment.CenterHorizontally)
+            )
+            Text(
+                text = transactionIcon.name,
+                style = MaterialTheme.typography.labelMedium,
+                modifier = Modifier.align(Alignment.CenterHorizontally)
+            )
+            Spacer(modifier = Modifier.weight(1F))
+        }
+
+        IconDisplayType.ICON_ONLY -> {
+            Spacer(modifier = Modifier.weight(1F))
+            Icon(
+                painter = painterResource(id = transactionIcon.path),
+                contentDescription = transactionIcon.name,
+                modifier = Modifier
+                    .size(32.dp)
+                    .align(Alignment.CenterHorizontally)
+            )
+            Spacer(modifier = Modifier.weight(1F))
         }
     }
 }
@@ -66,6 +112,7 @@ private fun PreviewIconsBoard() {
         modifier = Modifier.fillMaxSize(),
         icons = TransactionIconHelper.expenseIconList,
         onIconClick = {},
-        selectedIcon = TransactionIconHelper.expenseIconList.first()
+        selectedIcon = TransactionIconHelper.expenseIconList.first(),
+        iconDisplayType = IconDisplayType.ICON_CONTENT
     )
 }

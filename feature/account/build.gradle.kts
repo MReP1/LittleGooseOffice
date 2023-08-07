@@ -3,10 +3,29 @@ plugins {
     id("goose.android.compose")
     id("goose.android.hilt")
     alias(libs.plugins.ksp)
+    alias(libs.plugins.protobuf)
 }
 
 android {
     namespace = "little.goose.account"
+}
+
+protobuf {
+    protoc {
+        artifact = libs.protobuf.protoc.get().toString()
+    }
+    generateProtoTasks {
+        all().forEach { task ->
+            task.builtins {
+                register("java") {
+                    option("lite")
+                }
+                register("kotlin") {
+                    option("lite")
+                }
+            }
+        }
+    }
 }
 
 dependencies {
@@ -34,6 +53,11 @@ dependencies {
 
     implementation(libs.androidx.lifecycle.runtime.compose)
 
-    //MPAndroidChart
+    // MPAndroidChart
     implementation("com.github.PhilJay:MPAndroidChart:3.1.0")
+
+    // protobuf
+    implementation(libs.protobuf.kotlin.lite)
+    // datastore
+    implementation(libs.androidx.datastore)
 }

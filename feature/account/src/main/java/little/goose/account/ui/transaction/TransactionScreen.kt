@@ -11,6 +11,8 @@ import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.ArrowBack
 import androidx.compose.material3.CenterAlignedTopAppBar
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -40,6 +42,7 @@ import kotlinx.coroutines.launch
 import little.goose.account.R
 import little.goose.account.data.constants.AccountConstant.EXPENSE
 import little.goose.account.data.constants.AccountConstant.INCOME
+import little.goose.account.data.models.IconDisplayType
 import little.goose.account.ui.component.IconsBoard
 import little.goose.account.ui.component.TransactionEditSurface
 import little.goose.account.ui.transaction.icon.TransactionIconHelper
@@ -54,6 +57,7 @@ fun TransactionScreen(
     val pagerState = rememberPagerState(0)
 
     val transaction by viewModel.transaction.collectAsState()
+    val iconDisplayType by viewModel.iconDisplayType.collectAsState()
 
     var expenseSelectedIcon by remember {
         mutableStateOf(
@@ -186,6 +190,35 @@ fun TransactionScreen(
                             contentDescription = stringResource(id = R.string.back)
                         )
                     }
+                },
+                actions = {
+                    var expanded by remember { mutableStateOf(false) }
+                    IconButton(onClick = { expanded = true }) {
+                        Icon(
+                            imageVector = iconDisplayType.icon,
+                            contentDescription = stringResource(id = iconDisplayType.textRes)
+                        )
+                        DropdownMenu(
+                            expanded = expanded,
+                            onDismissRequest = { expanded = false }
+                        ) {
+                            // TODO set language to 1.9 to use entries
+                            IconDisplayType.values().forEach { type ->
+                                DropdownMenuItem(
+                                    text = {
+                                        Text(text = stringResource(id = type.textRes))
+                                    },
+                                    leadingIcon = {
+                                        Icon(
+                                            imageVector = type.icon,
+                                            contentDescription = stringResource(id = type.textRes)
+                                        )
+                                    },
+                                    onClick = { viewModel.setIconDisplayType(type) }
+                                )
+                            }
+                        }
+                    }
                 }
             )
         },
@@ -205,7 +238,8 @@ fun TransactionScreen(
                                 transaction.copy(icon_id = icon.id, content = icon.name)
                             )
                         },
-                        selectedIcon = expenseSelectedIcon
+                        selectedIcon = expenseSelectedIcon,
+                        iconDisplayType = iconDisplayType
                     )
                 } else {
                     IconsBoard(
@@ -217,7 +251,8 @@ fun TransactionScreen(
                                 transaction.copy(icon_id = icon.id, content = icon.name)
                             )
                         },
-                        selectedIcon = incomeSelectedIcon
+                        selectedIcon = incomeSelectedIcon,
+                        iconDisplayType = iconDisplayType
                     )
                 }
             }
