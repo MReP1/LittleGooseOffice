@@ -3,7 +3,7 @@
 import org.gradle.api.JavaVersion
 
 object AndroidConfigConventions {
-    private const val SDK_VERSION = 33
+    private const val SDK_VERSION = 34
     const val MIN_SDK_VERSION = 26
     const val COMPILE_SDK_VERSION = SDK_VERSION
     const val TARGET_SDK_VERSION = SDK_VERSION
