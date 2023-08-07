@@ -135,7 +135,7 @@ fun NoteRoute(
                         }.onFailure {
                             delay(600L)
                         }
-                    } while (result.isFailure && tryTime < 3)
+                    } while (result.isFailure && tryTime < 4)
                 }
             }
         }
