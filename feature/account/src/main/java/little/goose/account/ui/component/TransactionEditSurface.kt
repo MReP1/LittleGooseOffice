@@ -58,6 +58,7 @@ import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.TextFieldValue
@@ -67,6 +68,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import little.goose.account.R
 import little.goose.account.data.entities.Transaction
 import little.goose.account.logic.MoneyCalculator
 import little.goose.account.ui.transaction.icon.TransactionIconHelper
@@ -313,7 +315,9 @@ private fun TransactionContentEditBar(
             ) {
                 if (!isDescriptionEdit) {
                     Text(
-                        text = transaction.description.ifBlank { "Description..." },
+                        text = transaction.description.ifBlank {
+                            stringResource(id = R.string.description) + "..."
+                        },
                         style = MaterialTheme.typography.bodySmall,
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis

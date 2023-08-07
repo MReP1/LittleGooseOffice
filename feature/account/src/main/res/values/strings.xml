@@ -24,4 +24,5 @@
     <string name="icon_display_type">图标展示样式</string>
     <string name="icon_content">图标和内容</string>
     <string name="icon_only">仅图标</string>
+    <string name="description">描述</string>
 </resources>

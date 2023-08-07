@@ -80,7 +80,7 @@ private fun ColumnScope.TransactionIcon(
                 painter = painterResource(id = transactionIcon.path),
                 contentDescription = transactionIcon.name,
                 modifier = Modifier
-                    .size(32.dp)
+                    .size(30.dp)
                     .align(Alignment.CenterHorizontally)
             )
             Text(
