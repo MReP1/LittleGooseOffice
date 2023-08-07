@@ -1,11 +1,19 @@
 package little.goose.account.ui.transaction
 
+import androidx.compose.animation.core.FastOutSlowInEasing
+import androidx.compose.animation.core.animateDpAsState
+import androidx.compose.animation.core.tween
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBarsPadding
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material.icons.Icons
@@ -33,7 +41,9 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
@@ -151,7 +161,27 @@ fun TransactionScreen(
                     TabRow(
                         modifier = Modifier.width(120.dp),
                         selectedTabIndex = pagerState.currentPage,
-                        divider = {}
+                        divider = {},
+                        indicator = { tabPositions ->
+                            val currentTabPosition = tabPositions[pagerState.currentPage]
+                            val indicatorWidth = 16.dp
+                            val indicatorOffset by animateDpAsState(
+                                targetValue = currentTabPosition.right - (currentTabPosition.width / 2) - (indicatorWidth / 2),
+                                animationSpec = tween(
+                                    durationMillis = 250,
+                                    easing = FastOutSlowInEasing
+                                ),
+                                label = "indicator offset"
+                            )
+                            Spacer(
+                                Modifier
+                                    .wrapContentSize(Alignment.BottomStart)
+                                    .size(width = 16.dp, height = 3.dp)
+                                    .offset(x = indicatorOffset)
+                                    .clip(MaterialTheme.shapes.extraSmall)
+                                    .background(MaterialTheme.colorScheme.primary)
+                            )
+                        }
                     ) {
                         Tab(
                             selected = pagerState.currentPage == 0,
