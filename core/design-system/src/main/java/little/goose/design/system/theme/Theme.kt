@@ -65,8 +65,7 @@ private val gooseLightColorScheme = lightColorScheme(
     onSurface = md_theme_light_onSurface,
     surfaceVariant = md_theme_light_surfaceVariant,
     onSurfaceVariant = md_theme_light_onSurfaceVariant,
-).adjustmentColor()
-
+)
 
 private val gooseDarkColorScheme = darkColorScheme(
     primary = md_theme_dark_primary,
@@ -98,7 +97,7 @@ private val gooseDarkColorScheme = darkColorScheme(
     onSurface = md_theme_dark_onSurface,
     surfaceVariant = md_theme_dark_surfaceVariant,
     onSurfaceVariant = md_theme_dark_onSurfaceVariant,
-).adjustmentColor()
+)
 
 @Stable
 data class ThemeConfig(
@@ -123,7 +122,7 @@ data class ThemeConfig(
                 } else {
                     dynamicLightColorScheme(context)
                 }
-            }.adjustmentColor()
+            }
         } else {
             when (themeType) {
                 ThemeType.LIGHT -> gooseLightColorScheme
@@ -174,14 +173,6 @@ fun AccountTheme(
         colorScheme = themeConfig.getColorScheme(context = context),
         typography = Typography,
         content = content
-    )
-}
-
-private fun ColorScheme.adjustmentColor(): ColorScheme {
-    return this.copy(
-        surfaceVariant = surfaceVariant.copy(
-            // TODO 调暗卡片颜色
-        )
     )
 }
 
