@@ -109,7 +109,7 @@ internal fun TransactionEditSurface(
         }
     }
 
-    Column(modifier = modifier.animateContentSize()) {
+    Column(modifier = modifier.animateContentSize(animationSpec = tween(200))) {
 
         val iconAndContent = remember(transaction.icon_id, transaction.content) {
             IconAndContent(transaction.icon_id, transaction.content)
