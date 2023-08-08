@@ -111,26 +111,36 @@ fun SearchScheduleScreen(
                 .padding(it),
             transitionSpec = {
                 val durationMillis = 320
-                fadeIn(
-                    animationSpec = tween(durationMillis)
-                ) + slideIntoContainer(
-                    towards = if (targetState is SearchScheduleState.Success)
-                        AnimatedContentScope.SlideDirection.Down
-                    else AnimatedContentScope.SlideDirection.Up,
-                    animationSpec = spring(
-                        dampingRatio = Spring.DampingRatioLowBouncy,
-                        stiffness = Spring.StiffnessMediumLow
-                    ),
-                    initialOffset = { offset -> offset / 2 }
-                ) with fadeOut(
-                    animationSpec = tween(durationMillis)
-                ) + slideOutOfContainer(
-                    towards = if (targetState is SearchScheduleState.Success)
-                        AnimatedContentScope.SlideDirection.Down
-                    else AnimatedContentScope.SlideDirection.Up,
-                    animationSpec = tween(durationMillis),
-                    targetOffset = { offset -> offset / 2 }
-                )
+                if (this.initialState is SearchScheduleState.Success &&
+                    this.targetState is SearchScheduleState.Success
+                ) {
+                    fadeIn(
+                        initialAlpha = 0.8F, animationSpec = tween(durationMillis = 100)
+                    ) with fadeOut(
+                        animationSpec = tween(durationMillis = 100)
+                    )
+                } else {
+                    fadeIn(
+                        animationSpec = tween(durationMillis)
+                    ) + slideIntoContainer(
+                        towards = if (targetState is SearchScheduleState.Success)
+                            AnimatedContentScope.SlideDirection.Down
+                        else AnimatedContentScope.SlideDirection.Up,
+                        animationSpec = spring(
+                            dampingRatio = Spring.DampingRatioLowBouncy,
+                            stiffness = Spring.StiffnessMediumLow
+                        ),
+                        initialOffset = { offset -> offset / 2 }
+                    ) with fadeOut(
+                        animationSpec = tween(durationMillis)
+                    ) + slideOutOfContainer(
+                        towards = if (targetState is SearchScheduleState.Success)
+                            AnimatedContentScope.SlideDirection.Down
+                        else AnimatedContentScope.SlideDirection.Up,
+                        animationSpec = tween(durationMillis),
+                        targetOffset = { offset -> offset / 2 }
+                    )
+                }
             },
             targetState = state,
             label = "search schedule content"
