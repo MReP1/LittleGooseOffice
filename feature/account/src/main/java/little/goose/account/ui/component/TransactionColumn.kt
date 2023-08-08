@@ -1,5 +1,6 @@
 package little.goose.account.ui.component
 
+import androidx.compose.animation.core.spring
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.lazy.LazyColumn
@@ -45,11 +46,18 @@ fun TransactionColumn(
             key = { it.id ?: it }
         ) { transaction ->
             if (transaction.type == AccountConstant.TIME) {
-                Text(text = transaction.description, modifier = Modifier.animateItemPlacement())
+                Text(
+                    text = transaction.description,
+                    modifier = Modifier.animateItemPlacement(
+                        animationSpec = spring(stiffness = 8000F)
+                    )
+                )
             } else {
                 var isExpended by remember { mutableStateOf(false) }
                 TransactionCard(
-                    modifier = Modifier.animateItemPlacement(),
+                    modifier = Modifier.animateItemPlacement(
+                        animationSpec = spring(stiffness = 8000F)
+                    ),
                     transaction = transaction,
                     isExpended = isExpended,
                     isMultiSelecting = state.isMultiSelecting,
