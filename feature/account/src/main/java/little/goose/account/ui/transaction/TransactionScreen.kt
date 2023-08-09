@@ -232,8 +232,7 @@ fun TransactionScreen(
                             expanded = expanded,
                             onDismissRequest = { expanded = false }
                         ) {
-                            // TODO set language to 1.9 to use entries
-                            IconDisplayType.values().forEach { type ->
+                            IconDisplayType.entries.forEach { type ->
                                 DropdownMenuItem(
                                     text = {
                                         Text(text = stringResource(id = type.textRes))

@@ -33,7 +33,7 @@ import little.goose.appwidget.layout.AppWidgetSizeResponsive
 class GooseAppWidget : GlanceAppWidget() {
 
     override val sizeMode: SizeMode = SizeMode.Responsive(
-        AppWidgetSizeResponsive.values().map { it.size }.toSet()
+        AppWidgetSizeResponsive.entries.map { it.size }.toSet()
     )
 
     override suspend fun provideGlance(context: Context, id: GlanceId) {
@@ -88,7 +88,7 @@ private fun VerticalRectangleAppWidget(
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         val size = LocalSize.current
-        val navCollection = GooseNav.values()
+        val navCollection = GooseNav.entries
         navCollection.forEachIndexed { index, nav ->
             if (size == AppWidgetSizeResponsive.RECTANGLE_50_100.size) {
                 AppWidgetIcon(
@@ -130,7 +130,7 @@ private fun HorizontalRectangleAppWidget(
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         val size = LocalSize.current
-        val navCollection = GooseNav.values()
+        val navCollection = GooseNav.entries
         navCollection.forEachIndexed { index, gooseNav ->
             if (size == AppWidgetSizeResponsive.RECTANGLE_100_50.size) {
                 AppWidgetIcon(

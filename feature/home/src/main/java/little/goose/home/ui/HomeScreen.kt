@@ -495,7 +495,7 @@ fun HomeScreen(
             Box {
                 BottomAppBar(
                     actions = {
-                        for (homePage in HomePage.values()) {
+                        for (homePage in HomePage.entries) {
                             NavigationBarItem(
                                 selected = homePage == currentHomePage,
                                 onClick = {
