@@ -28,6 +28,24 @@ protobuf {
     }
 }
 
+androidComponents.beforeVariants {
+    android.sourceSets.getByName(it.name) {
+        java.srcDir(buildDir.resolve("generated/source/proto/${it.name}/java/"))
+        kotlin.srcDir(buildDir.resolve("generated/source/proto/${it.name}/kotlin"))
+    }
+}
+
+afterEvaluate {
+    tasks.forEach { task ->
+        if (task.name.contains("kspDebugKotlin")) {
+            task.dependsOn("generateDebugProto")
+        }
+        if (task.name.contains("kspReleaseKotlin")) {
+            task.dependsOn("generateReleaseProto")
+        }
+    }
+}
+
 dependencies {
     implementation(libs.androidx.appcompat)
 
