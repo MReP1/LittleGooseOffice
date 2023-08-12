@@ -1,6 +1,6 @@
 package little.goose.account.ui.analysis
 
-import androidx.compose.animation.AnimatedContentScope
+import androidx.compose.animation.AnimatedContentTransitionScope
 import androidx.compose.animation.core.FastOutLinearInEasing
 import androidx.compose.animation.core.LinearOutSlowInEasing
 import androidx.compose.animation.core.tween
@@ -40,7 +40,7 @@ fun NavGraphBuilder.accountAnalysisRoute(
         fadeIn(
             animationSpec = tween(200, easing = LinearOutSlowInEasing)
         ) + slideIntoContainer(
-            towards = AnimatedContentScope.SlideDirection.Up,
+            towards = AnimatedContentTransitionScope.SlideDirection.Up,
             animationSpec = tween(200, easing = LinearOutSlowInEasing),
             initialOffset = { it / 6 }
         )
@@ -50,7 +50,7 @@ fun NavGraphBuilder.accountAnalysisRoute(
         fadeOut(
             animationSpec = tween(200, easing = FastOutLinearInEasing)
         ) + slideOutOfContainer(
-            towards = AnimatedContentScope.SlideDirection.Down,
+            towards = AnimatedContentTransitionScope.SlideDirection.Down,
             animationSpec = tween(200, easing = FastOutLinearInEasing),
             targetOffset = { it / 6 }
         )

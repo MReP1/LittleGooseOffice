@@ -223,7 +223,6 @@ fun HomeScreen(
                     .padding(paddingValues)
             ) {
                 HorizontalPager(
-                    pageCount = 5,
                     modifier = Modifier
                         .fillMaxSize()
                         .zIndex(-1F),

@@ -64,7 +64,7 @@ fun TransactionScreen(
 ) {
     val viewModel: TransactionViewModel = hiltViewModel()
     val scope = rememberCoroutineScope()
-    val pagerState = rememberPagerState(0)
+    val pagerState = rememberPagerState(0, pageCount = { 2 })
 
     val transaction by viewModel.transaction.collectAsState()
     val iconDisplayType by viewModel.iconDisplayType.collectAsState()
@@ -254,7 +254,6 @@ fun TransactionScreen(
         content = {
             HorizontalPager(
                 modifier = Modifier.padding(it),
-                pageCount = 2,
                 state = pagerState
             ) { page ->
                 if (page == 0) {

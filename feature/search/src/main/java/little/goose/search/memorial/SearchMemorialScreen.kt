@@ -1,7 +1,7 @@
 package little.goose.search.memorial
 
 import androidx.compose.animation.AnimatedContent
-import androidx.compose.animation.AnimatedContentScope
+import androidx.compose.animation.AnimatedContentTransitionScope
 import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.spring
 import androidx.compose.animation.core.tween
@@ -118,8 +118,8 @@ fun SearchMemorialScreen(
                         animationSpec = tween(durationMillis)
                     ) + slideIntoContainer(
                         towards = if (targetState is SearchMemorialState.Success)
-                            AnimatedContentScope.SlideDirection.Down
-                        else AnimatedContentScope.SlideDirection.Up,
+                            AnimatedContentTransitionScope.SlideDirection.Down
+                        else AnimatedContentTransitionScope.SlideDirection.Up,
                         animationSpec = spring(
                             dampingRatio = Spring.DampingRatioLowBouncy,
                             stiffness = Spring.StiffnessMediumLow
@@ -129,8 +129,8 @@ fun SearchMemorialScreen(
                         animationSpec = tween(durationMillis)
                     ) + slideOutOfContainer(
                         towards = if (targetState is SearchMemorialState.Success)
-                            AnimatedContentScope.SlideDirection.Down
-                        else AnimatedContentScope.SlideDirection.Up,
+                            AnimatedContentTransitionScope.SlideDirection.Down
+                        else AnimatedContentTransitionScope.SlideDirection.Up,
                         animationSpec = tween(durationMillis),
                         targetOffset = { offset -> offset / 2 }
                     )

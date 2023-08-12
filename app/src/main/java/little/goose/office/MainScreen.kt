@@ -1,6 +1,6 @@
 package little.goose.office
 
-import androidx.compose.animation.AnimatedContentScope
+import androidx.compose.animation.AnimatedContentTransitionScope
 import androidx.compose.animation.EnterTransition
 import androidx.compose.animation.ExitTransition
 import androidx.compose.animation.core.FastOutLinearInEasing
@@ -41,7 +41,7 @@ import little.goose.settings.settingsRoute
 @Stable
 sealed interface AppState {
 
-    object Loading : AppState {
+    data object Loading : AppState {
         override val themeConfig: ThemeConfig
             get() = ThemeConfig(
                 isDynamicColor = true,
@@ -159,16 +159,16 @@ fun LittleGooseAnimatedNavHost(
     )
 }
 
-private fun AnimatedContentScope<NavBackStackEntry>.activityEnterTransition(): EnterTransition {
+private fun AnimatedContentTransitionScope<NavBackStackEntry>.activityEnterTransition(): EnterTransition {
     return slideIntoContainer(
-        towards = AnimatedContentScope.SlideDirection.Start,
+        towards = AnimatedContentTransitionScope.SlideDirection.Start,
         animationSpec = tween(DEFAULT_ENTER_DURATION, easing = LinearOutSlowInEasing),
         initialOffset = { it }
     )
 }
 
 @Suppress("UnusedReceiverParameter")
-private fun AnimatedContentScope<NavBackStackEntry>.activityExitTransition(): ExitTransition {
+private fun AnimatedContentTransitionScope<NavBackStackEntry>.activityExitTransition(): ExitTransition {
     return scaleOut(
         animationSpec = tween(DEFAULT_ENTER_DURATION),
         targetScale = 0.96F
@@ -176,16 +176,16 @@ private fun AnimatedContentScope<NavBackStackEntry>.activityExitTransition(): Ex
 }
 
 @Suppress("UnusedReceiverParameter")
-private fun AnimatedContentScope<NavBackStackEntry>.activityPopEnterTransition(): EnterTransition {
+private fun AnimatedContentTransitionScope<NavBackStackEntry>.activityPopEnterTransition(): EnterTransition {
     return scaleIn(
         animationSpec = tween(DEFAULT_EXIT_DURATION),
         initialScale = 0.96F
     )
 }
 
-private fun AnimatedContentScope<NavBackStackEntry>.activityPopExitTransition(): ExitTransition {
+private fun AnimatedContentTransitionScope<NavBackStackEntry>.activityPopExitTransition(): ExitTransition {
     return slideOutOfContainer(
-        towards = AnimatedContentScope.SlideDirection.End,
+        towards = AnimatedContentTransitionScope.SlideDirection.End,
         animationSpec = tween(DEFAULT_EXIT_DURATION, easing = FastOutLinearInEasing),
         targetOffset = { it }
     )

@@ -35,7 +35,7 @@ fun TransactionAnalysisScreen(
     onBack: () -> Unit
 ) {
     val scope = rememberCoroutineScope()
-    val pagerState = rememberPagerState(initialPage = 0)
+    val pagerState = rememberPagerState(initialPage = 0, pageCount = { 3 })
 
     val scaffoldState = rememberBottomSheetScaffoldState()
 

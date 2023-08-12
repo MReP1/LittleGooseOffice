@@ -1,7 +1,7 @@
 package little.goose.account.ui.component
 
 import androidx.compose.animation.AnimatedContent
-import androidx.compose.animation.AnimatedContentScope
+import androidx.compose.animation.AnimatedContentTransitionScope
 import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.LinearOutSlowInEasing
 import androidx.compose.animation.core.animateDp
@@ -192,7 +192,7 @@ private fun TransactionContentItem(
                             easing = LinearOutSlowInEasing
                         )
                     ) + slideIntoContainer(
-                        towards = AnimatedContentScope.SlideDirection.Down,
+                        towards = AnimatedContentTransitionScope.SlideDirection.Down,
                         animationSpec = tween(
                             durationMillis = inDurationMillis,
                             delayMillis = 36,
@@ -202,7 +202,7 @@ private fun TransactionContentItem(
                     ) with fadeOut(
                         animationSpec = tween(outDurationMillis, easing = LinearOutSlowInEasing)
                     ) + slideOutOfContainer(
-                        towards = AnimatedContentScope.SlideDirection.Down,
+                        towards = AnimatedContentTransitionScope.SlideDirection.Down,
                         animationSpec = tween(outDurationMillis, easing = LinearOutSlowInEasing),
                         targetOffset = { it / 2 }
                     )

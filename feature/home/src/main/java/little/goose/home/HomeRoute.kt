@@ -8,7 +8,7 @@ import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
@@ -99,14 +99,14 @@ fun HomeRoute(
 ) {
     val viewModel = hiltViewModel<HomeViewModel>()
     val homePage by remember(initHomePage) {
-        mutableStateOf(
+        mutableIntStateOf(
             initHomePage.takeIf { it != -1 } ?: viewModel.dataStoreHomePage
         )
     }
     if (homePage == -1) {
         LittleGooseEmptyScreen(modifier = modifier)
     } else {
-        val pagerState = rememberPagerState(initialPage = homePage)
+        val pagerState = rememberPagerState(initialPage = homePage, pageCount = { 5 })
         HomeScreen(
             modifier = modifier.fillMaxSize(),
             pagerState = pagerState,
