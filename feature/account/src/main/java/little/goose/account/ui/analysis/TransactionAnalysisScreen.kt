@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material3.BottomSheetScaffold
 import androidx.compose.material3.SheetValue
@@ -55,7 +56,7 @@ fun TransactionAnalysisScreen(
         },
         sheetContent = {
             TransactionAnalysisBottomBar(
-                modifier = Modifier.height(100.dp),
+                modifier = Modifier.wrapContentHeight(),
                 state = bottomBarState,
                 onSelectTimeClick = {
                     scope.launch {
