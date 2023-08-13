@@ -12,7 +12,7 @@ dependencies {
     implementation(libs.androidx.appcompat)
     implementation(libs.google.android.material)
     implementation(libs.androidx.activity.ktx)
-    implementation(libs.accompanist.navigation.animation)
+    implementation(libs.androidx.compose.navigation)
     implementation(libs.androidx.hilt.navigation.compose)
     implementation(libs.androidx.dataStore.preferences)
     implementation(libs.compose.calendar)

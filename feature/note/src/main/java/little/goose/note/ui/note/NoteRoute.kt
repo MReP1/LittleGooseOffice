@@ -15,9 +15,9 @@ import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavOptionsBuilder
 import androidx.navigation.NavType
+import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import androidx.navigation.navDeepLink
-import com.google.accompanist.navigation.animation.composable
 import kotlinx.coroutines.android.awaitFrame
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
@@ -28,7 +28,7 @@ import little.goose.note.data.entities.NoteContentBlock
 
 @Stable
 sealed interface NoteScreenState {
-    object Loading : NoteScreenState
+    data object Loading : NoteScreenState
 
     data class State(val scaffoldState: NoteScaffoldState) : NoteScreenState
 }
@@ -38,7 +38,7 @@ sealed class NoteScreenEvent {
 }
 
 sealed class NoteNavigatingType {
-    object Add : NoteNavigatingType()
+    data object Add : NoteNavigatingType()
     data class Edit(val noteId: Long) : NoteNavigatingType()
 }
 

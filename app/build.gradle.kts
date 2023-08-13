@@ -37,7 +37,7 @@ dependencies {
     implementation(libs.androidx.activity.compose)
     implementation(project(":core:design-system"))
     implementation(project(":core:ui"))
-    implementation(libs.accompanist.navigation.animation)
+    implementation(libs.androidx.compose.navigation)
     implementation(libs.androidx.hilt.navigation.compose)
     androidTestImplementation(libs.androidx.compose.ui.test)
     debugImplementation(libs.androidx.compose.ui.tooling)

@@ -8,9 +8,9 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavType
+import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import androidx.navigation.navDeepLink
-import com.google.accompanist.navigation.animation.composable
 import little.goose.account.ROUTE_GRAPH_ACCOUNT
 import little.goose.common.constants.DEEP_LINK_THEME_AND_HOST
 import little.goose.common.constants.KEY_TIME

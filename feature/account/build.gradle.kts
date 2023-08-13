@@ -65,7 +65,7 @@ dependencies {
     implementation(libs.room.ktx)
     ksp(libs.room.compiler)
 
-    implementation(libs.accompanist.navigation.animation)
+    implementation(libs.androidx.compose.navigation)
     implementation(libs.androidx.hilt.navigation.compose)
     implementation(libs.androidx.constraintLayout.compose)
 

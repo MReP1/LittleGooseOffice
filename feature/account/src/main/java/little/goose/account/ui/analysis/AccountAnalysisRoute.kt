@@ -16,7 +16,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
-import com.google.accompanist.navigation.animation.composable
+import androidx.navigation.compose.composable
 import little.goose.account.data.constants.MoneyType
 import little.goose.common.utils.TimeType
 import java.util.Date

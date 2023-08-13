@@ -14,8 +14,8 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
-import com.google.accompanist.navigation.animation.AnimatedNavHost
-import com.google.accompanist.navigation.animation.rememberAnimatedNavController
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.rememberNavController
 import little.goose.account.accountGraph
 import little.goose.account.ui.analysis.navigateToAccountAnalysis
 import little.goose.account.ui.navigateToTransactionExample
@@ -58,7 +58,7 @@ sealed interface AppState {
 
 @Composable
 internal fun MainScreen(modifier: Modifier) {
-    val navController = rememberAnimatedNavController()
+    val navController = rememberNavController()
     LittleGooseAnimatedNavHost(
         modifier = modifier,
         navController = navController,
@@ -139,7 +139,7 @@ fun LittleGooseAnimatedNavHost(
     startDestination: String,
     builder: NavGraphBuilder.() -> Unit
 ) {
-    AnimatedNavHost(
+    NavHost(
         modifier = modifier,
         navController = navController,
         startDestination = startDestination,

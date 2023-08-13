@@ -10,7 +10,7 @@ android {
 
 dependencies {
     implementation(libs.androidx.appcompat)
-    implementation(libs.accompanist.navigation.animation)
+    implementation(libs.androidx.compose.navigation)
     implementation(libs.androidx.hilt.navigation.compose)
     implementation(project(":core:ui"))
     implementation(project(":core:design-system"))

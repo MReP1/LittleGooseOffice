@@ -7,7 +7,7 @@ import androidx.compose.animation.core.spring
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
-import androidx.compose.animation.with
+import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.SnackbarHostState
@@ -116,7 +116,7 @@ fun SearchScheduleScreen(
                 ) {
                     fadeIn(
                         initialAlpha = 0.8F, animationSpec = tween(durationMillis = 100)
-                    ) with fadeOut(
+                    ) togetherWith fadeOut(
                         animationSpec = tween(durationMillis = 100)
                     )
                 } else {
@@ -131,7 +131,7 @@ fun SearchScheduleScreen(
                             stiffness = Spring.StiffnessMediumLow
                         ),
                         initialOffset = { offset -> offset / 2 }
-                    ) with fadeOut(
+                    ) togetherWith fadeOut(
                         animationSpec = tween(durationMillis)
                     ) + slideOutOfContainer(
                         towards = if (targetState is SearchScheduleState.Success)

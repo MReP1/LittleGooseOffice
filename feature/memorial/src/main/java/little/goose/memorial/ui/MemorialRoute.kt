@@ -8,7 +8,7 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
-import androidx.compose.animation.with
+import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -63,9 +63,9 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavType
+import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import androidx.navigation.navDeepLink
-import com.google.accompanist.navigation.animation.composable
 import little.goose.common.constants.DEEP_LINK_THEME_AND_HOST
 import little.goose.common.constants.KEY_TYPE
 import little.goose.common.utils.TimeType
@@ -257,7 +257,7 @@ private fun MemorialScreen(
                     ) + slideInVertically(
                         animationSpec = tween(durationMillis = 200, delayMillis = 60),
                         initialOffsetY = { (if (targetState) -it else it) / 24 }
-                    ) with fadeOut(
+                    ) togetherWith fadeOut(
                         animationSpec = tween(durationMillis = 120)
                     ) + slideOutVertically(
                         animationSpec = tween(durationMillis = 120),

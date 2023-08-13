@@ -32,8 +32,8 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavType
+import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
-import com.google.accompanist.navigation.animation.composable
 import little.goose.account.data.constants.MoneyType
 import little.goose.account.data.entities.Transaction
 import little.goose.account.ui.component.TransactionColumn

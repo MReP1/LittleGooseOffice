@@ -10,7 +10,7 @@ import androidx.compose.animation.core.tween
 import androidx.compose.animation.core.updateTransition
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
-import androidx.compose.animation.with
+import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
@@ -199,7 +199,7 @@ private fun TransactionContentItem(
                             easing = LinearOutSlowInEasing
                         ),
                         initialOffset = { it / 2 }
-                    ) with fadeOut(
+                    ) togetherWith fadeOut(
                         animationSpec = tween(outDurationMillis, easing = LinearOutSlowInEasing)
                     ) + slideOutOfContainer(
                         towards = AnimatedContentTransitionScope.SlideDirection.Down,
