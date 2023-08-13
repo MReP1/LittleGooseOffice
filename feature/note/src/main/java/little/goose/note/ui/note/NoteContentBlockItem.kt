@@ -28,6 +28,7 @@ import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
@@ -67,7 +68,9 @@ fun NoteContentBlockItem(
     }
 
     SwipeToDismiss(
-        modifier = modifier,
+        modifier = modifier
+            .padding(horizontal = 16.dp)
+            .clip(MaterialTheme.shapes.large),
         state = dismissState,
         background = {
             Box(
@@ -94,7 +97,7 @@ fun NoteContentBlockItem(
                 )
                 Icon(
                     modifier = Modifier
-                        .padding(start = 8.dp)
+                        .padding(start = 12.dp)
                         .alpha(alpha)
                         .scale(scale),
                     imageVector = Icons.Rounded.Delete,
@@ -105,7 +108,8 @@ fun NoteContentBlockItem(
         dismissContent = {
             Surface(
                 modifier = Modifier,
-                color = backgroundColor
+                color = backgroundColor,
+                shape = MaterialTheme.shapes.large
             ) {
                 NoteContentBlockTextField(
                     modifier = Modifier.fillMaxWidth(),

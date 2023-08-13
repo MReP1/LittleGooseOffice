@@ -1,6 +1,7 @@
 package little.goose.note.ui.note
 
 import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -140,7 +141,8 @@ fun NoteEditContent(
     val booleanCache = remember { BooleanCache() }
     LazyColumn(
         modifier = modifier,
-        state = blockColumnState
+        state = blockColumnState,
+        verticalArrangement = Arrangement.spacedBy(2.dp)
     ) {
         item {
             TextField(
