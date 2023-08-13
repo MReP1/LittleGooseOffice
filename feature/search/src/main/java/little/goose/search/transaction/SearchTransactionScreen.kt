@@ -9,7 +9,6 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -25,7 +24,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import little.goose.account.data.entities.Transaction
 import little.goose.account.ui.component.TransactionColumnState
 import little.goose.search.SearchState
-import little.goose.search.component.SearchScaffold
+import little.goose.search.component.SearchScreen
 import little.goose.ui.screen.LittleGooseEmptyScreen
 import little.goose.ui.screen.LittleGooseLoadingScreen
 
@@ -89,20 +88,17 @@ fun SearchTransactionScreen(
     onBack: () -> Unit
 ) {
     var keyword by rememberSaveable { mutableStateOf("") }
-    SearchScaffold(
+    SearchScreen(
         modifier = modifier,
-        snackbarHostState = snackbarHostState,
         keyword = keyword,
         onKeywordChange = {
             keyword = it
             state.search(it)
-        },
+        }, snackbarHostState = snackbarHostState,
         onBack = onBack
     ) {
         AnimatedContent(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(it),
+            modifier = Modifier.fillMaxSize(),
             transitionSpec = {
                 val durationMillis = 320
                 if (this.initialState is SearchTransactionState.Success &&

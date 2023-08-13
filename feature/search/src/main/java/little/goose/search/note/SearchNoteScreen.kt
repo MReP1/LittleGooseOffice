@@ -9,7 +9,6 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -29,7 +28,7 @@ import little.goose.note.data.entities.Note
 import little.goose.note.data.entities.NoteContentBlock
 import little.goose.note.ui.NoteColumnState
 import little.goose.search.SearchState
-import little.goose.search.component.SearchScaffold
+import little.goose.search.component.SearchScreen
 import little.goose.ui.screen.LittleGooseEmptyScreen
 import little.goose.ui.screen.LittleGooseLoadingScreen
 
@@ -94,20 +93,18 @@ fun SearchNoteScreen(
     onBack: () -> Unit
 ) {
     var keyword by rememberSaveable { mutableStateOf("") }
-    SearchScaffold(
+    SearchScreen(
         modifier = modifier,
-        snackbarHostState = snackbarHostState,
         keyword = keyword,
         onKeywordChange = {
             keyword = it
             state.search(it)
         },
+        snackbarHostState = snackbarHostState,
         onBack = onBack
     ) {
         AnimatedContent(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(it),
+            modifier = Modifier.fillMaxSize(),
             transitionSpec = {
                 val durationMillis = 320
                 if (this.initialState is SearchNoteState.Success &&

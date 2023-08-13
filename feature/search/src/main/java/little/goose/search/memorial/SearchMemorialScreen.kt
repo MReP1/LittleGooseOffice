@@ -9,7 +9,6 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -28,7 +27,7 @@ import little.goose.design.system.theme.AccountTheme
 import little.goose.memorial.data.entities.Memorial
 import little.goose.memorial.ui.component.MemorialColumnState
 import little.goose.search.SearchState
-import little.goose.search.component.SearchScaffold
+import little.goose.search.component.SearchScreen
 import little.goose.ui.screen.LittleGooseEmptyScreen
 import little.goose.ui.screen.LittleGooseLoadingScreen
 
@@ -90,19 +89,19 @@ fun SearchMemorialScreen(
     onBack: () -> Unit
 ) {
     var keyword by rememberSaveable { mutableStateOf("") }
-    SearchScaffold(
+    SearchScreen(
         modifier = modifier,
-        snackbarHostState = snackbarHostState,
         keyword = keyword,
         onKeywordChange = {
             keyword = it
             state.search(it)
-        }, onBack = onBack
+        },
+        onBack = onBack,
+        snackbarHostState = snackbarHostState
     ) {
         AnimatedContent(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(it),
+            modifier = Modifier.fillMaxSize(),
+            targetState = state,
             transitionSpec = {
                 val durationMillis = 320
                 if (this.initialState is SearchMemorialState.Success &&
@@ -136,7 +135,6 @@ fun SearchMemorialScreen(
                     )
                 }
             },
-            targetState = state,
             label = "search memorial content"
         ) { state ->
             when (state) {
