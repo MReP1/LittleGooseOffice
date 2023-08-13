@@ -19,9 +19,9 @@ import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import androidx.navigation.navDeepLink
 import kotlinx.coroutines.android.awaitFrame
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
 import little.goose.common.constants.DEEP_LINK_THEME_AND_HOST
+import little.goose.common.utils.log
 import little.goose.note.data.constants.KEY_NOTE
 import little.goose.note.data.constants.KEY_NOTE_ID
 import little.goose.note.data.entities.NoteContentBlock
@@ -112,19 +112,12 @@ fun NoteRoute(
                         return@collectLatest
                     }
                     // 定位新增的 Block
-                    val blockIndex = noteContentState.content
-                        .indexOf(event.noteContentBlock)
-                    if (blockIndex == noteContentState.content.lastIndex) {
-                        // 最后一个 Block，滚动到底部，展示新增按钮
-                        blockColumnState.animateScrollToItem(
-                            blockColumnState.layoutInfo.totalItemsCount - 1
-                        )
-                    } else if (blockIndex != -1) {
+                    val blockIndex = noteContentState.content.indexOf(event.noteContentBlock)
+                    // 等待重组完毕，FocusRequester 被添加到 Compose 树上
+                    awaitFrame()
+                    if (blockIndex != -1) {
                         // 标题占了一个位置，所以要 +1
-                        blockColumnState.animateScrollToItem(blockIndex + 1)
-                    } else {
-                        // 等待 focusRequester 被添加到 block component 中
-                        delay(66)
+                        blockColumnState.animateScrollToItem(blockIndex + 1, 12)
                     }
                     // 为新增的 Block 申请焦点
                     var tryTime = 0
@@ -135,6 +128,7 @@ fun NoteRoute(
                         val result = runCatching {
                             focusRequester.requestFocus()
                         }.onFailure {
+                            log(it)
                             awaitFrame()
                         }
                     } while (result.isFailure && tryTime < 10)

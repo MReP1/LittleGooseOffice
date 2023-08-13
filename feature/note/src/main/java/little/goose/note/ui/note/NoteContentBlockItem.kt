@@ -1,6 +1,6 @@
 package little.goose.note.ui.note
 
-import androidx.compose.animation.animateColorAsState
+import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -47,13 +47,9 @@ fun NoteContentBlockItem(
     focusRequester: FocusRequester = remember { FocusRequester() }
 ) {
     val isFocused by interactionSource.collectIsFocusedAsState()
-    val backgroundColor by animateColorAsState(
-        targetValue = if (isFocused) {
-            MaterialTheme.colorScheme.surfaceVariant
-        } else {
-            MaterialTheme.colorScheme.background
-        },
-        label = "item background color"
+    val tonalElevation by animateDpAsState(
+        targetValue = if (isFocused) 3.dp else 0.3.dp,
+        label = "block item tonal elevation"
     )
     val dismissState = rememberDismissState()
 
@@ -108,8 +104,8 @@ fun NoteContentBlockItem(
         dismissContent = {
             Surface(
                 modifier = Modifier,
-                color = backgroundColor,
-                shape = MaterialTheme.shapes.large
+                shape = MaterialTheme.shapes.large,
+                tonalElevation = tonalElevation
             ) {
                 NoteContentBlockTextField(
                     modifier = Modifier.fillMaxWidth(),

@@ -7,6 +7,7 @@ import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.Stable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
@@ -18,6 +19,11 @@ data class NoteScaffoldState(
     val bottomBarState: NoteBottomBarState = NoteBottomBarState()
 )
 
+@Stable
+data class BooleanCache(
+    var value: Boolean = false
+)
+
 @Composable
 fun NoteScreen(
     modifier: Modifier = Modifier,
@@ -25,6 +31,8 @@ fun NoteScreen(
     blockColumnState: LazyListState,
     onBack: () -> Unit
 ) {
+    // Fix 第一次进入页面 第一次新增 Block 无法聚焦的 Bug
+    val isAddClickCache = remember { BooleanCache() }
     Scaffold(
         modifier = modifier,
         topBar = {
@@ -48,7 +56,8 @@ fun NoteScreen(
                     NoteContent(
                         modifier = contentModifier,
                         state = state.scaffoldState.contentState,
-                        blockColumnState = blockColumnState
+                        blockColumnState = blockColumnState,
+                        isAddClickCache = isAddClickCache
                     )
                 }
             }
@@ -59,6 +68,12 @@ fun NoteScreen(
                 state = when (state) {
                     NoteScreenState.Loading -> remember { NoteBottomBarState() }
                     is NoteScreenState.State -> state.scaffoldState.bottomBarState
+                },
+                onAddClick = {
+                    isAddClickCache.value = true
+                    val bottomBarState = (state as? NoteScreenState.State)
+                        ?.scaffoldState?.bottomBarState ?: return@NoteBottomBar
+                    bottomBarState.onBlockAdd()
                 }
             )
         }

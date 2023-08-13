@@ -87,7 +87,16 @@ class NoteRouteStateFlowDelegate(
         coroutineScope = coroutineScope,
         isPreview = _isPreview,
         changeIsPreview = { _isPreview.value = it },
-        format = ::format
+        format = ::format,
+        onBlockAdd = {
+            coroutineScope.launchWithWritingMutex {
+                val index = noteWithContent.value?.content?.size ?: 0
+                val noteId = noteWithContent.value?.note?.id
+                addContentBlock(
+                    NoteContentBlock(id = null, noteId = noteId, index = index, content = "")
+                )
+            }
+        }
     )
 
     private val noteScreenState = combine(
@@ -389,19 +398,21 @@ class NoteBottomStateFlowDelegate(
     coroutineScope: CoroutineScope,
     isPreview: StateFlow<Boolean>,
     changeIsPreview: (Boolean) -> Unit,
-    format: (FormatType) -> Unit
+    format: (FormatType) -> Unit,
+    onBlockAdd: () -> Unit
 ) : ReadOnlyProperty<Any?, StateFlow<NoteBottomBarState>> {
 
     private val noteBottomState = isPreview.map { isPreview ->
         NoteBottomBarState(
             isPreview = isPreview,
             onPreviewChange = changeIsPreview,
-            onFormat = format
+            onFormat = format,
+            onBlockAdd = onBlockAdd
         )
     }.stateIn(
         scope = coroutineScope,
         started = SharingStarted.WhileSubscribed(5000L),
-        initialValue = NoteBottomBarState(isPreview.value, changeIsPreview, format)
+        initialValue = NoteBottomBarState(isPreview.value, changeIsPreview, format, onBlockAdd)
     )
 
     override fun getValue(
