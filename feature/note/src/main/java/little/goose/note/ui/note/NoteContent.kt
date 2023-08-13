@@ -21,8 +21,10 @@ import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.Stable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.produceState
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.graphics.RectangleShape
@@ -124,12 +126,18 @@ private fun MarkdownContent(
     )
 }
 
+@Stable
+data class BooleanCache(
+    var value: Boolean = false
+)
+
 @Composable
 fun NoteEditContent(
     modifier: Modifier = Modifier,
     state: NoteContentState,
     blockColumnState: LazyListState
 ) {
+    val booleanCache = remember { BooleanCache() }
     LazyColumn(
         modifier = modifier,
         state = blockColumnState
@@ -177,7 +185,7 @@ fun NoteEditContent(
             )
 
             // Fix bug: 第一次创建 block 有概率无法 focus
-            if (block.index == 0) {
+            if (block.index == 0 && booleanCache.value) {
                 DisposableEffect(focusRequester) {
                     if (state.content.size == 1) {
                         runCatching {
@@ -195,6 +203,7 @@ fun NoteEditContent(
         item {
             Card(
                 onClick = {
+                    booleanCache.value = true
                     state.onBlockAdd(
                         NoteContentBlock(
                             id = null,
