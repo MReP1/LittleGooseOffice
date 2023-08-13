@@ -6,13 +6,13 @@ import kotlinx.coroutines.flow.asStateFlow
 import java.math.BigDecimal
 
 sealed class MoneyCalculatorLogic {
-    object DOT : MoneyCalculatorLogic()
-    object BACKSPACE : MoneyCalculatorLogic()
+    data object DOT : MoneyCalculatorLogic()
+    data object BACKSPACE : MoneyCalculatorLogic()
 
     sealed class Operator : MoneyCalculatorLogic() {
-        object PLUS : Operator()
-        object SUB : Operator()
-        object RESULT : Operator()
+        data object PLUS : Operator()
+        data object SUB : Operator()
+        data object RESULT : Operator()
     }
 }
 

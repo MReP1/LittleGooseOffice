@@ -6,20 +6,20 @@ import androidx.compose.ui.text.input.TextFieldValue
 sealed class FormatType(val value: String) {
 
     sealed class Header(value: String) : FormatType(value) {
-        object H1 : Header("# ")
-        object H2 : Header("## ")
-        object H3 : Header("### ")
-        object H4 : Header("#### ")
-        object H5 : Header("##### ")
-        object H6 : Header("###### ")
+        data object H1 : Header("# ")
+        data object H2 : Header("## ")
+        data object H3 : Header("### ")
+        data object H4 : Header("#### ")
+        data object H5 : Header("##### ")
+        data object H6 : Header("###### ")
     }
 
     sealed class List(value: String) : FormatType(value) {
-        object Unordered : List("- ")
+        data object Unordered : List("- ")
         data class Ordered(private val num: Int) : List("$num. ")
     }
 
-    object Quote : FormatType("> ")
+    data object Quote : FormatType("> ")
 }
 
 fun TextFieldValue.format(

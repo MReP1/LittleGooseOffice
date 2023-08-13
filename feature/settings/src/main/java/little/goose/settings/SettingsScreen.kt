@@ -45,7 +45,7 @@ import little.goose.design.system.theme.AccountTheme
 import little.goose.design.system.theme.ThemeType
 
 sealed interface SettingsState {
-    object Loading : SettingsState
+    data object Loading : SettingsState
     data class Success(
         val isDynamicColor: Boolean,
         val onDynamicColorChange: (Boolean) -> Unit,

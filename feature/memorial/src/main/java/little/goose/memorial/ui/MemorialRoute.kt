@@ -146,7 +146,7 @@ internal fun NavGraphBuilder.memorialRoute(
 }
 
 sealed interface MemorialScreenState {
-    object Loading : MemorialScreenState
+    data object Loading : MemorialScreenState
     data class Success(val memorial: Memorial) : MemorialScreenState
 }
 
