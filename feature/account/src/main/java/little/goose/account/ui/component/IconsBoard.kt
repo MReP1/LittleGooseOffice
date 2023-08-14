@@ -1,7 +1,7 @@
 package little.goose.account.ui.component
 
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.ColumnScope
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
@@ -12,10 +12,9 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
-import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -51,14 +50,14 @@ fun IconsBoard(
                     .aspectRatio(1F)
                     .padding(8.dp)
             ) {
-                ElevatedCard(
+                Surface(
                     modifier = Modifier.fillMaxSize(),
                     onClick = { onIconClick(transactionIcon) },
-                    colors = CardDefaults.elevatedCardColors(
-                        containerColor = if (selectedIcon == transactionIcon)
-                            MaterialTheme.colorScheme.surfaceTint
-                        else MaterialTheme.colorScheme.surface
-                    )
+                    color = if (selectedIcon == transactionIcon)
+                        MaterialTheme.colorScheme.surfaceTint
+                    else MaterialTheme.colorScheme.surface,
+                    tonalElevation = 1.8.dp,
+                    shape = MaterialTheme.shapes.large
                 ) {
                     TransactionIcon(
                         transactionIcon = transactionIcon,
@@ -71,38 +70,41 @@ fun IconsBoard(
 }
 
 @Composable
-private fun ColumnScope.TransactionIcon(
+private fun TransactionIcon(
+    modifier: Modifier = Modifier,
     transactionIcon: TransactionIcon,
     iconDisplayType: IconDisplayType
 ) {
-    when (iconDisplayType) {
-        IconDisplayType.ICON_CONTENT -> {
-            Spacer(modifier = Modifier.weight(1F))
-            Icon(
-                painter = painterResource(id = transactionIcon.path),
-                contentDescription = transactionIcon.name,
-                modifier = Modifier
-                    .size(27.dp)
-                    .align(Alignment.CenterHorizontally)
-            )
-            Text(
-                text = transactionIcon.name,
-                style = MaterialTheme.typography.labelMedium,
-                modifier = Modifier.align(Alignment.CenterHorizontally)
-            )
-            Spacer(modifier = Modifier.weight(1F))
-        }
+    Column(modifier = modifier) {
+        when (iconDisplayType) {
+            IconDisplayType.ICON_CONTENT -> {
+                Spacer(modifier = Modifier.weight(1F))
+                Icon(
+                    painter = painterResource(id = transactionIcon.path),
+                    contentDescription = transactionIcon.name,
+                    modifier = Modifier
+                        .size(27.dp)
+                        .align(Alignment.CenterHorizontally)
+                )
+                Text(
+                    text = transactionIcon.name,
+                    style = MaterialTheme.typography.labelMedium,
+                    modifier = Modifier.align(Alignment.CenterHorizontally)
+                )
+                Spacer(modifier = Modifier.weight(1F))
+            }
 
-        IconDisplayType.ICON_ONLY -> {
-            Spacer(modifier = Modifier.weight(1F))
-            Icon(
-                painter = painterResource(id = transactionIcon.path),
-                contentDescription = transactionIcon.name,
-                modifier = Modifier
-                    .size(32.dp)
-                    .align(Alignment.CenterHorizontally)
-            )
-            Spacer(modifier = Modifier.weight(1F))
+            IconDisplayType.ICON_ONLY -> {
+                Spacer(modifier = Modifier.weight(1F))
+                Icon(
+                    painter = painterResource(id = transactionIcon.path),
+                    contentDescription = transactionIcon.name,
+                    modifier = Modifier
+                        .size(32.dp)
+                        .align(Alignment.CenterHorizontally)
+                )
+                Spacer(modifier = Modifier.weight(1F))
+            }
         }
     }
 }
