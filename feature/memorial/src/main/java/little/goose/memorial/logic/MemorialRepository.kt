@@ -3,6 +3,8 @@ package little.goose.memorial.logic
 import android.content.Context
 import androidx.room.Room
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import little.goose.common.utils.getOneDayRange
 import little.goose.common.utils.getOneMonthRange
 import little.goose.memorial.data.constants.TABLE_MEMORIAL
@@ -19,15 +21,24 @@ class MemorialRepository(context: Context) {
 
     private val memorialDao = database.memorialDao()
 
+    private val _deleteMemorialsEvent = MutableSharedFlow<List<Memorial>>()
+    val deleteMemorialsEvent = _deleteMemorialsEvent.asSharedFlow()
+
     fun getAllMemorialFlow() = memorialDao.getAllMemorialFlow()
 
     suspend fun insertMemorial(memorial: Memorial) = memorialDao.insertMemorial(memorial)
 
     suspend fun insertMemorials(memorials: List<Memorial>) = memorialDao.insertMemorials(memorials)
 
-    suspend fun deleteMemorials(memorials: List<Memorial>) = memorialDao.deleteMemorials(memorials)
+    suspend fun deleteMemorials(memorials: List<Memorial>) {
+        memorialDao.deleteMemorials(memorials)
+        _deleteMemorialsEvent.emit(memorials)
+    }
 
-    suspend fun deleteMemorial(memorial: Memorial) = memorialDao.deleteMemorial(memorial)
+    suspend fun deleteMemorial(memorial: Memorial) {
+        memorialDao.deleteMemorial(memorial)
+        _deleteMemorialsEvent.emit(listOf(memorial))
+    }
 
     suspend fun updateMemorial(memorial: Memorial) = memorialDao.updateMemorial(memorial)
 

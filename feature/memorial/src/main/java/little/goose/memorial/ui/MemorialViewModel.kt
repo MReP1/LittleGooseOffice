@@ -3,9 +3,19 @@ package little.goose.memorial.ui
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asSharedFlow
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import little.goose.memorial.data.entities.Memorial
+import little.goose.memorial.logic.DeleteMemorialsEventUseCase
 import little.goose.memorial.logic.DeleteMemorialsUseCase
 import little.goose.memorial.logic.GetAllMemorialFlowUseCase
 import little.goose.memorial.logic.GetMemorialAtTopFlowUseCase
@@ -16,7 +26,8 @@ import javax.inject.Inject
 class MemorialViewModel @Inject constructor(
     getAllMemorialFlowUseCase: GetAllMemorialFlowUseCase,
     getMemorialAtTopFlowUseCase: GetMemorialAtTopFlowUseCase,
-    private val deleteMemorialsUseCase: DeleteMemorialsUseCase
+    private val deleteMemorialsUseCase: DeleteMemorialsUseCase,
+    private val deleteMemorialsEventUseCase: DeleteMemorialsEventUseCase
 ) : ViewModel() {
 
     sealed class Event {
@@ -69,7 +80,7 @@ class MemorialViewModel @Inject constructor(
         )
 
     init {
-        deleteMemorialsUseCase.deleteMemorialsEvent.onEach {
+        deleteMemorialsEventUseCase().onEach {
             _event.emit(Event.DeleteMemorials(it))
         }.launchIn(viewModelScope)
     }

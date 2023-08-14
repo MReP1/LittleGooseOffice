@@ -13,6 +13,7 @@ import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import little.goose.schedule.data.entities.Schedule
+import little.goose.schedule.logic.DeleteSchedulesEventUseCase
 import little.goose.schedule.logic.DeleteSchedulesUseCase
 import little.goose.schedule.logic.InsertScheduleUseCase
 import little.goose.schedule.logic.SearchScheduleByTextFlowUseCase
@@ -25,7 +26,8 @@ class SearchScheduleViewModel @Inject constructor(
     private val insertScheduleUseCase: InsertScheduleUseCase,
     private val updateScheduleUseCase: UpdateScheduleUseCase,
     private val deleteSchedulesUseCase: DeleteSchedulesUseCase,
-    private val searchScheduleByTextFlowUseCase: SearchScheduleByTextFlowUseCase
+    private val searchScheduleByTextFlowUseCase: SearchScheduleByTextFlowUseCase,
+    private val deleteSchedulesEventUseCase: DeleteSchedulesEventUseCase
 ) : ViewModel() {
 
     private val _searchScheduleState = MutableStateFlow<SearchScheduleState>(
@@ -41,7 +43,7 @@ class SearchScheduleViewModel @Inject constructor(
     private val multiSelectedSchedules = MutableStateFlow(emptySet<Schedule>())
 
     init {
-        deleteSchedulesUseCase.deleteSchedulesEvent.onEach {
+        deleteSchedulesEventUseCase().onEach {
             _searchNoteEvent.emit(SearchScheduleEvent.DeleteSchedules(it))
         }.launchIn(viewModelScope)
     }

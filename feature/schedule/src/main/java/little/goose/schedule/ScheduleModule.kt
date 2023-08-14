@@ -7,6 +7,7 @@ import dagger.hilt.InstallIn
 import dagger.hilt.android.components.ViewModelComponent
 import dagger.hilt.android.scopes.ViewModelScoped
 import dagger.hilt.components.SingletonComponent
+import little.goose.schedule.logic.DeleteSchedulesEventUseCase
 import little.goose.schedule.logic.DeleteSchedulesUseCase
 import little.goose.schedule.logic.GetAllScheduleFlowUseCase
 import little.goose.schedule.logic.GetScheduleByIdFlowUseCase
@@ -30,10 +31,10 @@ class ScheduleModule {
 
     @Provides
     @Singleton
-    fun provideDeleteSchedulesUseCase(
+    fun provideDeleteSchedulesEventUseCase(
         scheduleRepository: ScheduleRepository
-    ): DeleteSchedulesUseCase {
-        return DeleteSchedulesUseCase(scheduleRepository)
+    ): DeleteSchedulesEventUseCase {
+        return DeleteSchedulesEventUseCase(scheduleRepository)
     }
 
 }
@@ -96,6 +97,14 @@ class ScheduleViewModelModule {
         scheduleRepository: ScheduleRepository
     ): SearchScheduleByTextFlowUseCase {
         return SearchScheduleByTextFlowUseCase(scheduleRepository)
+    }
+
+    @Provides
+    @ViewModelScoped
+    fun provideDeleteSchedulesUseCase(
+        scheduleRepository: ScheduleRepository
+    ): DeleteSchedulesUseCase {
+        return DeleteSchedulesUseCase(scheduleRepository)
     }
 
 }

@@ -3,9 +3,17 @@ package little.goose.schedule.ui
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.asSharedFlow
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import little.goose.schedule.data.entities.Schedule
+import little.goose.schedule.logic.DeleteSchedulesEventUseCase
 import little.goose.schedule.logic.DeleteSchedulesUseCase
 import little.goose.schedule.logic.GetAllScheduleFlowUseCase
 import little.goose.schedule.logic.UpdateScheduleUseCase
@@ -15,7 +23,8 @@ import javax.inject.Inject
 class ScheduleHomeViewModel @Inject constructor(
     private val updateScheduleUseCase: UpdateScheduleUseCase,
     private val deleteSchedulesUseCase: DeleteSchedulesUseCase,
-    getAllScheduleFlow: GetAllScheduleFlowUseCase
+    getAllScheduleFlow: GetAllScheduleFlowUseCase,
+    deleteSchedulesEventUseCase: DeleteSchedulesEventUseCase
 ) : ViewModel() {
 
     sealed class Event {
@@ -60,7 +69,7 @@ class ScheduleHomeViewModel @Inject constructor(
     )
 
     init {
-        deleteSchedulesUseCase.deleteSchedulesEvent.onEach {
+        deleteSchedulesEventUseCase().onEach {
             _event.emit(Event.DeleteSchedules(it))
         }.launchIn(viewModelScope)
     }

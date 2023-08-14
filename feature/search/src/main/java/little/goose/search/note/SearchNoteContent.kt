@@ -1,12 +1,18 @@
 package little.goose.search.note
 
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.imePadding
+import androidx.compose.foundation.layout.ime
+import androidx.compose.foundation.layout.isImeVisible
+import androidx.compose.foundation.layout.union
+import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Delete
 import androidx.compose.material.icons.rounded.DoneAll
 import androidx.compose.material.icons.rounded.RemoveDone
+import androidx.compose.material3.BottomAppBarDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -24,6 +30,7 @@ import little.goose.note.data.entities.NoteContentBlock
 import little.goose.note.ui.NoteColumn
 import little.goose.note.ui.NoteColumnState
 
+@OptIn(ExperimentalLayoutApi::class)
 @Composable
 internal fun SearchNoteContent(
     modifier: Modifier = Modifier,
@@ -48,7 +55,13 @@ internal fun SearchNoteContent(
         Box(
             modifier = Modifier
                 .fillMaxSize()
-                .imePadding()
+                .windowInsetsPadding(
+                    if (WindowInsets.isImeVisible) {
+                        WindowInsets.ime.union(BottomAppBarDefaults.windowInsets)
+                    } else {
+                        BottomAppBarDefaults.windowInsets
+                    }
+                )
         ) {
             MovableActionButton(
                 modifier = Modifier.align(Alignment.BottomEnd),

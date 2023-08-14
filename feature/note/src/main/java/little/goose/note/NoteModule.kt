@@ -9,6 +9,7 @@ import dagger.hilt.android.scopes.ViewModelScoped
 import dagger.hilt.components.SingletonComponent
 import little.goose.note.logic.DeleteNoteContentBlockUseCase
 import little.goose.note.logic.DeleteNotesAndItsBlocksUseCase
+import little.goose.note.logic.DeleteNotesEventUseCase
 import little.goose.note.logic.GetNoteFlowUseCase
 import little.goose.note.logic.GetNoteWithContentMapFlowUseCase
 import little.goose.note.logic.GetNoteWithContentsMapFlowUseCase
@@ -32,10 +33,10 @@ class NoteModule {
 
     @Provides
     @Singleton
-    fun provideDeleteNotesAndItsBlocksUseCase(
+    fun provideDeleteNotesEventUseCase(
         noteRepository: NoteRepository
-    ): DeleteNotesAndItsBlocksUseCase {
-        return DeleteNotesAndItsBlocksUseCase(noteRepository)
+    ): DeleteNotesEventUseCase {
+        return DeleteNotesEventUseCase(noteRepository)
     }
 
 }
@@ -114,6 +115,14 @@ class NoteViewModelModule {
         noteRepository: NoteRepository
     ): DeleteNoteContentBlockUseCase {
         return DeleteNoteContentBlockUseCase(noteRepository)
+    }
+
+    @Provides
+    @ViewModelScoped
+    fun provideDeleteNotesAndItsBlocksUseCase(
+        noteRepository: NoteRepository
+    ): DeleteNotesAndItsBlocksUseCase {
+        return DeleteNotesAndItsBlocksUseCase(noteRepository)
     }
 
 }

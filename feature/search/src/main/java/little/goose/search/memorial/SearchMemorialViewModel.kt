@@ -13,6 +13,7 @@ import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import little.goose.memorial.data.entities.Memorial
+import little.goose.memorial.logic.DeleteMemorialsEventUseCase
 import little.goose.memorial.logic.DeleteMemorialsUseCase
 import little.goose.memorial.logic.SearchMemorialByTextFlowUseCase
 import little.goose.memorial.ui.component.MemorialColumnState
@@ -21,7 +22,8 @@ import javax.inject.Inject
 @HiltViewModel
 class SearchMemorialViewModel @Inject constructor(
     private val searchMemorialByTextFlowUseCase: SearchMemorialByTextFlowUseCase,
-    private val deleteMemorialsUseCase: DeleteMemorialsUseCase
+    private val deleteMemorialsUseCase: DeleteMemorialsUseCase,
+    deleteMemorialsEventUseCase: DeleteMemorialsEventUseCase
 ) : ViewModel() {
 
     private val _searchMemorialState = MutableStateFlow<SearchMemorialState>(
@@ -37,7 +39,7 @@ class SearchMemorialViewModel @Inject constructor(
     private var searchingJob: Job? = null
 
     init {
-        deleteMemorialsUseCase.deleteMemorialsEvent.onEach {
+        deleteMemorialsEventUseCase().onEach {
             _searchMemorialEvent.emit(SearchMemorialEvent.DeleteMemorials(it))
         }.launchIn(viewModelScope)
     }

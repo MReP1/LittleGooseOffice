@@ -3,6 +3,8 @@ package little.goose.account.logic
 import android.content.Context
 import androidx.room.Room
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.map
 import little.goose.account.data.constants.AccountConstant.EXPENSE
 import little.goose.account.data.constants.AccountConstant.INCOME
@@ -10,9 +12,14 @@ import little.goose.account.data.constants.MoneyType
 import little.goose.account.data.constants.TABLE_TRANSACTION
 import little.goose.account.data.database.AccountDatabase
 import little.goose.account.data.entities.Transaction
-import little.goose.common.utils.*
+import little.goose.common.utils.DateTimeUtils
+import little.goose.common.utils.getOneDayRange
+import little.goose.common.utils.getRoundTwo
+import little.goose.common.utils.setDate
+import little.goose.common.utils.setMonth
+import little.goose.common.utils.setYear
 import java.math.BigDecimal
-import java.util.*
+import java.util.Calendar
 
 class AccountRepository(
     context: Context
@@ -25,6 +32,9 @@ class AccountRepository(
     ).build()
     private val accountDao = database.accountDao()
 
+    private val _deleteTransactionsEvent = MutableSharedFlow<List<Transaction>>()
+    val deleteTransactionsEvent = _deleteTransactionsEvent.asSharedFlow()
+
     //跑全库方法，不要乱用哦
     fun getAllTransactionFlow() = accountDao.getAllTransactionFlow()
 
@@ -36,12 +46,15 @@ class AccountRepository(
     suspend fun updateTransaction(transaction: Transaction) =
         accountDao.updateTransaction(transaction)
 
-    suspend fun deleteTransaction(transaction: Transaction) =
+    suspend fun deleteTransaction(transaction: Transaction) {
         accountDao.deleteTransaction(transaction)
+        _deleteTransactionsEvent.emit(listOf(transaction))
+    }
 
-    suspend fun deleteTransactions(transactionList: List<Transaction>) =
+    suspend fun deleteTransactions(transactionList: List<Transaction>) {
         accountDao.deleteTransactions(transactionList)
-
+        _deleteTransactionsEvent.emit(transactionList)
+    }
 
     fun getTransactionsFlowByYearAndMonth(
         year: Int,
@@ -131,9 +144,11 @@ class AccountRepository(
             MoneyType.INCOME -> accountDao.getTransactionByTimeFlowWithType(
                 startTime, endTime, INCOME
             )
+
             MoneyType.EXPENSE -> accountDao.getTransactionByTimeFlowWithType(
                 startTime, endTime, EXPENSE
             )
+
             else -> accountDao.getTransactionByTimeFlow(startTime, endTime)
         }
     }
@@ -154,9 +169,11 @@ class AccountRepository(
             MoneyType.INCOME -> accountDao.getTransactionByTimeFlowWithType(
                 startTime, endTime, INCOME
             )
+
             MoneyType.EXPENSE -> accountDao.getTransactionByTimeFlowWithType(
                 startTime, endTime, EXPENSE
             )
+
             else -> accountDao.getTransactionByTimeFlow(startTime, endTime)
         }
     }

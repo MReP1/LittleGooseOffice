@@ -19,6 +19,7 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import little.goose.account.data.constants.AccountConstant
 import little.goose.account.data.entities.Transaction
+import little.goose.account.logic.DeleteTransactionsEventUseCase
 import little.goose.account.logic.DeleteTransactionsUseCase
 import little.goose.account.logic.GetAllTransactionExpenseSumFlowUseCase
 import little.goose.account.logic.GetAllTransactionIncomeSumFlowUseCase
@@ -39,6 +40,7 @@ class AccountHomeViewModel @Inject constructor(
     getAllTransactionIncomeSumFlowUseCase: GetAllTransactionIncomeSumFlowUseCase,
     private val getTransactionByYearMonthFlowUseCase: GetTransactionByYearMonthFlowUseCase,
     private val deleteTransactionsUseCase: DeleteTransactionsUseCase,
+    deleteTransactionsEventUseCase: DeleteTransactionsEventUseCase
 ) : ViewModel() {
 
     sealed class Event {
@@ -174,9 +176,9 @@ class AccountHomeViewModel @Inject constructor(
     )
 
     init {
-        deleteTransactionsUseCase.deleteTransactionEvent
-            .onEach { _event.emit(Event.DeleteTransactions(it)) }
-            .launchIn(viewModelScope)
+        deleteTransactionsEventUseCase().onEach {
+            _event.emit(Event.DeleteTransactions(it))
+        }.launchIn(viewModelScope)
     }
 
     private fun changeTime(year: Int, month: Int) {

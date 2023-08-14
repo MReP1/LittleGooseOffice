@@ -1,14 +1,20 @@
 package little.goose.account.ui
 
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.imePadding
+import androidx.compose.foundation.layout.ime
+import androidx.compose.foundation.layout.isImeVisible
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.union
+import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.ArrowBack
 import androidx.compose.material.icons.rounded.Delete
 import androidx.compose.material.icons.rounded.DoneAll
 import androidx.compose.material.icons.rounded.RemoveDone
+import androidx.compose.material3.BottomAppBarDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
@@ -118,6 +124,7 @@ fun NavGraphBuilder.transactionExampleRoute(
     )
 }
 
+@OptIn(ExperimentalLayoutApi::class)
 @Composable
 private fun TransactionRoute(
     modifier: Modifier,
@@ -148,7 +155,13 @@ private fun TransactionRoute(
         Box(
             modifier = Modifier
                 .fillMaxSize()
-                .imePadding()
+                .windowInsetsPadding(
+                    if (WindowInsets.isImeVisible) {
+                        WindowInsets.ime.union(BottomAppBarDefaults.windowInsets)
+                    } else {
+                        BottomAppBarDefaults.windowInsets
+                    }
+                )
         ) {
             MovableActionButton(
                 modifier = Modifier.align(Alignment.BottomEnd),

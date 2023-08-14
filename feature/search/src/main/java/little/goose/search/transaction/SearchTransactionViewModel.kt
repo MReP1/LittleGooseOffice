@@ -14,6 +14,7 @@ import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import little.goose.account.data.entities.Transaction
+import little.goose.account.logic.DeleteTransactionsEventUseCase
 import little.goose.account.logic.DeleteTransactionsUseCase
 import little.goose.account.logic.SearchTransactionByMoneyFlowUseCase
 import little.goose.account.logic.SearchTransactionByTextFlowUseCase
@@ -24,7 +25,8 @@ import javax.inject.Inject
 class SearchTransactionViewModel @Inject constructor(
     private val searchTransactionByMoneyFlowUseCase: SearchTransactionByMoneyFlowUseCase,
     private val searchTransactionByTextFlowUseCase: SearchTransactionByTextFlowUseCase,
-    private val deleteTransactionsUseCase: DeleteTransactionsUseCase
+    private val deleteTransactionsUseCase: DeleteTransactionsUseCase,
+    deleteTransactionsEventUseCase: DeleteTransactionsEventUseCase
 ) : ViewModel() {
 
     private val multiSelectedTransactions = MutableStateFlow(emptySet<Transaction>())
@@ -40,7 +42,7 @@ class SearchTransactionViewModel @Inject constructor(
     private var searchingJob: Job? = null
 
     init {
-        deleteTransactionsUseCase.deleteTransactionEvent.onEach {
+        deleteTransactionsEventUseCase().onEach {
             _searchTransactionEvent.emit(SearchTransactionEvent.DeleteTransactions(it))
         }.launchIn(viewModelScope)
     }

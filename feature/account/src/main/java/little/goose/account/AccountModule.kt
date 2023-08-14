@@ -18,6 +18,7 @@ import little.goose.account.data.holder.AccountConfigDataHolder
 import little.goose.account.data.model.AccountPreference
 import little.goose.account.data.serializer.AccountPreferenceSerializer
 import little.goose.account.logic.AccountRepository
+import little.goose.account.logic.DeleteTransactionsEventUseCase
 import little.goose.account.logic.DeleteTransactionsUseCase
 import little.goose.account.logic.GetAllTransactionExpenseSumFlowUseCase
 import little.goose.account.logic.GetAllTransactionFlowUseCase
@@ -55,10 +56,10 @@ class AccountModule {
 
     @Provides
     @Singleton
-    fun provideDeleteTransactionsUseCase(
+    fun provideDeleteTransactionsEventUseCase(
         accountRepository: AccountRepository
-    ): DeleteTransactionsUseCase {
-        return DeleteTransactionsUseCase(accountRepository)
+    ): DeleteTransactionsEventUseCase {
+        return DeleteTransactionsEventUseCase(accountRepository)
     }
 
     @Provides
@@ -253,6 +254,14 @@ class AccountViewModelModule {
         accountRepository: AccountRepository
     ): SearchTransactionByTextFlowUseCase {
         return SearchTransactionByTextFlowUseCase(accountRepository)
+    }
+
+    @Provides
+    @ViewModelScoped
+    fun provideDeleteTransactionsUseCase(
+        accountRepository: AccountRepository
+    ): DeleteTransactionsUseCase {
+        return DeleteTransactionsUseCase(accountRepository)
     }
 
 }

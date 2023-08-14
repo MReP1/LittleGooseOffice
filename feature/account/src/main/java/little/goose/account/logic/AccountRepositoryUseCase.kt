@@ -2,6 +2,7 @@ package little.goose.account.logic
 
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import little.goose.account.data.constants.MoneyType
 import little.goose.account.data.entities.Transaction
@@ -44,6 +45,14 @@ class DeleteTransactionsUseCase(
             accountRepository.deleteTransactions(transactions)
         }
         _deleteTransactionEvent.emit(transactions)
+    }
+}
+
+class DeleteTransactionsEventUseCase(
+    private val accountRepository: AccountRepository
+) {
+    operator fun invoke(): SharedFlow<List<Transaction>> {
+        return accountRepository.deleteTransactionsEvent
     }
 }
 
