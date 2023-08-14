@@ -83,7 +83,7 @@ private fun TransactionIcon(
                     painter = painterResource(id = transactionIcon.path),
                     contentDescription = transactionIcon.name,
                     modifier = Modifier
-                        .size(27.dp)
+                        .size(26.dp)
                         .align(Alignment.CenterHorizontally)
                 )
                 Text(
