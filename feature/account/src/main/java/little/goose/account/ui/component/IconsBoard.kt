@@ -12,8 +12,8 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
-import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -51,11 +51,13 @@ fun IconsBoard(
                     .aspectRatio(1F)
                     .padding(8.dp)
             ) {
-                Card(
+                ElevatedCard(
                     modifier = Modifier.fillMaxSize(),
                     onClick = { onIconClick(transactionIcon) },
-                    colors = CardDefaults.cardColors(
-                        containerColor = if (selectedIcon == transactionIcon) MaterialTheme.colorScheme.surfaceTint else MaterialTheme.colorScheme.surfaceVariant
+                    colors = CardDefaults.elevatedCardColors(
+                        containerColor = if (selectedIcon == transactionIcon)
+                            MaterialTheme.colorScheme.surfaceTint
+                        else MaterialTheme.colorScheme.surface
                     )
                 ) {
                     TransactionIcon(
@@ -80,7 +82,7 @@ private fun ColumnScope.TransactionIcon(
                 painter = painterResource(id = transactionIcon.path),
                 contentDescription = transactionIcon.name,
                 modifier = Modifier
-                    .size(30.dp)
+                    .size(27.dp)
                     .align(Alignment.CenterHorizontally)
             )
             Text(

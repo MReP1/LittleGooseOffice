@@ -1,11 +1,19 @@
 package little.goose.home.ui.component
 
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material3.Card
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -35,34 +43,41 @@ internal fun IndexTransactionCard(
     onTransactionAdd: (Date) -> Unit,
     onTransactionClick: (Transaction) -> Unit
 ) {
-    Card(
-        modifier = modifier
+    Surface(
+        modifier = modifier,
+        tonalElevation = 1.8.dp,
+        shape = MaterialTheme.shapes.large
     ) {
-        if (state.transactions.isNotEmpty()) {
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(start = 12.dp, end = 12.dp, top = 8.dp, bottom = 10.dp)
-            ) {
-                Text(text = stringResource(id = little.goose.account.R.string.income) + " ${state.income}")
-                Spacer(modifier = Modifier.weight(1F))
-                Text(text = stringResource(id = little.goose.account.R.string.expense) + " -${state.expense}")
-            }
-            IndexTransactionColumn(
-                modifier = Modifier
-                    .fillMaxWidth(),
-                transactions = state.transactions,
-                onTransactionClick = onTransactionClick
-            )
-        } else {
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                Spacer(modifier = Modifier.width(16.dp))
-                Text(text = stringResource(id = little.goose.account.R.string.today_no_transaction))
-                Spacer(modifier = Modifier.weight(1F))
-                TextButton(onClick = {
-                    onTransactionAdd(state.currentTime.toDate())
-                }) {
-                    Text(text = stringResource(id = little.goose.account.R.string.take_a_transaction))
+        Column {
+            if (state.transactions.isNotEmpty()) {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(
+                            start = 12.dp, end = 12.dp,
+                            top = 8.dp, bottom = 10.dp
+                        )
+                ) {
+                    Text(text = stringResource(id = little.goose.account.R.string.income) + " ${state.income}")
+                    Spacer(modifier = Modifier.weight(1F))
+                    Text(text = stringResource(id = little.goose.account.R.string.expense) + " -${state.expense}")
+                }
+                IndexTransactionColumn(
+                    modifier = Modifier
+                        .fillMaxWidth(),
+                    transactions = state.transactions,
+                    onTransactionClick = onTransactionClick
+                )
+            } else {
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Spacer(modifier = Modifier.width(16.dp))
+                    Text(text = stringResource(id = little.goose.account.R.string.today_no_transaction))
+                    Spacer(modifier = Modifier.weight(1F))
+                    TextButton(onClick = {
+                        onTransactionAdd(state.currentTime.toDate())
+                    }) {
+                        Text(text = stringResource(id = little.goose.account.R.string.take_a_transaction))
+                    }
                 }
             }
         }

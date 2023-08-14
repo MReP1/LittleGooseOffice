@@ -55,9 +55,7 @@ fun TransactionColumn(
             } else {
                 var isExpended by remember { mutableStateOf(false) }
                 TransactionCard(
-                    modifier = Modifier.animateItemPlacement(
-                        animationSpec = spring(stiffness = 8000F)
-                    ),
+                    modifier = Modifier,
                     transaction = transaction,
                     isExpended = isExpended,
                     isMultiSelecting = state.isMultiSelecting,
