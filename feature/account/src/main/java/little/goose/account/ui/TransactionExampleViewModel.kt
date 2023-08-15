@@ -31,7 +31,6 @@ import little.goose.common.utils.TimeType
 import little.goose.common.utils.getDate
 import little.goose.common.utils.getMonth
 import little.goose.common.utils.getYear
-import little.goose.common.utils.log
 import little.goose.common.utils.toChineseYear
 import little.goose.common.utils.toChineseYearMonth
 import little.goose.common.utils.toChineseYearMonthDay
@@ -131,17 +130,11 @@ class TransactionExampleViewModel @Inject constructor(
         val year = calendar.getYear()
         val month = calendar.getMonth()
         val date = calendar.getDate()
-        log(timeType)
-        log(year)
-        log(month)
-        log(iconId)
         return if (iconId != null) {
             when (timeType) {
                 TimeType.YEAR_MONTH -> getTransactionByIconYearMonthUseCase(iconId!!, year, month)
                 TimeType.YEAR -> getTransactionByIconYearUseCase(iconId!!, year)
                 else -> getAllTransactionFlowUseCase()
-            }.onEach {
-                log(it)
             }
         } else if (content == null) {
             when (timeType) {
