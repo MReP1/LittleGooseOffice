@@ -136,18 +136,18 @@ class TransactionExampleViewModel @Inject constructor(
                 TimeType.YEAR -> getTransactionByIconYearUseCase(iconId!!, year)
                 else -> getAllTransactionFlowUseCase()
             }
-        } else if (content == null) {
-            when (timeType) {
-                TimeType.DATE -> getTransactionByDateFlowUseCase(year, month, date, moneyType)
-                TimeType.YEAR_MONTH -> getTransactionByYearMonthFlowUseCase(year, month, moneyType)
-                else -> getAllTransactionFlowUseCase()
-            }
-        } else {
+        } else if (content != null) {
             when (timeType) {
                 TimeType.YEAR -> getTransactionByYearFlowWithKeyContentUseCase(year, content!!)
                 TimeType.YEAR_MONTH ->
                     getTransactionByYearMonthFlowWithKeyContentUseCase(year, month, content!!)
 
+                else -> getAllTransactionFlowUseCase()
+            }
+        } else {
+            when (timeType) {
+                TimeType.DATE -> getTransactionByDateFlowUseCase(year, month, date, moneyType)
+                TimeType.YEAR_MONTH -> getTransactionByYearMonthFlowUseCase(year, month, moneyType)
                 else -> getAllTransactionFlowUseCase()
             }
         }
