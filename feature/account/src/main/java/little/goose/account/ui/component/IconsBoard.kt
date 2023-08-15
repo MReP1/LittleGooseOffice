@@ -12,19 +12,18 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import little.goose.account.data.models.IconDisplayType
 import little.goose.account.data.models.TransactionIcon
 import little.goose.account.ui.transaction.icon.TransactionIconHelper
+import little.goose.design.system.util.Display
 
 @Composable
 fun IconsBoard(
@@ -82,8 +81,7 @@ private fun TransactionIcon(
     ) {
         when (iconDisplayType) {
             IconDisplayType.ICON_CONTENT -> {
-                Icon(
-                    painter = painterResource(id = transactionIcon.path),
+                transactionIcon.icon.Display(
                     contentDescription = transactionIcon.name,
                     modifier = Modifier
                         .size(26.dp)
@@ -97,8 +95,7 @@ private fun TransactionIcon(
             }
 
             IconDisplayType.ICON_ONLY -> {
-                Icon(
-                    painter = painterResource(id = transactionIcon.path),
+                transactionIcon.icon.Display(
                     contentDescription = transactionIcon.name,
                     modifier = Modifier
                         .size(32.dp)

@@ -24,7 +24,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -35,6 +34,7 @@ import little.goose.account.ui.transaction.icon.TransactionIconHelper
 import little.goose.common.utils.toChineseMonthDayTime
 import little.goose.common.utils.toSignString
 import little.goose.design.system.theme.AccountTheme
+import little.goose.design.system.util.Display
 import java.math.BigDecimal
 import java.util.Date
 
@@ -77,13 +77,10 @@ fun TransactionCard(
                     Modifier.fillMaxWidth(),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Icon(
+                    TransactionIconHelper.getIcon(transaction.icon_id).Display(
                         modifier = Modifier
                             .padding(18.dp, 1.dp, 12.dp, 1.dp)
                             .size(30.dp),
-                        painter = painterResource(
-                            id = TransactionIconHelper.getIconPath(transaction.icon_id)
-                        ),
                         tint = MaterialTheme.colorScheme.primary,
                         contentDescription = null
                     )

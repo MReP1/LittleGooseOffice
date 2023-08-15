@@ -12,7 +12,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -21,12 +20,12 @@ import androidx.compose.runtime.key
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import little.goose.account.data.models.TransactionPercent
 import little.goose.account.ui.transaction.icon.TransactionIconHelper
 import little.goose.common.utils.toSignString
+import little.goose.design.system.util.Display
 import java.math.BigDecimal
 import kotlin.math.abs
 
@@ -89,13 +88,8 @@ fun TransactionPercentCard(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Spacer(modifier = Modifier.width(12.dp))
-                Icon(
+                TransactionIconHelper.getIcon(transactionPercent.icon_id).Display(
                     modifier = Modifier.size(32.dp),
-                    painter = painterResource(
-                        id = TransactionIconHelper.getIconPath(
-                            transactionPercent.icon_id
-                        )
-                    ),
                     tint = colors.second,
                     contentDescription = transactionPercent.content
                 )

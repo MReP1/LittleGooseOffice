@@ -57,7 +57,6 @@ import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalDensity
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.input.ImeAction
@@ -76,6 +75,7 @@ import little.goose.common.utils.TimeType
 import little.goose.common.utils.toChineseMonthDayTime
 import little.goose.design.system.component.dialog.TimeSelectorBottomDialog
 import little.goose.design.system.component.dialog.rememberBottomSheetDialogState
+import little.goose.design.system.util.Display
 import java.math.BigDecimal
 import kotlin.math.pow
 
@@ -212,11 +212,8 @@ private fun TransactionContentItem(
                 Row(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Icon(
+                    TransactionIconHelper.getIcon(iac.iconId).Display(
                         modifier = Modifier.size(32.dp),
-                        painter = painterResource(
-                            id = TransactionIconHelper.getIconPath(iac.iconId)
-                        ),
                         contentDescription = iac.content
                     )
                     Spacer(modifier = Modifier.width(12.dp))
