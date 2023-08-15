@@ -95,6 +95,7 @@ fun TransactionScreen(
     LaunchedEffect(transaction.type) {
         when (transaction.type) {
             EXPENSE -> {
+                if (pagerState.currentPage == 0) return@LaunchedEffect
                 expenseSelectedIcon = TransactionIconHelper.expenseIconList.find {
                     it.id == transaction.icon_id
                 }!!
@@ -102,6 +103,7 @@ fun TransactionScreen(
             }
 
             INCOME -> {
+                if (pagerState.currentPage == 1) return@LaunchedEffect
                 incomeSelectedIcon = TransactionIconHelper.incomeIconList.find {
                     it.id == transaction.icon_id
                 }!!
