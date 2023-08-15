@@ -1,9 +1,9 @@
 package little.goose.account.ui.component
 
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -75,10 +75,13 @@ private fun TransactionIcon(
     transactionIcon: TransactionIcon,
     iconDisplayType: IconDisplayType
 ) {
-    Column(modifier = modifier) {
+    Column(
+        modifier = modifier,
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
         when (iconDisplayType) {
             IconDisplayType.ICON_CONTENT -> {
-                Spacer(modifier = Modifier.weight(1F))
                 Icon(
                     painter = painterResource(id = transactionIcon.path),
                     contentDescription = transactionIcon.name,
@@ -91,11 +94,9 @@ private fun TransactionIcon(
                     style = MaterialTheme.typography.labelMedium,
                     modifier = Modifier.align(Alignment.CenterHorizontally)
                 )
-                Spacer(modifier = Modifier.weight(1F))
             }
 
             IconDisplayType.ICON_ONLY -> {
-                Spacer(modifier = Modifier.weight(1F))
                 Icon(
                     painter = painterResource(id = transactionIcon.path),
                     contentDescription = transactionIcon.name,
@@ -103,7 +104,6 @@ private fun TransactionIcon(
                         .size(32.dp)
                         .align(Alignment.CenterHorizontally)
                 )
-                Spacer(modifier = Modifier.weight(1F))
             }
         }
     }
