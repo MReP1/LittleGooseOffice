@@ -30,7 +30,7 @@ fun TransactionAnalysisScreen(
     bottomBarState: TransactionAnalysisBottomBarState,
     timeSelectorState: TimeSelectorState,
     onNavigateToTransactionExample: (
-        time: Date, timeType: TimeType, moneyType: MoneyType, content: String?
+        time: Date, timeType: TimeType, moneyType: MoneyType, iconId: Int?, content: String?
     ) -> Unit,
     onBack: () -> Unit
 ) {

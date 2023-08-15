@@ -45,6 +45,7 @@ import little.goose.account.data.entities.Transaction
 import little.goose.account.ui.component.TransactionColumn
 import little.goose.account.ui.component.TransactionColumnState
 import little.goose.common.constants.KEY_CONTENT
+import little.goose.common.constants.KEY_ICON_ID
 import little.goose.common.constants.KEY_MONEY_TYPE
 import little.goose.common.constants.KEY_TIME
 import little.goose.common.constants.KEY_TIME_TYPE
@@ -61,13 +62,15 @@ internal class TransactionExampleRouteArgs private constructor(
     val time: Date,
     val timeType: TimeType,
     val moneyType: MoneyType,
-    val keyContent: String?
+    val keyContent: String?,
+    val iconId: Int?
 ) {
     internal constructor(savedStateHandle: SavedStateHandle) : this(
         time = Date(savedStateHandle.get<Long>(KEY_TIME)!!),
         timeType = TimeType.valueOf(savedStateHandle[KEY_TIME_TYPE]!!),
         moneyType = MoneyType.valueOf(savedStateHandle[KEY_MONEY_TYPE]!!),
-        keyContent = savedStateHandle[KEY_CONTENT]
+        keyContent = savedStateHandle[KEY_CONTENT],
+        iconId = savedStateHandle.get<Int>(KEY_ICON_ID)?.takeIf { it != -1 }
     )
 }
 
@@ -75,6 +78,7 @@ fun NavController.navigateToTransactionExample(
     time: Date,
     timeType: TimeType,
     moneyType: MoneyType = MoneyType.BALANCE,
+    iconId: Int? = -1,
     keyContent: String? = null
 ) {
     navigate(
@@ -82,6 +86,7 @@ fun NavController.navigateToTransactionExample(
                 "/$KEY_TIME=${time.time}" +
                 "/$KEY_TIME_TYPE=$timeType" +
                 "/$KEY_MONEY_TYPE=$moneyType" +
+                "/$KEY_ICON_ID=${iconId ?: -1}" +
                 if (keyContent != null) "?$KEY_CONTENT=$KEY_CONTENT" else "",
     ) {
         launchSingleTop = true
@@ -96,6 +101,7 @@ fun NavGraphBuilder.transactionExampleRoute(
             "/$KEY_TIME={$KEY_TIME}" +
             "/$KEY_TIME_TYPE={$KEY_TIME_TYPE}" +
             "/$KEY_MONEY_TYPE={$KEY_MONEY_TYPE}" +
+            "/$KEY_ICON_ID={$KEY_ICON_ID}" +
             "?$KEY_CONTENT={$KEY_CONTENT}",
     arguments = listOf(
         navArgument(KEY_TIME) {
@@ -112,6 +118,10 @@ fun NavGraphBuilder.transactionExampleRoute(
         navArgument(KEY_CONTENT) {
             type = NavType.StringType
             nullable = true
+        },
+        navArgument(KEY_ICON_ID) {
+            type = NavType.IntType
+            defaultValue = -1
         }
     )
 ) {

@@ -31,7 +31,7 @@ fun NavController.navigateToAccountAnalysis() {
 
 fun NavGraphBuilder.accountAnalysisRoute(
     onNavigateToTransactionExample: (
-        time: Date, timeType: TimeType, moneyType: MoneyType, content: String?
+        time: Date, timeType: TimeType, moneyType: MoneyType, iconId: Int?, content: String?
     ) -> Unit,
     onBack: () -> Unit
 ) = composable(
@@ -70,7 +70,7 @@ fun NavGraphBuilder.accountAnalysisRoute(
 fun AccountAnalysisRoute(
     modifier: Modifier,
     onNavigateToTransactionExample: (
-        time: Date, timeType: TimeType, moneyType: MoneyType, content: String?
+        time: Date, timeType: TimeType, moneyType: MoneyType, iconId: Int?, content: String?
     ) -> Unit,
     onBack: () -> Unit
 ) {

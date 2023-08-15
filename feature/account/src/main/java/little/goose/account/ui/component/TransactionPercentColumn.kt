@@ -1,6 +1,16 @@
 package little.goose.account.ui.component
 
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -24,6 +34,7 @@ import kotlin.math.abs
 fun TransactionPercentColumn(
     modifier: Modifier = Modifier,
     transactionPercents: List<TransactionPercent>,
+    onTransactionPercentClick: (TransactionPercent) -> Unit,
     colors: List<Pair<Color, Color>>
 ) {
     Column(modifier = modifier) {
@@ -35,6 +46,7 @@ fun TransactionPercentColumn(
                         .height(54.dp)
                         .fillMaxWidth(),
                     transactionPercent = transactionPercents[index],
+                    onTransactionPercentClick = onTransactionPercentClick,
                     colors = colors[index]
                 )
             }
@@ -46,12 +58,16 @@ fun TransactionPercentColumn(
 fun TransactionPercentCard(
     modifier: Modifier,
     transactionPercent: TransactionPercent,
-    colors: Pair<Color, Color>
+    onTransactionPercentClick: (TransactionPercent) -> Unit,
+    colors: Pair<Color, Color>,
 ) {
     Surface(
         modifier = modifier,
         tonalElevation = 3.dp,
-        shape = RoundedCornerShape(12.dp)
+        shape = MaterialTheme.shapes.large,
+        onClick = {
+            onTransactionPercentClick(transactionPercent)
+        }
     ) {
         Box(modifier = Modifier) {
             Row(modifier = Modifier.fillMaxSize()) {
@@ -74,7 +90,7 @@ fun TransactionPercentCard(
             ) {
                 Spacer(modifier = Modifier.width(12.dp))
                 Icon(
-                    modifier = Modifier.size(38.dp),
+                    modifier = Modifier.size(32.dp),
                     painter = painterResource(
                         id = TransactionIconHelper.getIconPath(
                             transactionPercent.icon_id
@@ -102,6 +118,7 @@ fun PreviewTransactionPercentCard(
         transactionPercent = TransactionPercent(
             1, "饮食", BigDecimal(24), 0.34
         ),
+        onTransactionPercentClick = {},
         colors = MaterialTheme.colorScheme.tertiaryContainer to MaterialTheme.colorScheme.onTertiaryContainer
     )
 }

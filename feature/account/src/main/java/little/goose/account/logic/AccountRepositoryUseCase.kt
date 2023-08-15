@@ -1,9 +1,7 @@
 package little.goose.account.logic
 
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharedFlow
-import kotlinx.coroutines.flow.asSharedFlow
 import little.goose.account.data.constants.MoneyType
 import little.goose.account.data.entities.Transaction
 import java.math.BigDecimal
@@ -35,16 +33,12 @@ class UpdateTransactionUseCase(
 class DeleteTransactionsUseCase(
     private val accountRepository: AccountRepository
 ) {
-    private val _deleteTransactionEvent = MutableSharedFlow<List<Transaction>>()
-    val deleteTransactionEvent = _deleteTransactionEvent.asSharedFlow()
-
     suspend operator fun invoke(transactions: List<Transaction>) {
         if (transactions.size == 1) {
             accountRepository.deleteTransaction(transactions[0])
         } else {
             accountRepository.deleteTransactions(transactions)
         }
-        _deleteTransactionEvent.emit(transactions)
     }
 }
 
@@ -185,5 +179,23 @@ class SearchTransactionByTextFlowUseCase(
 ) {
     operator fun invoke(text: String): Flow<List<Transaction>> {
         return accountRepository.searchTransactionByTextFlow(text)
+    }
+}
+
+class GetTransactionByIconYearUseCase(
+    private val accountRepository: AccountRepository
+) {
+    operator fun invoke(iconId: Int, year: Int): Flow<List<Transaction>> {
+        return accountRepository.getTransactionByIconIdYearFlow(iconId, year)
+    }
+}
+
+class GetTransactionByIconYearMonthUseCase(
+    private val accountRepository: AccountRepository
+) {
+    operator fun invoke(
+        iconId: Int, year: Int, month: Int
+    ): Flow<List<Transaction>> {
+        return accountRepository.getTransactionByIconIdYearMonthFlow(iconId, year, month)
     }
 }

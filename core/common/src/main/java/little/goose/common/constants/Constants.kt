@@ -7,6 +7,7 @@ const val KEY_CONTENT = "content"
 
 const val KEY_TIME_TYPE = "time_type"
 const val KEY_MONEY_TYPE = "MONEY_TYPE"
+const val KEY_ICON_ID = "icon_id"
 
 const val KEY_HOME_PAGE = "home_page"
 

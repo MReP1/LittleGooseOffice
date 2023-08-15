@@ -51,6 +51,8 @@ class TransactionAnalysisViewModel @Inject constructor(
     }
 
     val contentState = combine(
+        analysisHelper.year,
+        analysisHelper.month,
         analysisHelper.timeType,
         combine(
             analysisHelper.expensePercents,
@@ -66,12 +68,15 @@ class TransactionAnalysisViewModel @Inject constructor(
         ) { timeExpenses, timeIncomes, timeBalances ->
             TransactionAnalysisTimeState(timeExpenses, timeIncomes, timeBalances)
         }
-    ) { timeType, percentsState, timeState ->
-        TransactionAnalysisContentState(timeType, percentsState, timeState)
+    ) { year, month, timeType, percentsState, timeState ->
+        TransactionAnalysisContentState(year, month, timeType, percentsState, timeState)
     }.stateIn(
         scope = viewModelScope,
         started = SharingStarted.WhileSubscribed(5000L),
-        initialValue = TransactionAnalysisContentState()
+        initialValue = TransactionAnalysisContentState(
+            analysisHelper.year.value,
+            analysisHelper.month.value
+        )
     )
 
     val topBarState = combine(

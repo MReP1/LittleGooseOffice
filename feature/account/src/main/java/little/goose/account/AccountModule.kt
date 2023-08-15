@@ -28,6 +28,8 @@ import little.goose.account.logic.GetExpenseSumFlowByYearUseCase
 import little.goose.account.logic.GetIncomeSumFlowByYearMonthUseCase
 import little.goose.account.logic.GetIncomeSumFlowByYearUseCase
 import little.goose.account.logic.GetTransactionByDateFlowUseCase
+import little.goose.account.logic.GetTransactionByIconYearMonthUseCase
+import little.goose.account.logic.GetTransactionByIconYearUseCase
 import little.goose.account.logic.GetTransactionByIdFlowUseCase
 import little.goose.account.logic.GetTransactionByYearFlowWithKeyContentUseCase
 import little.goose.account.logic.GetTransactionByYearMonthFlowUseCase
@@ -262,6 +264,22 @@ class AccountViewModelModule {
         accountRepository: AccountRepository
     ): DeleteTransactionsUseCase {
         return DeleteTransactionsUseCase(accountRepository)
+    }
+
+    @Provides
+    @ViewModelScoped
+    fun provideGetTransactionByIconYearUseCase(
+        accountRepository: AccountRepository
+    ): GetTransactionByIconYearUseCase {
+        return GetTransactionByIconYearUseCase(accountRepository)
+    }
+
+    @Provides
+    @ViewModelScoped
+    fun provideGetTransactionByIconYearMonthUseCase(
+        accountRepository: AccountRepository
+    ): GetTransactionByIconYearMonthUseCase {
+        return GetTransactionByIconYearMonthUseCase(accountRepository)
     }
 
 }

@@ -232,4 +232,34 @@ class AccountRepository(
     fun searchTransactionByMoneyFlow(money: String) = accountDao.searchTransactionByMoneyFlow(money)
 
     fun searchTransactionByTextFlow(text: String) = accountDao.searchTransactionByTextFlow(text)
+
+    fun getTransactionByIconIdYearFlow(
+        iconId: Int, year: Int
+    ): Flow<List<Transaction>> {
+        val calendar = Calendar.getInstance().apply {
+            clear()
+            setMonth(1)
+            setDate(1)
+            setYear(year)
+        }
+        val startTime = calendar.timeInMillis
+        calendar.setYear(year + 1)
+        val endTime = calendar.timeInMillis
+        return accountDao.getTransactionByIconIdTimeFlow(startTime, endTime, iconId)
+    }
+
+    fun getTransactionByIconIdYearMonthFlow(
+        iconId: Int, year: Int, month: Int
+    ): Flow<List<Transaction>> {
+        val calendar = Calendar.getInstance().apply {
+            clear()
+            setDate(1)
+            setYear(year)
+            setMonth(month)
+        }
+        val startTime = calendar.timeInMillis
+        calendar.setMonth(month + 1)
+        val endTime = calendar.timeInMillis
+        return accountDao.getTransactionByIconIdTimeFlow(startTime, endTime, iconId)
+    }
 }

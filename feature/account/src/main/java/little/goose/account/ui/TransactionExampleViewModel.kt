@@ -21,6 +21,8 @@ import little.goose.account.logic.DeleteTransactionsEventUseCase
 import little.goose.account.logic.DeleteTransactionsUseCase
 import little.goose.account.logic.GetAllTransactionFlowUseCase
 import little.goose.account.logic.GetTransactionByDateFlowUseCase
+import little.goose.account.logic.GetTransactionByIconYearMonthUseCase
+import little.goose.account.logic.GetTransactionByIconYearUseCase
 import little.goose.account.logic.GetTransactionByYearFlowWithKeyContentUseCase
 import little.goose.account.logic.GetTransactionByYearMonthFlowUseCase
 import little.goose.account.logic.GetTransactionByYearMonthFlowWithKeyContentUseCase
@@ -29,6 +31,7 @@ import little.goose.common.utils.TimeType
 import little.goose.common.utils.getDate
 import little.goose.common.utils.getMonth
 import little.goose.common.utils.getYear
+import little.goose.common.utils.log
 import little.goose.common.utils.toChineseYear
 import little.goose.common.utils.toChineseYearMonth
 import little.goose.common.utils.toChineseYearMonthDay
@@ -44,6 +47,8 @@ class TransactionExampleViewModel @Inject constructor(
     private val getTransactionByYearMonthFlowUseCase: GetTransactionByYearMonthFlowUseCase,
     private val getTransactionByYearFlowWithKeyContentUseCase: GetTransactionByYearFlowWithKeyContentUseCase,
     private val getTransactionByYearMonthFlowWithKeyContentUseCase: GetTransactionByYearMonthFlowWithKeyContentUseCase,
+    private val getTransactionByIconYearMonthUseCase: GetTransactionByIconYearMonthUseCase,
+    private val getTransactionByIconYearUseCase: GetTransactionByIconYearUseCase,
     private val getAllTransactionFlowUseCase: GetAllTransactionFlowUseCase,
     private val deleteTransactionsUseCase: DeleteTransactionsUseCase,
     deleteTransactionsEventUseCase: DeleteTransactionsEventUseCase
@@ -59,6 +64,7 @@ class TransactionExampleViewModel @Inject constructor(
     private val content: String? get() = args.keyContent
     private val timeType: TimeType get() = args.timeType
     private val moneyType: MoneyType get() = args.moneyType
+    private val iconId: Int? get() = args.iconId
 
     val title = when (timeType) {
         TimeType.DATE -> time.toChineseYearMonthDay()
@@ -122,37 +128,34 @@ class TransactionExampleViewModel @Inject constructor(
     private fun getTransactionFlow(): Flow<List<Transaction>> {
         val calendar = Calendar.getInstance()
         calendar.time = time
-        return if (content == null) {
+        val year = calendar.getYear()
+        val month = calendar.getMonth()
+        val date = calendar.getDate()
+        log(timeType)
+        log(year)
+        log(month)
+        log(iconId)
+        return if (iconId != null) {
             when (timeType) {
-                TimeType.DATE -> getTransactionByDateFlowUseCase(
-                    calendar.getYear(), calendar.getMonth(), calendar.getDate(), moneyType
-                )
-
-                TimeType.YEAR_MONTH -> getTransactionByYearMonthFlowUseCase(
-                    calendar.getYear(), calendar.getMonth(), moneyType
-                )
-
-                else -> {
-                    getAllTransactionFlowUseCase()
-                }
+                TimeType.YEAR_MONTH -> getTransactionByIconYearMonthUseCase(iconId!!, year, month)
+                TimeType.YEAR -> getTransactionByIconYearUseCase(iconId!!, year)
+                else -> getAllTransactionFlowUseCase()
+            }.onEach {
+                log(it)
+            }
+        } else if (content == null) {
+            when (timeType) {
+                TimeType.DATE -> getTransactionByDateFlowUseCase(year, month, date, moneyType)
+                TimeType.YEAR_MONTH -> getTransactionByYearMonthFlowUseCase(year, month, moneyType)
+                else -> getAllTransactionFlowUseCase()
             }
         } else {
             when (timeType) {
-                TimeType.YEAR -> {
-                    getTransactionByYearFlowWithKeyContentUseCase(
-                        calendar.getYear(), content!!
-                    )
-                }
+                TimeType.YEAR -> getTransactionByYearFlowWithKeyContentUseCase(year, content!!)
+                TimeType.YEAR_MONTH ->
+                    getTransactionByYearMonthFlowWithKeyContentUseCase(year, month, content!!)
 
-                TimeType.YEAR_MONTH -> {
-                    getTransactionByYearMonthFlowWithKeyContentUseCase(
-                        calendar.getYear(), calendar.getMonth(), content!!
-                    )
-                }
-
-                else -> {
-                    getAllTransactionFlowUseCase()
-                }
+                else -> getAllTransactionFlowUseCase()
             }
         }
     }

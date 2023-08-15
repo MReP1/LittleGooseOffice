@@ -15,7 +15,7 @@ const val ROUTE_GRAPH_ACCOUNT = "graph_account"
 fun NavGraphBuilder.accountGraph(
     onNavigateToTransactionScreen: (transactionId: Long) -> Unit,
     onNavigateToTransactionExample: (
-        time: Date, timeType: TimeType, moneyType: MoneyType, content: String?
+        time: Date, timeType: TimeType, moneyType: MoneyType, iconId: Int?, content: String?
     ) -> Unit,
     onBack: () -> Unit
 ) = navigation(

@@ -6,7 +6,11 @@ import androidx.compose.foundation.gestures.draggable
 import androidx.compose.foundation.gestures.rememberDraggableState
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableFloatStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.geometry.Offset
@@ -16,7 +20,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Paint
 import androidx.compose.ui.graphics.drawscope.drawIntoCanvas
 import androidx.compose.ui.graphics.withSaveLayer
-import androidx.compose.ui.text.ExperimentalTextApi
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.drawText
 import androidx.compose.ui.text.rememberTextMeasurer
@@ -24,14 +27,13 @@ import little.goose.account.data.models.TransactionPercent
 import kotlin.math.cos
 import kotlin.math.sin
 
-@OptIn(ExperimentalTextApi::class)
 @Composable
 fun TransactionPercentCircleChart(
     modifier: Modifier = Modifier,
     transactionPercents: List<TransactionPercent>,
     colors: List<Pair<Color, Color>>
 ) {
-    var rotate by remember { mutableStateOf(0F) }
+    var rotate by remember { mutableFloatStateOf(0F) }
     val draggableState = rememberDraggableState(onDelta = { rotate += it })
 
     val emptyPaint = remember {

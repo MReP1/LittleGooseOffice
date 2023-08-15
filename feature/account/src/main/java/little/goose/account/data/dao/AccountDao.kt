@@ -76,4 +76,7 @@ interface AccountDao {
 
     @Query("SELECT * FROM $TABLE_TRANSACTION WHERE description LIKE '%'|| :text ||'%' OR content LIKE '%'|| :text ||'%'")
     fun searchTransactionByTextFlow(text: String): Flow<List<Transaction>>
+
+    @Query("SELECT * FROM $TABLE_TRANSACTION WHERE time > :startTime and time < :endTime and icon_id = :iconId")
+    fun getTransactionByIconIdTimeFlow(startTime: Long, endTime: Long, iconId: Int): Flow<List<Transaction>>
 }
