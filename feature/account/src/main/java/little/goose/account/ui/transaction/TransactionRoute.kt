@@ -1,16 +1,26 @@
 package little.goose.account.ui.transaction
 
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.material3.SnackbarDuration
+import androidx.compose.material3.SnackbarHostState
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.SavedStateHandle
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavType
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import androidx.navigation.navDeepLink
+import little.goose.account.R
 import little.goose.account.ROUTE_GRAPH_ACCOUNT
 import little.goose.common.constants.DEEP_LINK_THEME_AND_HOST
 import little.goose.common.constants.KEY_TIME
@@ -74,11 +84,52 @@ internal fun NavGraphBuilder.transactionRoute(onBack: () -> Unit) {
             }
         )
     ) {
-        TransactionScreen(
+        TransactionRoute(
             modifier = Modifier
                 .fillMaxSize()
                 .shadow(36.dp, clip = false),
-            onFinished = onBack
+            onBack = onBack
         )
+    }
+}
+
+@Composable
+fun TransactionRoute(
+    modifier: Modifier,
+    onBack: () -> Unit
+) {
+    val viewModel: TransactionViewModel = hiltViewModel()
+    val transaction by viewModel.transaction.collectAsStateWithLifecycle()
+    val iconDisplayType by viewModel.iconDisplayType.collectAsStateWithLifecycle()
+    val snackbarHostState = remember { SnackbarHostState() }
+
+    TransactionScreen(
+        modifier = modifier,
+        transaction = transaction,
+        snackbarHostState = snackbarHostState,
+        onFinished = viewModel::writeDatabase,
+        onTransactionChange = viewModel::setTransaction,
+        onIconDisplayTypeChange = viewModel::setIconDisplayType,
+        iconDisplayType = iconDisplayType,
+        onBack = onBack
+    )
+
+    val context = LocalContext.current
+    LaunchedEffect(viewModel.event) {
+        viewModel.event.collect { event ->
+            when (event) {
+                TransactionViewModel.Event.WriteSuccess -> {
+                    onBack()
+                }
+
+                TransactionViewModel.Event.CantBeZero -> {
+                    snackbarHostState.showSnackbar(
+                        message = context.getString(R.string.money_cant_be_zero),
+                        withDismissAction = true,
+                        duration = SnackbarDuration.Short
+                    )
+                }
+            }
+        }
     }
 }
