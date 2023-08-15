@@ -17,7 +17,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
@@ -39,11 +39,11 @@ class TimeSelectorState(
     private val initTime: Date
 ) {
     private val calendar = Calendar.getInstance().apply { time = initTime }
-    var year by mutableStateOf(calendar.get(Calendar.YEAR))
-    var month by mutableStateOf((calendar.get(Calendar.MONTH) + 1))
-    var day by mutableStateOf(calendar.get(Calendar.DATE))
-    var hour by mutableStateOf(calendar.get(Calendar.HOUR_OF_DAY))
-    var minute by mutableStateOf(calendar.get(Calendar.MINUTE))
+    var year by mutableIntStateOf(calendar.get(Calendar.YEAR))
+    var month by mutableIntStateOf((calendar.get(Calendar.MONTH) + 1))
+    var day by mutableIntStateOf(calendar.get(Calendar.DATE))
+    var hour by mutableIntStateOf(calendar.get(Calendar.HOUR_OF_DAY))
+    var minute by mutableIntStateOf(calendar.get(Calendar.MINUTE))
     val yearList = DateTimeUtils.getYearsList()
     val monthList = DateTimeUtils.getMonthsList()
     val dayList by derivedStateOf { DateTimeUtils.getDaysList(year, month).map { it.toString() } }
