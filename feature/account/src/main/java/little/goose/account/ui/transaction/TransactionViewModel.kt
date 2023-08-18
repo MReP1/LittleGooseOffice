@@ -9,6 +9,8 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.filter
+import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
@@ -73,10 +75,36 @@ class TransactionViewModel @Inject constructor(
     private val _transaction = MutableStateFlow(defaultTransaction)
     val transaction = _transaction.asStateFlow()
 
+    val expenseIcon = _transaction
+        .filter { it.type == EXPENSE }
+        .map { transaction ->
+            TransactionIconHelper.expenseIconList.find { it.id == transaction.icon_id }
+        }
+        .filterNotNull()
+        .stateIn(
+            scope = viewModelScope,
+            SharingStarted.Eagerly,
+            TransactionIconHelper.expenseIconList.first()
+        )
+
+    val incomeIcon = _transaction
+        .filter { it.type == INCOME }
+        .map { transaction ->
+            TransactionIconHelper.incomeIconList.find { it.id == transaction.icon_id }
+        }
+        .filterNotNull()
+        .stateIn(
+            scope = viewModelScope,
+            SharingStarted.Eagerly,
+            TransactionIconHelper.incomeIconList.first()
+        )
+
     init {
         viewModelScope.launch {
             args.transactionId?.let { id ->
-                _transaction.value = getTransactionByIdFlowUseCase(id).first()
+                _transaction.value = getTransactionByIdFlowUseCase(id).map {
+                    if (it.type == EXPENSE) it.copy(money = it.money.abs()) else it
+                }.first()
             }
         }
     }
@@ -91,7 +119,7 @@ class TransactionViewModel @Inject constructor(
         _transaction.value = transaction
     }
 
-    fun writeDatabase(transaction: Transaction, isAgain: Boolean) {
+    private fun writeDatabase(transaction: Transaction, isAgain: Boolean) {
         // 检查金额是否为空
         if (transaction.money == BigDecimal.ZERO) {
             viewModelScope.launch { _event.emit(Event.CantBeZero) }
@@ -120,6 +148,15 @@ class TransactionViewModel @Inject constructor(
                 // 若点击下一笔，则需要重置Transaction
                 setTransaction(defaultTransaction)
             }
+        }
+    }
+
+    fun intent(intent: TransactionScreenIntent) {
+        when (intent) {
+            is TransactionScreenIntent.Done -> writeDatabase(intent.transaction, false)
+            is TransactionScreenIntent.Again -> writeDatabase(intent.transaction, true)
+            is TransactionScreenIntent.ChangeIconDisplayType -> setIconDisplayType(intent.iconDisplayType)
+            is TransactionScreenIntent.ChangeTransaction -> setTransaction(intent.transaction)
         }
     }
 

@@ -1,12 +1,15 @@
 package little.goose.account.ui.transaction
 
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.platform.LocalContext
@@ -20,8 +23,10 @@ import androidx.navigation.NavType
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import androidx.navigation.navDeepLink
+import kotlinx.coroutines.launch
 import little.goose.account.R
 import little.goose.account.ROUTE_GRAPH_ACCOUNT
+import little.goose.account.data.constants.AccountConstant
 import little.goose.common.constants.DEEP_LINK_THEME_AND_HOST
 import little.goose.common.constants.KEY_TIME
 import java.util.Date
@@ -102,19 +107,78 @@ fun TransactionRoute(
     val transaction by viewModel.transaction.collectAsStateWithLifecycle()
     val iconDisplayType by viewModel.iconDisplayType.collectAsStateWithLifecycle()
     val snackbarHostState = remember { SnackbarHostState() }
+    val expenseSelectedIcon by viewModel.expenseIcon.collectAsStateWithLifecycle()
+    val incomeSelectedIcon by viewModel.incomeIcon.collectAsStateWithLifecycle()
+    val pagerState = rememberPagerState(0, pageCount = { 2 })
+    val scope = rememberCoroutineScope()
 
     TransactionScreen(
         modifier = modifier,
         transaction = transaction,
         snackbarHostState = snackbarHostState,
-        onFinished = viewModel::writeDatabase,
         onTransactionChange = viewModel::setTransaction,
-        onIconDisplayTypeChange = viewModel::setIconDisplayType,
+        onIconDisplayTypeChange = {
+            viewModel.intent(TransactionScreenIntent.ChangeIconDisplayType(it))
+        },
         iconDisplayType = iconDisplayType,
-        onBack = onBack
+        onBack = onBack,
+        expenseSelectedIcon = expenseSelectedIcon,
+        incomeSelectedIcon = incomeSelectedIcon,
+        pagerState = pagerState,
+        onTabSelected = { scope.launch { pagerState.animateScrollToPage(it) } },
+        onAgainClick = { viewModel.intent(TransactionScreenIntent.Again(it)) },
+        onDoneClick = { viewModel.intent(TransactionScreenIntent.Done(it)) },
+        onIconClick = {
+            viewModel.intent(
+                TransactionScreenIntent.ChangeTransaction(
+                    transaction.copy(icon_id = it.id, content = it.name)
+                )
+            )
+        },
     )
 
     val context = LocalContext.current
+
+    LaunchedEffect(pagerState) {
+        snapshotFlow { pagerState.currentPage }.collect {
+            if (it == 0) {
+                viewModel.intent(
+                    TransactionScreenIntent.ChangeTransaction(
+                        transaction.copy(
+                            type = AccountConstant.EXPENSE,
+                            content = expenseSelectedIcon.name,
+                            icon_id = expenseSelectedIcon.id
+                        )
+                    )
+                )
+            } else {
+                viewModel.intent(
+                    TransactionScreenIntent.ChangeTransaction(
+                        transaction.copy(
+                            type = AccountConstant.INCOME,
+                            content = incomeSelectedIcon.name,
+                            icon_id = incomeSelectedIcon.id
+                        )
+                    )
+                )
+            }
+        }
+    }
+
+    LaunchedEffect(transaction.type) {
+        when (transaction.type) {
+            AccountConstant.EXPENSE -> {
+                if (pagerState.currentPage == 0) return@LaunchedEffect
+                pagerState.animateScrollToPage(0)
+            }
+
+            AccountConstant.INCOME -> {
+                if (pagerState.currentPage == 1) return@LaunchedEffect
+                pagerState.animateScrollToPage(1)
+            }
+        }
+    }
+
     LaunchedEffect(viewModel.event) {
         viewModel.event.collect { event ->
             when (event) {
