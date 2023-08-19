@@ -90,17 +90,17 @@ class IndexViewModel @Inject constructor(
         merge(firstVisibleMonth, lastVisibleMonth).flatMapLatest { yearMonth ->
             val transactionFlow = getTransactionByYearMonthFlowUseCase(
                 yearMonth.year, yearMonth.month.value
-            ).map { yearMonth to it }.onEach { (yearMonth, transactions) ->
+            ).onEach { transactions ->
                 updateTransactions(transactions, yearMonth)
             }
             val memorialFlow = getMemorialByYearMonthFlowUseCase(
                 yearMonth.year, yearMonth.month.value
-            ).map { yearMonth to it }.onEach { (yearMonth, memorials) ->
+            ).onEach { memorials ->
                 updateMemorials(memorials, yearMonth)
             }
             val scheduleFlow = getScheduleByYearMonthFlowUseCase(
                 yearMonth.year, yearMonth.month.value
-            ).map { yearMonth to it }.onEach { (yearMonth, schedules) ->
+            ).onEach { schedules ->
                 updateSchedules(schedules, yearMonth)
             }
             merge(transactionFlow, memorialFlow, scheduleFlow)
