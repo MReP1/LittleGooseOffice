@@ -1,14 +1,12 @@
 package little.goose.account.ui.transaction
 
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.platform.LocalContext
@@ -22,7 +20,6 @@ import androidx.navigation.NavType
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import androidx.navigation.navDeepLink
-import kotlinx.coroutines.launch
 import little.goose.account.R
 import little.goose.account.ROUTE_GRAPH_ACCOUNT
 import little.goose.common.constants.DEEP_LINK_THEME_AND_HOST
@@ -103,17 +100,12 @@ fun TransactionRoute(
 ) {
     val viewModel: TransactionViewModel = hiltViewModel()
     val transactionScreenState by viewModel.transactionScreenState.collectAsStateWithLifecycle()
-
-    val pagerState = rememberPagerState(0, pageCount = { 2 })
-    val scope = rememberCoroutineScope()
-
     val snackbarHostState = remember { SnackbarHostState() }
 
     TransactionScreen(
         modifier = modifier,
         snackbarHostState = snackbarHostState,
         onBack = onBack,
-        onTabSelected = { scope.launch { pagerState.animateScrollToPage(it) } },
         transactionScreenState = transactionScreenState
     )
 

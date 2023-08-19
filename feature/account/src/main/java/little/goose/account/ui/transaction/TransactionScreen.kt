@@ -40,10 +40,10 @@ internal sealed class TransactionScreenState {
 internal fun TransactionScreen(
     modifier: Modifier = Modifier,
     snackbarHostState: SnackbarHostState,
-    onTabSelected: (Int) -> Unit,
     transactionScreenState: TransactionScreenState,
     onBack: () -> Unit
 ) {
+    val scope = rememberCoroutineScope()
     val pagerState = if (transactionScreenState is TransactionScreenState.Success)
         rememberPagerState(initialPage = transactionScreenState.pageIndex, pageCount = { 2 })
     else rememberPagerState(initialPage = 0, pageCount = { 2 })
@@ -101,7 +101,9 @@ internal fun TransactionScreen(
                             TransactionScreenTabRow(
                                 modifier = Modifier.width(120.dp),
                                 selectedTabIndex = pagerState.currentPage,
-                                onTabSelected = onTabSelected
+                                onTabSelected = {
+                                    scope.launch { pagerState.animateScrollToPage(it) }
+                                }
                             )
                         }
                     }
@@ -149,12 +151,9 @@ internal fun TransactionScreen(
 @Preview
 @Composable
 private fun PreviewTransactionScreen() = AccountTheme {
-    val pagerState = rememberPagerState(initialPage = 0, pageCount = { 2 })
-    val scope = rememberCoroutineScope()
     TransactionScreen(
         snackbarHostState = remember { SnackbarHostState() },
         transactionScreenState = TransactionScreenState.Success(),
-        onBack = { },
-        onTabSelected = { scope.launch { pagerState.animateScrollToPage(it) } }
+        onBack = { }
     )
 }
