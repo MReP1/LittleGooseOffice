@@ -1,7 +1,5 @@
 package little.goose.home.ui
 
-import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.kizitonwose.calendar.core.atStartOfMonth
@@ -11,7 +9,10 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.merge
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import little.goose.account.data.constants.AccountConstant.EXPENSE
@@ -41,9 +42,9 @@ class IndexViewModel @Inject constructor(
 
     private val zoneId by lazy { ZoneId.systemDefault() }
 
-    private val calendarModelMap = mutableMapOf<LocalDate, MutableState<CalendarModel>>()
-    private fun getCalendarModelState(time: LocalDate): MutableState<CalendarModel> {
-        return calendarModelMap.getOrPut(time) { mutableStateOf(CalendarModel()) }
+    private val calendarModelMap = mutableMapOf<LocalDate, MutableStateFlow<CalendarModel>>()
+    private fun getCalendarModelState(time: LocalDate): MutableStateFlow<CalendarModel> {
+        return calendarModelMap.getOrPut(time) { MutableStateFlow(CalendarModel()) }
     }
 
     private val firstVisibleMonth: MutableStateFlow<YearMonth> = MutableStateFlow(YearMonth.now())
@@ -51,16 +52,15 @@ class IndexViewModel @Inject constructor(
         MutableStateFlow(firstVisibleMonth.value.plusMonths(1))
 
     private val currentDay: MutableStateFlow<LocalDate> = MutableStateFlow(LocalDate.now())
-    private val currentCalendarModel: StateFlow<MutableState<CalendarModel>> = currentDay.map {
-        getCalendarModelState(it)
-    }.stateIn(
-        scope = viewModelScope,
-        started = SharingStarted.WhileSubscribed(5000),
-        initialValue = getCalendarModelState(currentDay.value)
-    )
+    private val currentCalendarModel: StateFlow<MutableStateFlow<CalendarModel>> =
+        currentDay.map(::getCalendarModelState).stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5000),
+            initialValue = MutableStateFlow(CalendarModel())
+        )
 
     val indexScreenState = combine(
-        currentDay, currentCalendarModel
+        currentDay, currentCalendarModel.flatMapLatest { it }
     ) { currentDay, currentCalendarModelState ->
         IndexScreenState(
             today = LocalDate.now(),
@@ -74,7 +74,7 @@ class IndexViewModel @Inject constructor(
     }.stateIn(
         viewModelScope, SharingStarted.WhileSubscribed(5000),
         initialValue = IndexScreenState(
-            today = LocalDate.now(), currentDay.value, currentCalendarModel.value,
+            today = LocalDate.now(), currentDay.value, currentCalendarModel.value.value,
             ::updateMonth, ::updateCurrentDay, ::checkSchedule, ::getCalendarModelState
         )
     )
@@ -87,51 +87,24 @@ class IndexViewModel @Inject constructor(
     )
 
     init {
-        // TODO 有优化的空间，但是暂时没想好怎么优化
-        viewModelScope.launch {
-            launch {
-                firstVisibleMonth.flatMapLatest {
-                    getTransactionByYearMonthFlowUseCase(it.year, it.month.value)
-                }.collect { transactions: List<Transaction> ->
-                    updateTransactions(transactions, firstVisibleMonth.value)
-                }
+        merge(firstVisibleMonth, lastVisibleMonth).flatMapLatest { yearMonth ->
+            val transactionFlow = getTransactionByYearMonthFlowUseCase(
+                yearMonth.year, yearMonth.month.value
+            ).map { yearMonth to it }.onEach { (yearMonth, transactions) ->
+                updateTransactions(transactions, yearMonth)
             }
-            launch {
-                lastVisibleMonth.flatMapLatest {
-                    getTransactionByYearMonthFlowUseCase(it.year, it.month.value)
-                }.collect { transactions: List<Transaction> ->
-                    updateTransactions(transactions, lastVisibleMonth.value)
-                }
+            val memorialFlow = getMemorialByYearMonthFlowUseCase(
+                yearMonth.year, yearMonth.month.value
+            ).map { yearMonth to it }.onEach { (yearMonth, memorials) ->
+                updateMemorials(memorials, yearMonth)
             }
-            launch {
-                firstVisibleMonth.flatMapLatest {
-                    getScheduleByYearMonthFlowUseCase(it.year, it.month.value)
-                }.collect { schedules ->
-                    updateSchedules(schedules, firstVisibleMonth.value)
-                }
+            val scheduleFlow = getScheduleByYearMonthFlowUseCase(
+                yearMonth.year, yearMonth.month.value
+            ).map { yearMonth to it }.onEach { (yearMonth, schedules) ->
+                updateSchedules(schedules, yearMonth)
             }
-            launch {
-                lastVisibleMonth.flatMapLatest {
-                    getScheduleByYearMonthFlowUseCase(it.year, it.month.value)
-                }.collect { schedules ->
-                    updateSchedules(schedules, lastVisibleMonth.value)
-                }
-            }
-            launch {
-                firstVisibleMonth.flatMapLatest {
-                    getMemorialByYearMonthFlowUseCase(it.year, it.month.value)
-                }.collect { memorials ->
-                    updateMemorials(memorials, firstVisibleMonth.value)
-                }
-            }
-            launch {
-                lastVisibleMonth.flatMapLatest {
-                    getMemorialByYearMonthFlowUseCase(it.year, it.month.value)
-                }.collect { memorials ->
-                    updateMemorials(memorials, lastVisibleMonth.value)
-                }
-            }
-        }
+            merge(transactionFlow, memorialFlow, scheduleFlow)
+        }.launchIn(viewModelScope)
     }
 
     private fun updateTransactions(transactions: List<Transaction>, month: YearMonth) {
