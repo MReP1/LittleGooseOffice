@@ -1,6 +1,5 @@
 package little.goose.account.ui.component
 
-import androidx.compose.animation.core.spring
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.lazy.LazyColumn
@@ -48,9 +47,7 @@ fun TransactionColumn(
             if (transaction.type == AccountConstant.TIME) {
                 Text(
                     text = transaction.description,
-                    modifier = Modifier.animateItemPlacement(
-                        animationSpec = spring(stiffness = 8000F)
-                    )
+                    modifier = Modifier
                 )
             } else {
                 var isExpended by remember { mutableStateOf(false) }
