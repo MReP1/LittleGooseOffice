@@ -15,30 +15,24 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import kotlinx.coroutines.launch
-import little.goose.account.data.constants.AccountConstant.EXPENSE
-import little.goose.account.data.entities.Transaction
-import little.goose.account.data.models.IconDisplayType
-import little.goose.account.data.models.TransactionIcon
 import little.goose.account.ui.component.TransactionEditSurface
-import little.goose.account.ui.transaction.icon.TransactionIconHelper
+import little.goose.account.ui.component.TransactionEditSurfaceState
 import little.goose.design.system.theme.AccountTheme
 
+internal data class TransactionScreenState(
+    val topBarState: TransactionScreenTopBarState = TransactionScreenTopBarState(),
+    val editSurfaceState: TransactionEditSurfaceState = TransactionEditSurfaceState(),
+    val iconPagerState: TransactionScreenIconPagerState = TransactionScreenIconPagerState(),
+)
+
 @Composable
-fun TransactionScreen(
+internal fun TransactionScreen(
     modifier: Modifier = Modifier,
     snackbarHostState: SnackbarHostState,
-    transaction: Transaction,
-    iconDisplayType: IconDisplayType,
-    onTransactionChange: (Transaction) -> Unit,
-    onIconDisplayTypeChange: (IconDisplayType) -> Unit,
-    onBack: () -> Unit,
-    onDoneClick: (Transaction) -> Unit,
-    onAgainClick: (Transaction) -> Unit,
-    onIconClick: (TransactionIcon) -> Unit,
-    expenseSelectedIcon: TransactionIcon,
-    incomeSelectedIcon: TransactionIcon,
+    pagerState: PagerState,
     onTabSelected: (Int) -> Unit,
-    pagerState: PagerState
+    transactionScreenState: TransactionScreenState,
+    onBack: () -> Unit
 ) {
     Scaffold(
         modifier = modifier,
@@ -55,8 +49,7 @@ fun TransactionScreen(
                 modifier = Modifier.fillMaxWidth(),
                 selectedTabIndex = pagerState.currentPage,
                 onTabSelected = onTabSelected,
-                iconDisplayType = iconDisplayType,
-                onIconDisplayTypeChange = onIconDisplayTypeChange,
+                state = transactionScreenState.topBarState,
                 onBack = onBack
             )
         },
@@ -64,19 +57,13 @@ fun TransactionScreen(
             TransactionScreenIconPager(
                 modifier = Modifier.padding(it),
                 pagerState = pagerState,
-                onIconClick = onIconClick,
-                expenseSelectedIcon = expenseSelectedIcon,
-                incomeSelectedIcon = incomeSelectedIcon,
-                iconDisplayType = iconDisplayType
+                state = transactionScreenState.iconPagerState,
             )
         },
         bottomBar = {
             TransactionEditSurface(
                 modifier = Modifier.navigationBarsPadding(),
-                transaction = transaction,
-                onTransactionChange = onTransactionChange,
-                onAgainClick = onAgainClick,
-                onDoneClick = onDoneClick
+                state = transactionScreenState.editSurfaceState,
             )
         }
     )
@@ -89,17 +76,9 @@ private fun PreviewTransactionScreen() = AccountTheme {
     val scope = rememberCoroutineScope()
     TransactionScreen(
         snackbarHostState = remember { SnackbarHostState() },
-        transaction = Transaction(id = 0, type = EXPENSE, content = "饮食", icon_id = 0),
-        iconDisplayType = IconDisplayType.ICON_CONTENT,
-        onTransactionChange = { },
-        onIconDisplayTypeChange = { },
+        transactionScreenState = TransactionScreenState(),
         onBack = { },
-        onAgainClick = { },
-        onDoneClick = { },
-        expenseSelectedIcon = TransactionIconHelper.expenseIconList[0],
-        incomeSelectedIcon = TransactionIconHelper.incomeIconList[0],
         pagerState = pagerState,
-        onTabSelected = { scope.launch { pagerState.animateScrollToPage(it) } },
-        onIconClick = { }
+        onTabSelected = { scope.launch { pagerState.animateScrollToPage(it) } }
     )
 }

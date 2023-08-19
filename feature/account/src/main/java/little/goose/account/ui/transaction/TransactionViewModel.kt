@@ -9,11 +9,13 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import little.goose.account.data.constants.AccountConstant.EXPENSE
 import little.goose.account.data.constants.AccountConstant.INCOME
@@ -23,6 +25,7 @@ import little.goose.account.data.models.IconDisplayType
 import little.goose.account.logic.GetTransactionByIdFlowUseCase
 import little.goose.account.logic.InsertTransactionUseCase
 import little.goose.account.logic.UpdateTransactionUseCase
+import little.goose.account.ui.component.TransactionEditSurfaceState
 import little.goose.account.ui.transaction.icon.TransactionIconHelper
 import little.goose.common.utils.getDate
 import little.goose.common.utils.getMonth
@@ -75,29 +78,44 @@ class TransactionViewModel @Inject constructor(
     private val _transaction = MutableStateFlow(defaultTransaction)
     val transaction = _transaction.asStateFlow()
 
-    val expenseIcon = _transaction
-        .filter { it.type == EXPENSE }
-        .map { transaction ->
+    internal val transactionScreenState = combine(
+        transaction, iconDisplayType,
+        transaction.filter { it.type == EXPENSE }.map { transaction ->
             TransactionIconHelper.expenseIconList.find { it.id == transaction.icon_id }
-        }
-        .filterNotNull()
-        .stateIn(
-            scope = viewModelScope,
-            SharingStarted.Eagerly,
-            TransactionIconHelper.expenseIconList.first()
+        }.filterNotNull().stateIn(
+            viewModelScope, SharingStarted.Eagerly,
+            initialValue = TransactionIconHelper.expenseIconList.first()
+        ).combine(
+            transaction.filter { it.type == INCOME }.map { transaction ->
+                TransactionIconHelper.incomeIconList.find { it.id == transaction.icon_id }
+            }.filterNotNull().stateIn(
+                viewModelScope, SharingStarted.Eagerly,
+                initialValue = TransactionIconHelper.incomeIconList.first()
+            )
+        ) { expenseIcon, incomeIcon -> expenseIcon to incomeIcon },
+    ) { transaction, iconDisplayType, (expenseIcon, incomeIcon) ->
+        TransactionScreenState(
+            topBarState = TransactionScreenTopBarState(
+                iconDisplayType = iconDisplayType,
+                onIconDisplayTypeChange = ::intent
+            ),
+            editSurfaceState = TransactionEditSurfaceState(
+                transaction = transaction,
+                onTransactionChangeIntent = ::intent,
+                onOperationIntent = ::intent
+            ),
+            iconPagerState = TransactionScreenIconPagerState(
+                iconDisplayType = iconDisplayType,
+                expenseSelectedIcon = expenseIcon,
+                incomeSelectedIcon = incomeIcon,
+                onIconChangeIntent = ::intent
+            )
         )
-
-    val incomeIcon = _transaction
-        .filter { it.type == INCOME }
-        .map { transaction ->
-            TransactionIconHelper.incomeIconList.find { it.id == transaction.icon_id }
-        }
-        .filterNotNull()
-        .stateIn(
-            scope = viewModelScope,
-            SharingStarted.Eagerly,
-            TransactionIconHelper.incomeIconList.first()
-        )
+    }.stateIn(
+        scope = viewModelScope,
+        started = SharingStarted.Eagerly,
+        initialValue = TransactionScreenState()
+    )
 
     init {
         viewModelScope.launch {
@@ -109,14 +127,10 @@ class TransactionViewModel @Inject constructor(
         }
     }
 
-    fun setIconDisplayType(iconDisplayType: IconDisplayType) {
+    private fun setIconDisplayType(iconDisplayType: IconDisplayType) {
         viewModelScope.launch {
             accountConfigDataHolder.setIconDisplayType(iconDisplayType)
         }
-    }
-
-    fun setTransaction(transaction: Transaction) {
-        _transaction.value = transaction
     }
 
     private fun writeDatabase(transaction: Transaction, isAgain: Boolean) {
@@ -146,17 +160,39 @@ class TransactionViewModel @Inject constructor(
                 _event.emit(Event.WriteSuccess)
             } else {
                 // 若点击下一笔，则需要重置Transaction
-                setTransaction(defaultTransaction)
+                _transaction.value = defaultTransaction
             }
         }
     }
 
     fun intent(intent: TransactionScreenIntent) {
         when (intent) {
-            is TransactionScreenIntent.Done -> writeDatabase(intent.transaction, false)
-            is TransactionScreenIntent.Again -> writeDatabase(intent.transaction, true)
-            is TransactionScreenIntent.ChangeIconDisplayType -> setIconDisplayType(intent.iconDisplayType)
-            is TransactionScreenIntent.ChangeTransaction -> setTransaction(intent.transaction)
+            is TransactionScreenIntent.TransactionOperation.Done -> {
+                val transaction = _transaction.value.copy(money = intent.money)
+                writeDatabase(transaction, false)
+            }
+
+            is TransactionScreenIntent.TransactionOperation.Again -> {
+                val transaction = _transaction.value.copy(money = intent.money)
+                writeDatabase(transaction, true)
+            }
+
+            is TransactionScreenIntent.ChangeIconDisplayType -> {
+                setIconDisplayType(intent.iconDisplayType)
+            }
+
+            is TransactionScreenIntent.ChangeTransaction -> {
+                _transaction.update { currentTransaction ->
+                    currentTransaction.copy(
+                        type = intent.type ?: currentTransaction.type,
+                        icon_id = intent.iconId ?: currentTransaction.icon_id,
+                        content = intent.content ?: currentTransaction.content,
+                        money = intent.money ?: currentTransaction.money,
+                        description = intent.description ?: currentTransaction.description,
+                        time = intent.time ?: currentTransaction.time
+                    )
+                }
+            }
         }
     }
 

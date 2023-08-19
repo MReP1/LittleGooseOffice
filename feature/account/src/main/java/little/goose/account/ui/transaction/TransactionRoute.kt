@@ -105,36 +105,20 @@ fun TransactionRoute(
 ) {
     val viewModel: TransactionViewModel = hiltViewModel()
     val transaction by viewModel.transaction.collectAsStateWithLifecycle()
-    val iconDisplayType by viewModel.iconDisplayType.collectAsStateWithLifecycle()
-    val snackbarHostState = remember { SnackbarHostState() }
-    val expenseSelectedIcon by viewModel.expenseIcon.collectAsStateWithLifecycle()
-    val incomeSelectedIcon by viewModel.incomeIcon.collectAsStateWithLifecycle()
+    val transactionScreenState by viewModel.transactionScreenState.collectAsStateWithLifecycle()
+
     val pagerState = rememberPagerState(0, pageCount = { 2 })
     val scope = rememberCoroutineScope()
 
+    val snackbarHostState = remember { SnackbarHostState() }
+
     TransactionScreen(
         modifier = modifier,
-        transaction = transaction,
         snackbarHostState = snackbarHostState,
-        onTransactionChange = viewModel::setTransaction,
-        onIconDisplayTypeChange = {
-            viewModel.intent(TransactionScreenIntent.ChangeIconDisplayType(it))
-        },
-        iconDisplayType = iconDisplayType,
         onBack = onBack,
-        expenseSelectedIcon = expenseSelectedIcon,
-        incomeSelectedIcon = incomeSelectedIcon,
         pagerState = pagerState,
         onTabSelected = { scope.launch { pagerState.animateScrollToPage(it) } },
-        onAgainClick = { viewModel.intent(TransactionScreenIntent.Again(it)) },
-        onDoneClick = { viewModel.intent(TransactionScreenIntent.Done(it)) },
-        onIconClick = {
-            viewModel.intent(
-                TransactionScreenIntent.ChangeTransaction(
-                    transaction.copy(icon_id = it.id, content = it.name)
-                )
-            )
-        },
+        transactionScreenState = transactionScreenState
     )
 
     val context = LocalContext.current
@@ -142,23 +126,21 @@ fun TransactionRoute(
     LaunchedEffect(pagerState) {
         snapshotFlow { pagerState.currentPage }.collect {
             if (it == 0) {
+                val expenseSelectedIcon = transactionScreenState.iconPagerState.expenseSelectedIcon
                 viewModel.intent(
-                    TransactionScreenIntent.ChangeTransaction(
-                        transaction.copy(
-                            type = AccountConstant.EXPENSE,
-                            content = expenseSelectedIcon.name,
-                            icon_id = expenseSelectedIcon.id
-                        )
+                    TransactionScreenIntent.ChangeTransaction.Icon(
+                        expenseSelectedIcon.id, expenseSelectedIcon.name
+                    ) + TransactionScreenIntent.ChangeTransaction.Type(
+                        AccountConstant.EXPENSE
                     )
                 )
             } else {
+                val incomeSelectedIcon = transactionScreenState.iconPagerState.incomeSelectedIcon
                 viewModel.intent(
-                    TransactionScreenIntent.ChangeTransaction(
-                        transaction.copy(
-                            type = AccountConstant.INCOME,
-                            content = incomeSelectedIcon.name,
-                            icon_id = incomeSelectedIcon.id
-                        )
+                    TransactionScreenIntent.ChangeTransaction.Icon(
+                        incomeSelectedIcon.id, incomeSelectedIcon.name
+                    ) + TransactionScreenIntent.ChangeTransaction.Type(
+                        AccountConstant.INCOME
                     )
                 )
             }

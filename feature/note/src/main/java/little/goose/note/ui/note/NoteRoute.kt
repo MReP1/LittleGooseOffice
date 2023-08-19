@@ -21,7 +21,6 @@ import androidx.navigation.navDeepLink
 import kotlinx.coroutines.android.awaitFrame
 import kotlinx.coroutines.flow.collectLatest
 import little.goose.common.constants.DEEP_LINK_THEME_AND_HOST
-import little.goose.common.utils.log
 import little.goose.note.data.constants.KEY_NOTE
 import little.goose.note.data.constants.KEY_NOTE_ID
 import little.goose.note.data.entities.NoteContentBlock
@@ -128,7 +127,6 @@ fun NoteRoute(
                         val result = runCatching {
                             focusRequester.requestFocus()
                         }.onFailure {
-                            log(it)
                             awaitFrame()
                         }
                     } while (result.isFailure && tryTime < 10)

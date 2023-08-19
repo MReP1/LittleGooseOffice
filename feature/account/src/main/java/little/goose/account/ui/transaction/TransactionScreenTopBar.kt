@@ -22,6 +22,7 @@ import androidx.compose.material3.Tab
 import androidx.compose.material3.TabRow
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.Stable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -34,14 +35,19 @@ import androidx.compose.ui.unit.dp
 import little.goose.account.R
 import little.goose.account.data.models.IconDisplayType
 
+@Stable
+internal data class TransactionScreenTopBarState(
+    val iconDisplayType: IconDisplayType = IconDisplayType.ICON_CONTENT,
+    val onIconDisplayTypeChange: (TransactionScreenIntent.ChangeIconDisplayType) -> Unit = {}
+)
+
 @Composable
 internal fun TransactionScreenTopBar(
     modifier: Modifier,
     selectedTabIndex: Int,
     onTabSelected: (Int) -> Unit,
     onBack: () -> Unit,
-    iconDisplayType: IconDisplayType,
-    onIconDisplayTypeChange: (IconDisplayType) -> Unit,
+    state: TransactionScreenTopBarState
 ) {
     CenterAlignedTopAppBar(
         modifier = modifier,
@@ -64,8 +70,8 @@ internal fun TransactionScreenTopBar(
             var expanded by remember { mutableStateOf(false) }
             IconButton(onClick = { expanded = true }) {
                 Icon(
-                    imageVector = iconDisplayType.icon,
-                    contentDescription = stringResource(id = iconDisplayType.textRes)
+                    imageVector = state.iconDisplayType.icon,
+                    contentDescription = stringResource(id = state.iconDisplayType.textRes)
                 )
                 DropdownMenu(
                     expanded = expanded,
@@ -83,7 +89,9 @@ internal fun TransactionScreenTopBar(
                                 )
                             },
                             onClick = {
-                                onIconDisplayTypeChange(type)
+                                state.onIconDisplayTypeChange(
+                                    TransactionScreenIntent.ChangeIconDisplayType(type)
+                                )
                             }
                         )
                     }
