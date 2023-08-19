@@ -52,7 +52,7 @@ fun Calculator(
                 Cell(
                     modifier = Modifier.weight(1F),
                     onClick = {
-                        vibrator?.vibrate(VibrationEffect.createOneShot(28L, 166))
+                        vibrator?.vibrate(VibrationEffect.createOneShot(16, 180))
                         onNumClick(num)
                     }
                 ) {
@@ -62,7 +62,7 @@ fun Calculator(
             Cell(
                 modifier = Modifier.weight(1F),
                 onClick = {
-                    vibrator?.vibrate(VibrationEffect.createOneShot(28L, 166))
+                    vibrator?.vibrate(VibrationEffect.createOneShot(16, 180))
                     onOperatorClick(MoneyCalculatorLogic.BACKSPACE)
                 }
             ) {
@@ -80,7 +80,7 @@ fun Calculator(
                 Cell(
                     modifier = Modifier.weight(1F),
                     onClick = {
-                        vibrator?.vibrate(VibrationEffect.createOneShot(28L, 166))
+                        vibrator?.vibrate(VibrationEffect.createOneShot(16, 180))
                         onNumClick(num)
                     }
                 ) {
@@ -90,7 +90,7 @@ fun Calculator(
             Cell(
                 modifier = Modifier.weight(1F),
                 onClick = {
-                    vibrator?.vibrate(VibrationEffect.createOneShot(28L, 166))
+                    vibrator?.vibrate(VibrationEffect.createOneShot(16, 180))
                     onOperatorClick(MoneyCalculatorLogic.Operator.PLUS)
                 }
             ) {
@@ -108,7 +108,7 @@ fun Calculator(
                 Cell(
                     modifier = Modifier.weight(1F),
                     onClick = {
-                        vibrator?.vibrate(VibrationEffect.createOneShot(28L, 166))
+                        vibrator?.vibrate(VibrationEffect.createOneShot(16, 180))
                         onNumClick(num)
                     }
                 ) {
@@ -118,7 +118,7 @@ fun Calculator(
             Cell(
                 modifier = Modifier.weight(1F),
                 onClick = {
-                    vibrator?.vibrate(VibrationEffect.createOneShot(28L, 166))
+                    vibrator?.vibrate(VibrationEffect.createOneShot(16, 180))
                     onOperatorClick(MoneyCalculatorLogic.Operator.SUB)
                 }
             ) {
@@ -135,7 +135,7 @@ fun Calculator(
             Cell(
                 modifier = Modifier.weight(1F),
                 onClick = {
-                    vibrator?.vibrate(VibrationEffect.createOneShot(28L, 166))
+                    vibrator?.vibrate(VibrationEffect.createOneShot(16, 180))
                     onOperatorClick(MoneyCalculatorLogic.DOT)
                 }
             ) {
@@ -144,7 +144,7 @@ fun Calculator(
             Cell(
                 modifier = Modifier.weight(1F),
                 onClick = {
-                    vibrator?.vibrate(VibrationEffect.createOneShot(28L, 166))
+                    vibrator?.vibrate(VibrationEffect.createOneShot(16, 180))
                     onNumClick(0)
                 }
             ) {
@@ -153,7 +153,7 @@ fun Calculator(
             Cell(
                 modifier = Modifier.weight(1F),
                 onClick = {
-                    vibrator?.vibrate(VibrationEffect.createOneShot(28L, 166))
+                    vibrator?.vibrate(VibrationEffect.createOneShot(16, 180))
                     onAgainClick()
                 }
             ) {
@@ -165,7 +165,7 @@ fun Calculator(
             Cell(
                 modifier = Modifier.weight(1F),
                 onClick = {
-                    vibrator?.vibrate(VibrationEffect.createOneShot(28L, 166))
+                    vibrator?.vibrate(VibrationEffect.createOneShot(16, 180))
                     if (isContainOperator) {
                         onOperatorClick(MoneyCalculatorLogic.Operator.RESULT)
                     } else {
