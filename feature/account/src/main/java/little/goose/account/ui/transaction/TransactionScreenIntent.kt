@@ -18,16 +18,25 @@ sealed class TransactionScreenIntent {
         open val time: Date? = null
         open val iconId: Int? = null
 
-        data class Description(override val description: String) : ChangeTransaction()
-        data class Time(override val time: Date) : ChangeTransaction()
-        data class Money(override val money: BigDecimal) : ChangeTransaction()
+        data class Description(
+            override val description: String
+        ) : ChangeTransaction()
+
+        data class Time(
+            override val time: Date
+        ) : ChangeTransaction()
+
+        data class Money(
+            override val money: BigDecimal
+        ) : ChangeTransaction()
+
         data class Icon(
             override val iconId: Int,
             override val content: String
         ) : ChangeTransaction()
 
         data class Type(
-            override val type: Int,
+            override val type: Int
         ) : ChangeTransaction()
 
         operator fun plus(other: ChangeTransaction): ChangeTransaction {
@@ -43,6 +52,7 @@ sealed class TransactionScreenIntent {
         }
     }
 
-    data class ChangeIconDisplayType(val iconDisplayType: IconDisplayType) :
-        TransactionScreenIntent()
+    data class ChangeIconDisplayType(
+        val iconDisplayType: IconDisplayType
+    ) : TransactionScreenIntent()
 }

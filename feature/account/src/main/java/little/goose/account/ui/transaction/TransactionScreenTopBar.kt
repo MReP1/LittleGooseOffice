@@ -4,11 +4,11 @@ import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.ArrowBack
@@ -44,20 +44,13 @@ internal data class TransactionScreenTopBarState(
 @Composable
 internal fun TransactionScreenTopBar(
     modifier: Modifier,
-    selectedTabIndex: Int,
-    onTabSelected: (Int) -> Unit,
     onBack: () -> Unit,
-    state: TransactionScreenTopBarState
+    title: @Composable () -> Unit,
+    actions: @Composable RowScope.() -> Unit,
 ) {
     CenterAlignedTopAppBar(
         modifier = modifier,
-        title = {
-            TransactionScreenTabRow(
-                modifier = Modifier.width(120.dp),
-                selectedTabIndex = selectedTabIndex,
-                onTabSelected = onTabSelected
-            )
-        },
+        title = title,
         navigationIcon = {
             IconButton(onClick = onBack) {
                 Icon(
@@ -66,43 +59,53 @@ internal fun TransactionScreenTopBar(
                 )
             }
         },
-        actions = {
-            var expanded by remember { mutableStateOf(false) }
-            IconButton(onClick = { expanded = true }) {
-                Icon(
-                    imageVector = state.iconDisplayType.icon,
-                    contentDescription = stringResource(id = state.iconDisplayType.textRes)
-                )
-                DropdownMenu(
-                    expanded = expanded,
-                    onDismissRequest = { expanded = false }
-                ) {
-                    IconDisplayType.entries.forEach { type ->
-                        DropdownMenuItem(
-                            text = {
-                                Text(text = stringResource(id = type.textRes))
-                            },
-                            leadingIcon = {
-                                Icon(
-                                    imageVector = type.icon,
-                                    contentDescription = stringResource(id = type.textRes)
-                                )
-                            },
-                            onClick = {
-                                state.onIconDisplayTypeChange(
-                                    TransactionScreenIntent.ChangeIconDisplayType(type)
-                                )
-                            }
-                        )
-                    }
-                }
-            }
-        }
+        actions = actions
     )
 }
 
 @Composable
-private fun TransactionScreenTabRow(
+internal fun TransactionScreenTopBarAction(
+    modifier: Modifier = Modifier,
+    iconDisplayType: IconDisplayType,
+    onIconDisplayTypeChange: (TransactionScreenIntent.ChangeIconDisplayType) -> Unit
+) {
+    var expanded by remember { mutableStateOf(false) }
+    IconButton(
+        modifier = modifier,
+        onClick = { expanded = true }
+    ) {
+        Icon(
+            imageVector = iconDisplayType.icon,
+            contentDescription = stringResource(id = iconDisplayType.textRes)
+        )
+        DropdownMenu(
+            expanded = expanded,
+            onDismissRequest = { expanded = false }
+        ) {
+            IconDisplayType.entries.forEach { type ->
+                DropdownMenuItem(
+                    text = {
+                        Text(text = stringResource(id = type.textRes))
+                    },
+                    leadingIcon = {
+                        Icon(
+                            imageVector = type.icon,
+                            contentDescription = stringResource(id = type.textRes)
+                        )
+                    },
+                    onClick = {
+                        onIconDisplayTypeChange(
+                            TransactionScreenIntent.ChangeIconDisplayType(type)
+                        )
+                    }
+                )
+            }
+        }
+    }
+}
+
+@Composable
+internal fun TransactionScreenTabRow(
     modifier: Modifier,
     selectedTabIndex: Int,
     onTabSelected: (Int) -> Unit,

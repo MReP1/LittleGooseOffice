@@ -3,26 +3,24 @@ package little.goose.account.ui.transaction
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Snackbar
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.launch
-import little.goose.account.R
 import little.goose.account.data.constants.AccountConstant
 import little.goose.account.ui.component.TransactionEditSurface
 import little.goose.account.ui.component.TransactionEditSurfaceState
-import little.goose.design.system.component.LoadingCenterAlignedTopAppBar
 import little.goose.design.system.theme.AccountTheme
 
 internal sealed class TransactionScreenState {
@@ -93,25 +91,34 @@ internal fun TransactionScreen(
             }
         },
         topBar = {
-            when (transactionScreenState) {
-                TransactionScreenState.Loading -> {
-                    LoadingCenterAlignedTopAppBar(
-                        modifier = Modifier.fillMaxWidth(),
-                        onBack = onBack,
-                        title = { Text(text = stringResource(id = R.string.loading)) }
-                    )
+            TransactionScreenTopBar(
+                modifier = Modifier.fillMaxWidth(),
+                onBack = onBack,
+                title = {
+                    when (transactionScreenState) {
+                        TransactionScreenState.Loading -> Unit
+                        is TransactionScreenState.Success -> {
+                            TransactionScreenTabRow(
+                                modifier = Modifier.width(120.dp),
+                                selectedTabIndex = pagerState.currentPage,
+                                onTabSelected = onTabSelected
+                            )
+                        }
+                    }
+                },
+                actions = {
+                    when (transactionScreenState) {
+                        TransactionScreenState.Loading -> Unit
+                        is TransactionScreenState.Success -> {
+                            TransactionScreenTopBarAction(
+                                modifier = Modifier,
+                                iconDisplayType = transactionScreenState.topBarState.iconDisplayType,
+                                onIconDisplayTypeChange = transactionScreenState.topBarState.onIconDisplayTypeChange
+                            )
+                        }
+                    }
                 }
-
-                is TransactionScreenState.Success -> {
-                    TransactionScreenTopBar(
-                        modifier = Modifier.fillMaxWidth(),
-                        selectedTabIndex = pagerState.currentPage,
-                        onTabSelected = onTabSelected,
-                        state = transactionScreenState.topBarState,
-                        onBack = onBack
-                    )
-                }
-            }
+            )
         },
         content = {
             when (transactionScreenState) {
