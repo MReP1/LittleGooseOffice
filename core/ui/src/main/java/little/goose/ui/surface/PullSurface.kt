@@ -77,7 +77,7 @@ fun PullSurface(
                     threshold = 64.dp,
                     passThreshold = {
                         vibrator?.vibrate(
-                            VibrationEffect.createOneShot(28L, 140)
+                            VibrationEffect.createOneShot(28L, 166)
                         )
                     },
                     onPull = { pullDelta, threshold ->

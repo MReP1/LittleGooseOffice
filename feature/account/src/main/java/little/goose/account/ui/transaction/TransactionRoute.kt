@@ -9,7 +9,6 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.platform.LocalContext
@@ -26,7 +25,6 @@ import androidx.navigation.navDeepLink
 import kotlinx.coroutines.launch
 import little.goose.account.R
 import little.goose.account.ROUTE_GRAPH_ACCOUNT
-import little.goose.account.data.constants.AccountConstant
 import little.goose.common.constants.DEEP_LINK_THEME_AND_HOST
 import little.goose.common.constants.KEY_TIME
 import java.util.Date
@@ -104,7 +102,6 @@ fun TransactionRoute(
     onBack: () -> Unit
 ) {
     val viewModel: TransactionViewModel = hiltViewModel()
-    val transaction by viewModel.transaction.collectAsStateWithLifecycle()
     val transactionScreenState by viewModel.transactionScreenState.collectAsStateWithLifecycle()
 
     val pagerState = rememberPagerState(0, pageCount = { 2 })
@@ -116,50 +113,11 @@ fun TransactionRoute(
         modifier = modifier,
         snackbarHostState = snackbarHostState,
         onBack = onBack,
-        pagerState = pagerState,
         onTabSelected = { scope.launch { pagerState.animateScrollToPage(it) } },
         transactionScreenState = transactionScreenState
     )
 
     val context = LocalContext.current
-
-    LaunchedEffect(pagerState) {
-        snapshotFlow { pagerState.currentPage }.collect {
-            if (it == 0) {
-                val expenseSelectedIcon = transactionScreenState.iconPagerState.expenseSelectedIcon
-                viewModel.intent(
-                    TransactionScreenIntent.ChangeTransaction.Icon(
-                        expenseSelectedIcon.id, expenseSelectedIcon.name
-                    ) + TransactionScreenIntent.ChangeTransaction.Type(
-                        AccountConstant.EXPENSE
-                    )
-                )
-            } else {
-                val incomeSelectedIcon = transactionScreenState.iconPagerState.incomeSelectedIcon
-                viewModel.intent(
-                    TransactionScreenIntent.ChangeTransaction.Icon(
-                        incomeSelectedIcon.id, incomeSelectedIcon.name
-                    ) + TransactionScreenIntent.ChangeTransaction.Type(
-                        AccountConstant.INCOME
-                    )
-                )
-            }
-        }
-    }
-
-    LaunchedEffect(transaction.type) {
-        when (transaction.type) {
-            AccountConstant.EXPENSE -> {
-                if (pagerState.currentPage == 0) return@LaunchedEffect
-                pagerState.animateScrollToPage(0)
-            }
-
-            AccountConstant.INCOME -> {
-                if (pagerState.currentPage == 1) return@LaunchedEffect
-                pagerState.animateScrollToPage(1)
-            }
-        }
-    }
 
     LaunchedEffect(viewModel.event) {
         viewModel.event.collect { event ->

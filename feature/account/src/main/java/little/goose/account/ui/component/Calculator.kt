@@ -1,12 +1,25 @@
 package little.goose.account.ui.component
 
-import androidx.compose.foundation.layout.*
+import android.os.VibrationEffect
+import android.os.Vibrator
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxScope
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Backspace
-import androidx.compose.material3.*
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ProvideTextStyle
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import little.goose.account.R
@@ -23,33 +36,35 @@ fun Calculator(
     isContainOperator: Boolean
 ) {
     Column(modifier = modifier) {
+        val context = LocalContext.current
+        val vibrator = remember(context) {
+            runCatching {
+                context.getSystemService(Vibrator::class.java)
+            }.getOrNull()
+        }
         Row(
             modifier = Modifier
                 .fillMaxWidth()
                 .weight(1F),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Cell(
-                modifier = Modifier.weight(1F),
-                onClick = { onNumClick(7) }
-            ) {
-                Text(text = "7")
+            for (num in 7..9) {
+                Cell(
+                    modifier = Modifier.weight(1F),
+                    onClick = {
+                        vibrator?.vibrate(VibrationEffect.createOneShot(28L, 166))
+                        onNumClick(num)
+                    }
+                ) {
+                    Text(text = num.toString())
+                }
             }
             Cell(
                 modifier = Modifier.weight(1F),
-                onClick = { onNumClick(8) }
-            ) {
-                Text(text = "8")
-            }
-            Cell(
-                modifier = Modifier.weight(1F),
-                onClick = { onNumClick(9) }
-            ) {
-                Text(text = "9")
-            }
-            Cell(
-                modifier = Modifier.weight(1F),
-                onClick = { onOperatorClick(MoneyCalculatorLogic.BACKSPACE) }
+                onClick = {
+                    vibrator?.vibrate(VibrationEffect.createOneShot(28L, 166))
+                    onOperatorClick(MoneyCalculatorLogic.BACKSPACE)
+                }
             ) {
                 Icon(imageVector = Icons.Rounded.Backspace, contentDescription = "BackSpace")
             }
@@ -61,27 +76,23 @@ fun Calculator(
                 .weight(1F),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Cell(
-                modifier = Modifier.weight(1F),
-                onClick = { onNumClick(4) }
-            ) {
-                Text(text = "4")
+            for (num in 4..6) {
+                Cell(
+                    modifier = Modifier.weight(1F),
+                    onClick = {
+                        vibrator?.vibrate(VibrationEffect.createOneShot(28L, 166))
+                        onNumClick(num)
+                    }
+                ) {
+                    Text(text = num.toString())
+                }
             }
             Cell(
                 modifier = Modifier.weight(1F),
-                onClick = { onNumClick(5) }
-            ) {
-                Text(text = "5")
-            }
-            Cell(
-                modifier = Modifier.weight(1F),
-                onClick = { onNumClick(6) }
-            ) {
-                Text(text = "6")
-            }
-            Cell(
-                modifier = Modifier.weight(1F),
-                onClick = { onOperatorClick(MoneyCalculatorLogic.Operator.PLUS) }
+                onClick = {
+                    vibrator?.vibrate(VibrationEffect.createOneShot(28L, 166))
+                    onOperatorClick(MoneyCalculatorLogic.Operator.PLUS)
+                }
             ) {
                 Text(text = "+")
             }
@@ -93,27 +104,23 @@ fun Calculator(
                 .weight(1F),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Cell(
-                modifier = Modifier.weight(1F),
-                onClick = { onNumClick(1) }
-            ) {
-                Text(text = "1")
+            for (num in 1..3) {
+                Cell(
+                    modifier = Modifier.weight(1F),
+                    onClick = {
+                        vibrator?.vibrate(VibrationEffect.createOneShot(28L, 166))
+                        onNumClick(num)
+                    }
+                ) {
+                    Text(text = num.toString())
+                }
             }
             Cell(
                 modifier = Modifier.weight(1F),
-                onClick = { onNumClick(2) }
-            ) {
-                Text(text = "2")
-            }
-            Cell(
-                modifier = Modifier.weight(1F),
-                onClick = { onNumClick(3) }
-            ) {
-                Text(text = "3")
-            }
-            Cell(
-                modifier = Modifier.weight(1F),
-                onClick = { onOperatorClick(MoneyCalculatorLogic.Operator.SUB) }
+                onClick = {
+                    vibrator?.vibrate(VibrationEffect.createOneShot(28L, 166))
+                    onOperatorClick(MoneyCalculatorLogic.Operator.SUB)
+                }
             ) {
                 Text(text = "-")
             }
@@ -127,17 +134,29 @@ fun Calculator(
         ) {
             Cell(
                 modifier = Modifier.weight(1F),
-                onClick = { onOperatorClick(MoneyCalculatorLogic.DOT) }
+                onClick = {
+                    vibrator?.vibrate(VibrationEffect.createOneShot(28L, 166))
+                    onOperatorClick(MoneyCalculatorLogic.DOT)
+                }
             ) {
                 Text(text = ".")
             }
             Cell(
                 modifier = Modifier.weight(1F),
-                onClick = { onNumClick(0) }
+                onClick = {
+                    vibrator?.vibrate(VibrationEffect.createOneShot(28L, 166))
+                    onNumClick(0)
+                }
             ) {
                 Text(text = "0")
             }
-            Cell(modifier = Modifier.weight(1F), onAgainClick) {
+            Cell(
+                modifier = Modifier.weight(1F),
+                onClick = {
+                    vibrator?.vibrate(VibrationEffect.createOneShot(28L, 166))
+                    onAgainClick()
+                }
+            ) {
                 Text(
                     text = stringResource(id = R.string.next_transaction),
                     style = MaterialTheme.typography.titleMedium
@@ -146,6 +165,7 @@ fun Calculator(
             Cell(
                 modifier = Modifier.weight(1F),
                 onClick = {
+                    vibrator?.vibrate(VibrationEffect.createOneShot(28L, 166))
                     if (isContainOperator) {
                         onOperatorClick(MoneyCalculatorLogic.Operator.RESULT)
                     } else {

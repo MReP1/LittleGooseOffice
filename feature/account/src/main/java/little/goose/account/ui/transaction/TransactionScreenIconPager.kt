@@ -16,7 +16,7 @@ internal data class TransactionScreenIconPagerState(
     val expenseSelectedIcon: TransactionIcon = TransactionIconHelper.expenseIconList[0],
     val incomeSelectedIcon: TransactionIcon = TransactionIconHelper.incomeIconList[0],
     val iconDisplayType: IconDisplayType = IconDisplayType.ICON_CONTENT,
-    val onIconChangeIntent: (TransactionScreenIntent.ChangeTransaction.Icon) -> Unit = {}
+    val onIconChangeIntent: (TransactionScreenIntent.ChangeTransaction) -> Unit = {}
 )
 
 @Composable
