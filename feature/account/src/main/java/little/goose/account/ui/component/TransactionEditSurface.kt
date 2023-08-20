@@ -57,7 +57,6 @@ internal data class TransactionEditSurfaceState(
 @Composable
 internal fun TransactionEditSurface(
     modifier: Modifier = Modifier,
-    isLoading: Boolean = false,
     state: TransactionEditSurfaceState
 ) {
     val moneyCalculator = remember { MoneyCalculator(state.transaction.money) }
@@ -94,7 +93,6 @@ internal fun TransactionEditSurface(
         TransactionContentItem(
             modifier = Modifier.fillMaxWidth(),
             iconAndContent = iconAndContent,
-            isLoading = isLoading,
             money = money
         )
 
@@ -154,7 +152,6 @@ private data class IconAndContent(
 private fun TransactionContentItem(
     modifier: Modifier = Modifier,
     iconAndContent: IconAndContent,
-    isLoading: Boolean = false,
     money: String
 ) {
     Surface(
@@ -167,69 +164,49 @@ private fun TransactionContentItem(
                 .fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            if (isLoading) {
-                IconWithContent(
-                    iconAndContent = iconAndContent
-                )
-            } else {
-                AnimatedContent(
-                    targetState = iconAndContent,
-                    transitionSpec = {
-                        val inDurationMillis = 180
-                        val outDurationMillis = 160
-                        fadeIn(
-                            animationSpec = tween(
-                                durationMillis = inDurationMillis,
-                                delayMillis = 36,
-                                easing = LinearOutSlowInEasing
-                            )
-                        ) + slideIntoContainer(
-                            towards = AnimatedContentTransitionScope.SlideDirection.Down,
-                            animationSpec = tween(
-                                durationMillis = inDurationMillis,
-                                delayMillis = 36,
-                                easing = LinearOutSlowInEasing
-                            ),
-                            initialOffset = { it / 2 }
-                        ) togetherWith fadeOut(
-                            animationSpec = tween(outDurationMillis, easing = LinearOutSlowInEasing)
-                        ) + slideOutOfContainer(
-                            towards = AnimatedContentTransitionScope.SlideDirection.Down,
-                            animationSpec = tween(
-                                outDurationMillis,
-                                easing = LinearOutSlowInEasing
-                            ),
-                            targetOffset = { it / 2 }
+            AnimatedContent(
+                targetState = iconAndContent,
+                transitionSpec = {
+                    val inDurationMillis = 180
+                    val outDurationMillis = 160
+                    fadeIn(
+                        animationSpec = tween(
+                            durationMillis = inDurationMillis,
+                            delayMillis = 36,
+                            easing = LinearOutSlowInEasing
                         )
-                    },
-                    label = "transaction content item"
-                ) { iac ->
-                    IconWithContent(
-                        iconAndContent = iac
+                    ) + slideIntoContainer(
+                        towards = AnimatedContentTransitionScope.SlideDirection.Down,
+                        animationSpec = tween(
+                            durationMillis = inDurationMillis,
+                            delayMillis = 36,
+                            easing = LinearOutSlowInEasing
+                        ),
+                        initialOffset = { it / 2 }
+                    ) togetherWith fadeOut(
+                        animationSpec = tween(outDurationMillis, easing = LinearOutSlowInEasing)
+                    ) + slideOutOfContainer(
+                        towards = AnimatedContentTransitionScope.SlideDirection.Down,
+                        animationSpec = tween(outDurationMillis, easing = LinearOutSlowInEasing),
+                        targetOffset = { it / 2 }
                     )
+                },
+                label = "transaction content item"
+            ) { iac ->
+                Row(
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    TransactionIconHelper.getIcon(iac.iconId).Display(
+                        modifier = Modifier.size(32.dp),
+                        contentDescription = iac.content
+                    )
+                    Spacer(modifier = Modifier.width(12.dp))
+                    Text(text = iac.content)
                 }
             }
             Spacer(modifier = Modifier.weight(1f))
             Text(text = money, style = MaterialTheme.typography.titleLarge)
         }
-    }
-}
-
-@Composable
-private fun IconWithContent(
-    modifier: Modifier = Modifier,
-    iconAndContent: IconAndContent
-) {
-    Row(
-        modifier = modifier,
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        TransactionIconHelper.getIcon(iconAndContent.iconId).Display(
-            modifier = Modifier.size(32.dp),
-            contentDescription = iconAndContent.content
-        )
-        Spacer(modifier = Modifier.width(12.dp))
-        Text(text = iconAndContent.content)
     }
 }
 
