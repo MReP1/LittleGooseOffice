@@ -29,7 +29,6 @@ import little.goose.account.ui.transaction.icon.TransactionIconHelper
 import little.goose.common.utils.getDate
 import little.goose.common.utils.getMonth
 import little.goose.common.utils.getYear
-import little.goose.common.utils.log
 import little.goose.common.utils.setDate
 import little.goose.common.utils.setMonth
 import little.goose.common.utils.setYear
@@ -129,7 +128,6 @@ class TransactionViewModel @Inject constructor(
     }
 
     private fun intent(intent: TransactionScreenIntent) {
-        log(intent)
         val currentTransaction = _transaction.value ?: return
         when (intent) {
             is TransactionScreenIntent.TransactionOperation.Done -> {
