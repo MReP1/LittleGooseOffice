@@ -142,6 +142,7 @@ internal fun TransactionScreen(
                 ?.editSurfaceState ?: remember { TransactionEditSurfaceState() }
             TransactionEditSurface(
                 modifier = Modifier.navigationBarsPadding(),
+                isLoading = transactionScreenState is TransactionScreenState.Loading,
                 state = editSurfaceState,
             )
         }
