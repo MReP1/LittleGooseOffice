@@ -57,10 +57,11 @@ internal fun TransactionScreen(
     }
 
     LaunchedEffect(pagerState) {
+        var isFirstTime = true
         snapshotFlow { pagerState.currentPage }.collect {
             val iconState = (transactionScreenState as? TransactionScreenState.Success)
                 ?.iconPagerState ?: return@collect
-            if (it == 0) {
+            if (it == 0 && !isFirstTime) {
                 transactionScreenState.onChangeTransaction(
                     TransactionScreenIntent.ChangeTransaction.Icon(
                         iconState.expenseSelectedIcon.id, iconState.expenseSelectedIcon.name
@@ -68,7 +69,7 @@ internal fun TransactionScreen(
                         AccountConstant.EXPENSE
                     )
                 )
-            } else {
+            } else if (!isFirstTime) {
                 transactionScreenState.onChangeTransaction(
                     TransactionScreenIntent.ChangeTransaction.Icon(
                         iconState.incomeSelectedIcon.id, iconState.incomeSelectedIcon.name
@@ -77,6 +78,7 @@ internal fun TransactionScreen(
                     )
                 )
             }
+            isFirstTime = false
         }
     }
 
