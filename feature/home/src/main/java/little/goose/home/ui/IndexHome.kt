@@ -22,7 +22,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.Stable
-import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.State
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -43,7 +43,6 @@ import com.kizitonwose.calendar.core.OutDateStyle
 import com.kizitonwose.calendar.core.atStartOfMonth
 import com.kizitonwose.calendar.core.daysOfWeek
 import com.kizitonwose.calendar.core.yearMonth
-import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.launch
 import little.goose.account.data.entities.Transaction
@@ -65,11 +64,11 @@ import java.util.Locale
 data class IndexScreenState(
     val today: LocalDate,
     val currentDay: LocalDate,
-    val currentCalendarModel: CalendarModel,
+    val currentCalendarModel: State<CalendarModel>,
     val updateMonth: (YearMonth, YearMonth) -> Unit,
     val updateCurrentDay: (LocalDate) -> Unit,
     val checkSchedule: (Schedule, Boolean) -> Unit,
-    val getCalendarModelState: (LocalDate) -> StateFlow<CalendarModel>
+    val getCalendarModelState: (LocalDate) -> State<CalendarModel>
 )
 
 @Composable
@@ -157,7 +156,7 @@ fun IndexHome(
                 state = calendarState,
                 userScrollEnabled = true,
                 dayContent = { day ->
-                    val model by state.getCalendarModelState(day.date).collectAsState()
+                    val model by state.getCalendarModelState(day.date)
                     MonthDay(
                         modifier = Modifier.height(contentHeight),
                         day = day,
@@ -179,19 +178,19 @@ fun IndexHome(
                 .verticalScroll(rememberScrollState()),
             verticalArrangement = Arrangement.Top
         ) {
-            if (state.currentCalendarModel.memorials.isNotEmpty()) {
+            if (state.currentCalendarModel.value.memorials.isNotEmpty()) {
                 IndexMemorialCard(
                     modifier = Modifier.padding(horizontal = 16.dp, vertical = 6.dp),
-                    memorial = state.currentCalendarModel.memorials.first(),
+                    memorial = state.currentCalendarModel.value.memorials.first(),
                     onMemorialClick = onMemorialClick
                 )
             }
             val indexTransactionCardState by remember(state.currentDay) {
                 derivedStateOf {
                     IndexTransactionCardState(
-                        state.currentCalendarModel.expense,
-                        state.currentCalendarModel.income,
-                        state.currentCalendarModel.transactions,
+                        state.currentCalendarModel.value.expense,
+                        state.currentCalendarModel.value.income,
+                        state.currentCalendarModel.value.transactions,
                         state.currentDay
                     )
                 }
@@ -205,13 +204,13 @@ fun IndexHome(
                 onTransactionAdd = onTransactionAdd,
                 onTransactionClick = onTransactionClick
             )
-            if (state.currentCalendarModel.schedules.isNotEmpty()) {
+            if (state.currentCalendarModel.value.schedules.isNotEmpty()) {
                 IndexScheduleCard(
                     modifier = Modifier
                         .padding(horizontal = 16.dp, vertical = 6.dp)
                         .fillMaxWidth()
                         .heightIn(0.dp, 120.dp),
-                    schedules = state.currentCalendarModel.schedules,
+                    schedules = state.currentCalendarModel.value.schedules,
                     onCheckChange = state.checkSchedule,
                     onScheduleClick = onScheduleClick
                 )

@@ -1,5 +1,7 @@
 package little.goose.home.ui
 
+import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.kizitonwose.calendar.core.atStartOfMonth
@@ -42,9 +44,9 @@ class IndexViewModel @Inject constructor(
 
     private val zoneId by lazy { ZoneId.systemDefault() }
 
-    private val calendarModelMap = mutableMapOf<LocalDate, MutableStateFlow<CalendarModel>>()
-    private fun getCalendarModelState(time: LocalDate): MutableStateFlow<CalendarModel> {
-        return calendarModelMap.getOrPut(time) { MutableStateFlow(CalendarModel()) }
+    private val calendarModelMap = mutableMapOf<LocalDate, MutableState<CalendarModel>>()
+    private fun getCalendarModelState(time: LocalDate): MutableState<CalendarModel> {
+        return calendarModelMap.getOrPut(time) { mutableStateOf(CalendarModel()) }
     }
 
     private val firstVisibleMonth: MutableStateFlow<YearMonth> = MutableStateFlow(YearMonth.now())
@@ -52,15 +54,15 @@ class IndexViewModel @Inject constructor(
         MutableStateFlow(firstVisibleMonth.value.plusMonths(1))
 
     private val currentDay: MutableStateFlow<LocalDate> = MutableStateFlow(LocalDate.now())
-    private val currentCalendarModel: StateFlow<MutableStateFlow<CalendarModel>> =
+    private val currentCalendarModel: StateFlow<MutableState<CalendarModel>> =
         currentDay.map(::getCalendarModelState).stateIn(
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(5000),
-            initialValue = MutableStateFlow(CalendarModel())
+            initialValue = getCalendarModelState(currentDay.value)
         )
 
     val indexScreenState = combine(
-        currentDay, currentCalendarModel.flatMapLatest { it }
+        currentDay, currentCalendarModel
     ) { currentDay, currentCalendarModelState ->
         IndexScreenState(
             today = LocalDate.now(),
@@ -74,7 +76,7 @@ class IndexViewModel @Inject constructor(
     }.stateIn(
         viewModelScope, SharingStarted.WhileSubscribed(5000),
         initialValue = IndexScreenState(
-            today = LocalDate.now(), currentDay.value, currentCalendarModel.value.value,
+            today = LocalDate.now(), currentDay.value, currentCalendarModel.value,
             ::updateMonth, ::updateCurrentDay, ::checkSchedule, ::getCalendarModelState
         )
     )
