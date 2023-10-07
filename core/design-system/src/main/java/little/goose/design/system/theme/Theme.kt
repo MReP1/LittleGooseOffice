@@ -217,7 +217,7 @@ fun LittleGooseStyle() {
         LaunchedEffect(GooseStyle.goose) {
             GooseStyle.checkGoose(context)
             if (GooseStyle.goose) return@LaunchedEffect
-            findCheckStyleContainer(view).addView(
+            findGooseStyleContainer(view).addView(
                 TextView(context).apply {
                     gravity = Gravity.CENTER
                     setTextColor(colorScheme.primary.toArgb())
@@ -234,9 +234,9 @@ fun LittleGooseStyle() {
     }
 }
 
-fun findCheckStyleContainer(view: View): ViewGroup {
-    return if (view.parent is ComposeView) findCheckStyleContainer(view.parent as View)
-    else view.parent as? ViewGroup ?: findCheckStyleContainer(view)
+fun findGooseStyleContainer(view: View): ViewGroup {
+    return if (view.parent is ComposeView) findGooseStyleContainer(view.parent as View)
+    else view.parent as? ViewGroup ?: findGooseStyleContainer(view.parent as View)
 }
 
 @Composable
