@@ -1,8 +1,13 @@
 package little.goose.design.system.theme
 
+import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Context
 import android.os.Build
+import android.view.Gravity
+import android.view.View
+import android.view.ViewGroup
+import android.widget.TextView
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
@@ -18,12 +23,15 @@ import androidx.compose.material3.dynamicLightColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.toArgb
+import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalView
@@ -33,6 +41,10 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.doOnAttach
+import androidx.datastore.preferences.core.booleanPreferencesKey
+import androidx.datastore.preferences.core.edit
+import androidx.datastore.preferences.preferencesDataStore
+import little.goose.common.utils.getDataOrNull
 import kotlin.math.abs
 
 private val gooseLightColorScheme = lightColorScheme(
@@ -150,6 +162,7 @@ fun AccountTheme(
     val view = LocalView.current
     val window = (view.context as? Activity)?.window
     val isLightTheme = !themeConfig.isDarkTheme()
+    LittleGooseStyle()
     DisposableEffect(view, window) {
         if (window != null) {
             window.statusBarColor = android.graphics.Color.TRANSPARENT
@@ -174,6 +187,56 @@ fun AccountTheme(
         typography = Typography,
         content = content
     )
+}
+
+private val Context.gooseStyleDataStore by preferencesDataStore("gooseStyle")
+
+@Stable
+object GooseStyle {
+    @Stable
+    var goose: Boolean by mutableStateOf(false)
+
+    private val KEY = booleanPreferencesKey("key")
+
+    suspend fun checkGoose(context: Context) {
+        context.gooseStyleDataStore.getDataOrNull(KEY)?.let { goose = it }
+    }
+
+    suspend fun killGoose(context: Context) {
+        context.gooseStyleDataStore.edit { it[KEY] = true }
+    }
+}
+
+@SuppressLint("SetTextI18n")
+@Composable
+fun LittleGooseStyle() {
+    val view = LocalView.current
+    val context = LocalContext.current
+    val colorScheme = MaterialTheme.colorScheme
+    if (!GooseStyle.goose) {
+        LaunchedEffect(GooseStyle.goose) {
+            GooseStyle.checkGoose(context)
+            if (GooseStyle.goose) return@LaunchedEffect
+            findCheckStyleContainer(view).addView(
+                TextView(context).apply {
+                    gravity = Gravity.CENTER
+                    setTextColor(colorScheme.primary.toArgb())
+                    alpha = 0.76f
+                    text = "\u8be5\u5f00\u6e90\u9879\u76ee\u4ec5\u4f9b\u5b66\u4e60\n" +
+                            "\u8bf7\u52ff\u7528\u4e8e\u5176\u4ed6\u7528\u9014"
+                    tag = "goose"
+                },
+                ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.MATCH_PARENT
+            )
+            GooseStyle.goose = true
+        }
+    }
+}
+
+fun findCheckStyleContainer(view: View): ViewGroup {
+    return if (view.parent is ComposeView) findCheckStyleContainer(view.parent as View)
+    else view.parent as? ViewGroup ?: findCheckStyleContainer(view)
 }
 
 @Composable

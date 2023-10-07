@@ -56,6 +56,7 @@ dependencies {
     api(libs.androidx.compose.material.iconsExtended)
     implementation(libs.protobuf.kotlin.lite)
     implementation(libs.androidx.datastore)
+    implementation(libs.androidx.dataStore.preferences)
     implementation(libs.androidx.appcompat)
     implementation(project(":core:common"))
 }
