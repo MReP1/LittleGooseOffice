@@ -12,7 +12,7 @@ data class AccountConfig(
 )
 
 data class TransactionConfig(
-    val iconDisplayType: IconDisplayType = IconDisplayType.ICON_CONTENT
+    val iconDisplayType: IconDisplayType = IconDisplayType.ICON_ONLY
 )
 
 enum class IconDisplayType(

@@ -2,7 +2,10 @@ package little.goose.account.data.holder
 
 import android.util.Log
 import androidx.datastore.core.DataStore
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.stateIn
 import little.goose.account.data.model.AccountPreference
 import little.goose.account.data.model.IconDisplayTypeProto
 import little.goose.account.data.model.copy
@@ -11,7 +14,8 @@ import little.goose.account.data.models.IconDisplayType
 import little.goose.account.data.models.TransactionConfig
 
 class AccountConfigDataHolder(
-    private val accountPreference: DataStore<AccountPreference>
+    private val accountPreference: DataStore<AccountPreference>,
+    coroutineScope: CoroutineScope
 ) {
     val accountConfig = accountPreference.data.map { accountPreference ->
         val transactionConfig = TransactionConfig(
@@ -24,7 +28,7 @@ class AccountConfigDataHolder(
         AccountConfig(
             transactionConfig = transactionConfig
         )
-    }
+    }.stateIn(coroutineScope, SharingStarted.Eagerly, AccountConfig())
 
     suspend fun setIconDisplayType(iconDisplayType: IconDisplayType) {
         runCatching {

@@ -50,7 +50,7 @@ class TransactionViewModel @Inject constructor(
 
     val iconDisplayType = accountConfigDataHolder.accountConfig
         .map { it.transactionConfig.iconDisplayType }
-        .stateIn(scope = viewModelScope, SharingStarted.Eagerly, IconDisplayType.ICON_CONTENT)
+        .stateIn(scope = viewModelScope, SharingStarted.Eagerly, IconDisplayType.ICON_ONLY)
 
     private val defaultTransaction
         get() = Transaction(

@@ -83,9 +83,10 @@ class AccountModule {
     @Provides
     @Singleton
     fun provideAccountConfigDataHolder(
-        accountPreferenceDataStore: DataStore<AccountPreference>
+        accountPreferenceDataStore: DataStore<AccountPreference>,
+        @AppCoroutineScope coroutineScope: CoroutineScope
     ): AccountConfigDataHolder {
-        return AccountConfigDataHolder(accountPreferenceDataStore)
+        return AccountConfigDataHolder(accountPreferenceDataStore, coroutineScope)
     }
 
 }
