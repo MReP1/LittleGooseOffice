@@ -222,8 +222,8 @@ fun LittleGooseStyle() {
                     gravity = Gravity.CENTER
                     setTextColor(colorScheme.primary.toArgb())
                     alpha = 0.56f
-                    text = "\u8be5\u5f00\u6e90\u9879\u76ee\u4ec5\u4f9b\u5b66\u4e60\n" +
-                            "\u8bf7\u52ff\u7528\u4e8e\u5176\u4ed6\u7528\u9014"
+                    text = "\u8be5\u5f00\u6e90\u9879\u76ee\u4ec5\u4f9b\u5b66\u4e60"
+                    textSize = 16F
                     tag = "goose"
                 },
                 ViewGroup.LayoutParams.MATCH_PARENT,
