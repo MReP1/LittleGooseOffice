@@ -1,7 +1,7 @@
 plugins {
     alias(libs.plugins.goose.android.library)
     alias(libs.plugins.goose.android.hilt)
-    alias(libs.plugins.ksp)
+    alias(libs.plugins.goose.android.room)
 }
 
 android {
@@ -22,12 +22,6 @@ dependencies {
     implementation(libs.kotlinx.coroutines.android)
 
     implementation(libs.google.android.material)
-
-    // Room database
-    implementation(libs.room.runtime)
-    implementation(libs.room.ktx)
-    ksp(libs.room.compiler)
-
 
     // Metrics
     api(libs.androidx.metrics)

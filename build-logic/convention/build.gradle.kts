@@ -38,5 +38,9 @@ gradlePlugin {
             id = "goose.android.compose"
             implementationClass = "plugin.ComposeConventionPlugin"
         }
+        register("androidRoom") {
+            id = "goose.android.room"
+            implementationClass = "plugin.RoomConventionPlugin"
+        }
     }
 }

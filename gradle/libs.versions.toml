@@ -100,3 +100,4 @@ goose-android-application = { id = "goose.android.app", version = "unspecified" 
 goose-android-library = { id = "goose.android.library", version = "unspecified" }
 goose-android-hilt = { id = "goose.android.hilt", version = "unspecified" }
 goose-android-compose = { id = "goose.android.compose", version = "unspecified" }
+goose-android-room = { id = "goose.android.room", version = "unspecified" }
