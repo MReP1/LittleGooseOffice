@@ -45,7 +45,6 @@ dependencies {
     implementation(project(":core:common"))
     implementation(project(":core:ui"))
 
-    implementation(libs.androidx.fragment.ktx)
     implementation(libs.google.android.material)
 
     implementation(libs.androidx.compose.navigation)

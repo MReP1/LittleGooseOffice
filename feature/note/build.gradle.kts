@@ -28,5 +28,4 @@ dependencies {
     implementation(libs.androidx.lifecycle.runtime.compose)
 
     implementation(libs.androidx.activity.ktx)
-    implementation(libs.androidx.fragment.ktx)
 }

@@ -3,7 +3,6 @@ androidGradlePlugin = "8.1.2"
 androidxActivityCompose = "1.8.0"
 androidxAppcompat = "1.6.1"
 androidxActivityKtx = "1.8.0"
-androidxFragmentKtx = "1.6.1"
 androidxComposeBom = "2023.10.01"
 androidxComposeNavigation = "2.7.4"
 androidxCoreSplashscreen = "1.0.1"
@@ -38,7 +37,6 @@ protobufPlugin = "0.9.4"
 accompanist-navigation-animation = { group = "com.google.accompanist", name = "accompanist-navigation-animation", version.ref = "accompanistVersion" }
 androidx-appcompat = { group = "androidx.appcompat", name = "appcompat", version.ref = "androidxAppcompat" }
 androidx-activity-ktx = { group = "androidx.activity", name = "activity-ktx", version.ref = "androidxActivityKtx" }
-androidx-fragment-ktx = { group = "androidx.fragment", name = "fragment-ktx", version.ref = "androidxFragmentKtx" }
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "androidxCore" }
 androidx-core-splashscreen = { group = "androidx.core", name = "core-splashscreen", version.ref = "androidxCoreSplashscreen" }
 androidx-lifecycle-rumtime-ktx = { group = "androidx.lifecycle", name = "lifecycle-runtime-ktx", version.ref = "androidLifecycle" }
