@@ -1,7 +1,7 @@
 plugins {
-    id("goose.android.app")
-    id("goose.android.compose")
-    id("goose.android.hilt")
+    alias(libs.plugins.goose.android.application)
+    alias(libs.plugins.goose.android.compose)
+    alias(libs.plugins.goose.android.hilt)
     alias(libs.plugins.ksp)
 }
 

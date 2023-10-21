@@ -1,7 +1,7 @@
 plugins {
-    id("goose.android.library")
-    id("goose.android.compose")
-    id("goose.android.hilt")
+    alias(libs.plugins.goose.android.library)
+    alias(libs.plugins.goose.android.compose)
+    alias(libs.plugins.goose.android.hilt)
 }
 
 android {

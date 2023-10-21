@@ -94,3 +94,9 @@ android-library = { id = "com.android.library", version.ref = "androidGradlePlug
 hilt = { id = "com.google.dagger.hilt.android", version.ref = "hilt" }
 ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
 protobuf = { id = "com.google.protobuf", version.ref = "protobufPlugin" }
+
+# Plugins defined by this project
+goose-android-application = { id = "goose.android.app", version = "unspecified" }
+goose-android-library = { id = "goose.android.library", version = "unspecified" }
+goose-android-hilt = { id = "goose.android.hilt", version = "unspecified" }
+goose-android-compose = { id = "goose.android.compose", version = "unspecified" }
