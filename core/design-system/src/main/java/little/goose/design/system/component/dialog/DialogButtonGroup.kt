@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -55,14 +56,16 @@ fun DialogButtonGroup(
 @Preview(showBackground = true)
 @Composable
 private fun PreviewDialogButtonGroup() = AccountTheme {
-    DialogButtonGroup(
-        startButtonContent = {
-            Text(text = "Cancel")
-        },
-        onStartButtonClick = {},
-        endButtonContent = {
-            Text(text = "Confirm")
-        },
-        onEndButtonClick = {}
-    )
+    Surface {
+        DialogButtonGroup(
+            startButtonContent = {
+                Text(text = "Cancel")
+            },
+            onStartButtonClick = {},
+            endButtonContent = {
+                Text(text = "Confirm")
+            },
+            onEndButtonClick = {}
+        )
+    }
 }
