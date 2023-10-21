@@ -34,7 +34,7 @@ fun LittleGooseEmptyScreen(
     ) {
         val context = LocalContext.current
         val scope = rememberCoroutineScope()
-        val goose7 = Goose7()
+        val goose7 = remember { Goose7() }
         Image(
             painter = painterResource(id = R.drawable.ic_little_goose),
             contentDescription = "Logo",
