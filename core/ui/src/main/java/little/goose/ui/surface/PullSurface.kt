@@ -61,7 +61,7 @@ fun PullSurface(
         }
 
         backgroundContent(
-            progress = if (!reverseDirection) progress.value else -progress.value
+            if (!reverseDirection) progress.value else -progress.value
         )
 
         Surface(
