@@ -25,9 +25,7 @@ class AndroidAppConventionPlugin : Plugin<Project> {
     private fun PluginManager.applyPlugin() {
         apply("com.android.application")
         apply("org.jetbrains.kotlin.android")
-        apply("kotlin-kapt")
         apply("kotlin-parcelize")
-        apply("com.google.devtools.ksp")
     }
 
     private fun ApplicationExtension.configureAndroid() {
