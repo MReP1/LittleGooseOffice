@@ -12,7 +12,6 @@ android {
 dependencies {
     implementation(libs.androidx.appcompat)
     implementation(libs.androidx.constraintLayout)
-    implementation(libs.androidx.recyclerView)
 
     implementation(libs.google.android.material)
 
@@ -23,7 +22,7 @@ dependencies {
 
     // Markdown note
     implementation(libs.compose.markdown)
-    
+
     implementation(libs.androidx.compose.navigation)
     implementation(libs.androidx.hilt.navigation.compose)
     implementation(libs.androidx.lifecycle.runtime.compose)

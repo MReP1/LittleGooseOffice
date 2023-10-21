@@ -48,8 +48,6 @@ dependencies {
     implementation(libs.androidx.fragment.ktx)
     implementation(libs.google.android.material)
 
-    implementation(libs.androidx.recyclerView)
-
     implementation(libs.androidx.compose.navigation)
     implementation(libs.androidx.hilt.navigation.compose)
     implementation(libs.androidx.constraintLayout.compose)
