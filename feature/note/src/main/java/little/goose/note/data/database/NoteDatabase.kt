@@ -20,15 +20,15 @@ abstract class NoteDatabase : RoomDatabase() {
 
     companion object {
         val MIGRATION_1_2 = object : Migration(1, 2) {
-            override fun migrate(database: SupportSQLiteDatabase) {
+            override fun migrate(db: SupportSQLiteDatabase) {
                 // SQLite does not support dropping columns. Therefore, we have to create a new table
                 // database.execSQL("ALTER TABLE `note` DROP COLUMN content")
             }
         }
         val MIGRATION_2_3 = object : Migration(2, 3) {
-            override fun migrate(database: SupportSQLiteDatabase) {
+            override fun migrate(db: SupportSQLiteDatabase) {
                 // create note content block table
-                database.execSQL(
+                db.execSQL(
                     """CREATE TABLE IF NOT EXISTS `note_content_block` 
                        (`id` INTEGER PRIMARY KEY AUTOINCREMENT, 
                         `note_id` INTEGER,
@@ -37,9 +37,9 @@ abstract class NoteDatabase : RoomDatabase() {
             }
         }
         val MIGRATION_3_4 = object : Migration(3, 4) {
-            override fun migrate(database: SupportSQLiteDatabase) {
+            override fun migrate(db: SupportSQLiteDatabase) {
                 // create note content block table
-                database.execSQL(
+                db.execSQL(
                     """ALTER TABLE `note_content_block` 
                        ADD COLUMN `index` INTEGER NOT NULL DEFAULT 0""".trimIndent()
                 )
