@@ -7,7 +7,6 @@ import org.gradle.api.artifacts.VersionCatalogsExtension
 import org.gradle.api.plugins.ExtensionAware
 import org.gradle.kotlin.dsl.getByType
 import org.jetbrains.kotlin.gradle.dsl.KotlinJvmOptions
-import org.jetbrains.kotlin.gradle.plugin.KaptExtension
 
 fun CommonExtension<*, *, *, *, *>.kotlinOptions(block: KotlinJvmOptions.() -> Unit) {
     (this as ExtensionAware).extensions.configure("kotlinOptions", block)
@@ -15,10 +14,6 @@ fun CommonExtension<*, *, *, *, *>.kotlinOptions(block: KotlinJvmOptions.() -> U
 
 inline fun <reified T> Project.applyAndroid(block: T.() -> Unit) {
     (extensions.getByName("android") as T).apply(block)
-}
-
-fun Project.applyKapt(block: KaptExtension.() -> Unit) {
-    (this as ExtensionAware).extensions.configure("kapt", block)
 }
 
 val Project.libs
