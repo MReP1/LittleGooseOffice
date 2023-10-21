@@ -60,22 +60,10 @@ fun TimeSelector(
     modifier: Modifier = Modifier,
     state: TimeSelectorState,
     isShowConfirm: Boolean = true,
-    isConfirmBottom: Boolean = true,
     timeType: TimeType,
     onConfirm: (Date) -> Unit = {}
 ) {
     Column(modifier = modifier) {
-        if (!isConfirmBottom && isShowConfirm) {
-            Button(
-                onClick = { onConfirm(state.time) },
-                shape = RectangleShape,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(48.dp)
-            ) {
-                Text(text = stringResource(id = little.goose.common.R.string.confirm))
-            }
-        }
         Column(
             modifier = modifier
                 .weight(1F)
@@ -176,7 +164,7 @@ fun TimeSelector(
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .height(168.dp),
+                        .height(176.dp),
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.Center
                 ) {
@@ -231,7 +219,7 @@ fun TimeSelector(
                 }
             }
         }
-        if (isConfirmBottom && isShowConfirm) {
+        if (isShowConfirm) {
             Button(
                 onClick = { onConfirm(state.time) },
                 shape = RectangleShape,

@@ -19,8 +19,9 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
@@ -34,14 +35,12 @@ import androidx.navigation.NavType
 import androidx.navigation.compose.dialog
 import androidx.navigation.navArgument
 import androidx.navigation.navDeepLink
-import kotlinx.coroutines.launch
 import little.goose.common.constants.DEEP_LINK_THEME_AND_HOST
 import little.goose.common.utils.TimeType
 import little.goose.common.utils.toChineseStringWithYear
 import little.goose.design.system.component.dialog.DeleteDialog
 import little.goose.design.system.component.dialog.DeleteDialogState
-import little.goose.design.system.component.dialog.TimeSelectorBottomDialog
-import little.goose.design.system.component.dialog.rememberBottomSheetDialogState
+import little.goose.design.system.component.dialog.TimeSelectorBottomSheet
 import little.goose.design.system.theme.AccountTheme
 import little.goose.schedule.R
 import little.goose.schedule.data.entities.Schedule
@@ -77,13 +76,20 @@ fun NavGraphBuilder.scheduleRoute(
             }
         )
     ) {
-        val scope = rememberCoroutineScope()
         val deleteScheduleDialogState = remember { DeleteDialogState() }
-        val timeSelectorDialogState = rememberBottomSheetDialogState()
-
         val viewModel = hiltViewModel<ScheduleDialogViewModel>()
-
         val schedule by viewModel.schedule.collectAsStateWithLifecycle()
+        var isShowTimeSelectorDialog by remember { mutableStateOf(false) }
+        if (isShowTimeSelectorDialog) {
+            TimeSelectorBottomSheet(
+                onDismissRequest = { isShowTimeSelectorDialog = false },
+                modifier = Modifier.width(300.dp),
+                initTime = schedule.time,
+                type = TimeType.DATE_TIME,
+                onConfirm = viewModel::updateScheduleTime
+            )
+        }
+
         ScheduleDialogScreen(
             schedule = schedule,
             onTitleChange = viewModel::updateScheduleTitle,
@@ -104,21 +110,12 @@ fun NavGraphBuilder.scheduleRoute(
                 })
             },
             onChangeTimeClick = {
-                scope.launch {
-                    timeSelectorDialogState.open()
-                }
+                isShowTimeSelectorDialog = true
             }
         )
 
         DeleteDialog(
             state = deleteScheduleDialogState
-        )
-
-        TimeSelectorBottomDialog(
-            state = timeSelectorDialogState,
-            initTime = schedule.time,
-            type = TimeType.DATE_TIME,
-            onConfirm = viewModel::updateScheduleTime
         )
     }
 }

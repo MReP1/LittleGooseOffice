@@ -28,7 +28,6 @@ import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -44,15 +43,12 @@ import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 import little.goose.account.R
 import little.goose.account.data.entities.Transaction
 import little.goose.account.ui.transaction.TransactionScreenIntent
 import little.goose.common.utils.TimeType
 import little.goose.common.utils.toChineseMonthDayTime
-import little.goose.design.system.component.dialog.TimeSelectorBottomDialog
-import little.goose.design.system.component.dialog.rememberBottomSheetDialogState
+import little.goose.design.system.component.dialog.TimeSelectorBottomSheet
 import kotlin.math.pow
 
 @Composable
@@ -63,17 +59,17 @@ fun TransactionContentEditBar(
     transaction: Transaction,
     onTransactionChange: (TransactionScreenIntent.ChangeTransaction) -> Unit,
 ) {
-    val timeSelectorDialogState = rememberBottomSheetDialogState()
-    TimeSelectorBottomDialog(
-        state = timeSelectorDialogState,
-        initTime = transaction.time,
-        type = TimeType.DATE_TIME,
-        onConfirm = {
-            onTransactionChange(TransactionScreenIntent.ChangeTransaction.Time(it))
-        }
-    )
-
-    val scope = rememberCoroutineScope()
+    var isShowTimeSelector by remember { mutableStateOf(false) }
+    if (isShowTimeSelector) {
+        TimeSelectorBottomSheet(
+            onDismissRequest = { isShowTimeSelector = false },
+            initTime = transaction.time,
+            type = TimeType.DATE_TIME,
+            onConfirm = {
+                onTransactionChange(TransactionScreenIntent.ChangeTransaction.Time(it))
+            }
+        )
+    }
     val isDescriptionEditUpdateTransition = updateTransition(
         targetState = isDescriptionEdit, label = "is description edit"
     )
@@ -97,13 +93,7 @@ fun TransactionContentEditBar(
                 .align(Alignment.CenterStart)
                 .zIndex(1F),
             onClick = {
-                scope.launch(Dispatchers.Main.immediate) {
-                    if (timeSelectorDialogState.isClosed) {
-                        timeSelectorDialogState.open()
-                    } else {
-                        timeSelectorDialogState.close()
-                    }
-                }
+                isShowTimeSelector = true
             }
         ) {
             Row(
