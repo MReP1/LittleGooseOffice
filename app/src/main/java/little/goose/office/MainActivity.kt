@@ -1,9 +1,14 @@
 package little.goose.office
 
 import android.os.Bundle
+import androidx.activity.SystemBarStyle
 import androidx.activity.compose.setContent
+import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
@@ -26,9 +31,34 @@ class MainActivity : AppCompatActivity() {
         splashScreen.setKeepOnScreenCondition { !isAppInit }
         super.onCreate(savedInstanceState)
 
+        // Turn off the decor fitting system windows, which allows us to handle insets,
+        // including IME animations, and go edge-to-edge
+        // This also sets up the initial system bar style based on the platform theme
+        enableEdgeToEdge()
+
         setContent {
             val viewModel = hiltViewModel<MainViewModel>()
             val appState: AppState by viewModel.appState.collectAsState()
+            val darkTheme = appState.themeConfig.isDarkTheme()
+
+            // Update the edge to edge configuration to match the theme
+            // This is the same parameters as the default enableEdgeToEdge call, but we manually
+            // resolve whether or not to show dark theme using uiState, since it can be different
+            // than the configuration's dark theme value based on the user preference.
+            DisposableEffect(darkTheme) {
+                enableEdgeToEdge(
+                    statusBarStyle = SystemBarStyle.auto(
+                        android.graphics.Color.TRANSPARENT,
+                        android.graphics.Color.TRANSPARENT
+                    ) { darkTheme },
+                    navigationBarStyle = SystemBarStyle.auto(
+                        lightScrim,
+                        darkScrim
+                    ) { darkTheme }
+                )
+                onDispose { }
+            }
+
             AccountTheme(appState.themeConfig) {
                 when (appState) {
                     is AppState.Loading -> {
@@ -36,9 +66,11 @@ class MainActivity : AppCompatActivity() {
                     }
 
                     is AppState.Success -> {
-                        MainScreen(
-                            modifier = Modifier.fillMaxSize()
-                        )
+                        Surface(color = MaterialTheme.colorScheme.background) {
+                            MainScreen(
+                                modifier = Modifier.fillMaxSize()
+                            )
+                        }
                     }
                 }
             }
@@ -55,3 +87,6 @@ class MainActivity : AppCompatActivity() {
         lazyStats.get().isTrackingEnabled = false
     }
 }
+
+private val lightScrim = android.graphics.Color.argb(0xe6, 0xFF, 0xFF, 0xFF)
+private val darkScrim = android.graphics.Color.argb(0x80, 0x1b, 0x1b, 0x1b)

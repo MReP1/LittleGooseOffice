@@ -1,7 +1,6 @@
 package little.goose.design.system.theme
 
 import android.annotation.SuppressLint
-import android.app.Activity
 import android.content.Context
 import android.os.Build
 import android.view.Gravity
@@ -9,43 +8,27 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.compose.foundation.isSystemInDarkTheme
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.ColumnScope
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.height
 import androidx.compose.material3.ColorScheme
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
 import androidx.compose.material3.darkColorScheme
 import androidx.compose.material3.dynamicDarkColorScheme
 import androidx.compose.material3.dynamicLightColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalView
-import androidx.compose.ui.unit.Density
-import androidx.compose.ui.unit.dp
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowCompat
-import androidx.core.view.WindowInsetsCompat
-import androidx.core.view.doOnAttach
 import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.preferencesDataStore
 import little.goose.common.utils.getDataOrNull
-import kotlin.math.abs
 
 private val gooseLightColorScheme = lightColorScheme(
     primary = md_theme_light_primary,
@@ -159,29 +142,7 @@ fun AccountTheme(
     content: @Composable () -> Unit
 ) {
     val context = LocalContext.current
-    val view = LocalView.current
-    val window = (view.context as? Activity)?.window
-    val isLightTheme = !themeConfig.isDarkTheme()
     LittleGooseStyle()
-    DisposableEffect(view, window) {
-        if (window != null) {
-            window.statusBarColor = android.graphics.Color.TRANSPARENT
-            window.navigationBarColor = android.graphics.Color.TRANSPARENT
-            WindowCompat.setDecorFitsSystemWindows(window, false)
-        }
-        onDispose { }
-    }
-    DisposableEffect(isLightTheme, view, window) {
-        if (window != null) {
-            view.doOnAttach {
-                WindowCompat.getInsetsController(window, view).apply {
-                    isAppearanceLightStatusBars = isLightTheme
-                    isAppearanceLightNavigationBars = isLightTheme
-                }
-            }
-        }
-        onDispose { }
-    }
     MaterialTheme(
         colorScheme = themeConfig.getColorScheme(context = context),
         typography = Typography,
@@ -237,55 +198,4 @@ fun LittleGooseStyle() {
 fun findGooseStyleContainer(view: View): ViewGroup {
     return if (view.parent is ComposeView) findGooseStyleContainer(view.parent as View)
     else view.parent as? ViewGroup ?: findGooseStyleContainer(view.parent as View)
-}
-
-@Composable
-fun WithTransparentStyle(
-    modifier: Modifier = Modifier,
-    isLightTheme: Boolean = true,
-    content: @Composable ColumnScope.() -> Unit
-) {
-    val view = LocalView.current
-    val density: Density = LocalDensity.current
-    val window = (view.context as? Activity)?.window
-    var statusHeight by remember { mutableStateOf(0.dp) }
-    var navHeight by remember { mutableStateOf(0.dp) }
-    DisposableEffect(view, density, window) {
-        if (window != null) {
-            window.statusBarColor = android.graphics.Color.TRANSPARENT
-            window.navigationBarColor = android.graphics.Color.TRANSPARENT
-            WindowCompat.setDecorFitsSystemWindows(window, false)
-            view.doOnAttach {
-                ViewCompat.getRootWindowInsets(window.decorView)?.let { rootWindowInsert ->
-                    statusHeight = rootWindowInsert.getInsets(WindowInsetsCompat.Type.statusBars())
-                        .let { statusInsert ->
-                            density.run { (abs(statusInsert.top - statusInsert.bottom)).toDp() }
-                        }
-                    navHeight = rootWindowInsert.getInsets(WindowInsetsCompat.Type.navigationBars())
-                        .let { navInsert ->
-                            density.run { (abs(navInsert.top - navInsert.bottom)).toDp() }
-                        }
-                }
-            }
-        }
-        onDispose { }
-    }
-    DisposableEffect(isLightTheme, view, window) {
-        if (window != null) {
-            view.doOnAttach {
-                WindowCompat.getInsetsController(window, view).apply {
-                    isAppearanceLightStatusBars = isLightTheme
-                    isAppearanceLightNavigationBars = isLightTheme
-                }
-            }
-        }
-        onDispose { }
-    }
-    Surface(modifier = modifier.fillMaxSize()) {
-        Column(modifier = Modifier.fillMaxSize()) {
-            Spacer(modifier = Modifier.height(statusHeight))
-            content()
-            Spacer(modifier = Modifier.height(navHeight))
-        }
-    }
 }
