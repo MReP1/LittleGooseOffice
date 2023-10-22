@@ -32,6 +32,7 @@ kotlinxCoroutines = "1.7.3"
 ksp = "1.9.10-1.0.13"
 room = "2.6.0"
 protobufPlugin = "0.9.4"
+koin = "3.5.1"
 
 [libraries]
 accompanist-navigation-animation = { group = "com.google.accompanist", name = "accompanist-navigation-animation", version.ref = "accompanistVersion" }
@@ -75,6 +76,10 @@ hilt-compiler = { group = "com.google.dagger", name = "hilt-android-compiler", v
 junit4 = { group = "junit", name = "junit", version.ref = "junit4" }
 kotlinx-coroutines-android = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-android", version.ref = "kotlinxCoroutines" }
 kotlinx-coroutines-core = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-core", version.ref = "kotlinxCoroutines" }
+koin-bom = { group = "io.insert-koin", name = "koin-bom", version.ref = "koin" }
+koin-core = { group = "io.insert-koin", name = "koin-core" }
+koin-android = { group = "io.insert-koin", name = "koin-android" }
+koin-compose = { group = "io.insert-koin", name = "koin-androidx-compose" }
 room-compiler = { group = "androidx.room", name = "room-compiler", version.ref = "room" }
 room-ktx = { group = "androidx.room", name = "room-ktx", version.ref = "room" }
 room-runtime = { group = "androidx.room", name = "room-runtime", version.ref = "room" }
@@ -98,3 +103,4 @@ goose-android-library = { id = "goose.android.library", version = "unspecified" 
 goose-android-hilt = { id = "goose.android.hilt", version = "unspecified" }
 goose-android-compose = { id = "goose.android.compose", version = "unspecified" }
 goose-android-room = { id = "goose.android.room", version = "unspecified" }
+goose-android-koin = { id = "goose.android.koin", version = "unspecified" }

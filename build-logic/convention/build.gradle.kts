@@ -42,5 +42,9 @@ gradlePlugin {
             id = "goose.android.room"
             implementationClass = "plugin.RoomConventionPlugin"
         }
+        register("androidKoin") {
+            id = "goose.android.koin"
+            implementationClass = "plugin.KoinConventionPlugin"
+        }
     }
 }
