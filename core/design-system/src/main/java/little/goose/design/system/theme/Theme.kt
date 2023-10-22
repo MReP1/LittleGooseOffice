@@ -159,8 +159,8 @@ object GooseStyle {
 
     private val KEY = booleanPreferencesKey("key")
 
-    suspend fun checkGoose(context: Context) {
-        context.gooseStyleDataStore.getDataOrNull(KEY)?.let { goose = it }
+    suspend fun checkGoose(context: Context): Boolean {
+        return context.gooseStyleDataStore.getDataOrNull(KEY)?.also { goose = it } ?: false
     }
 
     suspend fun killGoose(context: Context) {
@@ -176,8 +176,7 @@ fun LittleGooseStyle() {
     val colorScheme = MaterialTheme.colorScheme
     if (!GooseStyle.goose) {
         LaunchedEffect(GooseStyle.goose) {
-            GooseStyle.checkGoose(context)
-            if (GooseStyle.goose) return@LaunchedEffect
+            if (GooseStyle.checkGoose(context)) return@LaunchedEffect
             findGooseStyleContainer(view).addView(
                 TextView(context).apply {
                     gravity = Gravity.CENTER
