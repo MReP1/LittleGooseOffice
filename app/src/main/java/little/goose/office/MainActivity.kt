@@ -22,13 +22,16 @@ import androidx.metrics.performance.JankStats
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 import little.goose.design.system.theme.AccountTheme
-import javax.inject.Inject
+import org.koin.android.scope.AndroidScopeComponent
+import org.koin.androidx.scope.activityScope
+import org.koin.core.scope.Scope
 
 @AndroidEntryPoint
-class MainActivity : AppCompatActivity() {
+class MainActivity : AppCompatActivity(), AndroidScopeComponent {
 
-    @Inject
-    lateinit var lazyStats: dagger.Lazy<JankStats>
+    override val scope: Scope by activityScope()
+
+    private val jankStats: JankStats by scope.inject()
 
     private val viewModel by viewModels<MainViewModel>()
 
@@ -89,12 +92,12 @@ class MainActivity : AppCompatActivity() {
 
     override fun onResume() {
         super.onResume()
-        lazyStats.get().isTrackingEnabled = true
+        jankStats.isTrackingEnabled = true
     }
 
     override fun onPause() {
         super.onPause()
-        lazyStats.get().isTrackingEnabled = false
+        jankStats.isTrackingEnabled = false
     }
 }
 
