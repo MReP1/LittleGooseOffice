@@ -3,8 +3,8 @@ package little.goose.design.system.component.dialog
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.material3.ModalBottomSheet
+import androidx.compose.material3.SheetState
 import androidx.compose.material3.Surface
-import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -50,16 +50,21 @@ fun TimeSelectorCenterDialog(
 
 @Composable
 fun TimeSelectorBottomSheet(
-    onDismissRequest: () -> Unit,
     modifier: Modifier = Modifier,
+    bottomSheetState: SheetState,
     initTime: Date,
     type: TimeType,
     onConfirm: (Date) -> Unit
 ) {
+    val scope = rememberCoroutineScope()
     ModalBottomSheet(
-        onDismissRequest = onDismissRequest,
+        onDismissRequest = {
+            scope.launch {
+                bottomSheetState.hide()
+            }
+        },
         modifier = modifier,
-        sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
+        sheetState = bottomSheetState
     ) {
         val selectorState = remember(initTime) { TimeSelectorState(initTime) }
         TimeSelector(
@@ -69,7 +74,9 @@ fun TimeSelectorBottomSheet(
                 .height(if (type.containTime()) 400.dp else 240.dp),
             onConfirm = { time ->
                 onConfirm(time)
-                onDismissRequest()
+                scope.launch {
+                    bottomSheetState.hide()
+                }
             },
             timeType = type
         )

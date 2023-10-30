@@ -21,8 +21,10 @@ import androidx.compose.material.icons.rounded.Done
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.SheetValue
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
@@ -60,15 +62,22 @@ fun TransactionContentEditBar(
     onTransactionChange: (TransactionScreenIntent.ChangeTransaction) -> Unit,
 ) {
     var isShowTimeSelector by remember { mutableStateOf(false) }
+    val bottomSheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
     if (isShowTimeSelector) {
         TimeSelectorBottomSheet(
-            onDismissRequest = { isShowTimeSelector = false },
             initTime = transaction.time,
             type = TimeType.DATE_TIME,
+            bottomSheetState = bottomSheetState,
             onConfirm = {
                 onTransactionChange(TransactionScreenIntent.ChangeTransaction.Time(it))
             }
         )
+    }
+    DisposableEffect(bottomSheetState.currentValue) {
+        if (bottomSheetState.currentValue == SheetValue.Hidden) {
+            isShowTimeSelector = false
+        }
+        onDispose { }
     }
     val isDescriptionEditUpdateTransition = updateTransition(
         targetState = isDescriptionEdit, label = "is description edit"

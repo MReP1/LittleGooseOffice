@@ -14,10 +14,13 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.SheetValue
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
+import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -80,14 +83,21 @@ fun NavGraphBuilder.scheduleRoute(
         val viewModel = hiltViewModel<ScheduleDialogViewModel>()
         val schedule by viewModel.schedule.collectAsStateWithLifecycle()
         var isShowTimeSelectorDialog by remember { mutableStateOf(false) }
+        val bottomSheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
         if (isShowTimeSelectorDialog) {
             TimeSelectorBottomSheet(
-                onDismissRequest = { isShowTimeSelectorDialog = false },
                 modifier = Modifier.width(300.dp),
                 initTime = schedule.time,
                 type = TimeType.DATE_TIME,
+                bottomSheetState = bottomSheetState,
                 onConfirm = viewModel::updateScheduleTime
             )
+        }
+        DisposableEffect(bottomSheetState.currentValue) {
+            if (bottomSheetState.currentValue == SheetValue.Hidden) {
+                isShowTimeSelectorDialog = false
+            }
+            onDispose { }
         }
 
         ScheduleDialogScreen(
