@@ -14,16 +14,15 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.SheetValue
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -38,6 +37,7 @@ import androidx.navigation.NavType
 import androidx.navigation.compose.dialog
 import androidx.navigation.navArgument
 import androidx.navigation.navDeepLink
+import kotlinx.coroutines.launch
 import little.goose.common.constants.DEEP_LINK_THEME_AND_HOST
 import little.goose.common.utils.TimeType
 import little.goose.common.utils.toChineseStringWithYear
@@ -83,21 +83,22 @@ fun NavGraphBuilder.scheduleRoute(
         val viewModel = hiltViewModel<ScheduleDialogViewModel>()
         val schedule by viewModel.schedule.collectAsStateWithLifecycle()
         var isShowTimeSelectorDialog by remember { mutableStateOf(false) }
-        val bottomSheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
+        val scope = rememberCoroutineScope()
         if (isShowTimeSelectorDialog) {
+            val bottomSheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
             TimeSelectorBottomSheet(
                 modifier = Modifier.width(300.dp),
+                onDismissRequest = {
+                    scope.launch {
+                        bottomSheetState.hide()
+                        isShowTimeSelectorDialog = false
+                    }
+                },
                 initTime = schedule.time,
                 type = TimeType.DATE_TIME,
                 bottomSheetState = bottomSheetState,
                 onConfirm = viewModel::updateScheduleTime
             )
-        }
-        DisposableEffect(bottomSheetState.currentValue) {
-            if (bottomSheetState.currentValue == SheetValue.Hidden) {
-                isShowTimeSelectorDialog = false
-            }
-            onDispose { }
         }
 
         ScheduleDialogScreen(

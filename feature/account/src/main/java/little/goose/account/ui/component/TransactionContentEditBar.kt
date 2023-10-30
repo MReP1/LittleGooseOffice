@@ -21,7 +21,6 @@ import androidx.compose.material.icons.rounded.Done
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.SheetValue
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
@@ -30,6 +29,7 @@ import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -45,6 +45,7 @@ import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
+import kotlinx.coroutines.launch
 import little.goose.account.R
 import little.goose.account.data.entities.Transaction
 import little.goose.account.ui.transaction.TransactionScreenIntent
@@ -62,9 +63,16 @@ fun TransactionContentEditBar(
     onTransactionChange: (TransactionScreenIntent.ChangeTransaction) -> Unit,
 ) {
     var isShowTimeSelector by remember { mutableStateOf(false) }
-    val bottomSheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
+    val scope = rememberCoroutineScope()
     if (isShowTimeSelector) {
+        val bottomSheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
         TimeSelectorBottomSheet(
+            onDismissRequest = {
+                scope.launch {
+                    bottomSheetState.hide()
+                    isShowTimeSelector = false
+                }
+            },
             initTime = transaction.time,
             type = TimeType.DATE_TIME,
             bottomSheetState = bottomSheetState,
@@ -72,12 +80,6 @@ fun TransactionContentEditBar(
                 onTransactionChange(TransactionScreenIntent.ChangeTransaction.Time(it))
             }
         )
-    }
-    DisposableEffect(bottomSheetState.currentValue) {
-        if (bottomSheetState.currentValue == SheetValue.Hidden) {
-            isShowTimeSelector = false
-        }
-        onDispose { }
     }
     val isDescriptionEditUpdateTransition = updateTransition(
         targetState = isDescriptionEdit, label = "is description edit"

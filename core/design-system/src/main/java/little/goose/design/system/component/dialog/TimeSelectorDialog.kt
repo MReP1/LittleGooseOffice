@@ -51,18 +51,14 @@ fun TimeSelectorCenterDialog(
 @Composable
 fun TimeSelectorBottomSheet(
     modifier: Modifier = Modifier,
+    onDismissRequest: () -> Unit,
     bottomSheetState: SheetState,
     initTime: Date,
     type: TimeType,
     onConfirm: (Date) -> Unit
 ) {
-    val scope = rememberCoroutineScope()
     ModalBottomSheet(
-        onDismissRequest = {
-            scope.launch {
-                bottomSheetState.hide()
-            }
-        },
+        onDismissRequest = onDismissRequest,
         modifier = modifier,
         sheetState = bottomSheetState
     ) {
@@ -74,9 +70,7 @@ fun TimeSelectorBottomSheet(
                 .height(if (type.containTime()) 400.dp else 240.dp),
             onConfirm = { time ->
                 onConfirm(time)
-                scope.launch {
-                    bottomSheetState.hide()
-                }
+                onDismissRequest()
             },
             timeType = type
         )
