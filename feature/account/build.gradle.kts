@@ -36,6 +36,18 @@ androidComponents.beforeVariants {
     }
 }
 
+afterEvaluate {
+    // Fix the implicit with ksp and protobuf.
+    tasks.forEach { task ->
+        if (task.name.contains("kspDebugKotlin")) {
+            task.dependsOn("generateDebugProto")
+        }
+        if (task.name.contains("kspReleaseKotlin")) {
+            task.dependsOn("generateReleaseProto")
+        }
+    }
+}
+
 dependencies {
     implementation(libs.androidx.appcompat)
 
