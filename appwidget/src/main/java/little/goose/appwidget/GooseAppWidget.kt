@@ -4,27 +4,13 @@ import android.content.Context
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.unit.dp
-import androidx.glance.GlanceId
-import androidx.glance.GlanceModifier
-import androidx.glance.GlanceTheme
-import androidx.glance.LocalContext
-import androidx.glance.LocalSize
+import androidx.glance.*
 import androidx.glance.action.clickable
 import androidx.glance.appwidget.GlanceAppWidget
 import androidx.glance.appwidget.SizeMode
 import androidx.glance.appwidget.cornerRadius
 import androidx.glance.appwidget.provideContent
-import androidx.glance.background
-import androidx.glance.layout.Alignment
-import androidx.glance.layout.Column
-import androidx.glance.layout.Row
-import androidx.glance.layout.Spacer
-import androidx.glance.layout.fillMaxHeight
-import androidx.glance.layout.fillMaxSize
-import androidx.glance.layout.fillMaxWidth
-import androidx.glance.layout.height
-import androidx.glance.layout.padding
-import androidx.glance.layout.width
+import androidx.glance.layout.*
 import little.goose.appwidget.component.AppWidgetIcon
 import little.goose.appwidget.component.AppWidgetIconColumn
 import little.goose.appwidget.component.AppWidgetIconRow
@@ -176,11 +162,6 @@ private fun SquareAppWidget(
             verticalAlignment = Alignment.CenterVertically,
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
-            GooseNav.SCHEDULE.IconWidget(
-                modifier = GlanceModifier
-                    .defaultWeight()
-                    .fillMaxHeight()
-            )
             GooseNav.NOTE.IconWidget(
                 modifier = GlanceModifier
                     .defaultWeight()

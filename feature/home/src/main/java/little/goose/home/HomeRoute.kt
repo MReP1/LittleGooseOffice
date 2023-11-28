@@ -5,12 +5,7 @@ import android.content.Intent
 import androidx.activity.ComponentActivity
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.pager.rememberPagerState
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.DisposableEffect
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalView
@@ -29,7 +24,7 @@ import little.goose.home.ui.HomeScreen
 import little.goose.home.ui.HomeViewModel
 import little.goose.search.SearchType
 import little.goose.ui.screen.LittleGooseEmptyScreen
-import java.util.Date
+import java.util.*
 
 const val ROUTE_HOME = "home"
 
@@ -50,8 +45,7 @@ fun NavGraphBuilder.homeRoute(
     onNavigateToSearch: (SearchType) -> Unit,
     onNavigateToTransactionScreen: (transactionId: Long) -> Unit,
     onNavigateToTransaction: (id: Long?, time: Date?) -> Unit,
-    onNavigateToAccountAnalysis: () -> Unit,
-    onNavigateToScheduleDialog: (Long?) -> Unit
+    onNavigateToAccountAnalysis: () -> Unit
 ) {
     composable(
         route = "$ROUTE_HOME/{$KEY_INIT_HOME_PAGE}",
@@ -77,8 +71,7 @@ fun NavGraphBuilder.homeRoute(
             onNavigateToSearch = onNavigateToSearch,
             onNavigateToTransactionScreen = onNavigateToTransactionScreen,
             onNavigateToTransaction = onNavigateToTransaction,
-            onNavigateToAccountAnalysis = onNavigateToAccountAnalysis,
-            onNavigateToScheduleDialog = onNavigateToScheduleDialog
+            onNavigateToAccountAnalysis = onNavigateToAccountAnalysis
         )
     }
 }
@@ -94,8 +87,7 @@ fun HomeRoute(
     onNavigateToTransaction: (id: Long?, time: Date?) -> Unit,
     onNavigateToNote: (noteId: Long?) -> Unit,
     onNavigateToSearch: (SearchType) -> Unit,
-    onNavigateToAccountAnalysis: () -> Unit,
-    onNavigateToScheduleDialog: (Long?) -> Unit
+    onNavigateToAccountAnalysis: () -> Unit
 ) {
     val viewModel = hiltViewModel<HomeViewModel>()
     val homePage by remember(initHomePage) {
@@ -117,8 +109,7 @@ fun HomeRoute(
             onNavigateToMemorialAdd = onNavigateToMemorialAdd,
             onNavigateToMemorial = onNavigateToMemorial,
             onNavigateToAccountAnalysis = onNavigateToAccountAnalysis,
-            onNavigateToTransactionScreen = onNavigateToTransactionScreen,
-            onNavigateToScheduleDialog = onNavigateToScheduleDialog
+            onNavigateToTransactionScreen = onNavigateToTransactionScreen
         )
 
         val context = LocalContext.current

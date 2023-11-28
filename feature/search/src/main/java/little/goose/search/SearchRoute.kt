@@ -17,7 +17,6 @@ import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import little.goose.search.memorial.SearchMemorialRoute
 import little.goose.search.note.SearchNoteRoute
-import little.goose.search.schedule.SearchScheduleRoute
 import little.goose.search.transaction.SearchTransactionRoute
 
 const val ROUTE_SEARCH = "search"
@@ -32,7 +31,6 @@ fun NavGraphBuilder.searchRoute(
     onNavigateToNote: (noteId: Long) -> Unit,
     onNavigateToMemorial: (memorialId: Long) -> Unit,
     onNavigateToTransactionScreen: (transactionId: Long) -> Unit,
-    onNavigateToScheduleDialog: (scheduleId: Long) -> Unit,
     onBack: () -> Unit
 ) = composable(
     route = "$ROUTE_SEARCH/{${SearchType.KEY_SEARCH_TYPE}}",
@@ -68,7 +66,6 @@ fun NavGraphBuilder.searchRoute(
         onNavigateToNote = onNavigateToNote,
         onNavigateToMemorial = onNavigateToMemorial,
         onNavigateToTransactionScreen = onNavigateToTransactionScreen,
-        onNavigateToScheduleDialog = onNavigateToScheduleDialog,
         onBack = onBack
     )
 }
@@ -79,7 +76,6 @@ fun SearchRoute(
     onNavigateToMemorial: (memorialId: Long) -> Unit,
     onNavigateToTransactionScreen: (transactionId: Long) -> Unit,
     onNavigateToNote: (noteId: Long) -> Unit,
-    onNavigateToScheduleDialog: (Long) -> Unit,
     onBack: () -> Unit
 ) {
     val viewModel = hiltViewModel<SearchViewModel>()
@@ -93,12 +89,6 @@ fun SearchRoute(
         SearchType.Note -> SearchNoteRoute(
             modifier = modifier,
             onNavigateToNote = onNavigateToNote,
-            onBack = onBack
-        )
-
-        SearchType.Schedule -> SearchScheduleRoute(
-            modifier = modifier,
-            onNavigateToScheduleDialog = onNavigateToScheduleDialog,
             onBack = onBack
         )
 

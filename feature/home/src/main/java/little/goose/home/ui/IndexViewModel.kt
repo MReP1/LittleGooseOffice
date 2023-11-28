@@ -6,17 +6,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.kizitonwose.calendar.core.atStartOfMonth
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.SharingStarted
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.flatMapLatest
-import kotlinx.coroutines.flow.launchIn
-import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.merge
-import kotlinx.coroutines.flow.onEach
-import kotlinx.coroutines.flow.stateIn
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.flow.*
 import little.goose.account.data.constants.AccountConstant.EXPENSE
 import little.goose.account.data.constants.AccountConstant.INCOME
 import little.goose.account.data.entities.Transaction
@@ -25,9 +15,6 @@ import little.goose.home.data.CalendarModel
 import little.goose.home.ui.component.IndexTopBarState
 import little.goose.memorial.data.entities.Memorial
 import little.goose.memorial.logic.GetMemorialsByYearMonthFlowUseCase
-import little.goose.schedule.data.entities.Schedule
-import little.goose.schedule.logic.GetScheduleByYearMonthFlowUseCase
-import little.goose.schedule.logic.UpdateScheduleUseCase
 import java.math.BigDecimal
 import java.time.LocalDate
 import java.time.YearMonth
@@ -37,8 +24,6 @@ import javax.inject.Inject
 @HiltViewModel
 class IndexViewModel @Inject constructor(
     private val getTransactionByYearMonthFlowUseCase: GetTransactionByYearMonthFlowUseCase,
-    private val getScheduleByYearMonthFlowUseCase: GetScheduleByYearMonthFlowUseCase,
-    private val updateScheduleUseCase: UpdateScheduleUseCase,
     private val getMemorialByYearMonthFlowUseCase: GetMemorialsByYearMonthFlowUseCase
 ) : ViewModel() {
 
@@ -70,14 +55,13 @@ class IndexViewModel @Inject constructor(
             currentCalendarModel = currentCalendarModelState,
             updateMonth = ::updateMonth,
             updateCurrentDay = ::updateCurrentDay,
-            checkSchedule = ::checkSchedule,
             getCalendarModelState = ::getCalendarModelState
         )
     }.stateIn(
         viewModelScope, SharingStarted.WhileSubscribed(5000),
         initialValue = IndexScreenState(
             today = LocalDate.now(), currentDay.value, currentCalendarModel.value,
-            ::updateMonth, ::updateCurrentDay, ::checkSchedule, ::getCalendarModelState
+            ::updateMonth, ::updateCurrentDay, ::getCalendarModelState
         )
     )
 
@@ -100,12 +84,7 @@ class IndexViewModel @Inject constructor(
             ).onEach { memorials ->
                 updateMemorials(memorials, yearMonth)
             }
-            val scheduleFlow = getScheduleByYearMonthFlowUseCase(
-                yearMonth.year, yearMonth.month.value
-            ).onEach { schedules ->
-                updateSchedules(schedules, yearMonth)
-            }
-            merge(transactionFlow, memorialFlow, scheduleFlow)
+            merge(transactionFlow, memorialFlow)
         }.launchIn(viewModelScope)
     }
 
@@ -151,25 +130,6 @@ class IndexViewModel @Inject constructor(
         }
     }
 
-    private fun updateSchedules(schedules: List<Schedule>, month: YearMonth) {
-        val map = mutableMapOf<LocalDate, MutableList<Schedule>>()
-        schedules.forEach { schedule ->
-            val time = schedule.time.toInstant().atZone(zoneId).toLocalDate()
-            val list = map.getOrPut(time) { mutableListOf() }
-            list.add(schedule)
-        }
-        val range = month.atStartOfMonth()..month.atEndOfMonth()
-        calendarModelMap.asSequence().filter {
-            it.key in range && !map.containsKey(it.key)
-        }.forEach {
-            it.value.value = it.value.value.copy(schedules = emptyList())
-        }
-        map.forEach { (time, schedules) ->
-            val calendarModelState = getCalendarModelState(time)
-            calendarModelState.value = calendarModelState.value.copy(schedules = schedules)
-        }
-    }
-
     private fun updateMemorials(memorials: List<Memorial>, month: YearMonth) {
         val map = mutableMapOf<LocalDate, MutableList<Memorial>>()
         memorials.forEach { memorial ->
@@ -199,12 +159,6 @@ class IndexViewModel @Inject constructor(
 
     private fun updateCurrentDay(day: LocalDate) {
         currentDay.value = day
-    }
-
-    private fun checkSchedule(schedule: Schedule, checked: Boolean) {
-        viewModelScope.launch {
-            updateScheduleUseCase(schedule.copy(isfinish = checked))
-        }
     }
 
 }

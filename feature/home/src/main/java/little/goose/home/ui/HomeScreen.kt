@@ -2,40 +2,14 @@ package little.goose.home.ui
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.wrapContentHeight
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.PagerState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.DonutSmall
-import androidx.compose.material.icons.rounded.Add
-import androidx.compose.material.icons.rounded.Delete
-import androidx.compose.material.icons.rounded.DoneAll
-import androidx.compose.material.icons.rounded.DonutSmall
-import androidx.compose.material.icons.rounded.RemoveDone
-import androidx.compose.material.icons.rounded.Search
-import androidx.compose.material.icons.rounded.Settings
-import androidx.compose.material.icons.rounded.SubdirectoryArrowRight
-import androidx.compose.material3.BottomAppBar
-import androidx.compose.material3.CenterAlignedTopAppBar
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.NavigationBarItem
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Snackbar
-import androidx.compose.material3.SnackbarHost
-import androidx.compose.material3.SnackbarHostState
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.material.icons.rounded.*
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -51,21 +25,14 @@ import little.goose.design.system.component.MovableActionButton
 import little.goose.design.system.component.MovableActionButtonState
 import little.goose.design.system.component.dialog.DeleteDialog
 import little.goose.design.system.component.dialog.DeleteDialogState
-import little.goose.home.data.ACCOUNT
-import little.goose.home.data.HOME
-import little.goose.home.data.HomePage
-import little.goose.home.data.MEMORIAL
-import little.goose.home.data.NOTEBOOK
-import little.goose.home.data.SCHEDULE
+import little.goose.home.data.*
 import little.goose.home.ui.component.IndexTopBar
 import little.goose.memorial.ui.MemorialHome
 import little.goose.memorial.ui.MemorialViewModel
 import little.goose.note.ui.NotebookHome
 import little.goose.note.ui.NotebookViewModel
-import little.goose.schedule.ui.ScheduleHome
-import little.goose.schedule.ui.ScheduleHomeViewModel
 import little.goose.search.SearchType
-import java.util.Date
+import java.util.*
 
 @Composable
 fun HomeScreen(
@@ -78,8 +45,7 @@ fun HomeScreen(
     onNavigateToTransaction: (transactionId: Long?, date: Date?) -> Unit,
     onNavigateToNote: (noteId: Long?) -> Unit,
     onNavigateToSearch: (SearchType) -> Unit,
-    onNavigateToAccountAnalysis: () -> Unit,
-    onNavigateToScheduleDialog: (Long?) -> Unit
+    onNavigateToAccountAnalysis: () -> Unit
 ) {
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
@@ -87,7 +53,6 @@ fun HomeScreen(
         HomePage.fromPageIndex(pagerState.currentPage)
     }
 
-    val scheduleHomeViewModel = hiltViewModel<ScheduleHomeViewModel>()
     val indexViewModel = hiltViewModel<IndexViewModel>()
     val accountViewModel = hiltViewModel<AccountHomeViewModel>()
     val memorialViewModel = hiltViewModel<MemorialViewModel>()
@@ -103,13 +68,11 @@ fun HomeScreen(
 
     val transactionColumnState by accountViewModel.transactionColumnState.collectAsState()
     val memorialColumnState by memorialViewModel.memorialColumnState.collectAsState()
-    val scheduleColumnState by scheduleHomeViewModel.scheduleColumnState.collectAsState()
     val noteColumnState by notebookViewModel.noteColumnState.collectAsState()
 
     val isMultiSelecting = when (currentHomePage) {
         HomePage.Notebook -> noteColumnState.isMultiSelecting
-        HomePage.ACCOUNT -> transactionColumnState.isMultiSelecting
-        HomePage.Schedule -> scheduleColumnState.isMultiSelecting
+        HomePage.Account -> transactionColumnState.isMultiSelecting
         HomePage.Memorial -> memorialColumnState.isMultiSelecting
         else -> false
     }
@@ -119,19 +82,6 @@ fun HomeScreen(
             buttonState.expend()
         } else {
             buttonState.fold()
-        }
-    }
-
-    LaunchedEffect(scheduleHomeViewModel.event) {
-        scheduleHomeViewModel.event.collect { event ->
-            when (event) {
-                is ScheduleHomeViewModel.Event.DeleteSchedules -> {
-                    snackbarHostState.showSnackbar(
-                        message = context.getString(little.goose.common.R.string.deleted),
-                        withDismissAction = true
-                    )
-                }
-            }
         }
     }
 
@@ -191,7 +141,7 @@ fun HomeScreen(
                         Text(text = stringResource(id = currentHomePage.labelRes))
                     },
                     actions = {
-                        if (currentHomePage == HomePage.ACCOUNT) {
+                        if (currentHomePage == HomePage.Account) {
                             IconButton(onClick = onNavigateToAccountAnalysis) {
                                 Icon(
                                     imageVector = Icons.Outlined.DonutSmall,
@@ -237,9 +187,6 @@ fun HomeScreen(
                                 onTransactionAdd = { time ->
                                     onNavigateToTransaction(null, time)
                                 },
-                                onScheduleClick = { schedule ->
-                                    onNavigateToScheduleDialog(schedule.id)
-                                },
                                 onTransactionClick = { transaction ->
                                     transaction.id?.run(onNavigateToTransactionScreen)
                                 },
@@ -269,15 +216,6 @@ fun HomeScreen(
                                 onNavigateToTransactionScreen = onNavigateToTransactionScreen,
                                 onNavigateToSearch = { onNavigateToSearch(SearchType.Transaction) },
                                 onNavigateToAccountAnalysis = onNavigateToAccountAnalysis
-                            )
-                        }
-
-                        SCHEDULE -> {
-                            ScheduleHome(
-                                modifier = Modifier.fillMaxSize(),
-                                scheduleColumnState = scheduleColumnState,
-                                onNavigateToSearch = { onNavigateToSearch(SearchType.Schedule) },
-                                onNavigateToScheduleDialog = onNavigateToScheduleDialog
                             )
                         }
 
@@ -323,7 +261,7 @@ fun HomeScreen(
                                     }
                                 }
 
-                                HomePage.ACCOUNT -> {
+                                HomePage.Account -> {
                                     if (isMultiSelecting) {
                                         deleteDialogState.show(onConfirm = {
                                             transactionColumnState.deleteTransactions(
@@ -334,19 +272,6 @@ fun HomeScreen(
                                         })
                                     } else {
                                         onNavigateToTransaction(null, Date())
-                                    }
-                                }
-
-                                HomePage.Schedule -> {
-                                    if (isMultiSelecting) {
-                                        deleteDialogState.show(onConfirm = {
-                                            scheduleColumnState.deleteSchedules(
-                                                scheduleColumnState.multiSelectedSchedules.toList()
-                                            )
-                                            scheduleColumnState.cancelMultiSelecting()
-                                        })
-                                    } else {
-                                        onNavigateToScheduleDialog(null)
                                     }
                                 }
 
@@ -390,19 +315,11 @@ fun HomeScreen(
                                     }
                                 }
 
-                                HomePage.ACCOUNT -> {
+                                HomePage.Account -> {
                                     if (isMultiSelecting) {
                                         transactionColumnState.selectAllTransactions()
                                     } else {
                                         onNavigateToSearch(SearchType.Transaction)
-                                    }
-                                }
-
-                                HomePage.Schedule -> {
-                                    if (isMultiSelecting) {
-                                        scheduleColumnState.selectAllSchedules()
-                                    } else {
-                                        onNavigateToSearch(SearchType.Schedule)
                                     }
                                 }
 
@@ -424,7 +341,7 @@ fun HomeScreen(
                                     contentDescription = "Remove done"
                                 )
                             } else when (currentHomePage) {
-                                HomePage.ACCOUNT -> {
+                                HomePage.Account -> {
                                     Icon(
                                         imageVector = Icons.Rounded.DonutSmall,
                                         contentDescription = "Analysis"
@@ -441,7 +358,7 @@ fun HomeScreen(
                         },
                         onBottomSubButtonClick = {
                             when (currentHomePage) {
-                                HomePage.ACCOUNT -> {
+                                HomePage.Account -> {
                                     if (isMultiSelecting) {
                                         transactionColumnState.cancelMultiSelecting()
                                     } else {
@@ -452,14 +369,6 @@ fun HomeScreen(
                                 HomePage.Memorial -> {
                                     if (isMultiSelecting) {
                                         memorialColumnState.cancelMultiSelecting()
-                                    } else scope.launch {
-                                        buttonState.fold()
-                                    }
-                                }
-
-                                HomePage.Schedule -> {
-                                    if (isMultiSelecting) {
-                                        scheduleColumnState.cancelMultiSelecting()
                                     } else scope.launch {
                                         buttonState.fold()
                                     }

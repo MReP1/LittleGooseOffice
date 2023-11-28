@@ -13,6 +13,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
 import little.goose.account.R
@@ -110,5 +111,17 @@ fun TransactionAnalysisTopBar(
                 )
             }
         }
+    )
+}
+
+@Preview
+@Composable
+private fun PreviewTransactionAnalysisTopBar() {
+    TransactionAnalysisTopBar(
+        modifier = Modifier.fillMaxWidth(),
+        state = TransactionAnalysisTopBarState(),
+        selectedTabIndex = 0,
+        onTabClick = {},
+        onBack = {}
     )
 }

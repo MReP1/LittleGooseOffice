@@ -1,13 +1,9 @@
 package little.goose.office
 
-import androidx.compose.animation.AnimatedContentTransitionScope
-import androidx.compose.animation.EnterTransition
-import androidx.compose.animation.ExitTransition
+import androidx.compose.animation.*
 import androidx.compose.animation.core.FastOutLinearInEasing
 import androidx.compose.animation.core.LinearOutSlowInEasing
 import androidx.compose.animation.core.tween
-import androidx.compose.animation.scaleIn
-import androidx.compose.animation.scaleOut
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Stable
 import androidx.compose.ui.Modifier
@@ -31,8 +27,6 @@ import little.goose.memorial.ui.navigateToMemorial
 import little.goose.note.ui.note.NoteNavigatingType
 import little.goose.note.ui.note.navigateToNote
 import little.goose.note.ui.note.noteRoute
-import little.goose.schedule.ui.navigateToScheduleDialog
-import little.goose.schedule.ui.scheduleRoute
 import little.goose.search.navigateToSearch
 import little.goose.search.searchRoute
 import little.goose.settings.navigateToSettings
@@ -89,8 +83,7 @@ internal fun MainScreen(modifier: Modifier) {
             onNavigateToMemorial = {
                 navController.navigateToMemorial(MemorialScreenType.Modify, memorialId = it)
             },
-            onNavigateToAccountAnalysis = navController::navigateToAccountAnalysis,
-            onNavigateToScheduleDialog = navController::navigateToScheduleDialog
+            onNavigateToAccountAnalysis = navController::navigateToAccountAnalysis
         )
 
         noteRoute(
@@ -105,7 +98,6 @@ internal fun MainScreen(modifier: Modifier) {
                 navController.navigateToMemorial(MemorialScreenType.Modify, memorialId = it)
             },
             onNavigateToTransactionScreen = navController::navigateToTransaction,
-            onNavigateToScheduleDialog = navController::navigateToScheduleDialog,
             onBack = navController::navigateUp
         )
 
@@ -117,10 +109,6 @@ internal fun MainScreen(modifier: Modifier) {
 
         memorialGraph(
             onBack = navController::navigateUp
-        )
-
-        scheduleRoute(
-            onDismissRequest = navController::navigateUp
         )
 
         settingsRoute(

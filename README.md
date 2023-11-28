@@ -56,12 +56,6 @@ The APP is divided into four modules, namely bookkeeping, notes, calendars and a
   <img src="doc/image/笔记.png" width=50% height=50%>
 </p>
 
-## Schedule
-
-<p align="center">
-  <img src="doc/image/日程.png" width=50% height=50%>
-</p>
-
 ## Memorial
 
 <p align="center">

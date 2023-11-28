@@ -12,7 +12,7 @@ import androidx.glance.action.clickable
 import little.goose.appwidget.component.AppWidgetIcon
 import little.goose.common.constants.DEEP_LINK_THEME_AND_HOST
 import little.goose.common.constants.KEY_HOME_PAGE
-import java.util.Date
+import java.util.*
 
 internal enum class GooseNav(
     val drawableResId: Int,
@@ -32,16 +32,10 @@ internal enum class GooseNav(
         homePageAction = actionStartHomeScreen(2),
         addAction = actionStartTransactionScreen()
     ),
-    SCHEDULE(
-        drawableResId = R.drawable.icon_fact_check,
-        contentDescription = "Schedule",
-        homePageAction = actionStartHomeScreen(3),
-        addAction = actionStartScheduleScreen()
-    ),
     MEMORIAL(
         drawableResId = R.drawable.icon_event,
         contentDescription = "Memorial",
-        homePageAction = actionStartHomeScreen(4),
+        homePageAction = actionStartHomeScreen(3),
         addAction = actionStartMemorialScreen()
     );
 
@@ -57,17 +51,6 @@ internal enum class GooseNav(
     }
 }
 
-internal fun actionStartScheduleScreen(): Action {
-    return actionStartMainActivity(
-        data = Uri.parse(
-            "$DEEP_LINK_THEME_AND_HOST/dialog_schedule" +
-                    "/schedule_id=0"
-        ),
-        parameters = actionParametersOf(
-            ActionParameters.Key<Int>(KEY_HOME_PAGE) to 3
-        )
-    )
-}
 
 internal fun actionStartNoteScreen(): Action {
     return actionStartMainActivity(
