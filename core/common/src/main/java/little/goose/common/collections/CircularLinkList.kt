@@ -32,17 +32,18 @@ class CircularLinkList<T> {
 
     fun remove(element: T) {
         var node: Node<T>? = headNode
-        if (node == element) {
+        if (node?.element == element) {
             headNode?._next = null
             headNode = null
         } else {
             while (node != tailNode || node != null) {
-                if (node?._next == element) {
-                    node?._next = element?._next
-                    if (element == tailNode) {
+                val next = node?._next
+                if (next?.element == element) {
+                    node?._next = next?._next
+                    if (element == tailNode?.element) {
                         tailNode = node
                     }
-                    element?._next = null
+                    next?._next = null
                     break
                 }
                 node = node?._next
