@@ -2,7 +2,7 @@ plugins {
     alias(libs.plugins.goose.android.application)
     alias(libs.plugins.goose.android.compose)
     alias(libs.plugins.goose.android.hilt)
-    alias(libs.plugins.goose.android.koin)
+    alias(libs.plugins.goose.koin)
 }
 
 android {

@@ -1,12 +1,6 @@
 package little.goose.account.ui.analysis
 
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.wrapContentSize
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.MaterialTheme
@@ -25,7 +19,7 @@ import little.goose.account.ui.component.TransactionPercentCircleChart
 import little.goose.account.ui.component.TransactionPercentColumn
 import little.goose.common.collections.CircularLinkList
 import little.goose.common.utils.TimeType
-import java.util.Date
+import java.util.*
 
 @Composable
 fun TransactionAnalysisCommonContent(
@@ -84,7 +78,7 @@ fun TransactionAnalysisCommonContent(
             Spacer(modifier = Modifier.height(16.dp))
 
             TransactionPercentCircleChart(
-                modifier = Modifier.size(200.dp),
+                modifier = Modifier.wrapContentSize(),
                 transactionPercents = transactionPercents,
                 colors = trColors
             )

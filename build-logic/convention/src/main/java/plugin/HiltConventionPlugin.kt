@@ -2,7 +2,6 @@ package plugin
 
 import org.gradle.api.Plugin
 import org.gradle.api.Project
-import org.gradle.api.plugins.PluginManager
 import org.gradle.kotlin.dsl.dependencies
 
 @Suppress("unused")
@@ -10,14 +9,12 @@ class HiltConventionPlugin : Plugin<Project> {
 
     override fun apply(project: Project) {
         with(project) {
-            pluginManager.applyPlugin()
+            with(pluginManager) {
+                apply(libs.findPlugin("hilt").get().get().pluginId)
+                apply(libs.findPlugin("ksp").get().get().pluginId)
+            }
             applyDependencies()
         }
-    }
-
-    private fun PluginManager.applyPlugin() {
-        apply("dagger.hilt.android.plugin")
-        apply("com.google.devtools.ksp")
     }
 
     private fun Project.applyDependencies() {

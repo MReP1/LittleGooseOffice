@@ -80,7 +80,7 @@ class MainActivity : AppCompatActivity(), AndroidScopeComponent {
                 onDispose { }
             }
 
-            AccountTheme(appState.themeConfig) {
+            AccountTheme(themeConfig = appState.themeConfig, useGooseStyle = true) {
                 Surface(color = MaterialTheme.colorScheme.background) {
                     MainScreen(
                         modifier = Modifier.fillMaxSize()

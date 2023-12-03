@@ -72,4 +72,6 @@ dependencies {
     implementation(libs.protobuf.kotlin.lite)
     // datastore
     implementation(libs.androidx.datastore)
+
+    implementation(project(":shared:chart"))
 }

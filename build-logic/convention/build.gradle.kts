@@ -23,28 +23,32 @@ dependencies {
 gradlePlugin {
     plugins {
         register("androidLibrary") {
-            id = "goose.android.library"
+            id = libs.plugins.goose.android.library.get().pluginId
             implementationClass = "plugin.AndroidLibraryConventionPlugin"
         }
         register("androidApp") {
-            id = "goose.android.app"
+            id = libs.plugins.goose.android.application.get().pluginId
             implementationClass = "plugin.AndroidAppConventionPlugin"
         }
         register("androidHilt") {
-            id = "goose.android.hilt"
+            id = libs.plugins.goose.android.hilt.get().pluginId
             implementationClass = "plugin.HiltConventionPlugin"
         }
         register("androidCompose") {
-            id = "goose.android.compose"
+            id = libs.plugins.goose.android.compose.get().pluginId
             implementationClass = "plugin.ComposeConventionPlugin"
         }
         register("androidRoom") {
-            id = "goose.android.room"
+            id = libs.plugins.goose.android.room.get().pluginId
             implementationClass = "plugin.RoomConventionPlugin"
         }
-        register("androidKoin") {
-            id = "goose.android.koin"
+        register("koin") {
+            id = libs.plugins.goose.koin.get().pluginId
             implementationClass = "plugin.KoinConventionPlugin"
+        }
+        register("kotlinMultiplatform") {
+            id = libs.plugins.goose.kotlin.multiplatform.get().pluginId
+            implementationClass = "plugin.KotlinMultiplatformConventionPlugin"
         }
     }
 }

@@ -8,19 +8,8 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.compose.foundation.isSystemInDarkTheme
-import androidx.compose.material3.ColorScheme
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.darkColorScheme
-import androidx.compose.material3.dynamicDarkColorScheme
-import androidx.compose.material3.dynamicLightColorScheme
-import androidx.compose.material3.lightColorScheme
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.Stable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.LocalContext
@@ -139,10 +128,13 @@ enum class ThemeType {
 @Composable
 fun AccountTheme(
     themeConfig: ThemeConfig = remember { ThemeConfig() },
+    useGooseStyle: Boolean = false,
     content: @Composable () -> Unit
 ) {
     val context = LocalContext.current
-    LittleGooseStyle()
+    if (useGooseStyle) {
+        LittleGooseStyle()
+    }
     MaterialTheme(
         colorScheme = themeConfig.getColorScheme(context = context),
         typography = Typography,

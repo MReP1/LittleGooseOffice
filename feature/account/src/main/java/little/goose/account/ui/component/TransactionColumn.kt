@@ -42,7 +42,7 @@ fun TransactionColumn(
     ) {
         items(
             items = state.transactions,
-            key = { it.id ?: it }
+            key = { it.id ?: it.toString() }
         ) { transaction ->
             if (transaction.type == AccountConstant.TIME) {
                 Text(

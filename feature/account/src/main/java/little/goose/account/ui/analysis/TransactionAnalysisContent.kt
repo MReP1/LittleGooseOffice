@@ -12,8 +12,7 @@ import little.goose.account.data.models.TransactionPercent
 import little.goose.common.utils.TimeType
 import little.goose.common.utils.setMonth
 import little.goose.common.utils.setYear
-import java.util.Calendar
-import java.util.Date
+import java.util.*
 
 data class TransactionAnalysisContentState(
     val year: Int,
@@ -44,6 +43,22 @@ fun TransactionAnalysisContent(
         time: Date, timeType: TimeType, moneyType: MoneyType, iconId: Int?, content: String?
     ) -> Unit
 ) {
+
+    fun clickTransactionPercent(moneyType: MoneyType, iconId: Int) {
+        val dateMillis = Calendar.getInstance().apply {
+            clear()
+            setYear(state.year)
+            setMonth(if (state.timeType == AnalysisHelper.TimeType.MONTH) state.month else 1)
+        }.time
+        val clickTimeType = when (state.timeType) {
+            AnalysisHelper.TimeType.MONTH -> TimeType.YEAR_MONTH
+            AnalysisHelper.TimeType.YEAR -> TimeType.YEAR
+        }
+        onNavigateToTransactionExample(
+            dateMillis, clickTimeType, moneyType, iconId, null
+        )
+    }
+
     HorizontalPager(
         modifier = modifier
             .fillMaxSize(),
@@ -59,18 +74,7 @@ fun TransactionAnalysisContent(
                     transactionPercents = state.percentsState.expensePercents,
                     onNavigateToTransactionExample = onNavigateToTransactionExample,
                     onTransactionPercentClick = {
-                        val dateMillis = Calendar.getInstance().apply {
-                            clear()
-                            setYear(state.year)
-                            setMonth(if (state.timeType == AnalysisHelper.TimeType.MONTH) state.month else 1)
-                        }.time
-                        val clickTimeType = when (state.timeType) {
-                            AnalysisHelper.TimeType.MONTH -> TimeType.YEAR_MONTH
-                            AnalysisHelper.TimeType.YEAR -> TimeType.YEAR
-                        }
-                        onNavigateToTransactionExample(
-                            dateMillis, clickTimeType, MoneyType.EXPENSE, it.icon_id, null
-                        )
+                        clickTransactionPercent(MoneyType.EXPENSE, it.icon_id)
                     }
                 )
             }
@@ -84,18 +88,7 @@ fun TransactionAnalysisContent(
                     transactionPercents = state.percentsState.incomePercents,
                     onNavigateToTransactionExample = onNavigateToTransactionExample,
                     onTransactionPercentClick = {
-                        val dateMillis = Calendar.getInstance().apply {
-                            clear()
-                            setYear(state.year)
-                            setMonth(if (state.timeType == AnalysisHelper.TimeType.MONTH) state.month else 1)
-                        }.time
-                        val clickTimeType = when (state.timeType) {
-                            AnalysisHelper.TimeType.MONTH -> TimeType.YEAR_MONTH
-                            AnalysisHelper.TimeType.YEAR -> TimeType.YEAR
-                        }
-                        onNavigateToTransactionExample(
-                            dateMillis, clickTimeType, MoneyType.INCOME, it.icon_id, null
-                        )
+                        clickTransactionPercent(MoneyType.INCOME, it.icon_id)
                     }
                 )
             }

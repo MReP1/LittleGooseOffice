@@ -1,11 +1,50 @@
 package plugin
 
 import AndroidConfigConventions
+import com.android.build.api.dsl.ApplicationExtension
 import com.android.build.api.dsl.CommonExtension
+import com.android.build.gradle.LibraryExtension
 import org.gradle.api.Project
 import org.gradle.kotlin.dsl.withType
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+
+/**
+ * Configures the Android specific settings for the application.
+ */
+internal fun ApplicationExtension.configureAndroidApplication() {
+    configureAndroidCommon()
+
+    defaultConfig.targetSdk = AndroidConfigConventions.TARGET_SDK_VERSION
+
+    buildTypes {
+        release {
+            isMinifyEnabled = true
+            isShrinkResources = true
+            proguardFiles(
+                getDefaultProguardFile("proguard-android-optimize.txt"),
+                "proguard-rules.pro"
+            )
+        }
+    }
+}
+
+/**
+ * Configures the Android settings for the library extension.
+ */
+internal fun LibraryExtension.configureAndroidLibrary() {
+    configureAndroidCommon()
+
+    buildTypes {
+        release {
+            isMinifyEnabled = true
+            proguardFiles(
+                getDefaultProguardFile("proguard-android-optimize.txt"),
+                "proguard-rules.pro"
+            )
+        }
+    }
+}
 
 fun Project.configureKotlin(
     commonExtension: CommonExtension<*, *, *, *, *>
