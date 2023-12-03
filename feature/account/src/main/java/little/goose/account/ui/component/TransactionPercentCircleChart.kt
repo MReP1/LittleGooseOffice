@@ -1,6 +1,5 @@
 package little.goose.account.ui.component
 
-import ChartLabel
 import androidx.compose.foundation.layout.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
@@ -9,8 +8,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import little.goose.account.data.models.TransactionPercent
-import pie.PieChart
-import pie.PieData
+import little.goose.chart.ChartLabel
+import little.goose.chart.pie.PieChart
+import little.goose.chart.pie.PieData
 
 @OptIn(ExperimentalLayoutApi::class)
 @Composable

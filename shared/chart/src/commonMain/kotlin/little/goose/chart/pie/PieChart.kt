@@ -1,4 +1,4 @@
-package pie
+package little.goose.chart.pie
 
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.layout.Row

@@ -1,4 +1,4 @@
-package pie
+package little.goose.chart.pie
 
 import androidx.compose.ui.graphics.Color
 
