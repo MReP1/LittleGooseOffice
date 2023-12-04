@@ -74,6 +74,12 @@ The APP is divided into four modules, namely bookkeeping, notes, calendars and a
   <img src="doc/image/分析.png" width=50% height=50%>
 </p>
 
+# Contribute
+
+Supported by [Jetbrains](https://jb.gg/OpenSourceSupport).
+
+<img src="doc/jb/JetBrains_Beam.png" width="40%" height="40%">
+
 # License
 ```
 MIT License
