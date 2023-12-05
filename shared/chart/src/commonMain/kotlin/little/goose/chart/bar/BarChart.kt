@@ -39,7 +39,7 @@ fun BarChart(
 
     val textMeasurer = rememberTextMeasurer(dataList.size)
 
-    val xTextList by remember {
+    val xTextList by remember(dataList) {
         derivedStateOf { dataList.map { it.xText } }
     }
 
@@ -49,7 +49,7 @@ fun BarChart(
         } else emptyList()
     }
 
-    val maxXTextHeight = remember(xTextResult) {
+    val maxXTextHeight = remember(properties.showXText, xTextResult) {
         if (properties.showXText) {
             xTextResult.maxOf { it.size.height }.toFloat()
         } else 0F
