@@ -10,6 +10,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import little.goose.chart.ChartLabel
+import little.goose.chart.bar.BarChart
+import little.goose.chart.bar.BarData
 import little.goose.chart.pie.PieChart
 import little.goose.chart.pie.PieData
 
@@ -19,9 +21,30 @@ internal fun ChartCatalogScreen(
 ) {
     Surface(modifier = modifier) {
         Column(modifier = Modifier.fillMaxSize()) {
+            BarChartCatalog(modifier = Modifier.fillMaxWidth())
             PieChartCatalog(modifier = Modifier.fillMaxWidth())
         }
     }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun BarChartCatalog(
+    modifier: Modifier = Modifier
+) {
+    val dataList = remember {
+        buildList {
+            repeat(4) {
+                add(BarData("$it", it.toFloat(), "$it", Color.Red))
+            }
+        }
+    }
+    BarChart(
+        modifier = Modifier
+            .fillMaxWidth()
+            .size(200.dp),
+        dataList = dataList
+    )
 }
 
 @OptIn(ExperimentalLayoutApi::class)

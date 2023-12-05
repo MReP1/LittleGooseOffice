@@ -4,8 +4,22 @@ plugins {
 }
 
 kotlin {
+
+    androidTarget()
+
+    listOf(
+        iosX64(),
+        iosArm64(),
+        iosSimulatorArm64()
+    ).forEach { iosTarget ->
+        iosTarget.binaries.framework {
+            baseName = "shared"
+            isStatic = true
+        }
+    }
+
     sourceSets {
-        val commonMain by getting {
+        commonMain {
             dependencies {
                 implementation(compose.runtime)
                 implementation(compose.foundation)
@@ -13,7 +27,7 @@ kotlin {
                 implementation(compose.materialIconsExtended)
             }
         }
-        val androidMain by getting {
+        androidMain {
 
         }
     }
@@ -21,4 +35,7 @@ kotlin {
 
 android {
     namespace = "little.goose.chart"
+
+    sourceSets["main"].manifest.srcFile("src/androidMain/AndroidManifest.xml")
+    sourceSets["main"].res.srcDirs("src/androidMain/res")
 }

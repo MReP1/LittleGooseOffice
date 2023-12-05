@@ -20,7 +20,6 @@ class KotlinMultiplatformConventionPlugin : Plugin<Project> {
             }
 
             extensions.configure<KotlinMultiplatformExtension> {
-                androidTarget()
                 jvmToolchain(AndroidConfigConventions.JAVA_VERSION.toString().toInt())
             }
 
