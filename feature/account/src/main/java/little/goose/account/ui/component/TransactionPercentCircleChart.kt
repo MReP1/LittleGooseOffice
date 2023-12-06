@@ -44,10 +44,15 @@ fun TransactionPercentCircleChart(
                         horizontalAlignment = Alignment.CenterHorizontally,
                         verticalArrangement = Arrangement.Center
                     ) {
-                        Text(text = data.content, color = MaterialTheme.colorScheme.onSurface)
+                        Text(
+                            text = data.content,
+                            color = MaterialTheme.colorScheme.onSurface,
+                            style = MaterialTheme.typography.labelSmall
+                        )
                         Text(
                             text = (data.amount * 100).toString().roundTo(1) + "%",
-                            color = MaterialTheme.colorScheme.onSurface
+                            color = MaterialTheme.colorScheme.onSurface,
+                            style = MaterialTheme.typography.labelSmall
                         )
                     }
                 }
