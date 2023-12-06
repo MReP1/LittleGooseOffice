@@ -40,7 +40,7 @@ fun BarChartCatalog(
         }
     }
     BarChart(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
             .size(200.dp),
         dataList = dataList
@@ -68,8 +68,7 @@ private fun PieChartCatalog(
             PieChart(
                 modifier = Modifier
                     .height(200.dp)
-                    .aspectRatio(1F)
-                    .padding(8.dp),
+                    .aspectRatio(1F),
                 dataList = dataList
             )
             Column(modifier = Modifier.weight(1F)) {
@@ -91,8 +90,7 @@ private fun PieChartCatalog(
             PieChart(
                 modifier = Modifier
                     .height(200.dp)
-                    .aspectRatio(1F)
-                    .padding(8.dp),
+                    .aspectRatio(1F),
                 dataList = dataList
             )
             FlowRow(
