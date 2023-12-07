@@ -20,6 +20,7 @@ import androidx.navigation.navArgument
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import little.goose.common.constants.KEY_HOME_PAGE
+import little.goose.home.data.HomePage
 import little.goose.home.ui.HomeScreen
 import little.goose.home.ui.HomeViewModel
 import little.goose.search.SearchType
@@ -98,7 +99,7 @@ fun HomeRoute(
     if (homePage == -1) {
         LittleGooseEmptyScreen(modifier = modifier)
     } else {
-        val pagerState = rememberPagerState(initialPage = homePage, pageCount = { 4 })
+        val pagerState = rememberPagerState(initialPage = homePage, pageCount = HomePage.entries::size)
         HomeScreen(
             modifier = modifier.fillMaxSize(),
             pagerState = pagerState,
