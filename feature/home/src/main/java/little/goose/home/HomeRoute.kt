@@ -98,7 +98,7 @@ fun HomeRoute(
     if (homePage == -1) {
         LittleGooseEmptyScreen(modifier = modifier)
     } else {
-        val pagerState = rememberPagerState(initialPage = homePage, pageCount = { 5 })
+        val pagerState = rememberPagerState(initialPage = homePage, pageCount = { 4 })
         HomeScreen(
             modifier = modifier.fillMaxSize(),
             pagerState = pagerState,
