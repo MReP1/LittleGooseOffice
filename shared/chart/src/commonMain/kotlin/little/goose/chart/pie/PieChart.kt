@@ -9,6 +9,7 @@ import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.*
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
@@ -29,7 +30,7 @@ data class PieChartProperties(
 )
 
 @Composable
-fun PieChart(
+fun PieChartWithContent(
     modifier: Modifier = Modifier,
     dataList: List<PieData>,
     pieChartProperties: PieChartProperties = PieChartProperties(),
@@ -37,13 +38,37 @@ fun PieChart(
         Text(text = data.content, style = MaterialTheme.typography.labelSmall, color = LocalContentColor.current)
     }
 ) {
+    var selectedData: PieData? by rememberSaveable(stateSaver = PieData.saver) { mutableStateOf(null) }
+    Box(modifier, contentAlignment = Alignment.Center) {
+        PieChart(
+            modifier = Modifier.fillMaxSize(),
+            dataList,
+            pieChartProperties,
+            selectedData,
+            onSelectedData = { selectedData = it }
+        )
+        selectedData?.let { data ->
+            selectedContent(data)
+        }
+    }
+}
+
+@Composable
+fun PieChart(
+    modifier: Modifier = Modifier,
+    dataList: List<PieData>,
+    pieChartProperties: PieChartProperties = PieChartProperties(),
+    selectedData: PieData? = null,
+    onSelectedData: (PieData?) -> Unit
+) {
+    val currentOnSelectedData by rememberUpdatedState(onSelectedData)
+    val currentSelectedData by rememberUpdatedState(selectedData)
+
     val amountSum = remember(dataList) {
         dataList.map { it.amount }
             .takeIf { it.isNotEmpty() }
             ?.reduce { acc, amount -> acc + amount } ?: 1F
     }
-
-    var selectedData: PieData? by remember { mutableStateOf(null) }
 
     Box(
         modifier = modifier.padding((pieChartProperties.selectedStrokeWidth - pieChartProperties.strokeWidth) / 2),
@@ -63,7 +88,9 @@ fun PieChart(
                             val data = dataList[index]
                             val sweepAngle = (data.amount / amountSum) * 360F
                             if (realAngle in currentAngle..(sweepAngle + currentAngle)) {
-                                selectedData = if (selectedData != data) data else null
+                                currentOnSelectedData(
+                                    if (currentSelectedData != data) data else null
+                                )
                             }
                             currentAngle += sweepAngle
                         }
@@ -90,10 +117,6 @@ fun PieChart(
                 )
                 startAngle += sweepAngle
             }
-        }
-
-        selectedData?.let { data ->
-            selectedContent(data)
         }
     }
 }

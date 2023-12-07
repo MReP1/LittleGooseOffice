@@ -4,8 +4,8 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.*
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -21,24 +21,39 @@ import little.goose.chart.util.roundTo
 fun TransactionPercentCircleChart(
     modifier: Modifier = Modifier,
     transactionPercents: List<TransactionPercent>,
-    colors: List<Pair<Color, Color>>
+    colors: List<Pair<Color, Color>>,
+    onTransactionPercentClick: (TransactionPercent) -> Unit
 ) {
+    val currentTransactionPercents by rememberUpdatedState(newValue = transactionPercents)
     val dataList = remember(transactionPercents) {
         transactionPercents.mapIndexed { index, tp ->
             PieData(
                 content = tp.content,
                 amount = tp.percent.toFloat(),
-                color = colors[index].first
+                color = colors[index].first,
+                id = tp.icon_id.toString()
             )
         }
     }
 
     Column(modifier = modifier, horizontalAlignment = Alignment.CenterHorizontally) {
-        PieChart(
-            modifier = Modifier.size(200.dp),
-            dataList = dataList,
-            selectedContent = { data ->
-                TextButton(onClick = { /*TODO*/ }) {
+        var selectedPieData: PieData? by rememberSaveable(stateSaver = PieData.saver) {
+            mutableStateOf(null)
+        }
+
+        Box(modifier = Modifier.size(200.dp), contentAlignment = Alignment.Center) {
+            PieChart(
+                modifier = Modifier.size(200.dp),
+                dataList = dataList,
+                selectedData = selectedPieData,
+                onSelectedData = { selectedPieData = it }
+            )
+            selectedPieData?.let { data ->
+                TextButton(onClick = {
+                    currentTransactionPercents.find {
+                        it.icon_id.toString() == data.id
+                    }?.run(onTransactionPercentClick)
+                }) {
                     Column(
                         modifier = Modifier.wrapContentWidth(),
                         horizontalAlignment = Alignment.CenterHorizontally,
@@ -57,7 +72,7 @@ fun TransactionPercentCircleChart(
                     }
                 }
             }
-        )
+        }
 
         FlowRow(
             modifier = Modifier.width(172.dp),

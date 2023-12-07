@@ -80,7 +80,8 @@ fun TransactionAnalysisCommonContent(
             TransactionPercentCircleChart(
                 modifier = Modifier.wrapContentSize(),
                 transactionPercents = transactionPercents,
-                colors = trColors
+                colors = trColors,
+                onTransactionPercentClick = onTransactionPercentClick
             )
 
             Spacer(modifier = Modifier.height(16.dp))
