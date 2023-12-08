@@ -1,23 +1,44 @@
 package little.goose.home.ui
 
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.interaction.MutableInteractionSource
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.PagerState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.DonutSmall
-import androidx.compose.material.icons.rounded.*
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.material.icons.rounded.Add
+import androidx.compose.material.icons.rounded.Delete
+import androidx.compose.material.icons.rounded.DoneAll
+import androidx.compose.material.icons.rounded.RemoveDone
+import androidx.compose.material.icons.rounded.Settings
+import androidx.compose.material3.BottomAppBar
+import androidx.compose.material3.CenterAlignedTopAppBar
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.NavigationBarItem
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Snackbar
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.zIndex
 import androidx.hilt.navigation.compose.hiltViewModel
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.merge
 import kotlinx.coroutines.launch
 import little.goose.account.ui.AccountHome
 import little.goose.account.ui.AccountHomeViewModel
@@ -25,14 +46,18 @@ import little.goose.design.system.component.MovableActionButton
 import little.goose.design.system.component.MovableActionButtonState
 import little.goose.design.system.component.dialog.DeleteDialog
 import little.goose.design.system.component.dialog.DeleteDialogState
-import little.goose.home.data.*
+import little.goose.home.data.ACCOUNT
+import little.goose.home.data.HOME
+import little.goose.home.data.HomePage
+import little.goose.home.data.MEMORIAL
+import little.goose.home.data.NOTEBOOK
 import little.goose.home.ui.component.IndexTopBar
 import little.goose.memorial.ui.MemorialHome
 import little.goose.memorial.ui.MemorialViewModel
 import little.goose.note.ui.NotebookHome
 import little.goose.note.ui.NotebookViewModel
 import little.goose.search.SearchType
-import java.util.*
+import java.util.Date
 
 @Composable
 fun HomeScreen(
@@ -85,35 +110,13 @@ fun HomeScreen(
         }
     }
 
-    LaunchedEffect(accountViewModel.event) {
-        accountViewModel.event.collect { event ->
+    LaunchedEffect(accountViewModel.event, memorialViewModel.event, notebookViewModel.event) {
+        merge(
+            accountViewModel.event, memorialViewModel.event, notebookViewModel.event
+        ).collect { event ->
             when (event) {
-                is AccountHomeViewModel.Event.DeleteTransactions -> {
-                    snackbarHostState.showSnackbar(
-                        message = context.getString(little.goose.common.R.string.deleted),
-                        withDismissAction = true
-                    )
-                }
-            }
-        }
-    }
-
-    LaunchedEffect(memorialViewModel.event) {
-        memorialViewModel.event.collect { event ->
-            when (event) {
-                is MemorialViewModel.Event.DeleteMemorials -> {
-                    snackbarHostState.showSnackbar(
-                        message = context.getString(little.goose.common.R.string.deleted),
-                        withDismissAction = true
-                    )
-                }
-            }
-        }
-    }
-
-    LaunchedEffect(notebookViewModel.event) {
-        notebookViewModel.event.collect { event ->
-            when (event) {
+                is AccountHomeViewModel.Event.DeleteTransactions,
+                is MemorialViewModel.Event.DeleteMemorials,
                 is NotebookViewModel.Event.DeleteNotes -> {
                     snackbarHostState.showSnackbar(
                         message = context.getString(little.goose.common.R.string.deleted),
@@ -123,7 +126,6 @@ fun HomeScreen(
             }
         }
     }
-
     Scaffold(
         modifier = modifier,
         snackbarHost = {
@@ -173,9 +175,7 @@ fun HomeScreen(
                     .padding(paddingValues)
             ) {
                 HorizontalPager(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .zIndex(-1F),
+                    modifier = Modifier.fillMaxSize(),
                     state = pagerState,
                     userScrollEnabled = true
                 ) { index ->
@@ -247,45 +247,45 @@ fun HomeScreen(
                             )
                         },
                         onMainButtonClick = {
-                            when (currentHomePage) {
-                                HomePage.Notebook -> {
-                                    if (isMultiSelecting) {
-                                        deleteDialogState.show(onConfirm = {
-                                            noteColumnState.deleteNotes(
-                                                noteColumnState.multiSelectedNotes.toList()
-                                            )
-                                            noteColumnState.cancelMultiSelecting()
-                                        })
-                                    } else {
-                                        onNavigateToNote(null)
-                                    }
+                            when {
+                                currentHomePage == HomePage.Notebook && isMultiSelecting -> {
+                                    deleteDialogState.show(onConfirm = {
+                                        noteColumnState.deleteNotes(
+                                            noteColumnState.multiSelectedNotes.toList()
+                                        )
+                                        noteColumnState.cancelMultiSelecting()
+                                    })
                                 }
 
-                                HomePage.Account -> {
-                                    if (isMultiSelecting) {
-                                        deleteDialogState.show(onConfirm = {
-                                            transactionColumnState.deleteTransactions(
-                                                transactionColumnState
-                                                    .multiSelectedTransactions.toList()
-                                            )
-                                            transactionColumnState.cancelMultiSelecting()
-                                        })
-                                    } else {
-                                        onNavigateToTransaction(null, Date())
-                                    }
+                                currentHomePage == HomePage.Notebook && !isMultiSelecting -> {
+                                    onNavigateToNote(null)
                                 }
 
-                                HomePage.Memorial -> {
-                                    if (isMultiSelecting) {
-                                        deleteDialogState.show(onConfirm = {
-                                            memorialColumnState.deleteMemorials(
-                                                memorialColumnState.multiSelectedMemorials.toList()
-                                            )
-                                            memorialColumnState.cancelMultiSelecting()
-                                        })
-                                    } else {
-                                        onNavigateToMemorialAdd()
-                                    }
+                                currentHomePage == HomePage.Account && isMultiSelecting -> {
+                                    deleteDialogState.show(onConfirm = {
+                                        transactionColumnState.deleteTransactions(
+                                            transactionColumnState
+                                                .multiSelectedTransactions.toList()
+                                        )
+                                        transactionColumnState.cancelMultiSelecting()
+                                    })
+                                }
+
+                                currentHomePage == HomePage.Account && !isMultiSelecting -> {
+                                    onNavigateToTransaction(null, Date())
+                                }
+
+                                currentHomePage == HomePage.Memorial && isMultiSelecting -> {
+                                    deleteDialogState.show(onConfirm = {
+                                        memorialColumnState.deleteMemorials(
+                                            memorialColumnState.multiSelectedMemorials.toList()
+                                        )
+                                        memorialColumnState.cancelMultiSelecting()
+                                    })
+                                }
+
+                                currentHomePage == HomePage.Memorial && !isMultiSelecting -> {
+                                    onNavigateToMemorialAdd()
                                 }
 
                                 else -> {}
@@ -293,145 +293,73 @@ fun HomeScreen(
                         },
                         topSubButtonContent = {
                             Icon(
-                                imageVector = if (isMultiSelecting) {
-                                    Icons.Rounded.DoneAll
-                                } else {
-                                    Icons.Rounded.Search
-                                },
-                                contentDescription = if (isMultiSelecting) {
-                                    "Select all"
-                                } else {
-                                    "Search"
-                                }
+                                imageVector = Icons.Rounded.DoneAll,
+                                contentDescription = "Select all"
                             )
                         },
                         onTopSubButtonClick = {
                             when (currentHomePage) {
-                                HomePage.Notebook -> {
-                                    if (isMultiSelecting) {
-                                        noteColumnState.selectAllNotes()
-                                    } else {
-                                        onNavigateToSearch(SearchType.Note)
-                                    }
-                                }
-
-                                HomePage.Account -> {
-                                    if (isMultiSelecting) {
-                                        transactionColumnState.selectAllTransactions()
-                                    } else {
-                                        onNavigateToSearch(SearchType.Transaction)
-                                    }
-                                }
-
-                                HomePage.Memorial -> {
-                                    if (isMultiSelecting) {
-                                        memorialColumnState.selectAllMemorial()
-                                    } else {
-                                        onNavigateToSearch(SearchType.Memorial)
-                                    }
-                                }
-
+                                HomePage.Notebook -> noteColumnState.selectAllNotes()
+                                HomePage.Account -> transactionColumnState.selectAllTransactions()
+                                HomePage.Memorial -> memorialColumnState.selectAllMemorial()
                                 else -> {}
                             }
                         },
                         bottomSubButtonContent = {
-                            if (isMultiSelecting) {
-                                Icon(
-                                    imageVector = Icons.Rounded.RemoveDone,
-                                    contentDescription = "Remove done"
-                                )
-                            } else when (currentHomePage) {
-                                HomePage.Account -> {
-                                    Icon(
-                                        imageVector = Icons.Rounded.DonutSmall,
-                                        contentDescription = "Analysis"
-                                    )
-                                }
-
-                                else -> {
-                                    Icon(
-                                        imageVector = Icons.Rounded.SubdirectoryArrowRight,
-                                        contentDescription = "fold"
-                                    )
-                                }
-                            }
+                            Icon(
+                                imageVector = Icons.Rounded.RemoveDone,
+                                contentDescription = "Remove done"
+                            )
                         },
                         onBottomSubButtonClick = {
                             when (currentHomePage) {
-                                HomePage.Account -> {
-                                    if (isMultiSelecting) {
-                                        transactionColumnState.cancelMultiSelecting()
-                                    } else {
-                                        onNavigateToAccountAnalysis()
-                                    }
-                                }
-
-                                HomePage.Memorial -> {
-                                    if (isMultiSelecting) {
-                                        memorialColumnState.cancelMultiSelecting()
-                                    } else scope.launch {
-                                        buttonState.fold()
-                                    }
-                                }
-
-                                HomePage.Notebook -> {
-                                    if (isMultiSelecting) {
-                                        noteColumnState.cancelMultiSelecting()
-                                    } else scope.launch {
-                                        buttonState.fold()
-                                    }
-                                }
-
-                                else -> scope.launch {
-                                    buttonState.fold()
-                                }
+                                HomePage.Account -> transactionColumnState.cancelMultiSelecting()
+                                HomePage.Memorial -> memorialColumnState.cancelMultiSelecting()
+                                HomePage.Notebook -> noteColumnState.cancelMultiSelecting()
+                                else -> scope.launch { buttonState.fold() }
                             }
                         }
                     )
-
-                    Box(modifier = Modifier.fillMaxSize().zIndex(-0.5F).run {
-                        if (buttonState.isExpended.value && !isMultiSelecting) {
-                            clickable(indication = null,
-                                interactionSource = remember { MutableInteractionSource() }
-                            ) { scope.launch { buttonState.fold() } }
-                        } else this
-                    })
                 }
             }
         },
         bottomBar = {
-            Box {
-                BottomAppBar(
-                    actions = {
-                        for (homePage in HomePage.entries) {
-                            NavigationBarItem(
-                                selected = homePage == currentHomePage,
-                                onClick = {
-                                    scope.launch(Dispatchers.Main.immediate) {
-                                        pagerState.scrollToPage(homePage.index)
-                                    }
-                                },
-                                icon = {
-                                    Icon(
-                                        modifier = Modifier.size(32.dp),
-                                        imageVector = homePage.icon,
-                                        contentDescription = stringResource(id = homePage.labelRes)
-                                    )
-                                }
-                            )
-                        }
+            HomeBottomBar(
+                currentHomePage = currentHomePage,
+                homePageList = HomePage.entries,
+                onHomePageClick = { homePage ->
+                    scope.launch(Dispatchers.Main.immediate) {
+                        pagerState.scrollToPage(homePage.index)
                     }
-                )
-                Box(modifier = Modifier.matchParentSize().zIndex(1F).run {
-                    if (buttonState.isExpended.value && !isMultiSelecting) {
-                        clickable(indication = null,
-                            interactionSource = remember { MutableInteractionSource() }
-                        ) { scope.launch { buttonState.fold() } }
-                    } else this
-                })
-            }
+                }
+            )
         }
     )
 
     DeleteDialog(state = deleteDialogState)
+}
+
+@Composable
+private fun HomeBottomBar(
+    currentHomePage: HomePage,
+    homePageList: List<HomePage>,
+    onHomePageClick: (HomePage) -> Unit
+) {
+    BottomAppBar(
+        actions = {
+            for (homePage in homePageList) {
+                NavigationBarItem(
+                    selected = homePage == currentHomePage,
+                    onClick = { onHomePageClick(homePage) },
+                    icon = {
+                        Icon(
+                            modifier = Modifier.size(32.dp),
+                            imageVector = homePage.icon,
+                            contentDescription = stringResource(id = homePage.labelRes)
+                        )
+                    }
+                )
+            }
+        }
+    )
 }

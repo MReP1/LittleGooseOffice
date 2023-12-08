@@ -27,7 +27,7 @@ class MemorialViewModel @Inject constructor(
     getAllMemorialFlowUseCase: GetAllMemorialFlowUseCase,
     getMemorialAtTopFlowUseCase: GetMemorialAtTopFlowUseCase,
     private val deleteMemorialsUseCase: DeleteMemorialsUseCase,
-    private val deleteMemorialsEventUseCase: DeleteMemorialsEventUseCase
+    deleteMemorialsEventUseCase: DeleteMemorialsEventUseCase
 ) : ViewModel() {
 
     sealed class Event {
