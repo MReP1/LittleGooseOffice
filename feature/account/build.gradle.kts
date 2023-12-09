@@ -74,4 +74,5 @@ dependencies {
     implementation(libs.androidx.datastore)
 
     implementation(project(":shared:chart"))
+    implementation(project(":shared:common"))
 }

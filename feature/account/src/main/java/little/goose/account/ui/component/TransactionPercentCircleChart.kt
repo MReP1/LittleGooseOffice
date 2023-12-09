@@ -14,7 +14,7 @@ import little.goose.account.data.models.TransactionPercent
 import little.goose.chart.ChartLabel
 import little.goose.chart.pie.PieChart
 import little.goose.chart.pie.PieData
-import little.goose.chart.util.roundTo
+import little.goose.shared.common.roundTo
 
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
