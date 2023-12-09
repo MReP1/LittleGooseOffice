@@ -4,6 +4,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
@@ -42,12 +43,24 @@ fun BarChartCatalog(
             }
         }
     }
+    val (selectedData, onSelectedDataChange) = remember {
+        mutableStateOf<BarData?>(null)
+    }
     BarChart(
         modifier = modifier
             .fillMaxWidth()
             .size(200.dp),
-        dataList = dataList
+        dataList = dataList,
+        selectedData = selectedData,
+        onSelectedDataChange = onSelectedDataChange
     )
+    selectedData?.let {
+        TextButton(onClick = {
+
+        }) {
+            Text(text = selectedData.xText)
+        }
+    }
 }
 
 @OptIn(ExperimentalLayoutApi::class)
@@ -68,7 +81,11 @@ private fun PieChartCatalog(
     Column(modifier = modifier, horizontalAlignment = Alignment.CenterHorizontally) {
         Row {
             Spacer(modifier = Modifier.weight(1F))
-            var selectedData1: PieData? by rememberSaveable(stateSaver = PieData.saver) { mutableStateOf(null) }
+            var selectedData1: PieData? by rememberSaveable(stateSaver = PieData.saver) {
+                mutableStateOf(
+                    null
+                )
+            }
             Box(modifier = Modifier.size(200.dp), contentAlignment = Alignment.Center) {
                 PieChart(
                     modifier = Modifier
@@ -110,7 +127,10 @@ private fun PieChartCatalog(
             )
             FlowRow(
                 modifier = Modifier.width(172.dp),
-                verticalArrangement = Arrangement.spacedBy(space = 2.dp, alignment = Alignment.Bottom),
+                verticalArrangement = Arrangement.spacedBy(
+                    space = 2.dp,
+                    alignment = Alignment.Bottom
+                ),
                 horizontalArrangement = Arrangement.Center
             ) {
                 for (index in dataList.indices) {

@@ -1,4 +1,4 @@
-package little.goose.chart.util
+package little.goose.shared.common
 
 fun String.roundTo(num: Int): String {
     val dotIndex = this.indexOf('.')

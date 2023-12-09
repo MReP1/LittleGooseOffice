@@ -6,5 +6,6 @@ data class BarData(
     val xText: String,
     val amount: Float,
     val yText: String,
-    val color: Color
+    val color: Color,
+    val id: String = ""
 )
