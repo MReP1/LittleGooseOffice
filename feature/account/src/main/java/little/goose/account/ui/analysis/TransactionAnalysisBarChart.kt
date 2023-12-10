@@ -11,19 +11,22 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import little.goose.account.R
 import little.goose.account.data.constants.MoneyType
 import little.goose.account.data.models.TimeMoney
 import little.goose.chart.bar.BarChart
 import little.goose.chart.bar.BarData
 import little.goose.common.utils.TimeType
+import little.goose.common.utils.toChineseMonth
+import little.goose.common.utils.toChineseMonthDay
+import java.math.BigDecimal
 import java.util.Date
 import kotlin.math.absoluteValue
 
@@ -37,7 +40,6 @@ fun TransactionAnalysisBarChart(
         time: Date, timeType: TimeType, moneyType: MoneyType, iconId: Int?, content: String?
     ) -> Unit
 ) {
-    val currentTimeMoney by rememberUpdatedState(newValue = timeMoneys)
     val colorScheme = MaterialTheme.colorScheme
     val dataList = remember(timeMoneys) {
         val calendar = Calendar.getInstance()
@@ -70,23 +72,41 @@ fun TransactionAnalysisBarChart(
             onSelectedDataChange = onSelectedDataChange
         )
 
-        selectedData?.let { barData ->
+        val timeMoney = remember(timeMoneys, selectedData) {
+            if (selectedData == null) null else {
+                val calendar = Calendar.getInstance()
+                timeMoneys.find {
+                    calendar.time = it.time
+                    calendar.get(Calendar.DATE).toString() == selectedData.id
+                }
+            }
+        }
+
+        timeMoney?.let {
             TextButton(onClick = {
                 val timeTypeTmp = when (timeType) {
                     AnalysisHelper.TimeType.MONTH -> TimeType.DATE
                     AnalysisHelper.TimeType.YEAR -> TimeType.YEAR_MONTH
                 }
-                currentTimeMoney.find {
-                    val calendar = Calendar.getInstance()
-                    calendar.time = it.time
-                    calendar.get(Calendar.DATE).toString() == barData.id
-                }?.let { timeMoney ->
-                    onNavigateToTransactionExample(
-                        timeMoney.time, timeTypeTmp, moneyType, null, null
-                    )
-                }
+                onNavigateToTransactionExample(
+                    timeMoney.time, timeTypeTmp, moneyType, null, null
+                )
             }) {
-                Text(text = barData.xText)
+                val timeText = when (timeType) {
+                    AnalysisHelper.TimeType.MONTH -> timeMoney.time.toChineseMonthDay()
+                    AnalysisHelper.TimeType.YEAR -> timeMoney.time.toChineseMonth()
+                }
+                val typeText = if (timeMoney.money.signum() < 0) {
+                    stringResource(id = R.string.expense)
+                } else {
+                    stringResource(id = R.string.income)
+                }
+                val moneyText = timeMoney.money.abs().toPlainString()
+                val noTransactionText = stringResource(id = R.string.no_transaction)
+                val text = if (timeMoney.money == BigDecimal(0)) noTransactionText else {
+                    "$timeText ${typeText}了${moneyText}元"
+                }
+                Text(text = text)
             }
         } ?: run {
             Spacer(modifier = Modifier.height(16.dp))
