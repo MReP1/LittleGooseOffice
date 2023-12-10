@@ -30,6 +30,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import little.goose.chart.ChartLabel
 import little.goose.chart.bar.BarChart
+import little.goose.chart.bar.BarChartProperties
 import little.goose.chart.bar.BarData
 import little.goose.chart.pie.PieChart
 import little.goose.chart.pie.PieChartWithContent
@@ -68,7 +69,8 @@ fun BarChartCatalog(
             .size(200.dp),
         dataList = dataList,
         selectedData = selectedData,
-        onSelectedDataChange = onSelectedDataChange
+        onSelectedDataChange = onSelectedDataChange,
+        properties = remember { BarChartProperties(showXText = true) }
     )
     selectedData?.let {
         TextButton(onClick = {

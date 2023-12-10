@@ -41,8 +41,8 @@ data class BarChartProperties(
     val startOffsetUnit: Float = 1.2F,
     val endOffsetUnit: Float = 0.8F,
     val topSpaceOffset: Dp = 18.dp,
-    val bottomSpaceOffset: Dp = 14.dp,
-    val lineWidth: Dp = 2.dp
+    val lineWidth: Dp = 1.5.dp,
+    val xTextPaddingTop: Dp = 2.dp
 ) {
 
     val selectedDataColor: Color
@@ -78,7 +78,7 @@ fun BarChart(
         derivedStateOf { dataList.map { it.xText } }
     }
 
-    val xTextResult = remember(properties.showXText, xTextList) {
+    val xTextResultList = remember(properties.showXText, xTextList) {
         if (properties.showXText) {
             xTextList.map { text ->
                 textMeasurer.measure(
@@ -89,9 +89,10 @@ fun BarChart(
         } else emptyList()
     }
 
-    val maxXTextHeight = remember(properties.showXText, xTextResult) {
+    val maxXTextHeight = remember(properties.showXText, xTextResultList) {
         if (properties.showXText) {
-            xTextResult.maxOf { it.size.height }.toFloat()
+            (xTextResultList.maxOfOrNull { it.size.height } ?: 0) +
+                    with(density) { properties.xTextPaddingTop.toPx() }
         } else 0F
     }
 
@@ -99,10 +100,11 @@ fun BarChart(
 
     val minAmount = remember(dataList) { dataList.minOfOrNull { it.amount } ?: 0F }
 
-    val amountDiff = maxAmount - minAmount
-
     val yTextResult = rememberMeasureAmountResult(
-        textMeasurer, properties.yTextSize, properties.splitCount, maxAmount, minAmount
+        textMeasurer,
+        properties.yTextSize,
+        properties.splitCount,
+        maxAmount
     )
 
     val startX = remember(density, yTextResult) {
@@ -140,16 +142,16 @@ fun BarChart(
         val innerStartX = startX + properties.lineWidth.toPx()
         val innerStartY = endY - properties.lineWidth.toPx()
 
-        val ySpaceHeight =
-            (endY - properties.bottomSpaceOffset.toPx()) - (startY + properties.topSpaceOffset.toPx())
+        val ySpaceHeight = endY - (startY + properties.topSpaceOffset.toPx())
 
-        val step = ySpaceHeight / (properties.splitCount - 1)
+        val step = ySpaceHeight / properties.splitCount
         var stepY = properties.topSpaceOffset.toPx()
 
         // 绘制 x, y 两根线
         path.addRoundRect(RoundRect(rect = Rect(startX, startY, innerStartX, endY)))
         path.addRoundRect(RoundRect(rect = Rect(startX, innerStartY, endX, endY)))
 
+        // Draw yText and shortLine from top to bottom.
         yTextResult.forEach { textLayoutResult ->
             path.addMarkLine(
                 innerStartX,
@@ -175,19 +177,30 @@ fun BarChart(
         val singleWidth = (size.width - startX) / dataSize
         var barStartX = startX + (singleWidth * 1.2).toInt()
 
-        val spaceBottom = endY - properties.bottomSpaceOffset.toPx()
-
-        for (data in dataList) {
+        for (index in dataList.indices) {
+            val data = dataList[index]
             path.reset()
             val x = barStartX
             val y =
-                spaceBottom - properties.lineWidth.toPx() /* 往上偏移一个刻度 */ - ((data.amount - minAmount) / amountDiff) * ySpaceHeight
+                endY - properties.lineWidth.toPx() /* 往上偏移一个刻度 */ - ((data.amount - minAmount) / maxAmount) * ySpaceHeight
             val width = (singleWidth * 2 / 3)
             val height = endY - y - properties.lineWidth.toPx()
             val cornerStart = width / 3
             val bezierHandleOffset = width / 12
 
             barStartX += singleWidth
+
+            if (properties.showXText) {
+                val xTextResult = xTextResultList[index]
+                drawText(
+                    xTextResult,
+                    topLeft = Offset(
+                        x = (x + (width / 2)) - (xTextResult.size.width / 2),
+                        y = endY + properties.xTextPaddingTop.toPx()
+                    )
+                )
+            }
+
 
             if (y == endY || height.toInt() == 0) {
                 continue
@@ -219,12 +232,10 @@ private fun rememberMeasureAmountResult(
     textMeasurer: TextMeasurer,
     textSize: TextUnit,
     splitCount: Int,
-    maxAmount: Float,
-    minAmount: Float
+    maxAmount: Float
 ): List<TextLayoutResult> {
-    val stepTexts = remember(maxAmount, minAmount) {
-        val amountDiff = maxAmount - minAmount
-        val unitDiff = amountDiff / (splitCount - 1)
+    val stepTexts = remember(maxAmount) {
+        val unitDiff = maxAmount / splitCount
         List(splitCount) { index ->
             (maxAmount - (unitDiff * index)).toString().roundTo(2)
         }
