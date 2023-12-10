@@ -65,17 +65,13 @@ fun TransactionAnalysisCommonContent(
                 }
             }
 
-            TransactionAnalysisLineChart(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(200.dp),
+            TransactionAnalysisBarChart(
+                modifier = Modifier.fillMaxWidth(),
+                timeMoneys = timeMoneys,
                 timeType = timeType,
                 moneyType = moneyType,
-                timeMoneys = timeMoneys,
                 onNavigateToTransactionExample = onNavigateToTransactionExample
             )
-
-            Spacer(modifier = Modifier.height(16.dp))
 
             TransactionPercentCircleChart(
                 modifier = Modifier.wrapContentSize(),

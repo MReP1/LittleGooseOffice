@@ -72,9 +72,9 @@ fun BarChart(
         } else 0F
     }
 
-    val maxAmount = remember(dataList) { dataList.maxOf { it.amount } }
+    val maxAmount = remember(dataList) { dataList.maxOfOrNull { it.amount } ?: 0F }
 
-    val minAmount = remember(dataList) { dataList.minOf { it.amount } }
+    val minAmount = remember(dataList) { dataList.minOfOrNull { it.amount } ?: 0F }
 
     val amountDiff = maxAmount - minAmount
 
@@ -86,7 +86,7 @@ fun BarChart(
         TextStyle.Default.copy(fontSize = properties.yTextSize)
     }
 
-    val yTextResult = rememberMeasureAmount(dataList, yTextStyle)
+    val yTextResult = rememberMeasureAmount(yTextStyle, maxAmount, minAmount)
 
     val startX = remember(
         density, yTextResult
@@ -215,19 +215,12 @@ private data class BarChartTextResult(
 
 @Composable
 private fun rememberMeasureAmount(
-    dataList: List<BarData>,
-    textStyle: TextStyle
+    textStyle: TextStyle,
+    maxAmount: Float,
+    minAmount: Float
 ): BarChartTextResult {
 
     val textMeasurer = rememberTextMeasurer(4)
-
-    val maxAmount = remember(dataList) {
-        dataList.maxOf { it.amount }
-    }
-
-    val minAmount = remember(dataList) {
-        dataList.minOf { it.amount }
-    }
 
     val amountDiff = maxAmount - minAmount
 

@@ -39,7 +39,7 @@ fun BarChartCatalog(
     val dataList = remember {
         buildList {
             repeat(4) {
-                add(BarData("$it", it.toFloat(), "$it", Color.Red))
+                add(BarData("$it", it.toFloat(), Color.Red))
             }
         }
     }

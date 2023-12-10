@@ -5,7 +5,6 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.rememberScrollState
@@ -54,15 +53,14 @@ fun TransactionAnalysisBalanceContent(
                 .verticalScroll(scrollState),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            TransactionAnalysisLineChart(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(200.dp),
+            TransactionAnalysisBarChart(
+                modifier = Modifier.fillMaxWidth(),
+                timeMoneys = timeMoneys,
                 timeType = timeType,
                 moneyType = MoneyType.BALANCE,
-                timeMoneys = timeMoneys,
                 onNavigateToTransactionExample = onNavigateToTransactionExample
             )
+
             LazyColumn(modifier = Modifier.weight(1F)) {
 
                 if (transactionBalances.isNotEmpty()) {
@@ -183,13 +181,46 @@ private fun TransactionBalanceItem(
 
 @Preview
 @Composable
-fun PreviewTransactionBalanceTitle() = AccountTheme {
+private fun PreviewTransactionAnalysisBalanceContent() {
+    TransactionAnalysisBalanceContent(
+        modifier = Modifier.fillMaxSize(),
+        timeType = AnalysisHelper.TimeType.MONTH,
+        timeMoneys = listOf(
+            TimeMoney(Date(), BigDecimal(12)),
+            TimeMoney(Date(), BigDecimal(16)),
+            TimeMoney(Date(), BigDecimal(18))
+        ),
+        transactionBalances = listOf(
+            TransactionBalance(
+                time = Date(),
+                expense = BigDecimal(12),
+                income = BigDecimal(21),
+                balance = BigDecimal(71)
+            ),
+            TransactionBalance(
+                time = Date(),
+                expense = BigDecimal(56),
+                income = BigDecimal(32),
+                balance = BigDecimal(12)
+            )
+        ),
+        onNavigateToTransactionExample = { _, _, _, _, _ ->
+        },
+        onTransactionBalanceClick = {
+
+        }
+    )
+}
+
+@Preview
+@Composable
+private fun PreviewTransactionBalanceTitle() = AccountTheme {
     TransactionBalanceTitle(modifier = Modifier)
 }
 
 @Preview
 @Composable
-fun PreviewTransactionBalanceItem() = AccountTheme {
+private fun PreviewTransactionBalanceItem() = AccountTheme {
     TransactionBalanceItem(
         modifier = Modifier,
         tonalElevation = 3.dp,
