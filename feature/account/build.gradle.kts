@@ -65,9 +65,6 @@ dependencies {
 
     implementation(libs.androidx.lifecycle.runtime.compose)
 
-    // MPAndroidChart
-    implementation("com.github.PhilJay:MPAndroidChart:3.1.0")
-
     // protobuf
     implementation(libs.protobuf.kotlin.lite)
     // datastore
