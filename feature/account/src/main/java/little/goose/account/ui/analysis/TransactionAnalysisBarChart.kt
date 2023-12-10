@@ -15,6 +15,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
@@ -55,8 +56,8 @@ fun TransactionAnalysisBarChart(
         modifier = modifier.animateContentSize(),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        val (selectedData, onSelectedData) = remember {
-            mutableStateOf<BarData?>(null)
+        val (selectedData, onSelectedDataChange) = rememberSaveable(stateSaver = BarData.saver) {
+            mutableStateOf(null)
         }
 
         BarChart(
@@ -66,7 +67,7 @@ fun TransactionAnalysisBarChart(
                 .padding(horizontal = 16.dp),
             dataList = dataList,
             selectedData = selectedData,
-            onSelectedDataChange = onSelectedData
+            onSelectedDataChange = onSelectedDataChange
         )
 
         selectedData?.let { barData ->

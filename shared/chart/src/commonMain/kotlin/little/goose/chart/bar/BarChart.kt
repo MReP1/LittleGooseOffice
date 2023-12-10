@@ -27,6 +27,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import little.goose.shared.common.roundTo
 
+@Stable
 data class BarChartProperties(
     val showYText: Boolean = true,
     val yTextSize: TextUnit = 10.sp,
