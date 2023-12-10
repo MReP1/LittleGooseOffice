@@ -19,9 +19,11 @@ import androidx.compose.ui.graphics.isSpecified
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.TextLayoutResult
+import androidx.compose.ui.text.TextMeasurer
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.drawText
 import androidx.compose.ui.text.rememberTextMeasurer
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -33,8 +35,21 @@ data class BarChartProperties(
     val yTextSize: TextUnit = 10.sp,
     val showXText: Boolean = false,
     val xTextSize: TextUnit = 10.sp,
-    val axisColor: Color = Color.Unspecified
-)
+    val axisColor: Color = Color.Unspecified,
+    val splitCount: Int = 4,
+    // 默认前面预留 1.2 个单位距离，后面预留 0.8 个单位距离
+    val startOffsetUnit: Float = 1.2F,
+    val endOffsetUnit: Float = 0.8F,
+    val topSpaceOffset: Dp = 18.dp,
+    val bottomSpaceOffset: Dp = 14.dp,
+    val lineWidth: Dp = 2.dp
+) {
+    init {
+        require(splitCount > 2) {
+            "BarChartProperties splitCount must be more than 2"
+        }
+    }
+}
 
 @Composable
 fun BarChart(
@@ -58,9 +73,9 @@ fun BarChart(
 
     val xTextResult = remember(properties.showXText, xTextList) {
         if (properties.showXText) {
-            xTextList.map {
+            xTextList.map { text ->
                 textMeasurer.measure(
-                    it,
+                    text,
                     TextStyle.Default.copy(fontSize = properties.xTextSize)
                 )
             }
@@ -79,34 +94,25 @@ fun BarChart(
 
     val amountDiff = maxAmount - minAmount
 
-    // 前面预留 1.2 个单位距离，后面预留 0.8 个单位距离
-    val startOffsetUnit = 1.2F
-    val endOffsetUnit = 0.8F
+    val yTextResult = rememberMeasureAmountResult(
+        textMeasurer, properties.yTextSize, properties.splitCount, maxAmount, minAmount
+    )
 
-    val yTextStyle = remember(properties.yTextSize) {
-        TextStyle.Default.copy(fontSize = properties.yTextSize)
-    }
-
-    val yTextResult = rememberMeasureAmount(yTextStyle, maxAmount, minAmount)
-
-    val startX = remember(
-        density, yTextResult
-    ) {
+    val startX = remember(density, yTextResult) {
         with(density) {
-            maxOf(
-                yTextResult.step1TextResult.size.width,
-                yTextResult.step2TextResult.size.width,
-                yTextResult.step3TextResult.size.width,
-                yTextResult.step4TextResult.size.width
-            ) + 6.dp.toPx()
+            (yTextResult.maxOfOrNull { it.size.width } ?: 0) + 6.dp.toPx()
         }
     }
 
+    val path = remember { Path() }
+
     Canvas(modifier = modifier.pointerInput(startX) {
         detectTapGestures { offset ->
-            val dataSize = currentDataList.size + (startOffsetUnit + endOffsetUnit)
+            val dataSize =
+                currentDataList.size + (properties.startOffsetUnit + properties.endOffsetUnit)
             val singleWidth = (size.width - startX) / dataSize
-            val index = ((offset.x) - startX - (startOffsetUnit * singleWidth)) / singleWidth
+            val index =
+                ((offset.x) - startX - (properties.startOffsetUnit * singleWidth)) / singleWidth
             if (index in 0F..currentDataList.size.toFloat()) {
                 val realIndex = index.toInt().coerceIn(0..currentDataList.lastIndex)
                 val data = currentDataList[realIndex]
@@ -116,79 +122,67 @@ fun BarChart(
             }
         }
     }) {
+        path.reset()
 
         val endX = size.width
         val startY = 0F
         val endY = size.height - maxXTextHeight
-        val innerStartX = startX + 2.dp.toPx()
-        val innerStartY = endY - 2.dp.toPx()
+        val innerStartX = startX + properties.lineWidth.toPx()
+        val innerStartY = endY - properties.lineWidth.toPx()
 
-        val path = Path()
+        val ySpaceHeight =
+            (endY - properties.bottomSpaceOffset.toPx()) - (startY + properties.topSpaceOffset.toPx())
 
-        // 上下预留 16dp
-        val spaceHeight = 16.dp.toPx()
-        val step = ((endY - spaceHeight) - (startY + spaceHeight)) / 3
-        val step1Y = spaceHeight
-        val step2Y = spaceHeight + step
-        val step3Y = spaceHeight + step * 2
-        val step4Y = spaceHeight + step * 3
-
-        // 绘制四个刻度点
-        path.addMarkLine(innerStartX, step1Y, 2.dp.toPx(), 2.dp.toPx())
-        path.addMarkLine(innerStartX, step2Y, 2.dp.toPx(), 2.dp.toPx())
-        path.addMarkLine(innerStartX, step3Y, 2.dp.toPx(), 2.dp.toPx())
-        path.addMarkLine(innerStartX, step4Y, 2.dp.toPx(), 2.dp.toPx())
+        val step = ySpaceHeight / (properties.splitCount - 1)
+        var stepY = properties.topSpaceOffset.toPx()
 
         // 绘制 x, y 两根线
         path.addRoundRect(RoundRect(rect = Rect(startX, startY, innerStartX, endY)))
         path.addRoundRect(RoundRect(rect = Rect(startX, innerStartY, endX, endY)))
 
-        drawText(
-            yTextResult.step1TextResult,
-            topLeft = Offset(
-                startX - yTextResult.step1TextResult.size.width - 2.dp.toPx(),
-                step1Y - (yTextResult.step1TextResult.size.height / 2)
+        yTextResult.forEach { textLayoutResult ->
+            path.addMarkLine(
+                innerStartX,
+                stepY,
+                properties.lineWidth.toPx(),
+                properties.lineWidth.toPx()
             )
-        )
-        drawText(
-            yTextResult.step2TextResult,
-            topLeft = Offset(
-                startX - yTextResult.step2TextResult.size.width - 2.dp.toPx(),
-                step2Y - (yTextResult.step2TextResult.size.height / 2)
+            drawText(
+                textLayoutResult, topLeft = Offset(
+                    x = startX - textLayoutResult.size.width - properties.lineWidth.toPx(),
+                    y = stepY - (textLayoutResult.size.height / 2)
+                )
             )
-        )
-        drawText(
-            yTextResult.step3TextResult,
-            topLeft = Offset(
-                startX - yTextResult.step3TextResult.size.width - 2.dp.toPx(),
-                step3Y - (yTextResult.step3TextResult.size.height / 2)
-            )
-        )
-        drawText(
-            yTextResult.step4TextResult,
-            topLeft = Offset(
-                startX - yTextResult.step4TextResult.size.width - 2.dp.toPx(),
-                step4Y - (yTextResult.step4TextResult.size.height / 2)
-            )
-        )
+            stepY += step
+        }
 
         drawPath(
             path,
             color = if (properties.axisColor.isSpecified) properties.axisColor else colorScheme.outline
         )
 
-        val dataSize = dataList.size + (startOffsetUnit + endOffsetUnit)
+        val dataSize = dataList.size + (properties.startOffsetUnit + properties.endOffsetUnit)
         val singleWidth = (size.width - startX) / dataSize
         var barStartX = startX + (singleWidth * 1.2).toInt()
+
+        val spaceBottom = endY - properties.bottomSpaceOffset.toPx()
+
         for (data in dataList) {
             path.reset()
             val x = barStartX
             val y =
-                step4Y - ((data.amount - minAmount) / amountDiff) * (step4Y - step1Y) - 2.dp.toPx() // 往上偏移一个刻度
+                spaceBottom - properties.lineWidth.toPx() /* 往上偏移一个刻度 */ - ((data.amount - minAmount) / amountDiff) * ySpaceHeight
             val width = (singleWidth * 2 / 3)
-            val height = endY - y - 2.dp.toPx()
+            val height = endY - y - properties.lineWidth.toPx()
             val cornerStart = width / 3
             val bezierHandleOffset = width / 12
+
+            barStartX += singleWidth
+
+            if (y == endY || height.toInt() == 0) {
+                continue
+            }
+
             path.moveTo(x, y + height)
             path.lineTo(x, (y + cornerStart))
             path.cubicTo(x, y + bezierHandleOffset, x + bezierHandleOffset, y, x + cornerStart, y)
@@ -201,68 +195,34 @@ fun BarChart(
             path.lineTo(x + width, y + height)
             path.close()
             drawPath(path, data.color)
-            barStartX += singleWidth
         }
     }
 }
 
-@Stable
-private data class BarChartTextResult(
-    val step1TextResult: TextLayoutResult,
-    val step2TextResult: TextLayoutResult,
-    val step3TextResult: TextLayoutResult,
-    val step4TextResult: TextLayoutResult
-)
-
 @Composable
-private fun rememberMeasureAmount(
-    textStyle: TextStyle,
+private fun rememberMeasureAmountResult(
+    textMeasurer: TextMeasurer,
+    textSize: TextUnit,
+    splitCount: Int,
     maxAmount: Float,
     minAmount: Float
-): BarChartTextResult {
-
-    val textMeasurer = rememberTextMeasurer(4)
-
-    val amountDiff = maxAmount - minAmount
-
-    val step1Text = remember(maxAmount) {
-        maxAmount.toString().roundTo(2)
+): List<TextLayoutResult> {
+    val stepTexts = remember(maxAmount, minAmount) {
+        val amountDiff = maxAmount - minAmount
+        val unitDiff = amountDiff / (splitCount - 1)
+        List(splitCount) { index ->
+            (maxAmount - (unitDiff * index)).toString().roundTo(2)
+        }
     }
 
-    val step2Text = remember(maxAmount, amountDiff) {
-        (maxAmount - (amountDiff / 3)).toString().roundTo(2)
+    val yTextStyle = remember(textSize) {
+        TextStyle.Default.copy(fontSize = textSize)
     }
 
-    val step3Text = remember(maxAmount, amountDiff) {
-        (maxAmount - (amountDiff / 3 * 2)).toString().roundTo(2)
-    }
-
-    val step4Text = remember(minAmount) {
-        minAmount.toString().roundTo(2)
-    }
-
-    val step1TextResult = remember(step1Text, textStyle) {
-        textMeasurer.measure(step1Text, textStyle)
-    }
-
-    val step2TextResult = remember(step2Text, textStyle) {
-        textMeasurer.measure(step2Text, textStyle)
-    }
-
-    val step3TextResult = remember(step3Text, textStyle) {
-        textMeasurer.measure(step3Text, textStyle)
-    }
-
-    val step4TextResult = remember(step4Text, textStyle) {
-        textMeasurer.measure(step4Text, textStyle)
-    }
-
-    return remember(
-        step1TextResult, step2TextResult, step3TextResult, step4TextResult
-    ) {
-        BarChartTextResult(
-            step1TextResult, step2TextResult, step3TextResult, step4TextResult
-        )
+    return remember(stepTexts) {
+        stepTexts.map { text ->
+            textMeasurer.measure(text, yTextStyle)
+        }
     }
 }
 
