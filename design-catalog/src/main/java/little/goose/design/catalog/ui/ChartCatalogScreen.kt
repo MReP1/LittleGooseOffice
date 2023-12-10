@@ -56,7 +56,7 @@ fun BarChartCatalog(
     val dataList = remember {
         buildList {
             repeat(4) {
-                add(BarData("$it", it.toFloat()))
+                add(BarData("${it + 1}", (it + 1).toFloat()))
             }
         }
     }

@@ -52,10 +52,15 @@ fun TransactionAnalysisBarChart(
             val calendar = Calendar.getInstance()
             timeMoneys.map { timeMoney ->
                 calendar.time = timeMoney.time
+                val xText = if (timeType == AnalysisHelper.TimeType.MONTH) {
+                    calendar.get(Calendar.DATE).toString()
+                } else {
+                    (calendar.get(Calendar.MONTH) + 1).toString()
+                }
                 BarData(
-                    xText = calendar.get(Calendar.MONTH).toString(),
+                    xText = xText,
                     amount = timeMoney.money.toFloat().absoluteValue,
-                    id = calendar.get(Calendar.DATE).toString()
+                    id = xText
                 )
             }
         }
@@ -75,7 +80,12 @@ fun TransactionAnalysisBarChart(
                 val calendar = Calendar.getInstance()
                 timeMoneys.find {
                     calendar.time = it.time
-                    calendar.get(Calendar.DATE).toString() == selectedData.id
+                    val id = if (timeType == AnalysisHelper.TimeType.MONTH) {
+                        calendar.get(Calendar.DATE).toString()
+                    } else {
+                        (calendar.get(Calendar.MONTH) + 1).toString()
+                    }
+                    id == selectedData.id
                 }
             }
         }

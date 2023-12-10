@@ -5,7 +5,6 @@ import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Stable
-import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
@@ -31,7 +30,6 @@ import little.goose.shared.common.roundTo
 
 @Stable
 data class BarChartProperties(
-    val showYText: Boolean = true,
     val yTextSize: TextUnit = 10.sp,
     val showXText: Boolean = false,
     val xTextSize: TextUnit = 10.sp,
@@ -74,8 +72,8 @@ fun BarChart(
 
     val textMeasurer = rememberTextMeasurer(dataList.size)
 
-    val xTextList by remember(dataList) {
-        derivedStateOf { dataList.map { it.xText } }
+    val xTextList = remember(dataList) {
+        dataList.map { it.xText }
     }
 
     val xTextResultList = remember(properties.showXText, xTextList) {
@@ -97,8 +95,6 @@ fun BarChart(
     }
 
     val maxAmount = remember(dataList) { dataList.maxOfOrNull { it.amount } ?: 0F }
-
-    val minAmount = remember(dataList) { dataList.minOfOrNull { it.amount } ?: 0F }
 
     val yTextResult = rememberMeasureAmountResult(
         textMeasurer,
@@ -182,7 +178,7 @@ fun BarChart(
             path.reset()
             val x = barStartX
             val y =
-                endY - properties.lineWidth.toPx() /* 往上偏移一个刻度 */ - ((data.amount - minAmount) / maxAmount) * ySpaceHeight
+                endY - properties.lineWidth.toPx() /* 往上偏移一个刻度 */ - (data.amount / maxAmount) * ySpaceHeight
             val width = (singleWidth * 2 / 3)
             val height = endY - y - properties.lineWidth.toPx()
             val cornerStart = width / 3
