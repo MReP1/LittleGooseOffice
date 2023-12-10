@@ -21,10 +21,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import little.goose.account.R
-import little.goose.account.data.constants.MoneyType
-import little.goose.account.data.models.TimeMoney
 import little.goose.account.data.models.TransactionBalance
-import little.goose.common.utils.TimeType
 import little.goose.common.utils.calendar
 import little.goose.common.utils.getDate
 import little.goose.common.utils.getMonth
@@ -36,11 +33,7 @@ import java.util.Date
 fun TransactionAnalysisBalanceContent(
     modifier: Modifier,
     timeType: AnalysisHelper.TimeType,
-    timeMoneys: List<TimeMoney>,
     transactionBalances: List<TransactionBalance>,
-    onNavigateToTransactionExample: (
-        time: Date, timeType: TimeType, moneyType: MoneyType, iconId: Int?, content: String?
-    ) -> Unit,
     onTransactionBalanceClick: (TransactionBalance) -> Unit
 ) {
     Surface(
@@ -53,13 +46,6 @@ fun TransactionAnalysisBalanceContent(
                 .verticalScroll(scrollState),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            TransactionAnalysisBarChart(
-                modifier = Modifier.fillMaxWidth(),
-                timeMoneys = timeMoneys,
-                timeType = timeType,
-                moneyType = MoneyType.BALANCE,
-                onNavigateToTransactionExample = onNavigateToTransactionExample
-            )
 
             LazyColumn(modifier = Modifier.weight(1F)) {
 
@@ -185,11 +171,6 @@ private fun PreviewTransactionAnalysisBalanceContent() {
     TransactionAnalysisBalanceContent(
         modifier = Modifier.fillMaxSize(),
         timeType = AnalysisHelper.TimeType.MONTH,
-        timeMoneys = listOf(
-            TimeMoney(Date(), BigDecimal(12)),
-            TimeMoney(Date(), BigDecimal(16)),
-            TimeMoney(Date(), BigDecimal(18))
-        ),
         transactionBalances = listOf(
             TransactionBalance(
                 time = Date(),
@@ -204,10 +185,7 @@ private fun PreviewTransactionAnalysisBalanceContent() {
                 balance = BigDecimal(12)
             )
         ),
-        onNavigateToTransactionExample = { _, _, _, _, _ ->
-        },
         onTransactionBalanceClick = {
-
         }
     )
 }

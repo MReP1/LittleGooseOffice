@@ -12,7 +12,8 @@ import little.goose.account.data.models.TransactionPercent
 import little.goose.common.utils.TimeType
 import little.goose.common.utils.setMonth
 import little.goose.common.utils.setYear
-import java.util.*
+import java.util.Calendar
+import java.util.Date
 
 data class TransactionAnalysisContentState(
     val year: Int,
@@ -97,9 +98,7 @@ fun TransactionAnalysisContent(
                 TransactionAnalysisBalanceContent(
                     modifier = Modifier.fillMaxSize(),
                     timeType = state.timeType,
-                    timeMoneys = state.timeState.balances,
                     transactionBalances = state.percentsState.balancePercents,
-                    onNavigateToTransactionExample = onNavigateToTransactionExample,
                     onTransactionBalanceClick = {
                         val clickTimeType = when (state.timeType) {
                             AnalysisHelper.TimeType.MONTH -> TimeType.DATE
