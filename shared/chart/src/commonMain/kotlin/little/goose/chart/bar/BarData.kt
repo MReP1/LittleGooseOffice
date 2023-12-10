@@ -7,7 +7,7 @@ import androidx.compose.ui.graphics.toArgb
 data class BarData(
     val xText: String,
     val amount: Float,
-    val color: Color,
+    val color: Color = Color.Unspecified,
     val id: String = ""
 ) {
     companion object {

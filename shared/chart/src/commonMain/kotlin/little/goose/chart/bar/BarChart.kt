@@ -44,6 +44,13 @@ data class BarChartProperties(
     val bottomSpaceOffset: Dp = 14.dp,
     val lineWidth: Dp = 2.dp
 ) {
+
+    val selectedDataColor: Color
+        @Composable get() = MaterialTheme.colorScheme.primary
+
+    val defaultDataColor: Color
+        @Composable get() = MaterialTheme.colorScheme.tertiary
+
     init {
         require(splitCount > 2) {
             "BarChartProperties splitCount must be more than 2"
@@ -105,6 +112,9 @@ fun BarChart(
     }
 
     val path = remember { Path() }
+
+    val defaultDataColor = properties.defaultDataColor
+    val selectedDataColor = properties.selectedDataColor
 
     Canvas(modifier = modifier.pointerInput(startX) {
         detectTapGestures { offset ->
@@ -194,7 +204,12 @@ fun BarChart(
             )
             path.lineTo(x + width, y + height)
             path.close()
-            drawPath(path, data.color)
+            drawPath(
+                path,
+                color = if (data.color.isSpecified) data.color
+                else if (data == selectedData) selectedDataColor
+                else defaultDataColor
+            )
         }
     }
 }

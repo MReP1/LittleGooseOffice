@@ -7,7 +7,6 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -40,19 +39,6 @@ fun TransactionAnalysisBarChart(
         time: Date, timeType: TimeType, moneyType: MoneyType, iconId: Int?, content: String?
     ) -> Unit
 ) {
-    val colorScheme = MaterialTheme.colorScheme
-    val dataList = remember(timeMoneys) {
-        val calendar = Calendar.getInstance()
-        timeMoneys.map { timeMoney ->
-            calendar.time = timeMoney.time
-            BarData(
-                xText = calendar.get(Calendar.MONTH).toString(),
-                amount = timeMoney.money.toFloat().absoluteValue,
-                color = colorScheme.primary,
-                id = calendar.get(Calendar.DATE).toString()
-            )
-        }
-    }
 
     Column(
         modifier = modifier.animateContentSize(),
@@ -60,6 +46,18 @@ fun TransactionAnalysisBarChart(
     ) {
         val (selectedData, onSelectedDataChange) = rememberSaveable(stateSaver = BarData.saver) {
             mutableStateOf(null)
+        }
+
+        val dataList = remember(timeMoneys) {
+            val calendar = Calendar.getInstance()
+            timeMoneys.map { timeMoney ->
+                calendar.time = timeMoney.time
+                BarData(
+                    xText = calendar.get(Calendar.MONTH).toString(),
+                    amount = timeMoney.money.toFloat().absoluteValue,
+                    id = calendar.get(Calendar.DATE).toString()
+                )
+            }
         }
 
         BarChart(
