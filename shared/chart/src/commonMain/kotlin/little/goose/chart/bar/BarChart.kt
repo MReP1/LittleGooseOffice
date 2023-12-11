@@ -26,7 +26,6 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import little.goose.shared.common.roundTo
 
 @Stable
 data class BarChartProperties(
@@ -246,6 +245,13 @@ private fun rememberMeasureAmountResult(
             textMeasurer.measure(text, yTextStyle)
         }
     }
+}
+
+private fun String.roundTo(num: Int): String {
+    val dotIndex = this.indexOf('.')
+    return if (dotIndex > 0 && dotIndex + num + 1 < lastIndex) {
+        substring(0, dotIndex + num + 1)
+    } else this
 }
 
 private fun Path.addMarkLine(x: Float, y: Float, height: Float, width: Float) {
