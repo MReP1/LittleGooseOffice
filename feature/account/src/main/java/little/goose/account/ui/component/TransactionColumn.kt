@@ -2,6 +2,7 @@ package little.goose.account.ui.component
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Text
@@ -11,11 +12,14 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import little.goose.account.data.constants.AccountConstant
+import little.goose.account.data.constants.AccountConstant.EXPENSE
 import little.goose.account.data.entities.Transaction
 import little.goose.design.system.component.dialog.DeleteDialog
 import little.goose.design.system.component.dialog.DeleteDialogState
+import java.math.BigDecimal
 
 data class TransactionColumnState(
     val transactions: List<Transaction> = emptyList(),
@@ -71,4 +75,20 @@ fun TransactionColumn(
     }
 
     DeleteDialog(state = deleteDialogState)
+}
+
+@Preview
+@Composable
+fun PreviewTransactionColumn() {
+    TransactionColumn(
+        modifier = Modifier.fillMaxSize(),
+        state = TransactionColumnState(
+            transactions = List(10) {
+                Transaction(
+                    id = it.toLong(), type = EXPENSE, money = BigDecimal(10)
+                )
+            }
+        ),
+        onTransactionEdit = {}
+    )
 }
