@@ -78,7 +78,9 @@ fun AccountHome(
                     }
                 )
                 TransactionColumn(
-                    modifier = Modifier.weight(1F),
+                    modifier = Modifier
+                        .weight(1F)
+                        .fillMaxWidth(),
                     state = transactionColumnState,
                     onTransactionEdit = { transaction ->
                         transaction.id?.run(onNavigateToTransactionScreen)
