@@ -16,6 +16,7 @@ dependencies {
     implementation(libs.androidx.hilt.navigation.compose)
     implementation(libs.androidx.dataStore.preferences)
     implementation(libs.compose.calendar)
+    implementation(libs.androidx.compose.material3.windowSizeClass)
     implementation(project(":core:design-system"))
     implementation(project(":core:common"))
     implementation(project(":feature:search"))

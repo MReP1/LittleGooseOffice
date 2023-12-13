@@ -87,7 +87,6 @@ fun HomeScreen(
     val indexTopBarState by indexViewModel.indexTopBarState.collectAsState()
 
     val buttonState = remember { MovableActionButtonState() }
-    val deleteDialogState = remember { DeleteDialogState() }
 
     val snackbarHostState = remember { SnackbarHostState() }
 
@@ -126,6 +125,7 @@ fun HomeScreen(
             }
         }
     }
+
     Scaffold(
         modifier = modifier,
         snackbarHost = {
@@ -232,93 +232,40 @@ fun HomeScreen(
                     }
                 }
                 if (currentHomePage != HomePage.Home) {
-                    MovableActionButton(
+                    HomeMovableActionButton(
                         modifier = Modifier.align(Alignment.BottomEnd),
-                        state = buttonState,
-                        needToExpand = isMultiSelecting,
-                        mainButtonContent = {
-                            Icon(
-                                imageVector = if (isMultiSelecting) {
-                                    Icons.Rounded.Delete
-                                } else {
-                                    Icons.Rounded.Add
-                                },
-                                contentDescription = "More"
+                        buttonState = buttonState,
+                        isMultiSelecting = isMultiSelecting,
+                        currentHomePage = currentHomePage,
+                        onDeleteNotes = {
+                            noteColumnState.deleteNotes(noteColumnState.multiSelectedNotes.toList())
+                            noteColumnState.cancelMultiSelecting()
+                        },
+                        onNavigateToNewNote = {
+                            onNavigateToNote(null)
+                        },
+                        onDeleteTransactions = {
+                            transactionColumnState.deleteTransactions(
+                                transactionColumnState.multiSelectedTransactions.toList()
                             )
+                            transactionColumnState.cancelMultiSelecting()
                         },
-                        onMainButtonClick = {
-                            when {
-                                currentHomePage == HomePage.Notebook && isMultiSelecting -> {
-                                    deleteDialogState.show(onConfirm = {
-                                        noteColumnState.deleteNotes(
-                                            noteColumnState.multiSelectedNotes.toList()
-                                        )
-                                        noteColumnState.cancelMultiSelecting()
-                                    })
-                                }
-
-                                currentHomePage == HomePage.Notebook && !isMultiSelecting -> {
-                                    onNavigateToNote(null)
-                                }
-
-                                currentHomePage == HomePage.Account && isMultiSelecting -> {
-                                    deleteDialogState.show(onConfirm = {
-                                        transactionColumnState.deleteTransactions(
-                                            transactionColumnState
-                                                .multiSelectedTransactions.toList()
-                                        )
-                                        transactionColumnState.cancelMultiSelecting()
-                                    })
-                                }
-
-                                currentHomePage == HomePage.Account && !isMultiSelecting -> {
-                                    onNavigateToTransaction(null, Date())
-                                }
-
-                                currentHomePage == HomePage.Memorial && isMultiSelecting -> {
-                                    deleteDialogState.show(onConfirm = {
-                                        memorialColumnState.deleteMemorials(
-                                            memorialColumnState.multiSelectedMemorials.toList()
-                                        )
-                                        memorialColumnState.cancelMultiSelecting()
-                                    })
-                                }
-
-                                currentHomePage == HomePage.Memorial && !isMultiSelecting -> {
-                                    onNavigateToMemorialAdd()
-                                }
-
-                                else -> {}
-                            }
+                        onNavigateToNewTransaction = {
+                            onNavigateToTransaction(null, Date())
                         },
-                        topSubButtonContent = {
-                            Icon(
-                                imageVector = Icons.Rounded.DoneAll,
-                                contentDescription = "Select all"
+                        onDeleteMemorials = {
+                            memorialColumnState.deleteMemorials(
+                                memorialColumnState.multiSelectedMemorials.toList()
                             )
+                            memorialColumnState.cancelMultiSelecting()
                         },
-                        onTopSubButtonClick = {
-                            when (currentHomePage) {
-                                HomePage.Notebook -> noteColumnState.selectAllNotes()
-                                HomePage.Account -> transactionColumnState.selectAllTransactions()
-                                HomePage.Memorial -> memorialColumnState.selectAllMemorial()
-                                else -> {}
-                            }
-                        },
-                        bottomSubButtonContent = {
-                            Icon(
-                                imageVector = Icons.Rounded.RemoveDone,
-                                contentDescription = "Remove done"
-                            )
-                        },
-                        onBottomSubButtonClick = {
-                            when (currentHomePage) {
-                                HomePage.Account -> transactionColumnState.cancelMultiSelecting()
-                                HomePage.Memorial -> memorialColumnState.cancelMultiSelecting()
-                                HomePage.Notebook -> noteColumnState.cancelMultiSelecting()
-                                else -> scope.launch { buttonState.fold() }
-                            }
-                        }
+                        onNavigateToNewMemorial = onNavigateToMemorialAdd,
+                        onSelectAllNotes = noteColumnState.selectAllNotes,
+                        onSelectAllTransactions = transactionColumnState.selectAllTransactions,
+                        onSelectAllMemorials = memorialColumnState.selectAllMemorial,
+                        onCancelTransactionsMultiSelecting = transactionColumnState.cancelMultiSelecting,
+                        onCancelMemorialsMultiSelecting = memorialColumnState.cancelMultiSelecting,
+                        onCancelNotesMultiSelecting = noteColumnState.cancelMultiSelecting
                     )
                 }
             }
@@ -335,8 +282,6 @@ fun HomeScreen(
             )
         }
     )
-
-    DeleteDialog(state = deleteDialogState)
 }
 
 @Composable
@@ -362,4 +307,101 @@ private fun HomeBottomBar(
             }
         }
     )
+}
+
+@Composable
+private fun HomeMovableActionButton(
+    currentHomePage: HomePage,
+    buttonState: MovableActionButtonState,
+    isMultiSelecting: Boolean,
+    modifier: Modifier = Modifier,
+    onDeleteNotes: () -> Unit,
+    onDeleteTransactions: () -> Unit,
+    onDeleteMemorials: () -> Unit,
+    onNavigateToNewNote: () -> Unit,
+    onNavigateToNewTransaction: () -> Unit,
+    onNavigateToNewMemorial: () -> Unit,
+    onSelectAllNotes: () -> Unit,
+    onSelectAllTransactions: () -> Unit,
+    onSelectAllMemorials: () -> Unit,
+    onCancelNotesMultiSelecting: () -> Unit,
+    onCancelTransactionsMultiSelecting: () -> Unit,
+    onCancelMemorialsMultiSelecting: () -> Unit
+) {
+    val deleteDialogState = remember { DeleteDialogState() }
+
+    MovableActionButton(
+        modifier = modifier,
+        state = buttonState,
+        needToExpand = isMultiSelecting,
+        mainButtonContent = {
+            Icon(
+                imageVector = if (isMultiSelecting) {
+                    Icons.Rounded.Delete
+                } else {
+                    Icons.Rounded.Add
+                },
+                contentDescription = "More"
+            )
+        },
+        onMainButtonClick = {
+            when {
+                currentHomePage == HomePage.Notebook && isMultiSelecting -> {
+                    deleteDialogState.show(onConfirm = onDeleteNotes)
+                }
+
+                currentHomePage == HomePage.Notebook && !isMultiSelecting -> {
+                    onNavigateToNewNote()
+                }
+
+                currentHomePage == HomePage.Account && isMultiSelecting -> {
+                    deleteDialogState.show(onConfirm = onDeleteTransactions)
+                }
+
+                currentHomePage == HomePage.Account && !isMultiSelecting -> {
+                    onNavigateToNewTransaction()
+                }
+
+                currentHomePage == HomePage.Memorial && isMultiSelecting -> {
+                    deleteDialogState.show(onConfirm = onDeleteMemorials)
+                }
+
+                currentHomePage == HomePage.Memorial && !isMultiSelecting -> {
+                    onNavigateToNewMemorial()
+                }
+
+                else -> {}
+            }
+        },
+        topSubButtonContent = {
+            Icon(
+                imageVector = Icons.Rounded.DoneAll,
+                contentDescription = "Select all"
+            )
+        },
+        onTopSubButtonClick = {
+            when (currentHomePage) {
+                HomePage.Notebook -> onSelectAllNotes()
+                HomePage.Account -> onSelectAllTransactions()
+                HomePage.Memorial -> onSelectAllMemorials()
+                else -> {}
+            }
+        },
+        bottomSubButtonContent = {
+            Icon(
+                imageVector = Icons.Rounded.RemoveDone,
+                contentDescription = "Remove done"
+            )
+        },
+        onBottomSubButtonClick = {
+            when (currentHomePage) {
+                HomePage.Account -> onCancelTransactionsMultiSelecting()
+                HomePage.Memorial -> onCancelMemorialsMultiSelecting()
+                HomePage.Notebook -> onCancelNotesMultiSelecting()
+                else -> {}
+            }
+        }
+    )
+
+    DeleteDialog(state = deleteDialogState)
 }
