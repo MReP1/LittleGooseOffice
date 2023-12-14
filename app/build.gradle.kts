@@ -56,6 +56,8 @@ dependencies {
     implementation(libs.androidx.lifecycle.rumtime.ktx)
     implementation(libs.androidx.lifecycle.viewModel.ktx)
 
+    implementation(libs.androidx.compose.material3.windowSizeClass)
+
     implementation(project(":core:common"))
     implementation(project(":feature:settings"))
     implementation(project(":appwidget"))
