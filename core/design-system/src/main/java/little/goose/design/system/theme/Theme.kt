@@ -18,6 +18,8 @@ import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalView
+import androidx.compose.ui.unit.DpSize
+import androidx.compose.ui.unit.dp
 import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.preferencesDataStore
@@ -138,15 +140,18 @@ val LocalWindowSizeClass = compositionLocalOf<WindowSizeClass> {
 fun AccountTheme(
     themeConfig: ThemeConfig = remember { ThemeConfig() },
     useGooseStyle: Boolean = false,
+    windowSizeClass: WindowSizeClass = (LocalContext.current as? Activity)
+        ?.let { calculateWindowSizeClass(it) }
+        ?: remember {
+            WindowSizeClass.calculateFromSize(DpSize(390.dp, 2200.dp))
+        },
     content: @Composable () -> Unit
 ) {
     val context = LocalContext.current
     if (useGooseStyle) {
         LittleGooseStyle()
     }
-    CompositionLocalProvider(
-        LocalWindowSizeClass provides calculateWindowSizeClass(activity = context as Activity)
-    ) {
+    CompositionLocalProvider(LocalWindowSizeClass provides windowSizeClass) {
         MaterialTheme(
             colorScheme = themeConfig.getColorScheme(context = context),
             typography = Typography,
