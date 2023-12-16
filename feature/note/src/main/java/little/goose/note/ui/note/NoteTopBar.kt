@@ -10,8 +10,8 @@ import androidx.compose.ui.Modifier
 
 @Composable
 fun NoteTopBar(
-    modifier: Modifier,
-    onBack: () -> Unit
+    onBack: () -> Unit,
+    modifier: Modifier
 ) {
     TopAppBar(
         modifier = modifier,

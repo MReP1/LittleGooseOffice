@@ -9,7 +9,9 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.foundation.text2.BasicTextField2
+import androidx.compose.foundation.text2.input.TextFieldState
+import androidx.compose.foundation.text2.input.rememberTextFieldState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Delete
 import androidx.compose.material3.DismissDirection
@@ -32,16 +34,15 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
-import androidx.compose.ui.text.input.TextFieldValue
+import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import little.goose.design.system.theme.AccountTheme
 
 @Composable
 fun NoteContentBlockItem(
     modifier: Modifier = Modifier,
-    value: TextFieldValue,
-    onValueChange: (TextFieldValue) -> Unit,
+    textFieldState: TextFieldState,
     onBlockDelete: () -> Unit,
     interactionSource: MutableInteractionSource = remember { MutableInteractionSource() },
     focusRequester: FocusRequester = remember { FocusRequester() }
@@ -102,72 +103,62 @@ fun NoteContentBlockItem(
             }
         },
         dismissContent = {
-            Surface(
-                modifier = Modifier,
-                shape = MaterialTheme.shapes.large,
-                tonalElevation = tonalElevation
-            ) {
-                NoteContentBlockTextField(
-                    modifier = Modifier.fillMaxWidth(),
-                    value = value,
-                    onValueChange = onValueChange,
-                    interactionSource = interactionSource,
-                    focusRequester = focusRequester
-                )
-            }
+            NoteContentBlockTextField(
+                modifier = Modifier.fillMaxWidth(),
+                textFieldState = textFieldState,
+                tonalElevation = tonalElevation,
+                interactionSource = interactionSource,
+                focusRequester = focusRequester
+            )
         },
-        directions = remember {
-            setOf(DismissDirection.StartToEnd)
-        }
+        directions = remember { setOf(DismissDirection.StartToEnd) }
     )
+
 }
 
 @Composable
 fun NoteContentBlockTextField(
-    modifier: Modifier = Modifier,
+    modifier: Modifier,
+    textFieldState: TextFieldState,
+    tonalElevation: Dp = 0.dp,
     focusRequester: FocusRequester = remember { FocusRequester() },
-    value: TextFieldValue,
-    onValueChange: (TextFieldValue) -> Unit,
     interactionSource: MutableInteractionSource = remember { MutableInteractionSource() }
 ) {
-    BasicTextField(
-        modifier = modifier.focusRequester(focusRequester),
-        value = value,
-        onValueChange = onValueChange,
-        interactionSource = interactionSource,
-        textStyle = MaterialTheme.typography.bodyMedium.copy(
-            color = LocalContentColor.current
-        ),
-        decorationBox = { innerTextField ->
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(vertical = 10.dp, horizontal = 16.dp),
-                contentAlignment = Alignment.CenterStart,
-            ) {
-                innerTextField()
-            }
-        }
-    )
+    Surface(
+        modifier = modifier,
+        shape = MaterialTheme.shapes.large,
+        tonalElevation = tonalElevation
+    ) {
+        BasicTextField2(
+            modifier = Modifier
+                .padding(horizontal = 16.dp, vertical = 10.dp)
+                .fillMaxWidth()
+                .focusRequester(focusRequester),
+            state = textFieldState,
+            interactionSource = interactionSource,
+            textStyle = MaterialTheme.typography.bodyMedium.copy(
+                color = LocalContentColor.current
+            ),
+            cursorBrush = SolidColor(LocalContentColor.current)
+        )
+    }
 }
 
 @Preview
 @Composable
-private fun PreviewNoteBlockBlockItem() = AccountTheme {
+private fun PreviewNoteContentBlockItem() {
     NoteContentBlockItem(
-        value = TextFieldValue("Content"),
-        onValueChange = {},
+        modifier = Modifier.fillMaxWidth(),
+        textFieldState = rememberTextFieldState(initialText = "Hello Horld!"),
         onBlockDelete = {}
     )
 }
 
 @Preview
 @Composable
-private fun PreviewNoteContentBlockTextField() = AccountTheme {
-    Surface {
-        NoteContentBlockTextField(
-            value = TextFieldValue("Content"),
-            onValueChange = {}
-        )
-    }
+private fun PreviewNoteContentBlockTextField() {
+    NoteContentBlockTextField(
+        modifier = Modifier.fillMaxWidth(),
+        textFieldState = rememberTextFieldState(initialText = "Hello Horld!")
+    )
 }

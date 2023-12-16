@@ -19,6 +19,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import little.goose.note.data.entities.Note
 import little.goose.note.data.entities.NoteContentBlock
@@ -122,4 +123,47 @@ fun NoteItem(
             }
         }
     }
+}
+
+@Preview
+@Composable
+private fun PreviewNoteColumn() {
+    val noteColumnState = remember {
+        val notes = List(10) {
+            Note.generateRandomNote()
+        }
+        val map = buildMap {
+            notes.forEach { note ->
+                put(note, List(10) {
+                    NoteContentBlock.generateRandom(note.id)
+                })
+            }
+        }
+        NoteColumnState(
+            noteWithContents = map,
+            isMultiSelecting = true,
+            mutableSetOf()
+        )
+    }
+    NoteColumn(
+        modifier = Modifier.fillMaxSize(),
+        state = noteColumnState,
+        onNoteClick = {}
+    )
+}
+
+@Preview(widthDp = 390, heightDp = 120)
+@Composable
+private fun PreviewNoteItem() {
+    val note = Note.generateRandomNote()
+    NoteItem(
+        note = note,
+        noteContentBlocks = List(10) {
+            NoteContentBlock.generateRandom(noteId = note.id)
+        },
+        isMultiSelecting = false,
+        onNoteSelect = { _, _ -> },
+        isSelected = false,
+        onNoteClick = {}
+    )
 }

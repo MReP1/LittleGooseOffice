@@ -10,98 +10,96 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text2.BasicTextField2
+import androidx.compose.foundation.text2.input.TextFieldLineLimits
+import androidx.compose.foundation.text2.input.TextFieldState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
-import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.DisposableEffect
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.produceState
+import androidx.compose.runtime.Stable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
-import androidx.compose.ui.graphics.RectangleShape
-import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.input.TextFieldValue
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.mikepenz.markdown.Markdown
 import com.mikepenz.markdown.MarkdownDefaults
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
-import little.goose.note.R
-import little.goose.note.data.entities.Note
-import little.goose.note.data.entities.NoteContentBlock
+import little.goose.common.utils.generateUnitId
+import little.goose.ui.screen.LittleGooseLoadingScreen
 
-data class NoteContentState(
-    val note: Note = Note(id = null),
-    val focusingBlockId: Long? = null,
-    val isPreview: Boolean = false,
-    val content: List<NoteContentBlock> = listOf(),
-    val interactions: Map<Long, MutableInteractionSource> = mapOf(),
-    val focusRequesters: Map<Long, FocusRequester> = mapOf(),
-    val textFieldValues: Map<Long, TextFieldValue> = mapOf(),
-    val onBlockChange: (Int, Long, TextFieldValue) -> Unit = { _, _, _ -> },
-    val onBlockAdd: (NoteContentBlock) -> Unit = {},
-    val onTitleChange: (String) -> Unit = {},
-    val onBlockDelete: (NoteContentBlock) -> Unit = {}
+@Stable
+sealed class NoteContentState {
+    data object Loading : NoteContentState()
+
+    data class Edit(
+        val titleState: TextFieldState,
+        val contentStateList: List<NoteBlockState>,
+        val onBlockDelete: (Long) -> Unit = {},
+        val onBlockAdd: () -> Unit = {}
+    ) : NoteContentState()
+
+    data class Preview(val content: String) : NoteContentState()
+}
+
+
+@Stable
+class NoteBlockState(
+    val id: Long,
+    val contentState: TextFieldState,
+    val interaction: MutableInteractionSource = MutableInteractionSource(),
+    val focusRequester: FocusRequester = FocusRequester()
 )
 
 @Composable
 fun NoteContent(
     modifier: Modifier = Modifier,
     state: NoteContentState,
-    isAddClickCache: BooleanCache,
+    onAddBlock: () -> Unit,
     blockColumnState: LazyListState
 ) {
-    Box(
-        modifier = modifier.fillMaxSize()
-    ) {
-        if (state.isPreview) {
-            MarkdownContent(
-                modifier = Modifier.fillMaxSize(),
-                state = state
-            )
-        } else {
-            NoteEditContent(
-                modifier = Modifier.fillMaxWidth(),
-                state = state,
-                isAddClickCache = isAddClickCache,
-                blockColumnState = blockColumnState
-            )
+    Box(modifier = modifier) {
+        when (state) {
+            is NoteContentState.Edit -> {
+                NoteEditContent(
+                    modifier = Modifier.fillMaxSize(),
+                    state = state,
+                    onAddBlock = onAddBlock,
+                    blockColumnState = blockColumnState
+                )
+            }
+
+            NoteContentState.Loading -> {
+                LittleGooseLoadingScreen(
+                    modifier = Modifier.fillMaxSize()
+                )
+            }
+
+            is NoteContentState.Preview -> {
+                MarkdownContent(
+                    modifier = Modifier.fillMaxSize(),
+                    state = state
+                )
+            }
         }
     }
 }
 
 @Composable
-private fun MarkdownContent(
+fun MarkdownContent(
     modifier: Modifier = Modifier,
-    state: NoteContentState
+    state: NoteContentState.Preview
 ) {
-    val fullContent by produceState(initialValue = "", key1 = state.content) {
-        value = if (state.content.size < 50) {
-            buildString {
-                if (state.note.title.isNotBlank()) {
-                    append("# ${state.note.title}\n\n")
-                }
-                append(state.content.joinToString("\n\n") { it.content })
-            }
-        } else withContext(Dispatchers.Default) {
-            buildString {
-                if (state.note.title.isNotBlank()) {
-                    append("# ${state.note.title}\n\n")
-                }
-                append(state.content.joinToString("\n\n") { it.content })
-            }
-        }
-    }
     val scrollState = rememberScrollState()
     Markdown(
-        content = fullContent,
+        content = state.content,
         modifier = modifier
-            .fillMaxSize()
             .verticalScroll(scrollState)
             .padding(16.dp),
         colors = MarkdownDefaults.markdownColors(
@@ -124,11 +122,11 @@ private fun MarkdownContent(
 }
 
 @Composable
-fun NoteEditContent(
+private fun NoteEditContent(
     modifier: Modifier = Modifier,
-    state: NoteContentState,
-    isAddClickCache: BooleanCache,
-    blockColumnState: LazyListState
+    state: NoteContentState.Edit,
+    onAddBlock: () -> Unit,
+    blockColumnState: LazyListState = rememberLazyListState()
 ) {
     LazyColumn(
         modifier = modifier,
@@ -136,60 +134,78 @@ fun NoteEditContent(
         verticalArrangement = Arrangement.spacedBy(4.dp)
     ) {
         item {
-            TextField(
-                value = state.note.title,
-                onValueChange = state.onTitleChange,
-                modifier = Modifier.fillMaxWidth(),
-                maxLines = 1,
-                label = {
-                    Text(text = stringResource(id = R.string.title))
-                },
-                shape = RectangleShape,
-                colors = TextFieldDefaults.colors(
-                    focusedContainerColor = MaterialTheme.colorScheme.background,
-                    unfocusedContainerColor = MaterialTheme.colorScheme.background,
-                    disabledContainerColor = MaterialTheme.colorScheme.background,
-                )
+            BasicTextField2(
+                state = state.titleState,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(
+                        horizontal = 24.dp,
+                        vertical = 12.dp
+                    ),
+                lineLimits = TextFieldLineLimits.SingleLine,
+                textStyle = MaterialTheme.typography.titleLarge.copy(
+                    color = LocalContentColor.current
+                ),
+                keyboardActions = KeyboardActions(
+                    onDone = {
+                        onAddBlock()
+                    }
+                ),
+                decorator = {
+                    if (state.titleState.text.isEmpty()) {
+                        Text(
+                            text = "Title",
+                            color = MaterialTheme.colorScheme.outline,
+                            style = MaterialTheme.typography.titleLarge
+                        )
+                    }
+                    it()
+                }
             )
             Spacer(modifier = Modifier.height(8.dp))
         }
 
         items(
-            count = state.content.size,
-            key = { state.content[it].id ?: 0 }
-        ) { index ->
-            val block = state.content[index]
-            val focusRequester = state.focusRequesters[block.id]!!
+            count = state.contentStateList.size,
+            key = { state.contentStateList[it].id }
+        ) {
+            val contentState = state.contentStateList[it]
             NoteContentBlockItem(
                 modifier = Modifier
                     .fillMaxWidth()
                     .animateItemPlacement(),
-                value = state.textFieldValues[block.id]!!,
-                focusRequester = focusRequester,
-                interactionSource = state.interactions[block.id]!!,
-                onValueChange = { value ->
-                    block.id?.let { blockId ->
-                        state.onBlockChange(block.index, blockId, value)
-                    }
-                },
-                onBlockDelete = {
-                    state.onBlockDelete(block)
+                textFieldState = contentState.contentState,
+                onBlockDelete = { state.onBlockDelete(contentState.id) },
+                focusRequester = contentState.focusRequester,
+                interactionSource = contentState.interaction
+            )
+        }
+    }
+}
+
+@Preview
+@Composable
+fun PreviewNoteEditContent() {
+    Surface(
+        modifier = Modifier.fillMaxSize()
+    ) {
+        val state = remember {
+            NoteContentState.Edit(
+                titleState = TextFieldState(),
+                contentStateList = List(10) {
+                    NoteBlockState(
+                        id = generateUnitId(),
+                        contentState = TextFieldState(
+                            initialText = System.currentTimeMillis().toString()
+                        )
+                    )
                 }
             )
-
-            // Fix bug: 第一次创建 block 有概率无法 focus
-            if (block.index == 0 && isAddClickCache.value) {
-                DisposableEffect(focusRequester) {
-                    if (state.content.size == 1) {
-                        runCatching {
-                            focusRequester.requestFocus()
-                        }.onFailure {
-                            focusRequester.requestFocus()
-                        }
-                    }
-                    onDispose { }
-                }
-            }
         }
+        NoteEditContent(
+            state = state,
+            modifier = Modifier.fillMaxSize(),
+            onAddBlock = {}
+        )
     }
 }

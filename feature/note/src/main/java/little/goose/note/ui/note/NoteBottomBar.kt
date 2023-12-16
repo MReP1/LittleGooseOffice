@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.ime
 import androidx.compose.foundation.layout.isImeVisible
 import androidx.compose.foundation.layout.padding
@@ -38,19 +39,27 @@ import little.goose.note.logic.FormatType
 import little.goose.note.ui.component.FormatHeaderIcon
 
 @Stable
-data class NoteBottomBarState(
-    val isPreview: Boolean = false,
-    val onPreviewChange: (Boolean) -> Unit = {},
-    val onFormat: (FormatType) -> Unit = {},
-    val onBlockAdd: () -> Unit = {},
-)
+sealed class NoteBottomBarState {
+
+    data object Loading : NoteBottomBarState()
+
+    data class Preview(
+        val onChangeToEditMode: () -> Unit = {}
+    ) : NoteBottomBarState()
+
+    data class Editing(
+        val onChangeToPreviewMode: () -> Unit = {},
+        val onFormat: (FormatType) -> Unit = {},
+        val onBlockAdd: () -> Unit = {},
+    ) : NoteBottomBarState()
+    
+}
 
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
 internal fun NoteBottomBar(
     modifier: Modifier = Modifier,
-    state: NoteBottomBarState,
-    onAddClick: () -> Unit
+    state: NoteBottomBarState
 ) {
     Surface(
         modifier = modifier,
@@ -66,11 +75,13 @@ internal fun NoteBottomBar(
             ),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            IconButton(onClick = onAddClick) {
-                Icon(
-                    imageVector = Icons.Rounded.Add,
-                    contentDescription = "add note"
-                )
+            if (state is NoteBottomBarState.Editing) {
+                IconButton(onClick = state.onBlockAdd) {
+                    Icon(
+                        imageVector = Icons.Rounded.Add,
+                        contentDescription = "add note"
+                    )
+                }
             }
             NoteBottomBarRow(
                 modifier = Modifier
@@ -88,77 +99,117 @@ private fun NoteBottomBarRow(
     state: NoteBottomBarState
 ) {
     Row(modifier) {
-        Spacer(modifier = Modifier.width(12.dp))
-        val horScrollState = rememberScrollState()
-        Row(
-            modifier = Modifier
-                .weight(1F)
-                .horizontalScroll(horScrollState)
-        ) {
-            FormatHeaderIcon(
-                modifier = Modifier,
-                onHeaderClick = state.onFormat
-            )
-            IconButton(
-                onClick = {
-                    state.onFormat(FormatType.List.Unordered)
-                }
-            ) {
-                Icon(
-                    imageVector = Icons.Rounded.FormatListBulleted,
-                    contentDescription = "UnorderedList"
-                )
+        when (state) {
+            is NoteBottomBarState.Preview -> {
+                Spacer(modifier = Modifier.weight(1F))
             }
-            IconButton(
-                onClick = {
-                    state.onFormat(FormatType.List.Ordered(1))
-                }
-            ) {
-                Icon(
-                    imageVector = Icons.Rounded.FormatListNumbered,
-                    contentDescription = "OrderedList"
-                )
+
+            is NoteBottomBarState.Loading -> {
+                // FAB min height.
+                Spacer(modifier = Modifier.height(56.dp))
             }
-            IconButton(
-                onClick = {
-                    state.onFormat(FormatType.Quote)
-                }
-            ) {
-                Icon(
-                    imageVector = Icons.Rounded.FormatQuote,
-                    contentDescription = "Quote"
-                )
+
+            else -> {
+                Spacer(modifier = Modifier.width(12.dp))
             }
         }
 
-        FloatingActionButton(
-            onClick = {
-                state.onPreviewChange(!state.isPreview)
-            }
-        ) {
-            AnimatedContent(
-                targetState = state.isPreview,
-                label = "fab preview"
-            ) { isPreview ->
-                Icon(
-                    imageVector = if (!isPreview) {
-                        Icons.Rounded.Preview
-                    } else {
-                        Icons.Rounded.EditNote
-                    },
-                    contentDescription = "Preview"
+        val horScrollState = rememberScrollState()
+
+        if (state is NoteBottomBarState.Editing) {
+            Row(
+                modifier = Modifier
+                    .weight(1F)
+                    .horizontalScroll(horScrollState),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                FormatHeaderIcon(
+                    modifier = Modifier,
+                    onHeaderClick = state.onFormat
                 )
+                IconButton(
+                    onClick = {
+                        state.onFormat(FormatType.List.Unordered)
+                    }
+                ) {
+                    Icon(
+                        imageVector = Icons.Rounded.FormatListBulleted,
+                        contentDescription = "UnorderedList"
+                    )
+                }
+                IconButton(
+                    onClick = {
+                        state.onFormat(FormatType.List.Ordered(1))
+                    }
+                ) {
+                    Icon(
+                        imageVector = Icons.Rounded.FormatListNumbered,
+                        contentDescription = "OrderedList"
+                    )
+                }
+                IconButton(
+                    onClick = {
+                        state.onFormat(FormatType.Quote)
+                    }
+                ) {
+                    Icon(
+                        imageVector = Icons.Rounded.FormatQuote,
+                        contentDescription = "Quote"
+                    )
+                }
             }
         }
+
+        if (state !is NoteBottomBarState.Loading) {
+            FloatingActionButton(
+                onClick = {
+                    when (state) {
+                        is NoteBottomBarState.Editing -> state.onChangeToPreviewMode()
+                        is NoteBottomBarState.Preview -> state.onChangeToEditMode()
+                        NoteBottomBarState.Loading -> Unit
+                    }
+                }
+            ) {
+                AnimatedContent(
+                    targetState = state is NoteBottomBarState.Preview,
+                    label = "fab preview"
+                ) { isPreview ->
+                    Icon(
+                        imageVector = if (!isPreview) {
+                            Icons.Rounded.Preview
+                        } else {
+                            Icons.Rounded.EditNote
+                        },
+                        contentDescription = "Preview"
+                    )
+                }
+            }
+        }
+
         Spacer(modifier = Modifier.width(12.dp))
     }
 }
 
 @Preview
 @Composable
-private fun PreviewNoteBottomBar() = AccountTheme {
+private fun PreviewNoteBottomBarEditing() = AccountTheme {
     NoteBottomBar(
-        state = NoteBottomBarState(),
-        onAddClick = {}
+        state = NoteBottomBarState.Editing()
+    )
+}
+
+@Preview
+@Composable
+private fun PreviewNoteBottomBarLoading() = AccountTheme {
+    NoteBottomBar(
+        state = NoteBottomBarState.Loading
+    )
+}
+
+@Preview
+@Composable
+private fun PreviewNoteBottomBarPreview() = AccountTheme {
+    NoteBottomBar(
+        state = NoteBottomBarState.Preview()
     )
 }
