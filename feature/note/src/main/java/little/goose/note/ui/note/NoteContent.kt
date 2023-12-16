@@ -97,6 +97,7 @@ fun MarkdownContent(
     state: NoteContentState.Preview
 ) {
     val scrollState = rememberScrollState()
+    val colorScheme = MaterialTheme.colorScheme
     Markdown(
         content = state.content,
         modifier = modifier
@@ -106,7 +107,7 @@ fun MarkdownContent(
             textColor = MaterialTheme.colorScheme.onBackground,
             backgroundColor = MaterialTheme.colorScheme.onSurface,
             codeBackgroundColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.1f),
-            colorByType = null
+            colorByType = { colorScheme.onBackground }
         ),
         typography = MarkdownDefaults.markdownTypography(
             h1 = MaterialTheme.typography.headlineLarge,
