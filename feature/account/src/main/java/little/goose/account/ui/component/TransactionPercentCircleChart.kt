@@ -5,7 +5,6 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentWidth
@@ -95,7 +94,6 @@ fun TransactionPercentCircleChart(
             for (index in dataList.indices) {
                 val data = dataList[index]
                 ChartLabel(color = data.color, text = data.content)
-                Spacer(modifier = Modifier.width(6.dp))
             }
         }
     }

@@ -154,9 +154,6 @@ private fun PieChartCatalog(
                 for (index in dataList.indices) {
                     val data = dataList[index]
                     ChartLabel(color = data.color, text = data.content)
-                    if (index < dataList.lastIndex) {
-                        Spacer(modifier = Modifier.width(6.dp))
-                    }
                 }
             }
         }

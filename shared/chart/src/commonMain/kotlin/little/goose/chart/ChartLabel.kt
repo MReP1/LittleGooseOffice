@@ -21,11 +21,21 @@ fun ChartLabel(
     color: Color,
     text: String,
     colorPalette: @Composable () -> Unit = {
-        Spacer(modifier = Modifier.padding(horizontal = 4.dp).size(8.dp).clip(RoundedCornerShape(3.dp)).background(color))
+        Spacer(
+            modifier = Modifier
+                .padding(horizontal = 4.dp)
+                .size(8.dp)
+                .clip(RoundedCornerShape(3.dp))
+                .background(color)
+        )
     },
     label: @Composable () -> Unit = {
-        Text(text, style = MaterialTheme.typography.labelSmall)
-    }
+        Text(
+            text,
+            style = MaterialTheme.typography.labelSmall,
+            modifier = Modifier.padding(end = 4.dp)
+        )
+    },
 ) {
     Row(
         modifier = modifier,
