@@ -19,6 +19,7 @@ dependencies {
     implementation(libs.androidx.activity.compose)
     implementation(platform(libs.androidx.compose.bom))
     implementation(libs.ui.graphics)
+    implementation(libs.androidx.compose.navigation)
     implementation(project(":core:design-system"))
     testImplementation(libs.junit4)
     androidTestImplementation(libs.junit)

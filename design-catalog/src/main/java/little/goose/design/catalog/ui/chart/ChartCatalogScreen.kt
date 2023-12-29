@@ -1,4 +1,4 @@
-package little.goose.design.catalog.ui
+package little.goose.design.catalog.ui.chart
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -36,11 +36,11 @@ import little.goose.chart.pie.PieChart
 import little.goose.chart.pie.PieChartWithContent
 import little.goose.chart.pie.PieData
 
+internal const val ROUTE_CHART_CATALOG = "chart_catalog"
+
 @Composable
-internal fun ChartCatalogScreen(
-    modifier: Modifier
-) {
-    Surface(modifier = modifier) {
+internal fun ChartCatalogScreen() {
+    Surface(modifier = Modifier.fillMaxSize()) {
         Column(modifier = Modifier.fillMaxSize()) {
             BarChartCatalog(modifier = Modifier.fillMaxWidth())
             PieChartCatalog(modifier = Modifier.fillMaxWidth())
@@ -50,7 +50,7 @@ internal fun ChartCatalogScreen(
 
 @Preview(showBackground = true)
 @Composable
-fun BarChartCatalog(
+internal fun BarChartCatalog(
     modifier: Modifier = Modifier
 ) {
     val dataList = remember {
