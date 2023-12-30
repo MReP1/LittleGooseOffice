@@ -23,6 +23,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.draw.clipToBounds
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
@@ -44,7 +45,7 @@ fun PullSurface(
     content: @Composable () -> Unit
 ) {
     Box(
-        modifier = modifier,
+        modifier = modifier.clipToBounds(),
         contentAlignment = if (!reverseDirection) {
             Alignment.TopCenter
         } else {
