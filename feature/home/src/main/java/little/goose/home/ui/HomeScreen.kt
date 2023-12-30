@@ -7,10 +7,16 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.pager.PagerState
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.DonutSmall
+import androidx.compose.material.icons.rounded.Settings
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Snackbar
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.windowsizeclass.WindowHeightSizeClass
 import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -20,6 +26,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.hilt.navigation.compose.hiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.merge
@@ -30,6 +37,7 @@ import little.goose.home.data.HomePage
 import little.goose.memorial.ui.MemorialViewModel
 import little.goose.note.ui.NotebookViewModel
 import little.goose.search.SearchType
+import little.goose.settings.R
 import java.util.Date
 
 @Composable
@@ -80,10 +88,9 @@ fun HomeScreen(
     }
 
     val windowSizeClass = LocalWindowSizeClass.current
-    val isShowBottomBar = windowSizeClass.widthSizeClass == WindowWidthSizeClass.Compact
-    val isShowRailBar = !isShowBottomBar
+    val isWindowSizeCompat = windowSizeClass.widthSizeClass == WindowWidthSizeClass.Compact
     Row(modifier = modifier) {
-        if (isShowRailBar) {
+        if (!isWindowSizeCompat) {
             HomeNavigationRailBar(
                 modifier = Modifier
                     .fillMaxHeight()
@@ -92,6 +99,26 @@ fun HomeScreen(
                 onHomePageClick = { homePage ->
                     scope.launch(Dispatchers.Main.immediate) {
                         pagerState.scrollToPage(homePage.index)
+                    }
+                },
+                bottomContent = { homePage ->
+                    if (homePage == HomePage.Account
+                        && windowSizeClass.heightSizeClass != WindowHeightSizeClass.Compact
+                    ) {
+                        IconButton(onClick = onNavigateToAccountAnalysis) {
+                            Icon(
+                                imageVector = Icons.Outlined.DonutSmall,
+                                contentDescription = "Analysis"
+                            )
+                        }
+                    }
+                    IconButton(onClick = onNavigateToSettings) {
+                        Icon(
+                            imageVector = Icons.Rounded.Settings,
+                            contentDescription = stringResource(
+                                id = R.string.settings
+                            )
+                        )
                     }
                 }
             )
@@ -106,14 +133,16 @@ fun HomeScreen(
                 }
             },
             topBar = {
-                val indexTopBarState by indexViewModel.indexTopBarState.collectAsState()
-                HomeTopBar(
-                    modifier = Modifier.fillMaxWidth(),
-                    currentHomePage = currentHomePage,
-                    indexTopBarState = indexTopBarState,
-                    onNavigateToSettings = onNavigateToSettings,
-                    onNavigateToAccountAnalysis = onNavigateToAccountAnalysis
-                )
+                if (isWindowSizeCompat) {
+                    val indexTopBarState by indexViewModel.indexTopBarState.collectAsState()
+                    HomeTopBar(
+                        modifier = Modifier.fillMaxWidth(),
+                        currentHomePage = currentHomePage,
+                        indexTopBarState = indexTopBarState,
+                        onNavigateToSettings = onNavigateToSettings,
+                        onNavigateToAccountAnalysis = onNavigateToAccountAnalysis
+                    )
+                }
             },
             content = { paddingValues ->
                 val indexScreenState by indexViewModel.indexScreenState.collectAsState()
@@ -143,7 +172,7 @@ fun HomeScreen(
                 )
             },
             bottomBar = {
-                if (isShowBottomBar) {
+                if (isWindowSizeCompat) {
                     HomeBottomBar(
                         currentHomePage = currentHomePage,
                         homePageList = HomePage.entries,
