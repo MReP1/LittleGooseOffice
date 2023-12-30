@@ -23,7 +23,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.navigation.compose.hiltViewModel
 import kotlinx.coroutines.flow.collectLatest
-import little.goose.design.system.theme.AccountTheme
+import little.goose.design.system.theme.GooseTheme
 import little.goose.note.data.entities.Note
 import little.goose.note.data.entities.NoteContentBlock
 import little.goose.note.ui.NoteColumnState
@@ -168,7 +168,7 @@ fun SearchNoteScreen(
 
 @Preview
 @Composable
-private fun PreviewSearchNoteScreen() = AccountTheme {
+private fun PreviewSearchNoteScreen() = GooseTheme {
     SearchNoteScreen(
         state = SearchNoteState.Success(
             data = NoteColumnState(

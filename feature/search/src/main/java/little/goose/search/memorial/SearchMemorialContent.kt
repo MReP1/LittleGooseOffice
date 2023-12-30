@@ -24,7 +24,7 @@ import little.goose.design.system.component.MovableActionButton
 import little.goose.design.system.component.MovableActionButtonState
 import little.goose.design.system.component.dialog.DeleteDialog
 import little.goose.design.system.component.dialog.DeleteDialogState
-import little.goose.design.system.theme.AccountTheme
+import little.goose.design.system.theme.GooseTheme
 import little.goose.memorial.data.entities.Memorial
 import little.goose.memorial.ui.component.MemorialColumn
 import little.goose.memorial.ui.component.MemorialColumnState
@@ -99,7 +99,7 @@ internal fun SearchMemorialContent(
 
 @Preview
 @Composable
-private fun PreviewSearchMemorialContent() = AccountTheme {
+private fun PreviewSearchMemorialContent() = GooseTheme {
     SearchMemorialContent(
         memorialColumnState = MemorialColumnState(
             memorials = (0..5).map {

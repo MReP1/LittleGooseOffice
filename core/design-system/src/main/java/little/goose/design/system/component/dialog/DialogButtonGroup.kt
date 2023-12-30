@@ -16,7 +16,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import little.goose.design.system.theme.AccountTheme
+import little.goose.design.system.theme.GooseTheme
 
 @Composable
 fun DialogButtonGroup(
@@ -55,7 +55,7 @@ fun DialogButtonGroup(
 
 @Preview(showBackground = true)
 @Composable
-private fun PreviewDialogButtonGroup() = AccountTheme {
+private fun PreviewDialogButtonGroup() = GooseTheme {
     Surface {
         DialogButtonGroup(
             startButtonContent = {

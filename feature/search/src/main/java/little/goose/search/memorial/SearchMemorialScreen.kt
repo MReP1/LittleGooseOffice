@@ -23,7 +23,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.navigation.compose.hiltViewModel
 import kotlinx.coroutines.flow.collectLatest
-import little.goose.design.system.theme.AccountTheme
+import little.goose.design.system.theme.GooseTheme
 import little.goose.memorial.data.entities.Memorial
 import little.goose.memorial.ui.component.MemorialColumnState
 import little.goose.search.SearchState
@@ -160,7 +160,7 @@ fun SearchMemorialScreen(
 
 @Preview
 @Composable
-fun PreviewSearchMemorialScreen() = AccountTheme {
+fun PreviewSearchMemorialScreen() = GooseTheme {
     SearchMemorialScreen(
         state = SearchMemorialState.Success(
             data = MemorialColumnState(

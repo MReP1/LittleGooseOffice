@@ -9,7 +9,7 @@ import androidx.compose.runtime.Stable
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import little.goose.design.system.R
-import little.goose.design.system.theme.AccountTheme
+import little.goose.design.system.theme.GooseTheme
 
 @Stable
 class DeleteDialogState {
@@ -58,6 +58,6 @@ fun DeleteDialog(
 
 @Preview
 @Composable
-private fun PreviewDeleteDialog() = AccountTheme {
+private fun PreviewDeleteDialog() = GooseTheme {
     DeleteDialog(state = DeleteDialogState().apply { show() })
 }

@@ -21,7 +21,7 @@ import androidx.lifecycle.repeatOnLifecycle
 import androidx.metrics.performance.JankStats
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
-import little.goose.design.system.theme.AccountTheme
+import little.goose.design.system.theme.GooseTheme
 import org.koin.android.scope.AndroidScopeComponent
 import org.koin.androidx.scope.activityScope
 import org.koin.core.scope.Scope
@@ -80,7 +80,7 @@ class MainActivity : AppCompatActivity(), AndroidScopeComponent {
                 onDispose { }
             }
 
-            AccountTheme(themeConfig = appState.themeConfig, useGooseStyle = true) {
+            GooseTheme(themeConfig = appState.themeConfig, useGooseStyle = true) {
                 Surface(color = MaterialTheme.colorScheme.background) {
                     MainScreen(
                         modifier = Modifier.fillMaxSize()

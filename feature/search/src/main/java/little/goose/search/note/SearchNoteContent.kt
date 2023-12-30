@@ -24,7 +24,7 @@ import little.goose.design.system.component.MovableActionButton
 import little.goose.design.system.component.MovableActionButtonState
 import little.goose.design.system.component.dialog.DeleteDialog
 import little.goose.design.system.component.dialog.DeleteDialogState
-import little.goose.design.system.theme.AccountTheme
+import little.goose.design.system.theme.GooseTheme
 import little.goose.note.data.entities.Note
 import little.goose.note.data.entities.NoteContentBlock
 import little.goose.note.ui.NoteColumn
@@ -95,7 +95,7 @@ internal fun SearchNoteContent(
 
 @Preview
 @Composable
-private fun PreviewSearchNoteContent() = AccountTheme {
+private fun PreviewSearchNoteContent() = GooseTheme {
     SearchNoteContent(
         noteColumnState = NoteColumnState(
             noteWithContents = mapOf(

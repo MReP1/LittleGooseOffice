@@ -16,7 +16,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import little.goose.account.R
 import little.goose.account.logic.MoneyCalculatorLogic
-import little.goose.design.system.theme.AccountTheme
+import little.goose.design.system.theme.GooseTheme
 
 @Composable
 fun Calculator(
@@ -198,7 +198,7 @@ private fun Cell(
 
 @Preview(heightDp = 380)
 @Composable
-fun PreviewCalculator() = AccountTheme {
+fun PreviewCalculator() = GooseTheme {
     Calculator(
         onNumClick = {},
         onAgainClick = {},

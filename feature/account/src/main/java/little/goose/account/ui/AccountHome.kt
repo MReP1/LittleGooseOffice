@@ -25,7 +25,7 @@ import little.goose.account.ui.component.MonthSelectorState
 import little.goose.account.ui.component.TransactionColumn
 import little.goose.account.ui.component.TransactionColumnState
 import little.goose.common.utils.progressWith
-import little.goose.design.system.theme.AccountTheme
+import little.goose.design.system.theme.GooseTheme
 import little.goose.ui.icon.PullToSearchIcon
 import little.goose.ui.surface.PullSurface
 
@@ -94,7 +94,7 @@ fun AccountHome(
 
 @Preview
 @Composable
-private fun PreviewAccountHome() = AccountTheme {
+private fun PreviewAccountHome() = GooseTheme {
     val calendar = remember { Calendar.getInstance() }
     AccountHome(
         modifier = Modifier.fillMaxSize(),

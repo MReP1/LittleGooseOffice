@@ -31,7 +31,7 @@ import androidx.compose.ui.unit.max
 import androidx.compose.ui.unit.min
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import little.goose.design.system.theme.AccountTheme
+import little.goose.design.system.theme.GooseTheme
 import little.goose.ui.modifier.nestedPull
 
 @Composable
@@ -131,7 +131,7 @@ fun PullSurface(
 
 @Preview
 @Composable
-fun PreviewPullSurface() = AccountTheme {
+fun PreviewPullSurface() = GooseTheme {
     PullSurface(
         onPull = { },
         backgroundContent = { progress ->

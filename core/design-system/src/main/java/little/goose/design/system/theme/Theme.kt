@@ -134,7 +134,7 @@ val LocalWindowSizeClass = compositionLocalOf<WindowSizeClass> {
 
 @OptIn(ExperimentalMaterial3AdaptiveApi::class)
 @Composable
-fun AccountTheme(
+fun GooseTheme(
     themeConfig: ThemeConfig = remember { ThemeConfig() },
     useGooseStyle: Boolean = false,
     windowSizeClass: WindowSizeClass = currentWindowAdaptiveInfo().windowSizeClass,

@@ -14,7 +14,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import little.goose.design.system.component.dialog.DeleteDialog
 import little.goose.design.system.component.dialog.DeleteDialogState
-import little.goose.design.system.theme.AccountTheme
+import little.goose.design.system.theme.GooseTheme
 import little.goose.memorial.data.entities.Memorial
 
 data class MemorialColumnState(
@@ -68,7 +68,7 @@ fun MemorialColumn(
 
 @Preview
 @Composable
-private fun PreviewMemorialColumn() = AccountTheme {
+private fun PreviewMemorialColumn() = GooseTheme {
     MemorialColumn(
         state = MemorialColumnState(
             memorials = (0..5).map {

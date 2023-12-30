@@ -31,7 +31,7 @@ import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.tooling.preview.Preview
-import little.goose.design.system.theme.AccountTheme
+import little.goose.design.system.theme.GooseTheme
 
 @OptIn(ExperimentalComposeUiApi::class, ExperimentalLayoutApi::class)
 @Composable
@@ -106,7 +106,7 @@ internal fun SearchScreen(
 
 @Preview
 @Composable
-fun PreviewSearchScreen() = AccountTheme {
+fun PreviewSearchScreen() = GooseTheme {
     SearchScreen(
         keyword = "Search keyword",
         snackbarHostState = SnackbarHostState(),

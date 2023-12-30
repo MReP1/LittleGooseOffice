@@ -34,7 +34,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import little.goose.design.system.theme.AccountTheme
+import little.goose.design.system.theme.GooseTheme
 import little.goose.note.logic.FormatType
 import little.goose.note.ui.component.FormatHeaderIcon
 
@@ -192,7 +192,7 @@ private fun NoteBottomBarRow(
 
 @Preview
 @Composable
-private fun PreviewNoteBottomBarEditing() = AccountTheme {
+private fun PreviewNoteBottomBarEditing() = GooseTheme {
     NoteBottomBar(
         state = NoteBottomBarState.Editing()
     )
@@ -200,7 +200,7 @@ private fun PreviewNoteBottomBarEditing() = AccountTheme {
 
 @Preview
 @Composable
-private fun PreviewNoteBottomBarLoading() = AccountTheme {
+private fun PreviewNoteBottomBarLoading() = GooseTheme {
     NoteBottomBar(
         state = NoteBottomBarState.Loading
     )
@@ -208,7 +208,7 @@ private fun PreviewNoteBottomBarLoading() = AccountTheme {
 
 @Preview
 @Composable
-private fun PreviewNoteBottomBarPreview() = AccountTheme {
+private fun PreviewNoteBottomBarPreview() = GooseTheme {
     NoteBottomBar(
         state = NoteBottomBarState.Preview()
     )

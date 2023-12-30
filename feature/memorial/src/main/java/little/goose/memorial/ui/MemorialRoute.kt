@@ -72,7 +72,7 @@ import little.goose.common.utils.TimeType
 import little.goose.common.utils.toChineseYearMonDayWeek
 import little.goose.design.system.component.dialog.TimeSelectorCenterDialog
 import little.goose.design.system.component.dialog.rememberDialogState
-import little.goose.design.system.theme.AccountTheme
+import little.goose.design.system.theme.GooseTheme
 import little.goose.memorial.R
 import little.goose.memorial.ROUTE_GRAPH_MEMORIAL
 import little.goose.memorial.data.constants.KEY_MEMORIAL_ID
@@ -482,7 +482,7 @@ private fun MemorialPreviewContent(
 
 @Preview
 @Composable
-private fun PreviewMemorialScreen() = AccountTheme {
+private fun PreviewMemorialScreen() = GooseTheme {
     MemorialScreen(
         memorial = Memorial(null, "纪念日", true, Date()),
         onChangeTimeClick = {},

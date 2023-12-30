@@ -33,7 +33,7 @@ import little.goose.account.data.entities.Transaction
 import little.goose.account.ui.transaction.icon.TransactionIconHelper
 import little.goose.common.utils.toChineseMonthDayTime
 import little.goose.common.utils.toSignString
-import little.goose.design.system.theme.AccountTheme
+import little.goose.design.system.theme.GooseTheme
 import little.goose.design.system.util.Display
 import java.math.BigDecimal
 import java.util.Date
@@ -143,7 +143,7 @@ fun TransactionCard(
 
 @Preview
 @Composable
-private fun ExpendedPreview() = AccountTheme {
+private fun ExpendedPreview() = GooseTheme {
     TransactionCard(
         transaction = Transaction(
             null, EXPENSE, BigDecimal(71),
@@ -160,7 +160,7 @@ private fun ExpendedPreview() = AccountTheme {
 @Preview
 @Composable
 private fun DefaultPreview() {
-    AccountTheme {
+    GooseTheme {
         TransactionCard(
             transaction = Transaction(
                 null, EXPENSE, BigDecimal(71),

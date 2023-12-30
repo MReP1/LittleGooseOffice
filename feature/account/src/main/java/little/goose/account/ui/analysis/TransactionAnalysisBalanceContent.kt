@@ -25,7 +25,7 @@ import little.goose.account.data.models.TransactionBalance
 import little.goose.common.utils.calendar
 import little.goose.common.utils.getDate
 import little.goose.common.utils.getMonth
-import little.goose.design.system.theme.AccountTheme
+import little.goose.design.system.theme.GooseTheme
 import java.math.BigDecimal
 import java.util.Date
 
@@ -192,13 +192,13 @@ private fun PreviewTransactionAnalysisBalanceContent() {
 
 @Preview
 @Composable
-private fun PreviewTransactionBalanceTitle() = AccountTheme {
+private fun PreviewTransactionBalanceTitle() = GooseTheme {
     TransactionBalanceTitle(modifier = Modifier)
 }
 
 @Preview
 @Composable
-private fun PreviewTransactionBalanceItem() = AccountTheme {
+private fun PreviewTransactionBalanceItem() = GooseTheme {
     TransactionBalanceItem(
         modifier = Modifier,
         tonalElevation = 3.dp,

@@ -24,7 +24,7 @@ import little.goose.account.data.constants.AccountConstant.EXPENSE
 import little.goose.account.data.entities.Transaction
 import little.goose.design.system.component.dialog.DeleteDialog
 import little.goose.design.system.component.dialog.DeleteDialogState
-import little.goose.design.system.theme.AccountTheme
+import little.goose.design.system.theme.GooseTheme
 import little.goose.design.system.theme.LocalWindowSizeClass
 import java.math.BigDecimal
 
@@ -105,7 +105,7 @@ fun TransactionColumn(
 
 @Preview
 @Composable
-fun PreviewTransactionColumn() = AccountTheme {
+fun PreviewTransactionColumn() = GooseTheme {
     TransactionColumn(
         modifier = Modifier.fillMaxSize(),
         state = TransactionColumnState(

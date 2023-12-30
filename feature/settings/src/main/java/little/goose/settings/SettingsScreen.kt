@@ -41,7 +41,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import little.goose.design.system.theme.AccountTheme
+import little.goose.design.system.theme.GooseTheme
 import little.goose.design.system.theme.ThemeType
 
 sealed interface SettingsState {
@@ -290,7 +290,7 @@ internal fun SettingsScreen(
 
 @Preview
 @Composable
-private fun PreviewSettingScreen() = AccountTheme {
+private fun PreviewSettingScreen() = GooseTheme {
     SettingsScreen(settingsState = SettingsState.Success(
         isDynamicColor = true,
         themeType = ThemeType.FOLLOW_SYSTEM,

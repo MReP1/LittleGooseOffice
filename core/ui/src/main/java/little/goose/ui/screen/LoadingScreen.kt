@@ -17,7 +17,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import kotlinx.coroutines.delay
-import little.goose.design.system.theme.AccountTheme
+import little.goose.design.system.theme.GooseTheme
 import little.goose.ui.R
 
 @Composable
@@ -70,6 +70,6 @@ internal fun LoadingScreen(
 
 @Preview
 @Composable
-fun PreviewLoadingScreen() = AccountTheme {
+fun PreviewLoadingScreen() = GooseTheme {
     LoadingScreen()
 }

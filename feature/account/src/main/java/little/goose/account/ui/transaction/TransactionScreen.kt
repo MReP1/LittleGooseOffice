@@ -21,7 +21,7 @@ import kotlinx.coroutines.launch
 import little.goose.account.data.constants.AccountConstant
 import little.goose.account.ui.component.TransactionEditSurface
 import little.goose.account.ui.component.TransactionEditSurfaceState
-import little.goose.design.system.theme.AccountTheme
+import little.goose.design.system.theme.GooseTheme
 
 internal sealed class TransactionScreenState {
 
@@ -152,7 +152,7 @@ internal fun TransactionScreen(
 
 @Preview
 @Composable
-private fun PreviewTransactionScreen() = AccountTheme {
+private fun PreviewTransactionScreen() = GooseTheme {
     TransactionScreen(
         snackbarHostState = remember { SnackbarHostState() },
         transactionScreenState = TransactionScreenState.Success(),

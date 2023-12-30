@@ -26,7 +26,7 @@ import little.goose.design.system.component.MovableActionButton
 import little.goose.design.system.component.MovableActionButtonState
 import little.goose.design.system.component.dialog.DeleteDialog
 import little.goose.design.system.component.dialog.DeleteDialogState
-import little.goose.design.system.theme.AccountTheme
+import little.goose.design.system.theme.GooseTheme
 
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
@@ -95,7 +95,7 @@ internal fun SearchTransactionContent(
 
 @Preview
 @Composable
-private fun PreviewSearchTransactionContent() = AccountTheme {
+private fun PreviewSearchTransactionContent() = GooseTheme {
     SearchTransactionContent(
         modifier = Modifier.fillMaxSize(),
         transactionColumnState = TransactionColumnState(),
