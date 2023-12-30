@@ -1,7 +1,6 @@
 package little.goose.design.system.theme
 
 import android.annotation.SuppressLint
-import android.app.Activity
 import android.content.Context
 import android.os.Build
 import android.view.Gravity
@@ -12,9 +11,7 @@ import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.*
 import androidx.compose.material3.adaptive.ExperimentalMaterial3AdaptiveApi
 import androidx.compose.material3.adaptive.currentWindowAdaptiveInfo
-import androidx.compose.material3.windowsizeclass.ExperimentalMaterial3WindowSizeClassApi
 import androidx.compose.material3.windowsizeclass.WindowSizeClass
-import androidx.compose.material3.windowsizeclass.calculateWindowSizeClass
 import androidx.compose.runtime.*
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.ComposeView
@@ -135,14 +132,12 @@ val LocalWindowSizeClass = compositionLocalOf<WindowSizeClass> {
     throw Exception("CompositionLocal WindowSize not present")
 }
 
-@OptIn(ExperimentalMaterial3WindowSizeClassApi::class, ExperimentalMaterial3AdaptiveApi::class)
+@OptIn(ExperimentalMaterial3AdaptiveApi::class)
 @Composable
 fun AccountTheme(
     themeConfig: ThemeConfig = remember { ThemeConfig() },
     useGooseStyle: Boolean = false,
-    windowSizeClass: WindowSizeClass = (LocalContext.current as? Activity)
-        ?.let { calculateWindowSizeClass(it) }
-        ?: currentWindowAdaptiveInfo().windowSizeClass,
+    windowSizeClass: WindowSizeClass = currentWindowAdaptiveInfo().windowSizeClass,
     content: @Composable () -> Unit
 ) {
     val context = LocalContext.current
