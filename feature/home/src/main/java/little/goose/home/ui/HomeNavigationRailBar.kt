@@ -1,10 +1,13 @@
 package little.goose.home.ui
 
-import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.wrapContentWidth
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.DonutSmall
+import androidx.compose.material.icons.rounded.Settings
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.NavigationRail
 import androidx.compose.material3.NavigationRailItem
 import androidx.compose.material3.Text
@@ -20,6 +23,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import little.goose.design.system.theme.GooseTheme
 import little.goose.design.system.theme.LocalWindowSizeClass
 import little.goose.home.data.HomePage
+import little.goose.settings.R
 
 @Composable
 internal fun HomeNavigationRailBar(
@@ -27,7 +31,8 @@ internal fun HomeNavigationRailBar(
     homePages: List<HomePage> = HomePage.entries,
     currentHomePage: HomePage,
     onHomePageClick: (HomePage) -> Unit,
-    bottomContent: @Composable ColumnScope.(homePage: HomePage) -> Unit
+    onNavigateToSettings: () -> Unit,
+    onNavigateToAccountAnalysis: () -> Unit
 ) {
     val windowSizeClass = LocalWindowSizeClass.current
     NavigationRail(
@@ -53,8 +58,27 @@ internal fun HomeNavigationRailBar(
                 }
             )
         }
+
         Spacer(modifier = Modifier.weight(1F))
-        bottomContent(currentHomePage)
+
+        if (currentHomePage == HomePage.Account
+            && windowSizeClass.heightSizeClass != WindowHeightSizeClass.Compact
+        ) {
+            IconButton(onClick = onNavigateToAccountAnalysis) {
+                Icon(
+                    imageVector = Icons.Outlined.DonutSmall,
+                    contentDescription = "Analysis"
+                )
+            }
+        }
+        IconButton(onClick = onNavigateToSettings) {
+            Icon(
+                imageVector = Icons.Rounded.Settings,
+                contentDescription = stringResource(
+                    id = R.string.settings
+                )
+            )
+        }
     }
 }
 
@@ -68,6 +92,7 @@ private fun PreviewHomeNavigationRailBar() = GooseTheme {
             .wrapContentWidth(),
         currentHomePage = currentHomePage,
         onHomePageClick = { currentHomePage = it },
-        bottomContent = {}
+        onNavigateToAccountAnalysis = {},
+        onNavigateToSettings = {}
     )
 }
