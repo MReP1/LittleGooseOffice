@@ -3,9 +3,12 @@ package little.goose.account.ui.component
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.GridItemSpan
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.material3.Text
+import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.getValue
@@ -20,6 +23,7 @@ import little.goose.account.data.constants.AccountConstant.EXPENSE
 import little.goose.account.data.entities.Transaction
 import little.goose.design.system.component.dialog.DeleteDialog
 import little.goose.design.system.component.dialog.DeleteDialogState
+import little.goose.design.system.theme.LocalWindowSizeClass
 import java.math.BigDecimal
 
 @Stable
@@ -40,15 +44,29 @@ fun TransactionColumn(
     onTransactionEdit: (Transaction) -> Unit
 ) {
     val deleteDialogState = remember { DeleteDialogState() }
-
-    LazyColumn(
+    val windowSizeClass = LocalWindowSizeClass.current
+    val fixedCount = when (windowSizeClass.widthSizeClass) {
+        WindowWidthSizeClass.Compact -> 1
+        WindowWidthSizeClass.Medium -> 2
+        else -> 3
+    }
+    LazyVerticalGrid(
         modifier = modifier,
         contentPadding = PaddingValues(16.dp, 16.dp),
-        verticalArrangement = Arrangement.spacedBy(12.dp)
+        columns = GridCells.Fixed(fixedCount),
+        verticalArrangement = Arrangement.spacedBy(12.dp),
+        horizontalArrangement = Arrangement.spacedBy(12.dp)
     ) {
         items(
             items = state.transactions,
-            key = { it.id ?: it.toString() }
+            key = { it.id ?: it.toString() },
+            span = { transaction ->
+                if (transaction.type == AccountConstant.TIME) {
+                    GridItemSpan(fixedCount)
+                } else {
+                    GridItemSpan(1)
+                }
+            }
         ) { transaction ->
             if (transaction.type == AccountConstant.TIME) {
                 Text(

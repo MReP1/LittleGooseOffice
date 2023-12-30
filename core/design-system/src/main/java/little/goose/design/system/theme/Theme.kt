@@ -10,6 +10,8 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.*
+import androidx.compose.material3.adaptive.ExperimentalMaterial3AdaptiveApi
+import androidx.compose.material3.adaptive.currentWindowAdaptiveInfo
 import androidx.compose.material3.windowsizeclass.ExperimentalMaterial3WindowSizeClassApi
 import androidx.compose.material3.windowsizeclass.WindowSizeClass
 import androidx.compose.material3.windowsizeclass.calculateWindowSizeClass
@@ -18,8 +20,6 @@ import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalView
-import androidx.compose.ui.unit.DpSize
-import androidx.compose.ui.unit.dp
 import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.preferencesDataStore
@@ -135,16 +135,14 @@ val LocalWindowSizeClass = compositionLocalOf<WindowSizeClass> {
     throw Exception("CompositionLocal WindowSize not present")
 }
 
-@OptIn(ExperimentalMaterial3WindowSizeClassApi::class)
+@OptIn(ExperimentalMaterial3WindowSizeClassApi::class, ExperimentalMaterial3AdaptiveApi::class)
 @Composable
 fun AccountTheme(
     themeConfig: ThemeConfig = remember { ThemeConfig() },
     useGooseStyle: Boolean = false,
     windowSizeClass: WindowSizeClass = (LocalContext.current as? Activity)
         ?.let { calculateWindowSizeClass(it) }
-        ?: remember {
-            WindowSizeClass.calculateFromSize(DpSize(390.dp, 2200.dp))
-        },
+        ?: currentWindowAdaptiveInfo().windowSizeClass,
     content: @Composable () -> Unit
 ) {
     val context = LocalContext.current
