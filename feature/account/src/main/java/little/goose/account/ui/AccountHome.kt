@@ -1,6 +1,6 @@
 package little.goose.account.ui
 
-import androidx.compose.foundation.layout.Column
+import android.icu.util.Calendar
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.offset
@@ -12,9 +12,11 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.DonutSmall
 import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.scale
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.min
 import little.goose.account.ui.component.AccountTitle
@@ -23,6 +25,7 @@ import little.goose.account.ui.component.MonthSelectorState
 import little.goose.account.ui.component.TransactionColumn
 import little.goose.account.ui.component.TransactionColumnState
 import little.goose.common.utils.progressWith
+import little.goose.design.system.theme.AccountTheme
 import little.goose.ui.icon.PullToSearchIcon
 import little.goose.ui.surface.PullSurface
 
@@ -52,41 +55,58 @@ fun AccountHome(
             )
         },
         content = {
-            Column(modifier = Modifier.fillMaxSize()) {
-                PullSurface(
-                    modifier = Modifier.wrapContentSize(),
-                    onPull = onNavigateToAccountAnalysis,
-                    reverseDirection = true,
-                    backgroundContent = { progress ->
-                        Icon(
-                            imageVector = Icons.Outlined.DonutSmall,
-                            contentDescription = "Analysis",
-                            modifier = Modifier
-                                .padding(bottom = 12.dp)
-                                .size(min(48.dp, 24.dp + 24.dp * progress))
-                                .alpha(progress.coerceIn(0.62F, 1F))
-                        )
-                    },
-                    content = {
-                        AccountTitle(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .wrapContentHeight(),
-                            accountTitleState = accountTitleState,
-                            monthSelectorState = monthSelectorState
-                        )
-                    }
-                )
-                TransactionColumn(
-                    modifier = Modifier
-                        .weight(1F)
-                        .fillMaxWidth(),
-                    state = transactionColumnState,
-                    onTransactionEdit = { transaction ->
-                        transaction.id?.run(onNavigateToTransactionScreen)
-                    }
-                )
-            }
+            TransactionColumn(
+                modifier = Modifier.fillMaxSize(),
+                state = transactionColumnState,
+                title = {
+                    PullSurface(
+                        modifier = Modifier.wrapContentSize(),
+                        onPull = onNavigateToAccountAnalysis,
+                        reverseDirection = true,
+                        backgroundContent = { progress ->
+                            Icon(
+                                imageVector = Icons.Outlined.DonutSmall,
+                                contentDescription = "Analysis",
+                                modifier = Modifier
+                                    .padding(bottom = 12.dp)
+                                    .size(min(48.dp, 24.dp + 24.dp * progress))
+                                    .alpha(progress.coerceIn(0.62F, 1F))
+                            )
+                        },
+                        content = {
+                            AccountTitle(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .wrapContentHeight(),
+                                accountTitleState = accountTitleState,
+                                monthSelectorState = monthSelectorState
+                            )
+                        }
+                    )
+                },
+                onTransactionEdit = { transaction ->
+                    transaction.id?.run(onNavigateToTransactionScreen)
+                }
+            )
         }
+    )
+}
+
+@Preview
+@Composable
+private fun PreviewAccountHome() = AccountTheme {
+    val calendar = remember { Calendar.getInstance() }
+    AccountHome(
+        modifier = Modifier.fillMaxSize(),
+        accountTitleState = AccountTitleState(),
+        monthSelectorState = MonthSelectorState(
+            year = calendar.get(Calendar.YEAR),
+            month = calendar.get(Calendar.MONTH),
+            onTimeChange = { _, _ -> }
+        ),
+        transactionColumnState = TransactionColumnState(),
+        onNavigateToAccountAnalysis = {},
+        onNavigateToSearch = {},
+        onNavigateToTransactionScreen = {}
     )
 }

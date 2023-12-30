@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.GridItemSpan
+import androidx.compose.foundation.lazy.grid.LazyGridItemScope
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.material3.Text
@@ -42,6 +43,7 @@ data class TransactionColumnState(
 fun TransactionColumn(
     modifier: Modifier,
     state: TransactionColumnState,
+    title: (@Composable LazyGridItemScope.() -> Unit)? = null,
     onTransactionEdit: (Transaction) -> Unit
 ) {
     val deleteDialogState = remember { DeleteDialogState() }
@@ -58,6 +60,9 @@ fun TransactionColumn(
         verticalArrangement = Arrangement.spacedBy(12.dp),
         horizontalArrangement = Arrangement.spacedBy(12.dp)
     ) {
+        title?.let {
+            item(span = { GridItemSpan(fixedCount) }, content = it)
+        }
         items(
             items = state.transactions,
             key = { it.id ?: it.toString() },
