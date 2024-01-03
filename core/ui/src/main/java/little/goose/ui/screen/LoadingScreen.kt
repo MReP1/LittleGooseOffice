@@ -17,6 +17,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.isActive
 import little.goose.design.system.theme.GooseTheme
 import little.goose.ui.R
 
@@ -34,7 +35,7 @@ fun LittleGooseLoadingScreen(
             Image(painter = painter, contentDescription = "Loading")
             LaunchedEffect(Unit) {
                 delay(80)
-                while (true) {
+                while (isActive) {
                     painter = backGoose
                     delay(100)
                     painter = normalGoose
