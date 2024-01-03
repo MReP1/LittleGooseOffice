@@ -9,8 +9,6 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.*
-import androidx.compose.material3.adaptive.ExperimentalMaterial3AdaptiveApi
-import androidx.compose.material3.adaptive.currentWindowAdaptiveInfo
 import androidx.compose.material3.windowsizeclass.WindowSizeClass
 import androidx.compose.runtime.*
 import androidx.compose.ui.graphics.toArgb
@@ -21,6 +19,7 @@ import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.preferencesDataStore
 import little.goose.common.utils.getDataOrNull
+import little.goose.design.system.util.calculateWindowSizeClassWithCurrentContext
 
 private val gooseLightColorScheme = lightColorScheme(
     primary = md_theme_light_primary,
@@ -132,12 +131,11 @@ val LocalWindowSizeClass = compositionLocalOf<WindowSizeClass> {
     throw Exception("CompositionLocal WindowSize not present")
 }
 
-@OptIn(ExperimentalMaterial3AdaptiveApi::class)
 @Composable
 fun GooseTheme(
     themeConfig: ThemeConfig = remember { ThemeConfig() },
     useGooseStyle: Boolean = false,
-    windowSizeClass: WindowSizeClass = currentWindowAdaptiveInfo().windowSizeClass,
+    windowSizeClass: WindowSizeClass = calculateWindowSizeClassWithCurrentContext(),
     content: @Composable () -> Unit
 ) {
     val context = LocalContext.current

@@ -14,13 +14,14 @@ import androidx.compose.foundation.text2.input.TextFieldState
 import androidx.compose.foundation.text2.input.rememberTextFieldState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Delete
+import androidx.compose.material3.DismissDirection
+import androidx.compose.material3.DismissValue
 import androidx.compose.material3.Icon
 import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
-import androidx.compose.material3.SwipeToDismissBox
-import androidx.compose.material3.SwipeToDismissValue
-import androidx.compose.material3.rememberSwipeToDismissState
+import androidx.compose.material3.SwipeToDismiss
+import androidx.compose.material3.rememberDismissState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -51,24 +52,24 @@ fun NoteContentBlockItem(
         targetValue = if (isFocused) 3.dp else 0.3.dp,
         label = "block item tonal elevation"
     )
-    val dismissState = rememberSwipeToDismissState()
+    val dismissState = rememberDismissState()
 
     LaunchedEffect(dismissState) {
         snapshotFlow {
             dismissState.currentValue
         }.collect { dismissValue ->
-            if (dismissValue == SwipeToDismissValue.StartToEnd) {
+            if (dismissValue == DismissValue.DismissedToEnd) {
                 onBlockDelete()
             }
         }
     }
 
-    SwipeToDismissBox(
+    SwipeToDismiss(
         modifier = modifier
             .padding(horizontal = 16.dp)
             .clip(MaterialTheme.shapes.large),
         state = dismissState,
-        backgroundContent = {
+        background = {
             Box(
                 modifier = Modifier
                     .fillMaxSize()
@@ -79,15 +80,15 @@ fun NoteContentBlockItem(
                 val currentValue = dismissState.currentValue
                 val alpha by animateFloatAsState(
                     targetValue = if (
-                        targetValue == SwipeToDismissValue.StartToEnd
-                        || currentValue == SwipeToDismissValue.StartToEnd
+                        targetValue == DismissValue.DismissedToEnd
+                        || currentValue == DismissValue.DismissedToEnd
                     ) 1F else 0.5F,
                     label = "delete icon alpha"
                 )
                 val scale by animateFloatAsState(
                     targetValue = if (
-                        targetValue == SwipeToDismissValue.StartToEnd
-                        || currentValue == SwipeToDismissValue.StartToEnd
+                        targetValue == DismissValue.DismissedToEnd
+                        || currentValue == DismissValue.DismissedToEnd
                     ) 1F else 0.72F,
                     label = "delete icon scale"
                 )
@@ -101,7 +102,7 @@ fun NoteContentBlockItem(
                 )
             }
         },
-        content = {
+        dismissContent = {
             NoteContentBlockTextField(
                 modifier = Modifier.fillMaxWidth(),
                 textFieldState = textFieldState,
@@ -110,8 +111,7 @@ fun NoteContentBlockItem(
                 focusRequester = focusRequester
             )
         },
-        enableDismissFromStartToEnd = true,
-        enableDismissFromEndToStart = false
+        directions = remember { setOf(DismissDirection.StartToEnd) }
     )
 
 }

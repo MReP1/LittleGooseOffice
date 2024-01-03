@@ -59,10 +59,10 @@ dependencies {
     api(libs.androidx.compose.material3)
     api(libs.androidx.compose.material.iconsExtended)
     api(libs.androidx.compose.material3.windowSizeClass)
-    api(libs.androidx.compose.material3.adapter)
     implementation(libs.protobuf.kotlin.lite)
     implementation(libs.androidx.datastore)
     implementation(libs.androidx.dataStore.preferences)
     implementation(libs.androidx.appcompat)
     implementation(project(":core:common"))
+    implementation(libs.androidx.window)
 }
