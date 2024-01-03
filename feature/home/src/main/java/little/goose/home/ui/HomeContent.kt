@@ -19,6 +19,8 @@ import little.goose.home.data.HOME
 import little.goose.home.data.HomePage
 import little.goose.home.data.MEMORIAL
 import little.goose.home.data.NOTEBOOK
+import little.goose.home.ui.index.IndexHome
+import little.goose.home.ui.index.IndexScreenState
 import little.goose.memorial.data.entities.Memorial
 import little.goose.memorial.ui.MemorialHome
 import little.goose.memorial.ui.component.MemorialColumnState

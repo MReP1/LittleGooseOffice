@@ -27,6 +27,7 @@ import kotlinx.coroutines.launch
 import little.goose.account.ui.AccountHomeViewModel
 import little.goose.design.system.theme.LocalWindowSizeClass
 import little.goose.home.data.HomePage
+import little.goose.home.ui.index.IndexViewModel
 import little.goose.memorial.ui.MemorialViewModel
 import little.goose.note.ui.NotebookViewModel
 import little.goose.search.SearchType
