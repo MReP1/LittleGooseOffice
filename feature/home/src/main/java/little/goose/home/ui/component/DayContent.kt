@@ -1,16 +1,23 @@
 package little.goose.home.ui.component
 
+import androidx.compose.animation.core.Animatable
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.drawWithCache
 import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.text.TextMeasurer
 import androidx.compose.ui.text.drawText
 import androidx.compose.ui.text.style.TextOverflow
@@ -32,11 +39,32 @@ fun DayContent(
 ) {
     val typography = MaterialTheme.typography
     val colorScheme = MaterialTheme.colorScheme
+    val currentDayProgress = remember { Animatable(0F) }
+    val currentIsCurrentDay by rememberUpdatedState(newValue = isCurrentDay)
+
+    LaunchedEffect(currentIsCurrentDay) {
+        currentDayProgress.animateTo(if (currentIsCurrentDay) 1F else 0F)
+    }
+
     Spacer(
         modifier = modifier
             .fillMaxWidth()
             .clip(RoundedCorner12)
             .clickable(onClick = onClick)
+            .pointerInput(Unit) {
+                detectTapGestures(
+                    onPress = {
+                        currentDayProgress.animateTo(0.8F)
+                        val isCancel = !tryAwaitRelease()
+                        if (isCancel) {
+                            currentDayProgress.animateTo(if (currentIsCurrentDay) 1F else 0F)
+                        } else if (currentIsCurrentDay) {
+                            currentDayProgress.animateTo(1F)
+                        }
+                    },
+                    onTap = { onClick() }
+                )
+            }
             .drawWithCache {
                 val dateTextLayoutResult = textMeasurer.measure(
                     text = dateText,
@@ -61,12 +89,18 @@ fun DayContent(
                     (size.height - dateTextLayoutResult.size.height) / 2
                 )
                 onDrawWithContent {
-                    if (isCurrentDay) {
-                        drawRoundRect(
-                            color = colorScheme.primary,
-                            cornerRadius = CornerRadius(12.dp.toPx(), 12.dp.toPx())
-                        )
-                    }
+                    val currentDayProgressValue = currentDayProgress.value
+                    val cornerRadius = (36 - 24 * currentDayProgressValue).dp.toPx()
+                    drawRoundRect(
+                        color = colorScheme.primary,
+                        cornerRadius = CornerRadius(cornerRadius, cornerRadius),
+                        topLeft = Offset(
+                            size.width / 2 - (currentDayProgressValue * size.width / 2),
+                            size.height / 2 - (currentDayProgressValue * size.height / 2)
+                        ),
+                        size = size * currentDayProgressValue,
+                        alpha = currentDayProgressValue
+                    )
                     if (isToday) {
                         drawRoundRect(
                             color = colorScheme.tertiaryContainer,
