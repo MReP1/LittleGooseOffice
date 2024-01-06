@@ -70,7 +70,8 @@ fun HomePageContent(
         HorizontalPager(
             modifier = Modifier.fillMaxSize(),
             state = pagerState,
-            userScrollEnabled = true
+            userScrollEnabled = true,
+            beyondBoundsPageCount = pagerState.pageCount
         ) { index ->
             when (index) {
                 HOME -> {
