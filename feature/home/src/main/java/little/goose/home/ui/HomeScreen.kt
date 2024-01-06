@@ -120,7 +120,7 @@ fun HomeScreen(
                 }
             },
             content = { paddingValues ->
-                val indexScreenState by indexViewModel.indexScreenState.collectAsState()
+                val indexHomeState by indexViewModel.indexHomeState.collectAsState()
                 val accountTitleState by accountViewModel.accountTitleState.collectAsState()
                 val monthSelectorState by accountViewModel.monthSelectorState.collectAsState()
                 val topMemorial by memorialViewModel.topMemorial.collectAsState()
@@ -129,7 +129,7 @@ fun HomeScreen(
                         .fillMaxSize()
                         .padding(paddingValues),
                     pagerState,
-                    indexScreenState,
+                    indexHomeState,
                     currentHomePage,
                     onNavigateToMemorialAdd,
                     onNavigateToMemorial,

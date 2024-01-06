@@ -11,6 +11,7 @@ import little.goose.memorial.logic.DeleteMemorialsEventUseCase
 import little.goose.memorial.logic.DeleteMemorialsUseCase
 import little.goose.memorial.logic.GetAllMemorialFlowUseCase
 import little.goose.memorial.logic.GetMemorialAtTopFlowUseCase
+import little.goose.memorial.logic.GetMemorialByDateFlowUseCase
 import little.goose.memorial.logic.GetMemorialFlowUseCase
 import little.goose.memorial.logic.GetMemorialsByYearMonthFlowUseCase
 import little.goose.memorial.logic.InsertMemorialUseCase
@@ -115,6 +116,14 @@ class MemorialViewModelModule {
         memorialRepository: MemorialRepository
     ): GetMemorialsByYearMonthFlowUseCase {
         return GetMemorialsByYearMonthFlowUseCase(memorialRepository)
+    }
+
+    @Provides
+    @ViewModelScoped
+    fun provideGetMemorialByDateFlowUseCase(
+        memorialRepository: MemorialRepository
+    ): GetMemorialByDateFlowUseCase {
+        return GetMemorialByDateFlowUseCase(memorialRepository)
     }
 
     @Provides

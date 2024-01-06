@@ -94,3 +94,11 @@ class GetMemorialsByYearMonthFlowUseCase(
         return memorialRepository.getMemorialsByYearMonthFlow(year, month)
     }
 }
+
+class GetMemorialByDateFlowUseCase(
+    private val memorialRepository: MemorialRepository
+) {
+    operator fun invoke(year: Int, month: Int, day: Int): Flow<List<Memorial>> {
+        return memorialRepository.getMemorialsByDateFlow(year, month, day)
+    }
+}

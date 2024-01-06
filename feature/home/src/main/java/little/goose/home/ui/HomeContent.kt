@@ -20,7 +20,7 @@ import little.goose.home.data.HomePage
 import little.goose.home.data.MEMORIAL
 import little.goose.home.data.NOTEBOOK
 import little.goose.home.ui.index.IndexHome
-import little.goose.home.ui.index.IndexScreenState
+import little.goose.home.ui.index.IndexHomeState
 import little.goose.memorial.data.entities.Memorial
 import little.goose.memorial.ui.MemorialHome
 import little.goose.memorial.ui.component.MemorialColumnState
@@ -33,7 +33,7 @@ import java.util.Date
 fun HomePageContent(
     modifier: Modifier,
     pagerState: PagerState,
-    indexScreenState: IndexScreenState,
+    indexHomeState: IndexHomeState,
     currentHomePage: HomePage,
     onNavigateToMemorialAdd: () -> Unit,
     onNavigateToMemorial: (memorialId: Long) -> Unit,
@@ -76,7 +76,7 @@ fun HomePageContent(
                 HOME -> {
                     IndexHome(
                         modifier = Modifier.fillMaxSize(),
-                        state = indexScreenState,
+                        state = indexHomeState,
                         onTransactionAdd = { time ->
                             onNavigateToTransaction(null, time)
                         },

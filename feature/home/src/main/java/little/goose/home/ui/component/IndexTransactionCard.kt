@@ -24,13 +24,12 @@ import little.goose.account.data.entities.Transaction
 import little.goose.account.ui.transaction.icon.TransactionIconHelper
 import little.goose.common.utils.toDate
 import little.goose.design.system.util.Display
-import java.math.BigDecimal
 import java.time.LocalDate
 import java.util.Date
 
 data class IndexTransactionCardState(
-    val expense: BigDecimal,
-    val income: BigDecimal,
+    val expense: String,
+    val income: String,
     val transactions: List<Transaction>,
     val currentTime: LocalDate
 )
