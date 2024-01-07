@@ -18,7 +18,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.produceState
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.snapshotFlow
@@ -109,9 +108,7 @@ fun IndexHome(
             state = calendarState,
             userScrollEnabled = true,
             dayContent = { day ->
-                val dayContent by produceState(key1 = day.date, initialValue = IndexDayContent()) {
-                    state.getDayContentFlow(day.date).collect { value = it }
-                }
+                val dayContent by state.getDayContentFlow(day.date).collectAsState()
                 DayContent(
                     onClick = { state.onCurrentDayChange(day.date) },
                     modifier = Modifier.height(54.dp),
