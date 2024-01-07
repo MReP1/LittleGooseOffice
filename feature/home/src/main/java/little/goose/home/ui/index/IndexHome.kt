@@ -6,14 +6,17 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Text
+import androidx.compose.material3.windowsizeclass.WindowHeightSizeClass
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -33,6 +36,7 @@ import com.kizitonwose.calendar.core.atStartOfMonth
 import com.kizitonwose.calendar.core.yearMonth
 import kotlinx.coroutines.flow.filterNot
 import little.goose.account.data.entities.Transaction
+import little.goose.design.system.theme.LocalWindowSizeClass
 import little.goose.home.ui.component.DayContent
 import little.goose.home.ui.component.IndexMemorialCard
 import little.goose.home.ui.component.IndexTransactionCard
@@ -51,34 +55,93 @@ fun IndexHome(
     onMemorialClick: (Memorial) -> Unit
 ) {
 
-    val calendarState = rememberCalendarState(
-        startMonth = state.startMonth,
-        endMonth = state.endMonth,
-        firstVisibleMonth = state.initMonth,
-        firstDayOfWeek = state.dayOfWeek.first(),
-        outDateStyle = OutDateStyle.EndOfRow
-    )
+    val windowSizeClass = LocalWindowSizeClass.current
+    val isLandscape = windowSizeClass.heightSizeClass == WindowHeightSizeClass.Compact
 
-    Column(modifier = modifier) {
+    Row(modifier = modifier) {
 
-        // 星期
-        Row(modifier = Modifier.fillMaxWidth()) {
-            for (day in state.dayOfWeek) {
-                Box(
-                    modifier = Modifier
-                        .weight(1F)
-                        .padding(4.dp),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Text(text = day.getDisplayName(TextStyle.SHORT, Locale.ENGLISH))
-                }
-            }
+        if (isLandscape) {
+            IndexCalendar(
+                modifier = Modifier
+                    .width(360.dp)
+                    .fillMaxHeight(),
+                state = state
+            )
         }
 
-        val currentCurrentDay by rememberUpdatedState(newValue = state.currentDay)
+        Column(
+            modifier = Modifier
+                .weight(1F)
+                .fillMaxHeight()
+        ) {
 
+            if (!isLandscape) {
+                IndexCalendar(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .wrapContentHeight(),
+                    state = state
+                )
+                Spacer(modifier = Modifier.height(12.dp))
+            }
+
+            val currentDayContentState = state.getDayContentFlow(state.currentDay).collectAsState()
+
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .wrapContentHeight()
+                    .verticalScroll(rememberScrollState()),
+                verticalArrangement = Arrangement.Top
+            ) {
+                currentDayContentState.value.memorials.firstOrNull()?.let { memorial ->
+                    IndexMemorialCard(
+                        modifier = Modifier.padding(horizontal = 16.dp, vertical = 6.dp),
+                        memorial = memorial,
+                        onMemorialClick = onMemorialClick
+                    )
+                }
+
+                val indexTransactionCardState = remember(
+                    currentDayContentState.value,
+                    state.currentDay
+                ) {
+                    IndexTransactionCardState(
+                        currentDayContentState.value.expense,
+                        currentDayContentState.value.income,
+                        currentDayContentState.value.transactions,
+                        state.currentDay
+                    )
+                }
+                IndexTransactionCard(
+                    modifier = Modifier
+                        .padding(horizontal = 16.dp, vertical = 6.dp)
+                        .fillMaxWidth()
+                        .heightIn(0.dp, 160.dp),
+                    state = indexTransactionCardState,
+                    onTransactionAdd = onTransactionAdd,
+                    onTransactionClick = onTransactionClick
+                )
+            }
+        }
+    }
+}
+
+@Composable
+fun IndexCalendar(
+    modifier: Modifier,
+    state: IndexHomeState,
+) {
+    Column(modifier = modifier) {
+        val currentCurrentDay by rememberUpdatedState(newValue = state.currentDay)
         val textMeasurer = rememberTextMeasurer(cacheSize = 256)
-        val currentDayContentState = state.getDayContentFlow(state.currentDay).collectAsState()
+        val calendarState = rememberCalendarState(
+            startMonth = state.startMonth,
+            endMonth = state.endMonth,
+            firstVisibleMonth = state.initMonth,
+            firstDayOfWeek = state.dayOfWeek.first(),
+            outDateStyle = OutDateStyle.EndOfRow
+        )
 
         LaunchedEffect(calendarState) {
             // select day of current month when scroll finished.
@@ -97,6 +160,21 @@ fun IndexHome(
             val visibleRange = currentMonth.atStartOfMonth()..currentMonth.atEndOfMonth()
             if (state.currentDay !in visibleRange) {
                 calendarState.animateScrollToMonth(state.currentDay.yearMonth)
+            }
+        }
+
+
+        // 星期
+        Row(modifier = Modifier.fillMaxWidth()) {
+            for (day in state.dayOfWeek) {
+                Box(
+                    modifier = Modifier
+                        .weight(1F)
+                        .padding(4.dp),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text(text = day.getDisplayName(TextStyle.SHORT, Locale.ENGLISH))
+                }
             }
         }
 
@@ -122,42 +200,5 @@ fun IndexHome(
                 )
             }
         )
-
-        Spacer(modifier = Modifier.height(12.dp))
-
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .wrapContentHeight()
-                .verticalScroll(rememberScrollState()),
-            verticalArrangement = Arrangement.Top
-        ) {
-            currentDayContentState.value.memorials.firstOrNull()?.let { memorial ->
-                IndexMemorialCard(
-                    modifier = Modifier.padding(horizontal = 16.dp, vertical = 6.dp),
-                    memorial = memorial,
-                    onMemorialClick = onMemorialClick
-                )
-            }
-
-            val indexTransactionCardState = remember(currentDayContentState.value) {
-                IndexTransactionCardState(
-                    currentDayContentState.value.expense,
-                    currentDayContentState.value.income,
-                    currentDayContentState.value.transactions,
-                    state.currentDay
-                )
-            }
-            IndexTransactionCard(
-                modifier = Modifier
-                    .padding(horizontal = 16.dp, vertical = 6.dp)
-                    .fillMaxWidth()
-                    .heightIn(0.dp, 160.dp),
-                state = indexTransactionCardState,
-                onTransactionAdd = onTransactionAdd,
-                onTransactionClick = onTransactionClick
-            )
-        }
     }
-
 }

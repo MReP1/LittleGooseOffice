@@ -62,9 +62,9 @@ class IndexViewModel @Inject constructor(
                 var expense = 0.0
                 for (transaction in transactions) {
                     if (transaction.type == EXPENSE) {
-                        income += transaction.money.toDouble()
-                    } else if (transaction.type == INCOME) {
                         expense += transaction.money.toDouble()
+                    } else if (transaction.type == INCOME) {
+                        income += transaction.money.toDouble()
                     }
                 }
                 IndexDayContent(
