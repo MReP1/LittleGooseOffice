@@ -16,7 +16,7 @@ import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Text
-import androidx.compose.material3.windowsizeclass.WindowHeightSizeClass
+import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -56,11 +56,11 @@ fun IndexHome(
 ) {
 
     val windowSizeClass = LocalWindowSizeClass.current
-    val isLandscape = windowSizeClass.heightSizeClass == WindowHeightSizeClass.Compact
+    val isTablet = windowSizeClass.widthSizeClass != WindowWidthSizeClass.Compact
 
     Row(modifier = modifier) {
 
-        if (isLandscape) {
+        if (isTablet) {
             IndexCalendar(
                 modifier = Modifier
                     .width(360.dp)
@@ -75,7 +75,7 @@ fun IndexHome(
                 .fillMaxHeight()
         ) {
 
-            if (!isLandscape) {
+            if (!isTablet) {
                 IndexCalendar(
                     modifier = Modifier
                         .fillMaxWidth()
