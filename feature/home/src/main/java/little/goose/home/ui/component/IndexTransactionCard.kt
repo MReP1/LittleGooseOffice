@@ -58,7 +58,7 @@ internal fun IndexTransactionCard(
                 ) {
                     Text(text = stringResource(id = little.goose.account.R.string.income) + " ${state.income}")
                     Spacer(modifier = Modifier.weight(1F))
-                    Text(text = stringResource(id = little.goose.account.R.string.expense) + " -${state.expense}")
+                    Text(text = stringResource(id = little.goose.account.R.string.expense) + " ${state.expense}")
                 }
                 IndexTransactionColumn(
                     modifier = Modifier
