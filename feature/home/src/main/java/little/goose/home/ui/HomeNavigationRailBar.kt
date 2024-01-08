@@ -1,15 +1,23 @@
 package little.goose.home.ui
 
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.DonutSmall
+import androidx.compose.material.icons.rounded.Add
+import androidx.compose.material.icons.rounded.CalendarToday
 import androidx.compose.material.icons.rounded.Settings
+import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.FloatingActionButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationRail
 import androidx.compose.material3.NavigationRailItem
 import androidx.compose.material3.Surface
@@ -20,37 +28,77 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
+import little.goose.common.utils.DateTimeUtils
 import little.goose.design.system.theme.GooseTheme
 import little.goose.design.system.theme.LocalWindowSizeClass
+import little.goose.design.system.util.PreviewMultipleScreenSizes
 import little.goose.home.data.HomePage
 import little.goose.settings.R
+import java.time.LocalDate
 
 @Composable
 internal fun HomeNavigationRailBar(
     modifier: Modifier = Modifier,
     homePages: List<HomePage> = HomePage.entries,
     currentHomePage: HomePage,
-    onHomePageClick: (HomePage) -> Unit,
-    onNavigateToSettings: () -> Unit,
-    onNavigateToAccountAnalysis: () -> Unit
+    onAddClick: () -> Unit = {},
+    currentDayText: String = LocalDate.now().let {
+        DateTimeUtils.getTimeFormatTen(it.month.value) + "-" + DateTimeUtils.getTimeFormatTen(it.dayOfMonth)
+    },
+    todayText: String = LocalDate.now().dayOfMonth.toString(),
+    onHomePageClick: (HomePage) -> Unit = {},
+    onNavigateToSettings: () -> Unit = {},
+    onNavigateToAccountAnalysis: () -> Unit = {}
 ) {
     val windowSizeClass = LocalWindowSizeClass.current
+    val isWindowHeightCompat = windowSizeClass.heightSizeClass == WindowHeightSizeClass.Compact
     NavigationRail(
         modifier = modifier,
         header = {
-            Text(text = stringResource(id = currentHomePage.labelRes))
+            Text(
+                text = if (currentHomePage == HomePage.Home && isWindowHeightCompat) {
+                    currentDayText
+                } else {
+                    stringResource(id = currentHomePage.labelRes)
+                },
+                modifier = Modifier.padding(vertical = 6.dp)
+            )
+            if (!isWindowHeightCompat) {
+                FloatingActionButton(
+                    onClick = onAddClick,
+                    elevation = FloatingActionButtonDefaults.bottomAppBarFabElevation(),
+                ) {
+                    if (currentHomePage == HomePage.Home) {
+                        Box(
+                            modifier = Modifier.wrapContentSize(),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Icon(
+                                imageVector = Icons.Rounded.CalendarToday,
+                                contentDescription = "Today"
+                            )
+                            Text(
+                                text = todayText,
+                                style = MaterialTheme.typography.bodySmall,
+                                modifier = Modifier.padding(top = 4.dp)
+                            )
+                        }
+                    } else {
+                        Icon(imageVector = Icons.Rounded.Add, contentDescription = "Add")
+                    }
+                }
+            }
         }
     ) {
         homePages.forEach { homePage ->
             NavigationRailItem(
                 selected = homePage == currentHomePage,
                 onClick = { onHomePageClick(homePage) },
-                label = if (windowSizeClass.heightSizeClass == WindowHeightSizeClass.Compact)
-                    null
-                else {
+                label = if (isWindowHeightCompat) null else {
                     { Text(text = stringResource(id = homePage.labelRes)) }
                 },
                 icon = {
@@ -85,7 +133,7 @@ internal fun HomeNavigationRailBar(
     }
 }
 
-@Preview(name = "landscape", device = "spec:parent=pixel_5,orientation=landscape")
+@PreviewMultipleScreenSizes
 @Composable
 private fun PreviewHomeNavigationRailBar() {
     GooseTheme {
@@ -96,30 +144,7 @@ private fun PreviewHomeNavigationRailBar() {
                     .fillMaxHeight()
                     .wrapContentWidth(),
                 currentHomePage = currentHomePage,
-                onHomePageClick = { currentHomePage = it },
-                onNavigateToAccountAnalysis = {},
-                onNavigateToSettings = {}
-            )
-            Surface(
-                modifier = Modifier
-                    .weight(1F)
-                    .fillMaxHeight()
-            ) {}
-        }
-    }
-}
-
-@Preview(name = "tablet", device = "spec:width=1280dp,height=800dp")
-@Composable
-private fun PreviewHomeNavigationRailBarTablet() {
-    GooseTheme {
-        Row(modifier = Modifier.fillMaxSize()) {
-            var currentHomePage by remember { mutableStateOf(HomePage.Home) }
-            HomeNavigationRailBar(
-                modifier = Modifier
-                    .fillMaxHeight()
-                    .wrapContentWidth(),
-                currentHomePage = currentHomePage,
+                onAddClick = {},
                 onHomePageClick = { currentHomePage = it },
                 onNavigateToAccountAnalysis = {},
                 onNavigateToSettings = {}

@@ -15,7 +15,9 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.windowsizeclass.WindowHeightSizeClass
 import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -33,15 +35,22 @@ import com.kizitonwose.calendar.compose.rememberCalendarState
 import com.kizitonwose.calendar.core.DayPosition
 import com.kizitonwose.calendar.core.OutDateStyle
 import com.kizitonwose.calendar.core.atStartOfMonth
+import com.kizitonwose.calendar.core.daysOfWeek
 import com.kizitonwose.calendar.core.yearMonth
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.filterNot
 import little.goose.account.data.entities.Transaction
+import little.goose.design.system.theme.GooseTheme
 import little.goose.design.system.theme.LocalWindowSizeClass
+import little.goose.design.system.util.PreviewMultipleScreenSizes
 import little.goose.home.ui.component.DayContent
+import little.goose.home.ui.component.IndexCalendarLabel
 import little.goose.home.ui.component.IndexMemorialCard
 import little.goose.home.ui.component.IndexTransactionCard
 import little.goose.home.ui.component.IndexTransactionCardState
 import little.goose.memorial.data.entities.Memorial
+import java.time.LocalDate
+import java.time.YearMonth
 import java.time.format.TextStyle
 import java.util.Date
 import java.util.Locale
@@ -57,16 +66,26 @@ fun IndexHome(
 
     val windowSizeClass = LocalWindowSizeClass.current
     val isTablet = windowSizeClass.widthSizeClass != WindowWidthSizeClass.Compact
+    val isHeightCompat = windowSizeClass.heightSizeClass == WindowHeightSizeClass.Compact
 
     Row(modifier = modifier) {
 
         if (isTablet) {
-            IndexCalendar(
-                modifier = Modifier
-                    .width(360.dp)
-                    .fillMaxHeight(),
-                state = state
-            )
+            Column {
+                if (!isHeightCompat) {
+                    IndexCalendarLabel(
+                        modifier = Modifier.padding(start = 8.dp),
+                        date = state.currentDay,
+                        navigateToDate = state.onCurrentDayChange
+                    )
+                }
+                IndexCalendar(
+                    modifier = Modifier
+                        .width(360.dp)
+                        .fillMaxHeight(),
+                    state = state
+                )
+            }
         }
 
         Column(
@@ -199,6 +218,37 @@ fun IndexCalendar(
                     drawPoint = dayContent.memorials.isNotEmpty()
                 )
             }
+        )
+    }
+}
+
+@PreviewMultipleScreenSizes
+@Composable
+fun PreviewIndexHome() = GooseTheme {
+    Surface {
+        IndexHome(
+            state = IndexHomeState(
+                today = LocalDate.now(),
+                currentDay = LocalDate.now(),
+                initMonth = YearMonth.now(),
+                startMonth = YearMonth.now().minusMonths(12),
+                endMonth = YearMonth.now().plusMonths(12),
+                dayOfWeek = daysOfWeek(),
+                onCurrentDayChange = {},
+                getDayContentFlow = {
+                    MutableStateFlow(
+                        IndexDayContent(
+                            memorials = listOf(Memorial()),
+                            transactions = listOf(
+                                Transaction(), Transaction()
+                            )
+                        )
+                    )
+                }
+            ),
+            onTransactionAdd = {},
+            onTransactionClick = {},
+            onMemorialClick = {}
         )
     }
 }

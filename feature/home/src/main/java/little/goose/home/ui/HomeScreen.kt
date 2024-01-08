@@ -31,7 +31,9 @@ import little.goose.home.ui.index.IndexViewModel
 import little.goose.memorial.ui.MemorialViewModel
 import little.goose.note.ui.NotebookViewModel
 import little.goose.search.SearchType
+import java.time.format.TextStyle
 import java.util.Date
+import java.util.Locale
 
 @Composable
 fun HomeScreen(
@@ -80,6 +82,8 @@ fun HomeScreen(
         }
     }
 
+    val indexTopBarState by indexViewModel.indexTopBarState.collectAsState()
+
     val windowSizeClass = LocalWindowSizeClass.current
     val isWindowWidthSizeCompat = windowSizeClass.widthSizeClass == WindowWidthSizeClass.Compact
     Row(modifier = modifier) {
@@ -89,6 +93,18 @@ fun HomeScreen(
                     .fillMaxHeight()
                     .wrapContentWidth(),
                 currentHomePage = currentHomePage,
+                currentDayText = indexTopBarState.currentDay.month.getDisplayName(
+                    TextStyle.SHORT, Locale.CHINA
+                ) + indexTopBarState.currentDay.dayOfMonth + "日",
+                onAddClick = {
+                    when (currentHomePage) {
+                        HomePage.Home -> indexTopBarState.navigateToDate(indexTopBarState.today)
+                        HomePage.Notebook -> onNavigateToNote(null)
+                        HomePage.Account -> onNavigateToTransaction(null, Date())
+                        HomePage.Memorial -> onNavigateToMemorialAdd()
+                    }
+                },
+                todayText = indexTopBarState.today.dayOfMonth.toString(),
                 onHomePageClick = { homePage ->
                     scope.launch(Dispatchers.Main.immediate) {
                         pagerState.scrollToPage(homePage.index)
@@ -109,7 +125,6 @@ fun HomeScreen(
             },
             topBar = {
                 if (isWindowWidthSizeCompat) {
-                    val indexTopBarState by indexViewModel.indexTopBarState.collectAsState()
                     HomeTopBar(
                         modifier = Modifier.fillMaxWidth(),
                         currentHomePage = currentHomePage,

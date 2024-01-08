@@ -127,7 +127,7 @@ fun HomePageContent(
                 }
             }
         }
-        if (currentHomePage != HomePage.Home) {
+        if (currentHomePage != HomePage.Home && isWindowWidthSizeCompat) {
             HomeMovableActionButton(
                 modifier = Modifier.align(Alignment.BottomEnd),
                 buttonState = buttonState,
