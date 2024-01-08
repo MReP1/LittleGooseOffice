@@ -4,6 +4,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.PagerState
+import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
@@ -14,6 +15,7 @@ import little.goose.account.ui.component.AccountTitleState
 import little.goose.account.ui.component.MonthSelectorState
 import little.goose.account.ui.component.TransactionColumnState
 import little.goose.design.system.component.MovableActionButtonState
+import little.goose.design.system.theme.LocalWindowSizeClass
 import little.goose.home.data.ACCOUNT
 import little.goose.home.data.HOME
 import little.goose.home.data.HomePage
@@ -66,11 +68,14 @@ fun HomePageContent(
         }
     }
 
+    val windowSizeClass = LocalWindowSizeClass.current
+    val isWindowWidthSizeCompat = windowSizeClass.widthSizeClass == WindowWidthSizeClass.Compact
+
     Box(modifier = modifier) {
         HorizontalPager(
             modifier = Modifier.fillMaxSize(),
             state = pagerState,
-            userScrollEnabled = true,
+            userScrollEnabled = isWindowWidthSizeCompat,
             beyondBoundsPageCount = pagerState.pageCount
         ) { index ->
             when (index) {

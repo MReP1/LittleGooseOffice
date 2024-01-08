@@ -81,9 +81,9 @@ fun HomeScreen(
     }
 
     val windowSizeClass = LocalWindowSizeClass.current
-    val isWindowSizeCompat = windowSizeClass.widthSizeClass == WindowWidthSizeClass.Compact
+    val isWindowWidthSizeCompat = windowSizeClass.widthSizeClass == WindowWidthSizeClass.Compact
     Row(modifier = modifier) {
-        if (!isWindowSizeCompat) {
+        if (!isWindowWidthSizeCompat) {
             HomeNavigationRailBar(
                 modifier = Modifier
                     .fillMaxHeight()
@@ -108,7 +108,7 @@ fun HomeScreen(
                 }
             },
             topBar = {
-                if (isWindowSizeCompat) {
+                if (isWindowWidthSizeCompat) {
                     val indexTopBarState by indexViewModel.indexTopBarState.collectAsState()
                     HomeTopBar(
                         modifier = Modifier.fillMaxWidth(),
@@ -147,7 +147,7 @@ fun HomeScreen(
                 )
             },
             bottomBar = {
-                if (isWindowSizeCompat) {
+                if (isWindowWidthSizeCompat) {
                     HomeBottomBar(
                         currentHomePage = currentHomePage,
                         homePageList = HomePage.entries,
