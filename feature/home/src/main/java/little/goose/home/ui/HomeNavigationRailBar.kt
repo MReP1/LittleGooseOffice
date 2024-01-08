@@ -1,7 +1,9 @@
 package little.goose.home.ui
 
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.DonutSmall
@@ -10,6 +12,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.NavigationRail
 import androidx.compose.material3.NavigationRailItem
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.windowsizeclass.WindowHeightSizeClass
 import androidx.compose.runtime.Composable
@@ -82,17 +85,50 @@ internal fun HomeNavigationRailBar(
     }
 }
 
-@Preview
+@Preview(name = "landscape", device = "spec:parent=pixel_5,orientation=landscape")
 @Composable
-private fun PreviewHomeNavigationRailBar() = GooseTheme {
-    var currentHomePage by remember { mutableStateOf(HomePage.Home) }
-    HomeNavigationRailBar(
-        modifier = Modifier
-            .fillMaxHeight()
-            .wrapContentWidth(),
-        currentHomePage = currentHomePage,
-        onHomePageClick = { currentHomePage = it },
-        onNavigateToAccountAnalysis = {},
-        onNavigateToSettings = {}
-    )
+private fun PreviewHomeNavigationRailBar() {
+    GooseTheme {
+        Row(modifier = Modifier.fillMaxSize()) {
+            var currentHomePage by remember { mutableStateOf(HomePage.Home) }
+            HomeNavigationRailBar(
+                modifier = Modifier
+                    .fillMaxHeight()
+                    .wrapContentWidth(),
+                currentHomePage = currentHomePage,
+                onHomePageClick = { currentHomePage = it },
+                onNavigateToAccountAnalysis = {},
+                onNavigateToSettings = {}
+            )
+            Surface(
+                modifier = Modifier
+                    .weight(1F)
+                    .fillMaxHeight()
+            ) {}
+        }
+    }
+}
+
+@Preview(name = "tablet", device = "spec:width=1280dp,height=800dp")
+@Composable
+private fun PreviewHomeNavigationRailBarTablet() {
+    GooseTheme {
+        Row(modifier = Modifier.fillMaxSize()) {
+            var currentHomePage by remember { mutableStateOf(HomePage.Home) }
+            HomeNavigationRailBar(
+                modifier = Modifier
+                    .fillMaxHeight()
+                    .wrapContentWidth(),
+                currentHomePage = currentHomePage,
+                onHomePageClick = { currentHomePage = it },
+                onNavigateToAccountAnalysis = {},
+                onNavigateToSettings = {}
+            )
+            Surface(
+                modifier = Modifier
+                    .weight(1F)
+                    .fillMaxHeight()
+            ) {}
+        }
+    }
 }

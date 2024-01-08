@@ -1,6 +1,7 @@
 package little.goose.design.system.theme
 
 import android.annotation.SuppressLint
+import android.app.Activity
 import android.content.Context
 import android.os.Build
 import android.view.Gravity
@@ -9,17 +10,21 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.*
+import androidx.compose.material3.windowsizeclass.ExperimentalMaterial3WindowSizeClassApi
 import androidx.compose.material3.windowsizeclass.WindowSizeClass
+import androidx.compose.material3.windowsizeclass.calculateWindowSizeClass
 import androidx.compose.runtime.*
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.ComposeView
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalView
+import androidx.compose.ui.unit.DpSize
+import androidx.compose.ui.unit.dp
 import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.preferencesDataStore
 import little.goose.common.utils.getDataOrNull
-import little.goose.design.system.util.calculateWindowSizeClassWithCurrentContext
 
 private val gooseLightColorScheme = lightColorScheme(
     primary = md_theme_light_primary,
@@ -131,11 +136,18 @@ val LocalWindowSizeClass = compositionLocalOf<WindowSizeClass> {
     throw Exception("CompositionLocal WindowSize not present")
 }
 
+@OptIn(ExperimentalMaterial3WindowSizeClassApi::class)
 @Composable
 fun GooseTheme(
     themeConfig: ThemeConfig = remember { ThemeConfig() },
     useGooseStyle: Boolean = false,
-    windowSizeClass: WindowSizeClass = calculateWindowSizeClassWithCurrentContext(),
+    windowSizeClass: WindowSizeClass = (LocalContext.current as? Activity)?.let { act ->
+        calculateWindowSizeClass(activity = act)
+    } ?: LocalConfiguration.current.let { configuration ->
+        WindowSizeClass.calculateFromSize(
+            DpSize(configuration.screenWidthDp.dp, configuration.screenHeightDp.dp)
+        )
+    },
     content: @Composable () -> Unit
 ) {
     val context = LocalContext.current
