@@ -144,8 +144,10 @@ fun DayContent(
                             ),
                             color = if (isCurrentDay) {
                                 colorScheme.onPrimary
-                            } else {
+                            } else if (isCurrentMonth) {
                                 colorScheme.onSurface
+                            } else {
+                                colorScheme.outlineVariant
                             }
                         )
                     }
