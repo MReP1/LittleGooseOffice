@@ -13,6 +13,7 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.NonCancellable
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -306,6 +307,7 @@ class NoteViewModel @Inject constructor(
         }
     }
 
+    @OptIn(FlowPreview::class)
     private suspend fun createCollectUpdateJob(blockId: Long, textFieldState: TextFieldState) {
         collectUpdateJobMap[blockId]?.cancel()
         collectUpdateJobMap[blockId] = viewModelScope.launch {
