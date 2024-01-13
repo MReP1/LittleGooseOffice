@@ -2,6 +2,7 @@
 <resources>
 
     <string name="confirm_delete">确认删除吗？</string>
+    <string name="delete_description">一旦删除将无法恢复。</string>
     <string name="back">返回</string>
 
 </resources>

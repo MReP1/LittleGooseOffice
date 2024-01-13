@@ -50,10 +50,14 @@ fun DeleteDialog(
         },
         icon = {
             Icon(imageVector = Icons.Rounded.Delete, contentDescription = "Delete")
+        },
+        title = {
+            Text(text = stringResource(id = R.string.confirm_delete))
+        },
+        text = {
+            Text(text = stringResource(id = R.string.delete_description))
         }
-    ) {
-        Text(text = stringResource(id = R.string.confirm_delete))
-    }
+    )
 }
 
 @Preview
