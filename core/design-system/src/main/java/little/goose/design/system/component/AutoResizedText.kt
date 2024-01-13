@@ -68,13 +68,13 @@ fun AutoResizedText(
                     textLayoutResult.size,
                     IntSize(size.width.toInt(), size.height.toInt()),
                     layoutDirection
-                )
+                ).toOffset()
 
                 onDrawWithContent {
                     drawText(
-                        textLayoutResult,
+                        textLayoutResult = textLayoutResult,
                         color = color,
-                        topLeft = offset.toOffset()
+                        topLeft = offset
                     )
                 }
             }
