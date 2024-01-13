@@ -226,10 +226,11 @@ private class ResizableTextModifierElement(
     }
 
     override fun hashCode(): Int {
-        return textStyle.hashCode() +
-                text.hashCode() +
-                factor.hashCode() +
-                alignment.hashCode()
+        var result = text.hashCode()
+        result = 31 * result + textStyle.hashCode()
+        result = 31 * result + (factor * 100).toInt()
+        result = 31 * result + alignment.hashCode()
+        return result
     }
 
     override fun InspectorInfo.inspectableProperties() {
