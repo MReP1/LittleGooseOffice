@@ -10,13 +10,13 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import little.goose.memorial.data.entities.Memorial
+import little.goose.common.collections.CircularLinkList
 import little.goose.common.utils.DateTimeUtils
 import little.goose.common.utils.getMonth
 import little.goose.common.utils.getYear
-import little.goose.common.collections.CircularLinkList
 import little.goose.design.system.component.AutoResizedText
-import java.util.*
+import little.goose.memorial.data.entities.Memorial
+import java.util.Calendar
 
 @Composable
 fun MemorialText(
@@ -65,6 +65,7 @@ fun MemorialText(
         AutoResizedText(
             text = currentTime.toString(),
             style = MaterialTheme.typography.displayLarge,
+            textAlignment = Alignment.Center
         )
     }
 }

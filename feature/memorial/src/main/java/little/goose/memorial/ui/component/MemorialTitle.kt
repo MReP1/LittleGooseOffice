@@ -17,14 +17,15 @@ import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ChainStyle
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
-import little.goose.memorial.data.entities.Memorial
 import little.goose.common.utils.DateTimeUtils
-import little.goose.memorial.utils.appendTimePrefix
-import little.goose.memorial.utils.appendTimeSuffix
 import little.goose.common.utils.toChineseYearMonDayWeek
 import little.goose.design.system.component.AutoResizedText
 import little.goose.memorial.R
-import java.util.*
+import little.goose.memorial.data.entities.Memorial
+import little.goose.memorial.utils.appendTimePrefix
+import little.goose.memorial.utils.appendTimeSuffix
+import java.util.Calendar
+import java.util.Date
 
 @Composable
 fun MemorialTitle(
@@ -86,7 +87,8 @@ fun MemorialTitle(
             ) {
                 AutoResizedText(
                     text = DateTimeUtils.getBetweenDay(curCalendar, memCalendar).toString(),
-                    style = MaterialTheme.typography.displayLarge
+                    style = MaterialTheme.typography.displayLarge,
+                    textAlignment = Alignment.Center
                 )
             }
 
