@@ -12,6 +12,21 @@ data class PieData(
     val color: Color,
     val id: String = ""
 ) {
+
+    override fun equals(other: Any?): Boolean {
+        // we don't need color in equals.
+        if (other !is PieData) return false
+        if (content != other.content) return false
+        return id == other.id
+    }
+
+    override fun hashCode(): Int {
+        var result = content.hashCode()
+        result = 31 * result + amount.hashCode()
+        result = 31 * result + id.hashCode()
+        return result
+    }
+
     companion object {
         val saver = listSaver<PieData?, Any?>(
             save = { pieData ->

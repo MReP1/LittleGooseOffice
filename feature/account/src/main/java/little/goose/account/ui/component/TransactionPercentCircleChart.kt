@@ -37,8 +37,8 @@ fun TransactionPercentCircleChart(
     onTransactionPercentClick: (TransactionPercent) -> Unit
 ) {
     val currentTransactionPercents by rememberUpdatedState(newValue = transactionPercents)
-    val dataList = remember(transactionPercents) {
-        transactionPercents.mapIndexed { index, tp ->
+    val dataList = remember(currentTransactionPercents) {
+        currentTransactionPercents.mapIndexed { index, tp ->
             PieData(
                 content = tp.content,
                 amount = tp.percent.toFloat(),
@@ -49,7 +49,10 @@ fun TransactionPercentCircleChart(
     }
 
     Column(modifier = modifier, horizontalAlignment = Alignment.CenterHorizontally) {
-        var selectedPieData: PieData? by rememberSaveable(stateSaver = PieData.saver) {
+        var selectedPieData: PieData? by rememberSaveable(
+            currentTransactionPercents,
+            stateSaver = PieData.saver
+        ) {
             mutableStateOf(null)
         }
 
@@ -61,11 +64,13 @@ fun TransactionPercentCircleChart(
                 onSelectedData = { selectedPieData = it }
             )
             selectedPieData?.let { data ->
-                TextButton(onClick = {
-                    currentTransactionPercents.find {
-                        it.icon_id.toString() == data.id
-                    }?.run(onTransactionPercentClick)
-                }) {
+                TextButton(
+                    onClick = {
+                        currentTransactionPercents.find {
+                            it.icon_id.toString() == data.id
+                        }?.run(onTransactionPercentClick)
+                    }
+                ) {
                     Column(
                         modifier = Modifier.wrapContentWidth(),
                         horizontalAlignment = Alignment.CenterHorizontally,
