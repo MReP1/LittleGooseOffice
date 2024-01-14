@@ -40,7 +40,7 @@ fun MonthSelector(
     Row(
         modifier = modifier
             .clip(shape)
-            .background(MaterialTheme.colorScheme.surfaceColorAtElevation(2.dp))
+            .background(MaterialTheme.colorScheme.surfaceColorAtElevation(1.8.dp))
     ) {
         Box(
             modifier = Modifier
