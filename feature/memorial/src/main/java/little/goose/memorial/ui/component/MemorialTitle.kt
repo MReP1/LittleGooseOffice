@@ -19,7 +19,7 @@ import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
 import little.goose.common.utils.DateTimeUtils
 import little.goose.common.utils.toChineseYearMonDayWeek
-import little.goose.design.system.component.AutoResizedText
+import little.goose.design.system.component.AutoResizableText
 import little.goose.memorial.R
 import little.goose.memorial.data.entities.Memorial
 import little.goose.memorial.utils.appendTimePrefix
@@ -85,10 +85,10 @@ fun MemorialTitle(
                 },
                 contentAlignment = Alignment.Center
             ) {
-                AutoResizedText(
+                AutoResizableText(
                     text = DateTimeUtils.getBetweenDay(curCalendar, memCalendar).toString(),
                     style = MaterialTheme.typography.displayLarge,
-                    textAlignment = Alignment.Center
+                    textAlignment = Alignment.CenterHorizontally
                 )
             }
 

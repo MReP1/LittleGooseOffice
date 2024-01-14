@@ -3,8 +3,6 @@ package little.goose.design.system.component
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.size
 import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
@@ -35,22 +33,18 @@ import androidx.compose.ui.text.drawText
 import androidx.compose.ui.text.rememberTextMeasurer
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Constraints
-import androidx.compose.ui.unit.IntSize
-import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.takeOrElse
-import androidx.compose.ui.unit.toOffset
 import little.goose.design.system.theme.GooseTheme
-import kotlin.math.max
 
 @Composable
-fun AutoResizedText(
+fun AutoResizableText(
     modifier: Modifier = Modifier,
     text: String,
     factor: Float = 0.92F,
     textMeasurer: TextMeasurer = rememberTextMeasurer(),
     style: TextStyle = MaterialTheme.typography.bodyMedium,
     color: Color = style.color,
-    textAlignment: Alignment = Alignment.CenterStart
+    textAlignment: Alignment.Horizontal = Alignment.Start
 ) {
     require(factor < 1F && factor > 0F) { "Scale factor must me in 0..1" }
     val fontSize = style.fontSize.takeOrElse { MaterialTheme.typography.bodyMedium.fontSize }
@@ -64,7 +58,6 @@ fun AutoResizedText(
                 alignment = textAlignment,
                 factor = factor
             )
-            .fillMaxSize()
     )
 }
 
@@ -73,7 +66,7 @@ private fun Modifier.resizableText(
     textStyle: TextStyle,
     text: String,
     factor: Float,
-    alignment: Alignment
+    alignment: Alignment.Horizontal
 ): Modifier = this then ResizableTextModifierElement(
     textMeasurer, textStyle, text, factor, alignment
 )
@@ -83,7 +76,7 @@ private class ResizableTextNode(
     private var textStyle: TextStyle,
     private var text: String,
     private var factor: Float,
-    private var alignment: Alignment
+    private var alignment: Alignment.Horizontal
 ) : Modifier.Node(), LayoutModifierNode, DrawModifierNode {
 
     private var textLayoutResult: TextLayoutResult? = null
@@ -108,7 +101,11 @@ private class ResizableTextNode(
         return false
     }
 
-    fun updateLayout(textStyle: TextStyle, alignment: Alignment, factor: Float): Boolean {
+    fun updateLayout(
+        textStyle: TextStyle,
+        alignment: Alignment.Horizontal,
+        factor: Float
+    ): Boolean {
         var changed: Boolean
         changed = !textStyle.hasSameLayoutAffectingAttributes(this.textStyle)
         this.textStyle = textStyle
@@ -165,21 +162,22 @@ private class ResizableTextNode(
                     style = textStyle,
                     maxLines = 1,
                     softWrap = false,
-                    constraints = constraints.copy(maxHeight = Int.MAX_VALUE)
+                    constraints = constraints.copy(maxHeight = Int.MAX_VALUE),
+                    layoutDirection = layoutDirection
                 )
                 isFirstMeasure = false
             } while (textLayoutResult?.didOverflowWidth == true)
         }
-        topLeftOffset = alignment.align(
-            textLayoutResult!!.size,
-            IntSize(constraints.maxWidth, constraints.maxHeight),
-            layoutDirection
-        ).toOffset()
+        topLeftOffset = Offset(
+            x = alignment.align(
+                size = textLayoutResult!!.size.width,
+                space = constraints.maxWidth,
+                layoutDirection = layoutDirection
+            ).toFloat(),
+            y = 0F
+        )
         val placeable = measurable.measure(constraints)
-        return layout(
-            max(textLayoutResult?.size?.width ?: 0, constraints.maxWidth),
-            max(textLayoutResult?.size?.height ?: 0, constraints.maxHeight)
-        ) {
+        return layout(constraints.maxWidth, textLayoutResult!!.size.height) {
             placeable.place(0, 0)
         }
     }
@@ -197,7 +195,7 @@ private class ResizableTextModifierElement(
     private val textStyle: TextStyle,
     private val text: String,
     private val factor: Float,
-    private val alignment: Alignment
+    private val alignment: Alignment.Horizontal
 ) : ModifierNodeElement<ResizableTextNode>() {
 
     override fun create(): ResizableTextNode {
@@ -242,38 +240,37 @@ private class ResizableTextModifierElement(
 @Preview(showBackground = true)
 @Composable
 private fun PreviewAutoResizedTextCenter() = GooseTheme {
-    PreviewAutoResizedText(alignment = Alignment.Center)
+    PreviewAutoResizedText(alignment = Alignment.CenterHorizontally)
 }
 
 @Preview(showBackground = true)
 @Composable
-private fun PreviewAutoResizedTextTopEnd() = GooseTheme {
-    PreviewAutoResizedText(alignment = Alignment.TopEnd)
+private fun PreviewAutoResizedTextEnd() = GooseTheme {
+    PreviewAutoResizedText(alignment = Alignment.End)
 }
 
 @Preview(showBackground = true)
 @Composable
-private fun PreviewAutoResizedTextBottomStart() = GooseTheme {
-    PreviewAutoResizedText(alignment = Alignment.BottomStart)
+private fun PreviewAutoResizedTextStart() = GooseTheme {
+    PreviewAutoResizedText(alignment = Alignment.Start)
 }
 
 @Preview(showBackground = true)
 @Composable
 private fun PreviewAutoResizedTextOffset() = GooseTheme {
     PreviewAutoResizedText(
-        alignment = BiasAlignment(0.6F, -0.4F)
+        alignment = BiasAlignment.Horizontal(-0.5F)
     )
 }
 
 @Composable
-private fun PreviewAutoResizedText(alignment: Alignment) {
+private fun PreviewAutoResizedText(alignment: Alignment.Horizontal) {
     var count by remember { mutableIntStateOf(1) }
     val text = remember(count) { "Hello World, Hello World. ".repeat(count) }
     Box(
         modifier = Modifier
-            .size(200.dp)
             .clickable { count++ }
     ) {
-        AutoResizedText(text = text, textAlignment = alignment)
+        AutoResizableText(text = text, textAlignment = alignment)
     }
 }
