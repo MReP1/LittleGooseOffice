@@ -3,14 +3,11 @@ package little.goose.account.ui
 import android.icu.util.Calendar
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.wrapContentHeight
-import androidx.compose.foundation.layout.wrapContentSize
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.DonutSmall
-import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
@@ -18,13 +15,21 @@ import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.min
 import little.goose.account.ui.component.AccountTitle
 import little.goose.account.ui.component.AccountTitleState
+import little.goose.account.ui.component.MonthSelector
 import little.goose.account.ui.component.MonthSelectorState
 import little.goose.account.ui.component.TransactionColumn
 import little.goose.account.ui.component.TransactionColumnState
+import little.goose.common.utils.TimeType
+import little.goose.common.utils.calendar
+import little.goose.common.utils.getMonth
+import little.goose.common.utils.getYear
 import little.goose.common.utils.progressWith
+import little.goose.common.utils.setMonth
+import little.goose.common.utils.setYear
+import little.goose.design.system.component.dialog.TimeSelectorCenterDialog
+import little.goose.design.system.component.dialog.rememberDialogState
 import little.goose.design.system.theme.GooseTheme
 import little.goose.ui.icon.PullToSearchIcon
 import little.goose.ui.surface.PullSurface
@@ -59,28 +64,39 @@ fun AccountHome(
                 modifier = Modifier.fillMaxSize(),
                 state = transactionColumnState,
                 title = {
-                    PullSurface(
-                        modifier = Modifier.wrapContentSize(),
-                        onPull = onNavigateToAccountAnalysis,
-                        reverseDirection = true,
-                        backgroundContent = { progress ->
-                            Icon(
-                                imageVector = Icons.Outlined.DonutSmall,
-                                contentDescription = "Analysis",
-                                modifier = Modifier
-                                    .padding(bottom = 12.dp)
-                                    .size(min(48.dp, 24.dp + 24.dp * progress))
-                                    .alpha(progress.coerceIn(0.62F, 1F))
-                            )
+                    AccountTitle(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(118.dp),
+                        accountTitleState = accountTitleState,
+                        onNavigateToAnalysis = onNavigateToAccountAnalysis
+                    )
+                },
+                monthSelector = {
+                    val selectorTimeDialogState = rememberDialogState()
+
+                    MonthSelector(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(42.dp),
+                        state = monthSelectorState,
+                        shape = MaterialTheme.shapes.large,
+                        onSelectTimeClick = { selectorTimeDialogState.show() }
+                    )
+
+                    TimeSelectorCenterDialog(
+                        state = selectorTimeDialogState,
+                        initTime = remember(monthSelectorState.year, monthSelectorState.month) {
+                            calendar.apply {
+                                clear()
+                                setYear(monthSelectorState.year)
+                                setMonth(monthSelectorState.month)
+                            }.time
                         },
-                        content = {
-                            AccountTitle(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .wrapContentHeight(),
-                                accountTitleState = accountTitleState,
-                                monthSelectorState = monthSelectorState
-                            )
+                        type = TimeType.YEAR_MONTH,
+                        onConfirm = {
+                            val cal = calendar.apply { time = it }
+                            monthSelectorState.onTimeChange(cal.getYear(), cal.getMonth())
                         }
                     )
                 },

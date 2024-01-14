@@ -44,6 +44,7 @@ fun TransactionColumn(
     modifier: Modifier,
     state: TransactionColumnState,
     title: (@Composable LazyGridItemScope.() -> Unit)? = null,
+    monthSelector: (@Composable LazyGridItemScope.() -> Unit)? = null,
     onTransactionEdit: (Transaction) -> Unit
 ) {
     val deleteDialogState = remember { DeleteDialogState() }
@@ -61,6 +62,9 @@ fun TransactionColumn(
         horizontalArrangement = Arrangement.spacedBy(12.dp)
     ) {
         title?.let {
+            item(span = { GridItemSpan(fixedCount) }, content = it)
+        }
+        monthSelector?.let {
             item(span = { GridItemSpan(fixedCount) }, content = it)
         }
         items(
