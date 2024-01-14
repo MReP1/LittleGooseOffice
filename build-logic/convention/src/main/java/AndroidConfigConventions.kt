@@ -14,8 +14,8 @@ object AndroidConfigConventions {
         private const val PACKAGE_NAME = "little.goose.account"
         const val APPLICATION_ID = PACKAGE_NAME
 
-        const val VERSION_CODE = 27
-        const val VERSION_NAME = "2.1.0"
+        const val VERSION_CODE = 28
+        const val VERSION_NAME = "2.1.1"
     }
 
     object Note {
