@@ -129,8 +129,7 @@ fun HomeScreen(
                         modifier = Modifier.fillMaxWidth(),
                         currentHomePage = currentHomePage,
                         indexTopBarState = indexTopBarState,
-                        onNavigateToSettings = onNavigateToSettings,
-                        onNavigateToAccountAnalysis = onNavigateToAccountAnalysis
+                        onNavigateToSettings = onNavigateToSettings
                     )
                 }
             },

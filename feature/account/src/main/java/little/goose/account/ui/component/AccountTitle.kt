@@ -13,7 +13,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.DonutSmall
+import androidx.compose.material.icons.outlined.DonutSmall
 import androidx.compose.material3.Divider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -128,7 +128,7 @@ fun AccountTitle(
                         contentAlignment = Alignment.Center
                     ) {
                         Icon(
-                            imageVector = Icons.Rounded.DonutSmall,
+                            imageVector = Icons.Outlined.DonutSmall,
                             contentDescription = "analysis",
                             modifier = Modifier.size(24.dp)
                         )
@@ -193,7 +193,7 @@ fun PreviewAccountTitle2() {
     AccountTitle(
         modifier = Modifier
             .fillMaxWidth()
-            .height(118.dp),
+            .height(136.dp),
         accountTitleState = AccountTitleState(
             BigDecimal(5125), BigDecimal(1234), BigDecimal(8512),
             BigDecimal(23), BigDecimal(512293), BigDecimal(2144)

@@ -3,7 +3,6 @@ package little.goose.home.ui
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.DonutSmall
 import androidx.compose.material.icons.rounded.Settings
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.Icon
@@ -22,8 +21,7 @@ internal fun HomeTopBar(
     modifier: Modifier = Modifier,
     currentHomePage: HomePage,
     indexTopBarState: IndexTopBarState,
-    onNavigateToSettings: () -> Unit,
-    onNavigateToAccountAnalysis: () -> Unit
+    onNavigateToSettings: () -> Unit
 ) {
     if (currentHomePage != HomePage.Home) {
         CenterAlignedTopAppBar(
@@ -34,14 +32,6 @@ internal fun HomeTopBar(
                 Text(text = stringResource(id = currentHomePage.labelRes))
             },
             actions = {
-                if (currentHomePage == HomePage.Account) {
-                    IconButton(onClick = onNavigateToAccountAnalysis) {
-                        Icon(
-                            imageVector = Icons.Outlined.DonutSmall,
-                            contentDescription = "Analysis"
-                        )
-                    }
-                }
                 IconButton(onClick = onNavigateToSettings) {
                     Icon(
                         imageVector = Icons.Rounded.Settings,
