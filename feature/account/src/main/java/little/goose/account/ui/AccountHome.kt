@@ -67,7 +67,7 @@ fun AccountHome(
                     AccountTitle(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .height(118.dp),
+                            .height(136.dp),
                         accountTitleState = accountTitleState,
                         onNavigateToAnalysis = onNavigateToAccountAnalysis
                     )
