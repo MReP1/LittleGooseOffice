@@ -11,6 +11,7 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.Velocity
 import androidx.compose.ui.unit.dp
+import kotlin.properties.Delegates
 
 fun Modifier.nestedPull(
     onPull: (pullDelta: Float, threshold: Float) -> Float,
@@ -41,7 +42,7 @@ class PullNestedScrollConnection(
 
     private var isExceedThreshold = false
 
-    private var offsetY = 0F
+    private var offsetY by Delegates.vetoable(0F) { _, _, newValue -> newValue >= 0 }
 
     override fun onPreScroll(
         available: Offset,
