@@ -78,6 +78,7 @@ fun AccountHome(
                             .fillMaxHeight()
                             .width(320.dp)
                     ) {
+                        Spacer(modifier = Modifier.height(16.dp))
                         AccountTitle(
                             modifier = Modifier
                                 .fillMaxWidth()

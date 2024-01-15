@@ -1,5 +1,6 @@
 package little.goose.office
 
+import android.content.res.Configuration
 import android.os.Bundle
 import androidx.activity.SystemBarStyle
 import androidx.activity.compose.setContent
@@ -14,7 +15,10 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
+import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.WindowInsetsControllerCompat
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
@@ -80,12 +84,34 @@ class MainActivity : AppCompatActivity(), AndroidScopeComponent {
                 onDispose { }
             }
 
+            val configuration = LocalConfiguration.current
+            val isLandscape = configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
+            DisposableEffect(isLandscape) {
+                setStatusBarIsShow(!isLandscape)
+                onDispose {
+                    setStatusBarIsShow(true)
+                }
+            }
+
+
             GooseTheme(themeConfig = appState.themeConfig, useGooseStyle = true) {
                 Surface(color = MaterialTheme.colorScheme.background) {
                     MainScreen(
                         modifier = Modifier.fillMaxSize()
                     )
                 }
+            }
+        }
+    }
+
+    private fun setStatusBarIsShow(show: Boolean) {
+        WindowInsetsControllerCompat(window, window.decorView).apply {
+            systemBarsBehavior = if (show) {
+                show(WindowInsetsCompat.Type.statusBars())
+                WindowInsetsControllerCompat.BEHAVIOR_DEFAULT
+            } else {
+                hide(WindowInsetsCompat.Type.statusBars())
+                WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
             }
         }
     }
