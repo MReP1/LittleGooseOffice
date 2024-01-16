@@ -26,6 +26,7 @@ import kotlinx.coroutines.flow.merge
 import kotlinx.coroutines.launch
 import little.goose.account.ui.AccountHomeViewModel
 import little.goose.design.system.theme.LocalWindowSizeClass
+import little.goose.design.system.util.paddingCutout
 import little.goose.home.data.HomePage
 import little.goose.home.ui.index.IndexViewModel
 import little.goose.memorial.ui.MemorialViewModel
@@ -86,7 +87,7 @@ fun HomeScreen(
 
     val windowSizeClass = LocalWindowSizeClass.current
     val isWindowWidthSizeCompat = windowSizeClass.widthSizeClass == WindowWidthSizeClass.Compact
-    Row(modifier = modifier) {
+    Row(modifier = modifier.paddingCutout(!isWindowWidthSizeCompat)) {
         if (!isWindowWidthSizeCompat) {
             HomeNavigationRailBar(
                 modifier = Modifier
