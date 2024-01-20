@@ -13,6 +13,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.surfaceColorAtElevation
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.Stable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -23,11 +24,13 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import little.goose.account.R
 import little.goose.design.system.theme.GooseTheme
+import java.time.YearMonth
 
+@Stable
 data class MonthSelectorState(
-    val year: Int,
-    val month: Int,
-    val onTimeChange: (year: Int, month: Int) -> Unit
+    val year: Int = YearMonth.now().year,
+    val month: Int = YearMonth.now().monthValue,
+    val onTimeChange: (year: Int, month: Int) -> Unit = { _, _ -> }
 )
 
 @Composable

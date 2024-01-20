@@ -120,15 +120,13 @@ fun HomeRoute(
 
         val context: Context = LocalContext.current
         val indexViewModel = hiltViewModel<IndexViewModel>()
-        val accountViewModel = hiltViewModel<AccountHomeViewModel>()
+        val accountHomeViewModel = hiltViewModel<AccountHomeViewModel>()
         val memorialHomeViewModel = hiltViewModel<MemorialHomeViewModel>()
         val notebookViewModel = hiltViewModel<NotebookViewModel>()
 
-        val transactionColumnState by accountViewModel.transactionColumnState.collectAsState()
         val noteColumnState by notebookViewModel.noteColumnState.collectAsState()
         val indexState by indexViewModel.indexState.collectAsState()
-        val accountTitleState by accountViewModel.accountTitleState.collectAsState()
-        val monthSelectorState by accountViewModel.monthSelectorState.collectAsState()
+        val accountHomeState by accountHomeViewModel.accountHomeState.collectAsState()
         val memorialHomeState by memorialHomeViewModel.memorialHomeState.collectAsState()
 
         val snackbarHostState = remember { SnackbarHostState() }
@@ -136,12 +134,10 @@ fun HomeRoute(
         HomeScreen(
             modifier = modifier.fillMaxSize(),
             pagerState = pagerState,
-            transactionColumnState = transactionColumnState,
             noteColumnState = noteColumnState,
             snackbarHostState = snackbarHostState,
             indexState = indexState,
-            monthSelectorState = monthSelectorState,
-            accountTitleState = accountTitleState,
+            accountHomeState = accountHomeState,
             memorialHomeState = memorialHomeState,
             onNavigateToSettings = onNavigateToSettings,
             onNavigateToNote = onNavigateToNote,
@@ -154,10 +150,10 @@ fun HomeRoute(
         )
 
         LaunchedEffect(
-            accountViewModel.event, memorialHomeViewModel.event, notebookViewModel.event
+            accountHomeViewModel.event, memorialHomeViewModel.event, notebookViewModel.event
         ) {
             merge(
-                accountViewModel.event, memorialHomeViewModel.event, notebookViewModel.event
+                accountHomeViewModel.event, memorialHomeViewModel.event, notebookViewModel.event
             ).collect { event ->
                 when (event) {
                     is AccountHomeViewModel.Event.DeleteTransactions,

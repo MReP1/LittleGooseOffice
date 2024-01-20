@@ -124,7 +124,7 @@ class AccountHomeViewModel @Inject constructor(
         emptyList()
     )
 
-    val transactionColumnState = combine(
+    private val transactionColumnState = combine(
         curMonthTransactionWithTime,
         multiSelectedTransactions
     ) { transactions, multiSelectedTransactions ->
@@ -156,7 +156,7 @@ class AccountHomeViewModel @Inject constructor(
         }
     }
 
-    val accountTitleState = combine(
+    private val accountTitleState = combine(
         curMonthExpenseSum, curMonthIncomeSum, curMonthBalance,
         totalExpenseSum, totalIncomeSum, totalBalance
     ) {
@@ -167,12 +167,25 @@ class AccountHomeViewModel @Inject constructor(
         AccountTitleState()
     )
 
-    val monthSelectorState = combine(year, month) { year, month ->
+    private val monthSelectorState = combine(year, month) { year, month ->
         MonthSelectorState(year, month, ::changeTime)
     }.stateIn(
         viewModelScope,
         SharingStarted.WhileSubscribed(5000),
         MonthSelectorState(year.value, month.value, ::changeTime)
+    )
+
+    val accountHomeState = combine(
+        accountTitleState, transactionColumnState, monthSelectorState,
+        ::AccountHomeState
+    ).stateIn(
+        viewModelScope,
+        SharingStarted.WhileSubscribed(5000L),
+        initialValue = AccountHomeState(
+            accountTitleState.value,
+            transactionColumnState.value,
+            monthSelectorState.value
+        )
     )
 
     init {

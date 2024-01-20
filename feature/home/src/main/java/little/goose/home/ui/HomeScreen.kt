@@ -18,9 +18,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import little.goose.account.ui.component.AccountTitleState
-import little.goose.account.ui.component.MonthSelectorState
-import little.goose.account.ui.component.TransactionColumnState
+import little.goose.account.ui.AccountHomeState
 import little.goose.design.system.theme.LocalWindowSizeClass
 import little.goose.design.system.util.paddingCutout
 import little.goose.home.data.HomePage
@@ -36,13 +34,11 @@ import java.util.Locale
 fun HomeScreen(
     modifier: Modifier,
     pagerState: PagerState,
-    transactionColumnState: TransactionColumnState,
     memorialHomeState: MemorialHomeState,
     noteColumnState: NoteColumnState,
     snackbarHostState: SnackbarHostState,
     indexState: IndexState,
-    accountTitleState: AccountTitleState,
-    monthSelectorState: MonthSelectorState,
+    accountHomeState: AccountHomeState,
     onNavigateToSettings: () -> Unit,
     onNavigateToMemorialAdd: () -> Unit,
     onNavigateToMemorial: (memorialId: Long) -> Unit,
@@ -122,10 +118,8 @@ fun HomeScreen(
                     onNavigateToSearch,
                     onNavigateToAccountAnalysis,
                     noteColumnState,
-                    transactionColumnState,
                     memorialHomeState,
-                    accountTitleState,
-                    monthSelectorState
+                    accountHomeState
                 )
             },
             bottomBar = {

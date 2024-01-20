@@ -11,9 +11,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import little.goose.account.ui.AccountHome
-import little.goose.account.ui.component.AccountTitleState
-import little.goose.account.ui.component.MonthSelectorState
-import little.goose.account.ui.component.TransactionColumnState
+import little.goose.account.ui.AccountHomeState
 import little.goose.design.system.component.MovableActionButtonState
 import little.goose.design.system.theme.LocalWindowSizeClass
 import little.goose.home.data.ACCOUNT
@@ -44,16 +42,14 @@ fun HomePageContent(
     onNavigateToSearch: (SearchType) -> Unit,
     onNavigateToAccountAnalysis: () -> Unit,
     noteColumnState: NoteColumnState,
-    transactionColumnState: TransactionColumnState,
     memorialHomeState: MemorialHomeState,
-    accountTitleState: AccountTitleState,
-    monthSelectorState: MonthSelectorState
+    accountHomeState: AccountHomeState
 ) {
     val buttonState = remember { MovableActionButtonState() }
 
     val isMultiSelecting = when (currentHomePage) {
         HomePage.Notebook -> noteColumnState.isMultiSelecting
-        HomePage.Account -> transactionColumnState.isMultiSelecting
+        HomePage.Account -> accountHomeState.transactionColumnState.isMultiSelecting
         HomePage.Memorial -> memorialHomeState.memorialColumnState.isMultiSelecting
         else -> false
     }
@@ -105,9 +101,9 @@ fun HomePageContent(
                 ACCOUNT -> {
                     AccountHome(
                         modifier = Modifier.fillMaxSize(),
-                        transactionColumnState = transactionColumnState,
-                        accountTitleState = accountTitleState,
-                        monthSelectorState = monthSelectorState,
+                        transactionColumnState = accountHomeState.transactionColumnState,
+                        accountTitleState = accountHomeState.accountTitleState,
+                        monthSelectorState = accountHomeState.monthSelectorState,
                         onNavigateToTransactionScreen = onNavigateToTransactionScreen,
                         onNavigateToSearch = { onNavigateToSearch(SearchType.Transaction) },
                         onNavigateToAccountAnalysis = onNavigateToAccountAnalysis
@@ -139,10 +135,10 @@ fun HomePageContent(
                     onNavigateToNote(null)
                 },
                 onDeleteTransactions = {
-                    transactionColumnState.deleteTransactions(
-                        transactionColumnState.multiSelectedTransactions.toList()
+                    accountHomeState.transactionColumnState.deleteTransactions(
+                        accountHomeState.transactionColumnState.multiSelectedTransactions.toList()
                     )
-                    transactionColumnState.cancelMultiSelecting()
+                    accountHomeState.transactionColumnState.cancelMultiSelecting()
                 },
                 onNavigateToNewTransaction = {
                     onNavigateToTransaction(null, Date())
@@ -155,9 +151,9 @@ fun HomePageContent(
                 },
                 onNavigateToNewMemorial = onNavigateToMemorialAdd,
                 onSelectAllNotes = noteColumnState.selectAllNotes,
-                onSelectAllTransactions = transactionColumnState.selectAllTransactions,
+                onSelectAllTransactions = accountHomeState.transactionColumnState.selectAllTransactions,
                 onSelectAllMemorials = memorialHomeState.memorialColumnState.selectAllMemorial,
-                onCancelTransactionsMultiSelecting = transactionColumnState.cancelMultiSelecting,
+                onCancelTransactionsMultiSelecting = accountHomeState.transactionColumnState.cancelMultiSelecting,
                 onCancelMemorialsMultiSelecting = memorialHomeState.memorialColumnState.cancelMultiSelecting,
                 onCancelNotesMultiSelecting = noteColumnState.cancelMultiSelecting
             )
