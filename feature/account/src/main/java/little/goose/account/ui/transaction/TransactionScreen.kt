@@ -85,11 +85,11 @@ internal fun TransactionScreen(
                         }
                     },
                     topBar = {
-                        val scope = rememberCoroutineScope()
                         TransactionScreenTopBar(
                             modifier = Modifier.fillMaxWidth(),
                             onBack = onBack,
                             title = {
+                                val scope = rememberCoroutineScope()
                                 TransactionScreenTabRow(
                                     modifier = Modifier.width(120.dp),
                                     selectedTabIndex = pagerState.currentPage,
