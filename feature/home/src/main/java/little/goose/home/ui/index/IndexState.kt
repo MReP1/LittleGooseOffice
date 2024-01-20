@@ -9,6 +9,19 @@ import java.time.LocalDate
 import java.time.YearMonth
 
 @Stable
+data class IndexState(
+    val indexTopBarState: IndexTopBarState,
+    val indexHomeState: IndexHomeState
+)
+
+@Stable
+data class IndexTopBarState(
+    val currentDay: LocalDate = LocalDate.now(),
+    val today: LocalDate = LocalDate.now(),
+    val navigateToDate: (LocalDate) -> Unit
+)
+
+@Stable
 data class IndexHomeState(
     val today: LocalDate,
     val currentDay: LocalDate,

@@ -13,24 +13,21 @@ import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
-import androidx.hilt.navigation.compose.hiltViewModel
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.merge
 import kotlinx.coroutines.launch
-import little.goose.account.ui.AccountHomeViewModel
+import little.goose.account.ui.component.AccountTitleState
+import little.goose.account.ui.component.MonthSelectorState
+import little.goose.account.ui.component.TransactionColumnState
 import little.goose.design.system.theme.LocalWindowSizeClass
 import little.goose.design.system.util.paddingCutout
 import little.goose.home.data.HomePage
-import little.goose.home.ui.index.IndexViewModel
-import little.goose.memorial.ui.MemorialViewModel
-import little.goose.note.ui.NotebookViewModel
+import little.goose.home.ui.index.IndexState
+import little.goose.memorial.data.entities.Memorial
+import little.goose.memorial.ui.component.MemorialColumnState
+import little.goose.note.ui.NoteColumnState
 import little.goose.search.SearchType
 import java.time.format.TextStyle
 import java.util.Date
@@ -40,6 +37,14 @@ import java.util.Locale
 fun HomeScreen(
     modifier: Modifier,
     pagerState: PagerState,
+    transactionColumnState: TransactionColumnState,
+    memorialColumnState: MemorialColumnState,
+    noteColumnState: NoteColumnState,
+    snackbarHostState: SnackbarHostState,
+    indexState: IndexState,
+    accountTitleState: AccountTitleState,
+    monthSelectorState: MonthSelectorState,
+    topMemorial: Memorial?,
     onNavigateToSettings: () -> Unit,
     onNavigateToMemorialAdd: () -> Unit,
     onNavigateToMemorial: (memorialId: Long) -> Unit,
@@ -49,41 +54,10 @@ fun HomeScreen(
     onNavigateToSearch: (SearchType) -> Unit,
     onNavigateToAccountAnalysis: () -> Unit
 ) {
-    val context = LocalContext.current
     val scope = rememberCoroutineScope()
     val currentHomePage = remember(pagerState.currentPage) {
         HomePage.fromPageIndex(pagerState.currentPage)
     }
-
-    val indexViewModel = hiltViewModel<IndexViewModel>()
-    val accountViewModel = hiltViewModel<AccountHomeViewModel>()
-    val memorialViewModel = hiltViewModel<MemorialViewModel>()
-    val notebookViewModel = hiltViewModel<NotebookViewModel>()
-
-    val snackbarHostState = remember { SnackbarHostState() }
-
-    val transactionColumnState by accountViewModel.transactionColumnState.collectAsState()
-    val memorialColumnState by memorialViewModel.memorialColumnState.collectAsState()
-    val noteColumnState by notebookViewModel.noteColumnState.collectAsState()
-
-    LaunchedEffect(accountViewModel.event, memorialViewModel.event, notebookViewModel.event) {
-        merge(
-            accountViewModel.event, memorialViewModel.event, notebookViewModel.event
-        ).collect { event ->
-            when (event) {
-                is AccountHomeViewModel.Event.DeleteTransactions,
-                is MemorialViewModel.Event.DeleteMemorials,
-                is NotebookViewModel.Event.DeleteNotes -> {
-                    snackbarHostState.showSnackbar(
-                        message = context.getString(little.goose.common.R.string.deleted),
-                        withDismissAction = true
-                    )
-                }
-            }
-        }
-    }
-
-    val indexTopBarState by indexViewModel.indexTopBarState.collectAsState()
 
     val windowSizeClass = LocalWindowSizeClass.current
     val isWindowWidthSizeCompat = windowSizeClass.widthSizeClass == WindowWidthSizeClass.Compact
@@ -94,18 +68,18 @@ fun HomeScreen(
                     .fillMaxHeight()
                     .wrapContentWidth(),
                 currentHomePage = currentHomePage,
-                currentDayText = indexTopBarState.currentDay.month.getDisplayName(
+                currentDayText = indexState.indexTopBarState.currentDay.month.getDisplayName(
                     TextStyle.SHORT, Locale.CHINA
-                ) + indexTopBarState.currentDay.dayOfMonth + "日",
+                ) + indexState.indexTopBarState.currentDay.dayOfMonth + "日",
                 onAddClick = {
                     when (currentHomePage) {
-                        HomePage.Home -> indexTopBarState.navigateToDate(indexTopBarState.today)
+                        HomePage.Home -> indexState.indexTopBarState.navigateToDate(indexState.indexTopBarState.today)
                         HomePage.Notebook -> onNavigateToNote(null)
                         HomePage.Account -> onNavigateToTransaction(null, Date())
                         HomePage.Memorial -> onNavigateToMemorialAdd()
                     }
                 },
-                todayText = indexTopBarState.today.dayOfMonth.toString(),
+                todayText = indexState.indexTopBarState.today.dayOfMonth.toString(),
                 onHomePageClick = { homePage ->
                     scope.launch(Dispatchers.Main.immediate) {
                         pagerState.scrollToPage(homePage.index)
@@ -129,22 +103,18 @@ fun HomeScreen(
                     HomeTopBar(
                         modifier = Modifier.fillMaxWidth(),
                         currentHomePage = currentHomePage,
-                        indexTopBarState = indexTopBarState,
+                        indexTopBarState = indexState.indexTopBarState,
                         onNavigateToSettings = onNavigateToSettings
                     )
                 }
             },
             content = { paddingValues ->
-                val indexHomeState by indexViewModel.indexHomeState.collectAsState()
-                val accountTitleState by accountViewModel.accountTitleState.collectAsState()
-                val monthSelectorState by accountViewModel.monthSelectorState.collectAsState()
-                val topMemorial by memorialViewModel.topMemorial.collectAsState()
                 HomePageContent(
                     modifier = Modifier
                         .fillMaxSize()
                         .padding(paddingValues),
                     pagerState,
-                    indexHomeState,
+                    indexState.indexHomeState,
                     currentHomePage,
                     onNavigateToMemorialAdd,
                     onNavigateToMemorial,

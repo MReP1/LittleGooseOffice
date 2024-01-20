@@ -16,7 +16,6 @@ import little.goose.account.data.constants.AccountConstant.EXPENSE
 import little.goose.account.data.constants.AccountConstant.INCOME
 import little.goose.account.logic.GetTransactionByDateFlowUseCase
 import little.goose.common.utils.getRoundTwo
-import little.goose.home.ui.component.IndexTopBarState
 import little.goose.memorial.logic.GetMemorialByDateFlowUseCase
 import java.math.BigDecimal
 import java.time.LocalDate
@@ -40,14 +39,33 @@ class IndexViewModel @Inject constructor(
     private val dayContentMap = mutableMapOf<LocalDate, StateFlow<IndexDayContent>>()
 
     val indexHomeState = currentDay.map(::generateIndexHomeState).stateIn(
-        viewModelScope, SharingStarted.Eagerly, generateIndexHomeState(currentDay.value)
+        viewModelScope, SharingStarted.WhileSubscribed(5000),
+        initialValue = generateIndexHomeState(currentDay.value)
     )
+
+    val indexTopBarState = currentDay.map(::generateIndexTopBarState).stateIn(
+        viewModelScope, SharingStarted.WhileSubscribed(5000),
+        initialValue = generateIndexTopBarState(currentDay.value)
+    )
+
+    val indexState = combine(indexTopBarState, indexHomeState, ::IndexState).stateIn(
+        viewModelScope, SharingStarted.WhileSubscribed(5000),
+        initialValue = IndexState(indexTopBarState.value, indexHomeState.value)
+    )
+
+    private fun generateIndexTopBarState(date: LocalDate): IndexTopBarState {
+        return IndexTopBarState(date, LocalDate.now(), ::updateCurrentDay)
+    }
 
     private fun generateIndexHomeState(currentDay: LocalDate) = IndexHomeState(
         today, currentDay, initMonth,
         startMonth, endMonth, daysOfWeek,
         ::updateCurrentDay, ::getDayContentFlow
     )
+
+    private fun updateCurrentDay(day: LocalDate) {
+        currentDay.value = day
+    }
 
     private fun getDayContentFlow(date: LocalDate): StateFlow<IndexDayContent> {
         return dayContentMap[date] ?: run {
@@ -82,17 +100,6 @@ class IndexViewModel @Inject constructor(
                 IndexDayContent()
             ).also { dayContentMap[date] = it }
         }
-    }
-
-    val indexTopBarState = currentDay.map {
-        IndexTopBarState(it, LocalDate.now(), ::updateCurrentDay)
-    }.stateIn(
-        viewModelScope, SharingStarted.WhileSubscribed(5000),
-        initialValue = IndexTopBarState(currentDay.value, LocalDate.now(), ::updateCurrentDay)
-    )
-
-    private fun updateCurrentDay(day: LocalDate) {
-        currentDay.value = day
     }
 
 }

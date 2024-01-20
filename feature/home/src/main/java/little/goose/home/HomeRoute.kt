@@ -1,11 +1,20 @@
 package little.goose.home
 
 import android.app.Activity
+import android.content.Context
 import android.content.Intent
 import androidx.activity.ComponentActivity
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.pager.rememberPagerState
-import androidx.compose.runtime.*
+import androidx.compose.material3.SnackbarHostState
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalView
@@ -18,14 +27,19 @@ import androidx.navigation.NavType
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.merge
 import kotlinx.coroutines.launch
+import little.goose.account.ui.AccountHomeViewModel
 import little.goose.common.constants.KEY_HOME_PAGE
 import little.goose.home.data.HomePage
 import little.goose.home.ui.HomeScreen
 import little.goose.home.ui.HomeViewModel
+import little.goose.home.ui.index.IndexViewModel
+import little.goose.memorial.ui.MemorialViewModel
+import little.goose.note.ui.NotebookViewModel
 import little.goose.search.SearchType
 import little.goose.ui.screen.LittleGooseEmptyScreen
-import java.util.*
+import java.util.Date
 
 const val ROUTE_HOME = "home"
 
@@ -99,10 +113,38 @@ fun HomeRoute(
     if (homePage == -1) {
         LittleGooseEmptyScreen(modifier = modifier)
     } else {
-        val pagerState = rememberPagerState(initialPage = homePage, pageCount = HomePage.entries::size)
+        val pagerState = rememberPagerState(
+            initialPage = homePage,
+            pageCount = HomePage.entries::size
+        )
+
+        val context: Context = LocalContext.current
+        val indexViewModel = hiltViewModel<IndexViewModel>()
+        val accountViewModel = hiltViewModel<AccountHomeViewModel>()
+        val memorialViewModel = hiltViewModel<MemorialViewModel>()
+        val notebookViewModel = hiltViewModel<NotebookViewModel>()
+
+        val transactionColumnState by accountViewModel.transactionColumnState.collectAsState()
+        val memorialColumnState by memorialViewModel.memorialColumnState.collectAsState()
+        val noteColumnState by notebookViewModel.noteColumnState.collectAsState()
+        val indexState by indexViewModel.indexState.collectAsState()
+        val accountTitleState by accountViewModel.accountTitleState.collectAsState()
+        val monthSelectorState by accountViewModel.monthSelectorState.collectAsState()
+        val topMemorial by memorialViewModel.topMemorial.collectAsState()
+
+        val snackbarHostState = remember { SnackbarHostState() }
+
         HomeScreen(
             modifier = modifier.fillMaxSize(),
             pagerState = pagerState,
+            transactionColumnState = transactionColumnState,
+            memorialColumnState = memorialColumnState,
+            noteColumnState = noteColumnState,
+            snackbarHostState = snackbarHostState,
+            indexState = indexState,
+            monthSelectorState = monthSelectorState,
+            topMemorial = topMemorial,
+            accountTitleState = accountTitleState,
             onNavigateToSettings = onNavigateToSettings,
             onNavigateToNote = onNavigateToNote,
             onNavigateToSearch = onNavigateToSearch,
@@ -113,7 +155,23 @@ fun HomeRoute(
             onNavigateToTransactionScreen = onNavigateToTransactionScreen
         )
 
-        val context = LocalContext.current
+        LaunchedEffect(accountViewModel.event, memorialViewModel.event, notebookViewModel.event) {
+            merge(
+                accountViewModel.event, memorialViewModel.event, notebookViewModel.event
+            ).collect { event ->
+                when (event) {
+                    is AccountHomeViewModel.Event.DeleteTransactions,
+                    is MemorialViewModel.Event.DeleteMemorials,
+                    is NotebookViewModel.Event.DeleteNotes -> {
+                        snackbarHostState.showSnackbar(
+                            message = context.getString(little.goose.common.R.string.deleted),
+                            withDismissAction = true
+                        )
+                    }
+                }
+            }
+        }
+
         val scope = rememberCoroutineScope()
         DisposableEffect(context, scope) {
             val activity = (context as ComponentActivity)

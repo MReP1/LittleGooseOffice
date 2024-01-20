@@ -13,7 +13,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import little.goose.home.data.HomePage
 import little.goose.home.ui.component.IndexTopBar
-import little.goose.home.ui.component.IndexTopBarState
+import little.goose.home.ui.index.IndexTopBarState
 import little.goose.settings.R
 
 @Composable
