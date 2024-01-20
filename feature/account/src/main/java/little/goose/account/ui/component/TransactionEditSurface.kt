@@ -48,16 +48,16 @@ import java.math.BigDecimal
 
 @Stable
 internal data class TransactionEditSurfaceState(
-    val transaction: Transaction = Transaction(),
-    val onTransactionChangeIntent: (TransactionScreenIntent.ChangeTransaction) -> Unit = {},
-    val onOperationIntent: (TransactionScreenIntent.TransactionOperation) -> Unit = {},
+    val transaction: Transaction = Transaction()
 )
 
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
 internal fun TransactionEditSurface(
     modifier: Modifier = Modifier,
-    state: TransactionEditSurfaceState
+    state: TransactionEditSurfaceState,
+    onTransactionChangeIntent: (TransactionScreenIntent.ChangeTransaction) -> Unit,
+    onOperationIntent: (TransactionScreenIntent.TransactionOperation) -> Unit,
 ) {
     val moneyCalculator = remember { MoneyCalculator(state.transaction.money) }
 
@@ -74,7 +74,7 @@ internal fun TransactionEditSurface(
             runCatching {
                 BigDecimal(moneyStr)
             }.getOrNull()?.let { money ->
-                state.onTransactionChangeIntent(
+                onTransactionChangeIntent(
                     TransactionScreenIntent.ChangeTransaction.Money(money)
                 )
             }
@@ -101,7 +101,7 @@ internal fun TransactionEditSurface(
             transaction = state.transaction,
             isDescriptionEdit = isDescriptionEdit,
             onIsDescriptionEditChange = onIsDescriptionEditChange,
-            onTransactionChange = state.onTransactionChangeIntent
+            onTransactionChange = onTransactionChangeIntent
         )
 
         val density = LocalDensity.current
@@ -122,7 +122,7 @@ internal fun TransactionEditSurface(
             },
             onAgainClick = {
                 moneyCalculator.operate()
-                state.onOperationIntent(
+                onOperationIntent(
                     TransactionScreenIntent.TransactionOperation.Again(
                         money = BigDecimal(moneyCalculator.money.value)
                     )
@@ -130,7 +130,7 @@ internal fun TransactionEditSurface(
             },
             onDoneClick = {
                 moneyCalculator.operate()
-                state.onOperationIntent(
+                onOperationIntent(
                     TransactionScreenIntent.TransactionOperation.Done(
                         money = BigDecimal(moneyCalculator.money.value)
                     )
@@ -220,9 +220,9 @@ private fun PreviewTransactionEditSurface() {
                 icon_id = 0,
                 content = "饮食",
                 money = BigDecimal(0)
-            ),
-            onTransactionChangeIntent = {},
-            onOperationIntent = {}
-        )
+            )
+        ),
+        onOperationIntent = {},
+        onTransactionChangeIntent = {}
     )
 }

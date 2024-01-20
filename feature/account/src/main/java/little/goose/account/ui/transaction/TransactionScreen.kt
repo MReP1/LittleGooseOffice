@@ -27,7 +27,6 @@ internal sealed class TransactionScreenState {
 
     data class Success(
         val pageIndex: Int = 0,
-        val onChangeTransaction: (TransactionScreenIntent.ChangeTransaction) -> Unit = {},
         val topBarState: TransactionScreenTopBarState = TransactionScreenTopBarState(),
         val editSurfaceState: TransactionEditSurfaceState = TransactionEditSurfaceState(),
         val iconPagerState: TransactionScreenIconPagerState = TransactionScreenIconPagerState(),
@@ -41,6 +40,7 @@ internal fun TransactionScreen(
     modifier: Modifier = Modifier,
     snackbarHostState: SnackbarHostState,
     transactionScreenState: TransactionScreenState,
+    intent: (TransactionScreenIntent) -> Unit,
     onBack: () -> Unit
 ) {
     val scope = rememberCoroutineScope()
@@ -56,7 +56,7 @@ internal fun TransactionScreen(
             val iconState = (transactionScreenState as? TransactionScreenState.Success)
                 ?.iconPagerState ?: return@collect
             if (currentPage == 0 && !isFirstTime) {
-                transactionScreenState.onChangeTransaction(
+                intent(
                     TransactionScreenIntent.ChangeTransaction.Icon(
                         iconState.expenseSelectedIcon.id, iconState.expenseSelectedIcon.name
                     ) + TransactionScreenIntent.ChangeTransaction.Type(
@@ -64,7 +64,7 @@ internal fun TransactionScreen(
                     )
                 )
             } else if (!isFirstTime) {
-                transactionScreenState.onChangeTransaction(
+                intent(
                     TransactionScreenIntent.ChangeTransaction.Icon(
                         iconState.incomeSelectedIcon.id, iconState.incomeSelectedIcon.name
                     ) + TransactionScreenIntent.ChangeTransaction.Type(
@@ -111,7 +111,7 @@ internal fun TransactionScreen(
                             TransactionScreenTopBarAction(
                                 modifier = Modifier,
                                 iconDisplayType = transactionScreenState.topBarState.iconDisplayType,
-                                onIconDisplayTypeChange = transactionScreenState.topBarState.onIconDisplayTypeChange
+                                onIconDisplayTypeChange = intent
                             )
                         }
                     }
@@ -139,6 +139,8 @@ internal fun TransactionScreen(
             TransactionEditSurface(
                 modifier = Modifier.navigationBarsPadding(),
                 state = editSurfaceState,
+                onTransactionChangeIntent = intent,
+                onOperationIntent = intent
             )
         }
     )
@@ -150,6 +152,7 @@ private fun PreviewTransactionScreen() = GooseTheme {
     TransactionScreen(
         snackbarHostState = remember { SnackbarHostState() },
         transactionScreenState = TransactionScreenState.Success(),
+        intent = {},
         onBack = { }
     )
 }

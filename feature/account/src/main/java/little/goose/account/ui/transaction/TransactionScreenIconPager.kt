@@ -15,15 +15,15 @@ import little.goose.account.ui.transaction.icon.TransactionIconHelper
 internal data class TransactionScreenIconPagerState(
     val expenseSelectedIcon: TransactionIcon = TransactionIconHelper.expenseIconList[0],
     val incomeSelectedIcon: TransactionIcon = TransactionIconHelper.incomeIconList[0],
-    val iconDisplayType: IconDisplayType = IconDisplayType.ICON_CONTENT,
-    val onIconChangeIntent: (TransactionScreenIntent.ChangeTransaction) -> Unit = {}
+    val iconDisplayType: IconDisplayType = IconDisplayType.ICON_CONTENT
 )
 
 @Composable
 internal fun TransactionScreenIconPager(
     modifier: Modifier,
     pagerState: PagerState,
-    state: TransactionScreenIconPagerState
+    state: TransactionScreenIconPagerState,
+    onIconChangeIntent: (TransactionScreenIntent.ChangeTransaction) -> Unit
 ) {
     HorizontalPager(
         modifier = modifier,
@@ -34,7 +34,7 @@ internal fun TransactionScreenIconPager(
                 modifier = Modifier.fillMaxSize(),
                 icons = TransactionIconHelper.expenseIconList,
                 onIconClick = {
-                    state.onIconChangeIntent(
+                    onIconChangeIntent(
                         TransactionScreenIntent.ChangeTransaction.Icon(it.id, it.name)
                     )
                 },
@@ -46,7 +46,7 @@ internal fun TransactionScreenIconPager(
                 modifier = Modifier.fillMaxSize(),
                 icons = TransactionIconHelper.incomeIconList,
                 onIconClick = {
-                    state.onIconChangeIntent(
+                    onIconChangeIntent(
                         TransactionScreenIntent.ChangeTransaction.Icon(it.id, it.name)
                     )
                 },

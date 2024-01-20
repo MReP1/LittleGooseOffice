@@ -4,6 +4,7 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.NonCancellable
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -94,21 +95,12 @@ class TransactionViewModel @Inject constructor(
     ) { transaction, iconDisplayType, expenseIcon, incomeIcon ->
         TransactionScreenState.Success(
             pageIndex = if (transaction.type == EXPENSE) 0 else 1,
-            onChangeTransaction = ::intent,
-            topBarState = TransactionScreenTopBarState(
-                iconDisplayType = iconDisplayType,
-                onIconDisplayTypeChange = ::intent
-            ),
-            editSurfaceState = TransactionEditSurfaceState(
-                transaction = transaction,
-                onTransactionChangeIntent = ::intent,
-                onOperationIntent = ::intent
-            ),
+            topBarState = TransactionScreenTopBarState(iconDisplayType = iconDisplayType),
+            editSurfaceState = TransactionEditSurfaceState(transaction = transaction),
             iconPagerState = TransactionScreenIconPagerState(
                 iconDisplayType = iconDisplayType,
                 expenseSelectedIcon = expenseIcon,
-                incomeSelectedIcon = incomeIcon,
-                onIconChangeIntent = ::intent
+                incomeSelectedIcon = incomeIcon
             )
         )
     }.stateIn(
@@ -127,7 +119,7 @@ class TransactionViewModel @Inject constructor(
         }
     }
 
-    private fun intent(intent: TransactionScreenIntent) {
+    internal fun intent(intent: TransactionScreenIntent) {
         val currentTransaction = _transaction.value ?: return
         when (intent) {
             is TransactionScreenIntent.TransactionOperation.Done -> {
@@ -173,7 +165,7 @@ class TransactionViewModel @Inject constructor(
             transaction.copy(money = transaction.money.negate())
         } else transaction
 
-        viewModelScope.launch {
+        viewModelScope.launch(NonCancellable) {
             // 写入数据库
             if (tra.id == null) {
                 insertTransactionUseCase(tra)

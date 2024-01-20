@@ -38,7 +38,6 @@ import little.goose.account.data.models.IconDisplayType
 @Stable
 internal data class TransactionScreenTopBarState(
     val iconDisplayType: IconDisplayType = IconDisplayType.ICON_CONTENT,
-    val onIconDisplayTypeChange: (TransactionScreenIntent.ChangeIconDisplayType) -> Unit = {}
 )
 
 @Composable
