@@ -44,24 +44,18 @@ internal fun TransactionScreen(
     onBack: () -> Unit
 ) {
     val scope = rememberCoroutineScope()
-    val pagerState = if (transactionScreenState is TransactionScreenState.Success)
+    val pagerState = if (transactionScreenState is TransactionScreenState.Success) {
         rememberPagerState(initialPage = transactionScreenState.pageIndex, pageCount = { 2 })
-    else rememberPagerState(initialPage = 0, pageCount = { 2 })
-
-    LaunchedEffect(transactionScreenState) {
-        (transactionScreenState as? TransactionScreenState.Success)?.let { state ->
-            if (state.pageIndex != pagerState.currentPage) {
-                pagerState.animateScrollToPage(state.pageIndex)
-            }
-        }
+    } else {
+        rememberPagerState(initialPage = 0, pageCount = { 2 })
     }
 
     LaunchedEffect(pagerState) {
         var isFirstTime = true
-        snapshotFlow { pagerState.currentPage }.collect {
+        snapshotFlow { pagerState.currentPage }.collect { currentPage ->
             val iconState = (transactionScreenState as? TransactionScreenState.Success)
                 ?.iconPagerState ?: return@collect
-            if (it == 0 && !isFirstTime) {
+            if (currentPage == 0 && !isFirstTime) {
                 transactionScreenState.onChangeTransaction(
                     TransactionScreenIntent.ChangeTransaction.Icon(
                         iconState.expenseSelectedIcon.id, iconState.expenseSelectedIcon.name
