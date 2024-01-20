@@ -101,9 +101,7 @@ fun HomePageContent(
                 ACCOUNT -> {
                     AccountHome(
                         modifier = Modifier.fillMaxSize(),
-                        transactionColumnState = accountHomeState.transactionColumnState,
-                        accountTitleState = accountHomeState.accountTitleState,
-                        monthSelectorState = accountHomeState.monthSelectorState,
+                        accountHomeState = accountHomeState,
                         onNavigateToTransactionScreen = onNavigateToTransactionScreen,
                         onNavigateToSearch = { onNavigateToSearch(SearchType.Transaction) },
                         onNavigateToAccountAnalysis = onNavigateToAccountAnalysis
