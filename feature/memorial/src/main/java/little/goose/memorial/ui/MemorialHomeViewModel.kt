@@ -44,7 +44,7 @@ class MemorialHomeViewModel @Inject constructor(
         initialValue = listOf()
     )
 
-    val memorialColumnState = combine(
+    private val memorialColumnState = combine(
         multiSelectedMemorials, memorials
     ) { multiSelectedMemorials, memorials ->
         MemorialColumnState(
@@ -70,7 +70,7 @@ class MemorialHomeViewModel @Inject constructor(
         )
     )
 
-    val topMemorial: StateFlow<Memorial?> = getMemorialAtTopFlowUseCase()
+    private val topMemorial: StateFlow<Memorial?> = getMemorialAtTopFlowUseCase()
         .map { it.firstOrNull() }
         .stateIn(
             scope = viewModelScope,
