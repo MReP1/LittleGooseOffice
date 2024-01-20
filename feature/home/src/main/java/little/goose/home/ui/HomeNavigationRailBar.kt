@@ -83,7 +83,7 @@ internal fun HomeNavigationRailBar(
                             )
                             Text(
                                 text = todayText,
-                                style = MaterialTheme.typography.bodySmall,
+                                style = MaterialTheme.typography.labelSmall,
                                 modifier = Modifier.padding(top = 4.dp)
                             )
                         }
