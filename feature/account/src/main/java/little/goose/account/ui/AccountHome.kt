@@ -1,6 +1,5 @@
 package little.goose.account.ui
 
-import android.icu.util.Calendar
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -21,11 +20,8 @@ import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.unit.dp
 import little.goose.account.ui.component.AccountTitle
-import little.goose.account.ui.component.AccountTitleState
 import little.goose.account.ui.component.MonthSelector
-import little.goose.account.ui.component.MonthSelectorState
 import little.goose.account.ui.component.TransactionColumn
-import little.goose.account.ui.component.TransactionColumnState
 import little.goose.common.utils.TimeType
 import little.goose.common.utils.calendar
 import little.goose.common.utils.getMonth
@@ -44,14 +40,15 @@ import little.goose.ui.surface.PullSurface
 @Composable
 fun AccountHome(
     modifier: Modifier = Modifier,
-    accountTitleState: AccountTitleState,
-    monthSelectorState: MonthSelectorState,
-    transactionColumnState: TransactionColumnState,
+    accountHomeState: AccountHomeState,
     onNavigateToTransactionScreen: (Long) -> Unit,
     onNavigateToSearch: () -> Unit,
     onNavigateToAccountAnalysis: () -> Unit
 ) {
     val selectorTimeDialogState = rememberDialogState()
+    val accountTitleState = accountHomeState.accountTitleState
+    val monthSelectorState = accountHomeState.monthSelectorState
+    val transactionColumnState = accountHomeState.transactionColumnState
 
     PullSurface(
         modifier = modifier,
@@ -156,16 +153,10 @@ fun AccountHome(
 @PreviewMultipleScreenSizes
 @Composable
 private fun PreviewAccountHome() = GooseTheme {
-    val calendar = remember { Calendar.getInstance() }
+    val accountHomeState = remember { AccountHomeState() }
     AccountHome(
         modifier = Modifier.fillMaxSize(),
-        accountTitleState = AccountTitleState(),
-        monthSelectorState = MonthSelectorState(
-            year = calendar.get(Calendar.YEAR),
-            month = calendar.get(Calendar.MONTH),
-            onTimeChange = { _, _ -> }
-        ),
-        transactionColumnState = TransactionColumnState(),
+        accountHomeState = accountHomeState,
         onNavigateToAccountAnalysis = {},
         onNavigateToSearch = {},
         onNavigateToTransactionScreen = {}

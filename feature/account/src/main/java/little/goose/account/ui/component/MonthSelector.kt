@@ -108,7 +108,7 @@ fun PreviewMonthSelector() = GooseTheme {
             .fillMaxWidth()
             .height(48.dp),
         shape = RectangleShape,
-        state = MonthSelectorState(2024, 12, onTimeChange = { _, _ -> }),
+        state = MonthSelectorState(),
         onSelectTimeClick = {}
     )
 }
