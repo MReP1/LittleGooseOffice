@@ -26,9 +26,9 @@ import little.goose.note.data.entities.NoteContentBlock
 import little.goose.note.logic.notes
 
 data class NoteColumnState(
-    val noteWithContents: Map<Note, List<NoteContentBlock>>,
-    val isMultiSelecting: Boolean,
-    val multiSelectedNotes: Set<Note>,
+    val noteWithContents: Map<Note, List<NoteContentBlock>> = emptyMap(),
+    val isMultiSelecting: Boolean = false,
+    val multiSelectedNotes: Set<Note> = emptySet(),
     val onSelectNote: (item: Note, selected: Boolean) -> Unit = { _, _ -> },
     val selectAllNotes: () -> Unit = {},
     val cancelMultiSelecting: () -> Unit = {},

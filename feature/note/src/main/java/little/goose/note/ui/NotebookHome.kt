@@ -8,8 +8,12 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.scale
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import little.goose.common.utils.progressWith
+import little.goose.design.system.theme.GooseTheme
+import little.goose.note.data.entities.Note
+import little.goose.note.data.entities.NoteContentBlock
 import little.goose.ui.icon.PullToSearchIcon
 import little.goose.ui.surface.PullSurface
 
@@ -44,5 +48,19 @@ fun NotebookHome(
                 }
             )
         }
+    )
+}
+
+@Preview
+@Composable
+fun PreviewNotebookHome() = GooseTheme {
+    NotebookHome(
+        noteColumnState = NoteColumnState(
+            noteWithContents = mapOf(
+                Note(title = "Hello World") to listOf(NoteContentBlock.generateRandom())
+            )
+        ),
+        onNavigateToNote = {},
+        onNavigateToSearch = {}
     )
 }

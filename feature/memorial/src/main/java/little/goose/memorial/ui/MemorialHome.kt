@@ -11,8 +11,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.scale
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import little.goose.common.utils.generateUnitId
 import little.goose.common.utils.progressWith
+import little.goose.design.system.theme.GooseTheme
 import little.goose.memorial.data.entities.Memorial
 import little.goose.memorial.ui.component.MemorialColumn
 import little.goose.memorial.ui.component.MemorialTitle
@@ -22,8 +25,7 @@ import little.goose.ui.surface.PullSurface
 @Composable
 fun MemorialHome(
     modifier: Modifier,
-    topMemorial: Memorial?,
-    memorialColumnState: MemorialColumnState,
+    memorialHomeState: MemorialHomeState,
     onNavigateToMemorial: (Long) -> Unit,
     onNavigateToSearch: () -> Unit
 ) {
@@ -44,24 +46,40 @@ fun MemorialHome(
         },
         content = {
             Column(modifier = Modifier.fillMaxSize()) {
-                if (topMemorial != null) {
+                if (memorialHomeState.topMemorial != null) {
                     MemorialTitle(
                         modifier = Modifier
                             .height(130.dp)
                             .fillMaxWidth(),
-                        memorial = topMemorial
+                        memorial = memorialHomeState.topMemorial
                     )
                 }
                 MemorialColumn(
                     modifier = Modifier
                         .weight(1F)
                         .fillMaxWidth(),
-                    state = memorialColumnState,
+                    state = memorialHomeState.memorialColumnState,
                     onMemorialEdit = { memorial ->
                         memorial.id?.run(onNavigateToMemorial)
                     }
                 )
             }
         }
+    )
+}
+
+@Preview
+@Composable
+fun PreviewMemorialHome() = GooseTheme {
+    MemorialHome(
+        modifier = Modifier.fillMaxSize(),
+        memorialHomeState = MemorialHomeState(
+            topMemorial = Memorial(content = "HelloWorld", isTop = true),
+            memorialColumnState = MemorialColumnState(
+                listOf(Memorial(id = generateUnitId()))
+            )
+        ),
+        onNavigateToMemorial = {},
+        onNavigateToSearch = {}
     )
 }

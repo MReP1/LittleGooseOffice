@@ -113,8 +113,7 @@ fun HomePageContent(
                 MEMORIAL -> {
                     MemorialHome(
                         modifier = Modifier.fillMaxSize(),
-                        topMemorial = memorialHomeState.topMemorial,
-                        memorialColumnState = memorialHomeState.memorialColumnState,
+                        memorialHomeState = memorialHomeState,
                         onNavigateToMemorial = onNavigateToMemorial,
                         onNavigateToSearch = { onNavigateToSearch(SearchType.Memorial) }
                     )
