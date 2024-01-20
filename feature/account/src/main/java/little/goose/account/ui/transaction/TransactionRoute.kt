@@ -107,7 +107,7 @@ fun TransactionRoute(
         snackbarHostState = snackbarHostState,
         onBack = onBack,
         transactionScreenState = transactionScreenState,
-        intent = viewModel::intent
+        action = viewModel::action
     )
 
     val context = LocalContext.current

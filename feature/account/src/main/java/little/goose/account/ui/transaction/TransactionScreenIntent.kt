@@ -1,6 +1,7 @@
 package little.goose.account.ui.transaction
 
 import little.goose.account.data.models.IconDisplayType
+import little.goose.account.data.models.TransactionIcon
 import java.math.BigDecimal
 import java.util.Date
 
@@ -33,7 +34,9 @@ sealed class TransactionScreenIntent {
         data class Icon(
             override val iconId: Int,
             override val content: String
-        ) : ChangeTransaction()
+        ) : ChangeTransaction() {
+            constructor(icon: TransactionIcon) : this(icon.id, icon.name)
+        }
 
         data class Type(
             override val type: Int

@@ -30,6 +30,7 @@ import little.goose.account.ui.transaction.icon.TransactionIconHelper
 import little.goose.common.utils.getDate
 import little.goose.common.utils.getMonth
 import little.goose.common.utils.getYear
+import little.goose.common.utils.log
 import little.goose.common.utils.setDate
 import little.goose.common.utils.setMonth
 import little.goose.common.utils.setYear
@@ -77,22 +78,28 @@ class TransactionViewModel @Inject constructor(
     private val _transaction: MutableStateFlow<Transaction?> = MutableStateFlow(null)
     val transaction = _transaction.asStateFlow()
 
-    internal val transactionScreenState = combine(
-        transaction.filterNotNull(),
-        iconDisplayType,
-        transaction.filterNotNull().filter { it.type == EXPENSE }.map { transaction ->
+    private val expenseIcon = transaction.filterNotNull()
+        .filter { it.type == EXPENSE }
+        .map { transaction ->
             TransactionIconHelper.expenseIconList.find { it.id == transaction.icon_id }
         }.filterNotNull().stateIn(
-            viewModelScope, SharingStarted.Eagerly,
+            scope = viewModelScope, started = SharingStarted.Eagerly,
             initialValue = TransactionIconHelper.expenseIconList.first()
-        ),
-        transaction.filterNotNull().filter { it.type == INCOME }.map { transaction ->
+        )
+
+    private val incomeIcon = transaction.filterNotNull()
+        .filter { it.type == INCOME }
+        .map { transaction ->
             TransactionIconHelper.incomeIconList.find { it.id == transaction.icon_id }
         }.filterNotNull().stateIn(
-            viewModelScope, SharingStarted.Eagerly,
+            scope = viewModelScope, started = SharingStarted.Eagerly,
             initialValue = TransactionIconHelper.incomeIconList.first()
-        ),
+        )
+
+    internal val transactionScreenState = combine(
+        transaction.filterNotNull(), iconDisplayType, expenseIcon, incomeIcon,
     ) { transaction, iconDisplayType, expenseIcon, incomeIcon ->
+        log("expenseIcon $expenseIcon incomeIcon $incomeIcon")
         TransactionScreenState.Success(
             pageIndex = if (transaction.type == EXPENSE) 0 else 1,
             topBarState = TransactionScreenTopBarState(iconDisplayType = iconDisplayType),
@@ -119,7 +126,7 @@ class TransactionViewModel @Inject constructor(
         }
     }
 
-    internal fun intent(intent: TransactionScreenIntent) {
+    internal fun action(intent: TransactionScreenIntent) {
         val currentTransaction = _transaction.value ?: return
         when (intent) {
             is TransactionScreenIntent.TransactionOperation.Done -> {
