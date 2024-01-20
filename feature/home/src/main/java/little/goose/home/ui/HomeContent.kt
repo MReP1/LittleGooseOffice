@@ -23,9 +23,8 @@ import little.goose.home.data.MEMORIAL
 import little.goose.home.data.NOTEBOOK
 import little.goose.home.ui.index.IndexHome
 import little.goose.home.ui.index.IndexHomeState
-import little.goose.memorial.data.entities.Memorial
 import little.goose.memorial.ui.MemorialHome
-import little.goose.memorial.ui.component.MemorialColumnState
+import little.goose.memorial.ui.MemorialHomeState
 import little.goose.note.ui.NoteColumnState
 import little.goose.note.ui.NotebookHome
 import little.goose.search.SearchType
@@ -46,8 +45,7 @@ fun HomePageContent(
     onNavigateToAccountAnalysis: () -> Unit,
     noteColumnState: NoteColumnState,
     transactionColumnState: TransactionColumnState,
-    memorialColumnState: MemorialColumnState,
-    topMemorial: Memorial?,
+    memorialHomeState: MemorialHomeState,
     accountTitleState: AccountTitleState,
     monthSelectorState: MonthSelectorState
 ) {
@@ -56,7 +54,7 @@ fun HomePageContent(
     val isMultiSelecting = when (currentHomePage) {
         HomePage.Notebook -> noteColumnState.isMultiSelecting
         HomePage.Account -> transactionColumnState.isMultiSelecting
-        HomePage.Memorial -> memorialColumnState.isMultiSelecting
+        HomePage.Memorial -> memorialHomeState.memorialColumnState.isMultiSelecting
         else -> false
     }
 
@@ -119,8 +117,8 @@ fun HomePageContent(
                 MEMORIAL -> {
                     MemorialHome(
                         modifier = Modifier.fillMaxSize(),
-                        topMemorial = topMemorial,
-                        memorialColumnState = memorialColumnState,
+                        topMemorial = memorialHomeState.topMemorial,
+                        memorialColumnState = memorialHomeState.memorialColumnState,
                         onNavigateToMemorial = onNavigateToMemorial,
                         onNavigateToSearch = { onNavigateToSearch(SearchType.Memorial) }
                     )
@@ -150,17 +148,17 @@ fun HomePageContent(
                     onNavigateToTransaction(null, Date())
                 },
                 onDeleteMemorials = {
-                    memorialColumnState.deleteMemorials(
-                        memorialColumnState.multiSelectedMemorials.toList()
+                    memorialHomeState.memorialColumnState.deleteMemorials(
+                        memorialHomeState.memorialColumnState.multiSelectedMemorials.toList()
                     )
-                    memorialColumnState.cancelMultiSelecting()
+                    memorialHomeState.memorialColumnState.cancelMultiSelecting()
                 },
                 onNavigateToNewMemorial = onNavigateToMemorialAdd,
                 onSelectAllNotes = noteColumnState.selectAllNotes,
                 onSelectAllTransactions = transactionColumnState.selectAllTransactions,
-                onSelectAllMemorials = memorialColumnState.selectAllMemorial,
+                onSelectAllMemorials = memorialHomeState.memorialColumnState.selectAllMemorial,
                 onCancelTransactionsMultiSelecting = transactionColumnState.cancelMultiSelecting,
-                onCancelMemorialsMultiSelecting = memorialColumnState.cancelMultiSelecting,
+                onCancelMemorialsMultiSelecting = memorialHomeState.memorialColumnState.cancelMultiSelecting,
                 onCancelNotesMultiSelecting = noteColumnState.cancelMultiSelecting
             )
         }

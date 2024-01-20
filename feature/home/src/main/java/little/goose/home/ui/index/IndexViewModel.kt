@@ -38,12 +38,12 @@ class IndexViewModel @Inject constructor(
 
     private val dayContentMap = mutableMapOf<LocalDate, StateFlow<IndexDayContent>>()
 
-    val indexHomeState = currentDay.map(::generateIndexHomeState).stateIn(
+    private val indexHomeState = currentDay.map(::generateIndexHomeState).stateIn(
         viewModelScope, SharingStarted.WhileSubscribed(5000),
         initialValue = generateIndexHomeState(currentDay.value)
     )
 
-    val indexTopBarState = currentDay.map(::generateIndexTopBarState).stateIn(
+    private val indexTopBarState = currentDay.map(::generateIndexTopBarState).stateIn(
         viewModelScope, SharingStarted.WhileSubscribed(5000),
         initialValue = generateIndexTopBarState(currentDay.value)
     )

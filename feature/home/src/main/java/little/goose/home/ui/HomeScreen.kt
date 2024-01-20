@@ -25,8 +25,7 @@ import little.goose.design.system.theme.LocalWindowSizeClass
 import little.goose.design.system.util.paddingCutout
 import little.goose.home.data.HomePage
 import little.goose.home.ui.index.IndexState
-import little.goose.memorial.data.entities.Memorial
-import little.goose.memorial.ui.component.MemorialColumnState
+import little.goose.memorial.ui.MemorialHomeState
 import little.goose.note.ui.NoteColumnState
 import little.goose.search.SearchType
 import java.time.format.TextStyle
@@ -38,13 +37,12 @@ fun HomeScreen(
     modifier: Modifier,
     pagerState: PagerState,
     transactionColumnState: TransactionColumnState,
-    memorialColumnState: MemorialColumnState,
+    memorialHomeState: MemorialHomeState,
     noteColumnState: NoteColumnState,
     snackbarHostState: SnackbarHostState,
     indexState: IndexState,
     accountTitleState: AccountTitleState,
     monthSelectorState: MonthSelectorState,
-    topMemorial: Memorial?,
     onNavigateToSettings: () -> Unit,
     onNavigateToMemorialAdd: () -> Unit,
     onNavigateToMemorial: (memorialId: Long) -> Unit,
@@ -125,8 +123,7 @@ fun HomeScreen(
                     onNavigateToAccountAnalysis,
                     noteColumnState,
                     transactionColumnState,
-                    memorialColumnState,
-                    topMemorial,
+                    memorialHomeState,
                     accountTitleState,
                     monthSelectorState
                 )

@@ -16,16 +16,7 @@ import little.goose.design.system.component.dialog.DeleteDialog
 import little.goose.design.system.component.dialog.DeleteDialogState
 import little.goose.design.system.theme.GooseTheme
 import little.goose.memorial.data.entities.Memorial
-
-data class MemorialColumnState(
-    val memorials: List<Memorial> = listOf(),
-    val isMultiSelecting: Boolean = false,
-    val multiSelectedMemorials: Set<Memorial> = emptySet(),
-    val onSelectMemorial: (item: Memorial, selected: Boolean) -> Unit = { _, _ -> },
-    val selectAllMemorial: () -> Unit = {},
-    val cancelMultiSelecting: () -> Unit = {},
-    val deleteMemorials: (memorials: List<Memorial>) -> Unit = {}
-)
+import little.goose.memorial.ui.MemorialColumnState
 
 @Composable
 fun MemorialColumn(

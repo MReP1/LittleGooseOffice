@@ -16,7 +16,7 @@ import little.goose.memorial.data.entities.Memorial
 import little.goose.memorial.logic.DeleteMemorialsEventUseCase
 import little.goose.memorial.logic.DeleteMemorialsUseCase
 import little.goose.memorial.logic.SearchMemorialByTextFlowUseCase
-import little.goose.memorial.ui.component.MemorialColumnState
+import little.goose.memorial.ui.MemorialColumnState
 import javax.inject.Inject
 
 @HiltViewModel

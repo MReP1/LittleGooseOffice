@@ -19,11 +19,10 @@ import little.goose.memorial.logic.DeleteMemorialsEventUseCase
 import little.goose.memorial.logic.DeleteMemorialsUseCase
 import little.goose.memorial.logic.GetAllMemorialFlowUseCase
 import little.goose.memorial.logic.GetMemorialAtTopFlowUseCase
-import little.goose.memorial.ui.component.MemorialColumnState
 import javax.inject.Inject
 
 @HiltViewModel
-class MemorialViewModel @Inject constructor(
+class MemorialHomeViewModel @Inject constructor(
     getAllMemorialFlowUseCase: GetAllMemorialFlowUseCase,
     getMemorialAtTopFlowUseCase: GetMemorialAtTopFlowUseCase,
     private val deleteMemorialsUseCase: DeleteMemorialsUseCase,
@@ -78,6 +77,12 @@ class MemorialViewModel @Inject constructor(
             started = SharingStarted.Eagerly,
             initialValue = null
         )
+
+    val memorialHomeState = combine(topMemorial, memorialColumnState, ::MemorialHomeState).stateIn(
+        scope = viewModelScope,
+        started = SharingStarted.WhileSubscribed(5000),
+        initialValue = MemorialHomeState(topMemorial.value, memorialColumnState.value)
+    )
 
     init {
         deleteMemorialsEventUseCase().onEach {

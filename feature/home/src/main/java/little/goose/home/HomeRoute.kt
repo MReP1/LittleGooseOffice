@@ -35,7 +35,7 @@ import little.goose.home.data.HomePage
 import little.goose.home.ui.HomeScreen
 import little.goose.home.ui.HomeViewModel
 import little.goose.home.ui.index.IndexViewModel
-import little.goose.memorial.ui.MemorialViewModel
+import little.goose.memorial.ui.MemorialHomeViewModel
 import little.goose.note.ui.NotebookViewModel
 import little.goose.search.SearchType
 import little.goose.ui.screen.LittleGooseEmptyScreen
@@ -121,16 +121,15 @@ fun HomeRoute(
         val context: Context = LocalContext.current
         val indexViewModel = hiltViewModel<IndexViewModel>()
         val accountViewModel = hiltViewModel<AccountHomeViewModel>()
-        val memorialViewModel = hiltViewModel<MemorialViewModel>()
+        val memorialHomeViewModel = hiltViewModel<MemorialHomeViewModel>()
         val notebookViewModel = hiltViewModel<NotebookViewModel>()
 
         val transactionColumnState by accountViewModel.transactionColumnState.collectAsState()
-        val memorialColumnState by memorialViewModel.memorialColumnState.collectAsState()
         val noteColumnState by notebookViewModel.noteColumnState.collectAsState()
         val indexState by indexViewModel.indexState.collectAsState()
         val accountTitleState by accountViewModel.accountTitleState.collectAsState()
         val monthSelectorState by accountViewModel.monthSelectorState.collectAsState()
-        val topMemorial by memorialViewModel.topMemorial.collectAsState()
+        val memorialHomeState by memorialHomeViewModel.memorialHomeState.collectAsState()
 
         val snackbarHostState = remember { SnackbarHostState() }
 
@@ -138,13 +137,12 @@ fun HomeRoute(
             modifier = modifier.fillMaxSize(),
             pagerState = pagerState,
             transactionColumnState = transactionColumnState,
-            memorialColumnState = memorialColumnState,
             noteColumnState = noteColumnState,
             snackbarHostState = snackbarHostState,
             indexState = indexState,
             monthSelectorState = monthSelectorState,
-            topMemorial = topMemorial,
             accountTitleState = accountTitleState,
+            memorialHomeState = memorialHomeState,
             onNavigateToSettings = onNavigateToSettings,
             onNavigateToNote = onNavigateToNote,
             onNavigateToSearch = onNavigateToSearch,
@@ -155,13 +153,15 @@ fun HomeRoute(
             onNavigateToTransactionScreen = onNavigateToTransactionScreen
         )
 
-        LaunchedEffect(accountViewModel.event, memorialViewModel.event, notebookViewModel.event) {
+        LaunchedEffect(
+            accountViewModel.event, memorialHomeViewModel.event, notebookViewModel.event
+        ) {
             merge(
-                accountViewModel.event, memorialViewModel.event, notebookViewModel.event
+                accountViewModel.event, memorialHomeViewModel.event, notebookViewModel.event
             ).collect { event ->
                 when (event) {
                     is AccountHomeViewModel.Event.DeleteTransactions,
-                    is MemorialViewModel.Event.DeleteMemorials,
+                    is MemorialHomeViewModel.Event.DeleteMemorials,
                     is NotebookViewModel.Event.DeleteNotes -> {
                         snackbarHostState.showSnackbar(
                             message = context.getString(little.goose.common.R.string.deleted),

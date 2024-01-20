@@ -26,8 +26,8 @@ import little.goose.design.system.component.dialog.DeleteDialog
 import little.goose.design.system.component.dialog.DeleteDialogState
 import little.goose.design.system.theme.GooseTheme
 import little.goose.memorial.data.entities.Memorial
+import little.goose.memorial.ui.MemorialColumnState
 import little.goose.memorial.ui.component.MemorialColumn
-import little.goose.memorial.ui.component.MemorialColumnState
 
 @OptIn(ExperimentalLayoutApi::class)
 @Composable

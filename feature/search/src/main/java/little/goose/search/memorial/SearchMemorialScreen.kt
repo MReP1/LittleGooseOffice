@@ -25,7 +25,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import kotlinx.coroutines.flow.collectLatest
 import little.goose.design.system.theme.GooseTheme
 import little.goose.memorial.data.entities.Memorial
-import little.goose.memorial.ui.component.MemorialColumnState
+import little.goose.memorial.ui.MemorialColumnState
 import little.goose.search.SearchState
 import little.goose.search.component.SearchScreen
 import little.goose.ui.screen.LittleGooseEmptyScreen
