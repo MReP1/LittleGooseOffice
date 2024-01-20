@@ -73,7 +73,7 @@ fun AccountTitle(
     Surface(
         onClick = { showTotal = !showTotal },
         modifier = modifier,
-        color = MaterialTheme.colorScheme.surfaceColorAtElevation(1.8.dp),
+        color = MaterialTheme.colorScheme.surfaceColorAtElevation(1.dp),
         shape = MaterialTheme.shapes.large
     ) {
         Box(modifier = Modifier.fillMaxSize()) {
@@ -116,7 +116,7 @@ fun AccountTitle(
                         .weight(2F)
                         .fillMaxHeight()
                         .clip(MaterialTheme.shapes.large)
-                        .background(MaterialTheme.colorScheme.surfaceColorAtElevation(3.6.dp))
+                        .background(MaterialTheme.colorScheme.surfaceColorAtElevation(2.dp))
                 ) {
                     Box(
                         modifier = Modifier

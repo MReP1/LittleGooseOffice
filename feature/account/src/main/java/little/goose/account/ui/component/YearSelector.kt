@@ -38,7 +38,7 @@ fun YearSelector(
     Row(
         modifier = modifier
             .clip(shape)
-            .background(MaterialTheme.colorScheme.surfaceColorAtElevation(1.8.dp))
+            .background(MaterialTheme.colorScheme.surfaceColorAtElevation(1.dp))
     ) {
         Box(
             modifier = Modifier
