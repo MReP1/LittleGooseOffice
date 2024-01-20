@@ -129,6 +129,7 @@ internal fun TransactionScreen(
                         modifier = Modifier.padding(it),
                         pagerState = pagerState,
                         state = transactionScreenState.iconPagerState,
+                        onIconChangeIntent = intent
                     )
                 }
             }
