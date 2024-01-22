@@ -65,13 +65,16 @@ fun IndexHome(
 ) {
 
     val windowSizeClass = LocalWindowSizeClass.current
-    val isTablet = windowSizeClass.widthSizeClass != WindowWidthSizeClass.Compact
+    val isExpanded = windowSizeClass.widthSizeClass == WindowWidthSizeClass.Expanded
     val isHeightCompat = windowSizeClass.heightSizeClass == WindowHeightSizeClass.Compact
 
     Row(modifier = modifier) {
 
-        if (isTablet) {
-            Column {
+        if (isExpanded) {
+            Column(
+                modifier = Modifier.fillMaxHeight(),
+                verticalArrangement = Arrangement.Center
+            ) {
                 if (!isHeightCompat) {
                     IndexCalendarLabel(
                         modifier = Modifier.padding(start = 8.dp),
@@ -80,9 +83,7 @@ fun IndexHome(
                     )
                 }
                 IndexCalendar(
-                    modifier = Modifier
-                        .width(360.dp)
-                        .fillMaxHeight(),
+                    modifier = Modifier.width(360.dp),
                     state = state
                 )
             }
@@ -94,7 +95,7 @@ fun IndexHome(
                 .fillMaxHeight()
         ) {
 
-            if (!isTablet) {
+            if (!isExpanded) {
                 IndexCalendar(
                     modifier = Modifier
                         .fillMaxWidth()
