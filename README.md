@@ -2,7 +2,7 @@
 
 This project was originally started as my graduation design in college. The code is still a bit rough, but it is my first relatively complete project. I will continue to improve and maintain this open-source project in the future.
 
-I am the product manager, designer, and developer of this project. Due to my limited ability, you may see the shadow of many other software in this project. If you have any suggestions, please feel free to submit an issue.
+I am the product manager, designer, and developer of this project. If you have any suggestions, please feel free to submit an issue.
 
 I will put all my knowledge into practice in this project, including interaction design, UI design, motion design, and programming.
 
@@ -23,6 +23,7 @@ Project introduction:
 - Room
 - Jetpack DataStore
 - Hilt
+- Koin
 - Kotlin Coroutine
 - Kotlin Flow
 - SplashScreen
