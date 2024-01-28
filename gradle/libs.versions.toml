@@ -1,9 +1,9 @@
 [versions]
-androidGradlePlugin = "8.2.1"
+androidGradlePlugin = "8.2.2"
 androidxActivityCompose = "1.8.2"
 androidxAppcompat = "1.6.1"
 androidxActivityKtx = "1.8.2"
-androidxComposeBom = "2023.10.01"
+androidxComposeBom = "2024.01.00"
 androidxComposeNavigation = "2.7.6"
 androidxCoreSplashscreen = "1.0.1"
 androidxCore = "1.12.0"
@@ -49,7 +49,7 @@ androidx-activity-compose = { group = "androidx.activity", name = "activity-comp
 androidx-hilt-navigation-compose = { group = "androidx.hilt", name = "hilt-navigation-compose", version.ref = "androidxHiltNavigationCompose" }
 androidx-constraintLayout-compose = { group = "androidx.constraintlayout", name = "constraintlayout-compose", version.ref = "androidxConstraintLayoutCompose" }
 androidx-compose-bom = { group = "androidx.compose", name = "compose-bom", version.ref = "androidxComposeBom" }
-androidx-compose-ui = { group = "androidx.compose.ui", name = "ui", version = "1.6.0-rc01" }
+androidx-compose-ui = { group = "androidx.compose.ui", name = "ui" }
 androidx-compose-ui-tool-preview = { group = "androidx.compose.ui", name = "ui-tooling-preview" }
 androidx-compose-navigation = { group = "androidx.navigation", name = "navigation-compose", version.ref = "androidxComposeNavigation" }
 androidx-compose-material3 = { group = "androidx.compose.material3", name = "material3" }
