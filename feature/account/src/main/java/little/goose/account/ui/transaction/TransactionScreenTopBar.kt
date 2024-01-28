@@ -1,8 +1,5 @@
 package little.goose.account.ui.transaction
 
-import androidx.compose.animation.core.FastOutSlowInEasing
-import androidx.compose.animation.core.animateDpAsState
-import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.Spacer
@@ -11,7 +8,7 @@ import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.ArrowBack
+import androidx.compose.material.icons.automirrored.rounded.ArrowBack
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
@@ -24,6 +21,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -31,9 +29,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import little.goose.account.R
 import little.goose.account.data.models.IconDisplayType
+import little.goose.design.system.theme.GooseTheme
 
 @Stable
 internal data class TransactionScreenTopBarState(
@@ -53,7 +53,7 @@ internal fun TransactionScreenTopBar(
         navigationIcon = {
             IconButton(onClick = onBack) {
                 Icon(
-                    imageVector = Icons.Rounded.ArrowBack,
+                    imageVector = Icons.AutoMirrored.Rounded.ArrowBack,
                     contentDescription = stringResource(id = R.string.back)
                 )
             }
@@ -107,6 +107,7 @@ internal fun TransactionScreenTopBarAction(
 internal fun TransactionScreenTabRow(
     modifier: Modifier,
     selectedTabIndex: Int,
+    offsetFraction: Float,
     onTabSelected: (Int) -> Unit,
 ) {
     TabRow(
@@ -116,14 +117,8 @@ internal fun TransactionScreenTabRow(
         indicator = { tabPositions ->
             val currentTabPosition = tabPositions[selectedTabIndex]
             val indicatorWidth = 16.dp
-            val indicatorOffset by animateDpAsState(
-                targetValue = currentTabPosition.right - (currentTabPosition.width / 2) - (indicatorWidth / 2),
-                animationSpec = tween(
-                    durationMillis = 250,
-                    easing = FastOutSlowInEasing
-                ),
-                label = "indicator offset"
-            )
+            val indicatorOffset =
+                (currentTabPosition.right - (currentTabPosition.width / 2)) * (1 + offsetFraction) - (indicatorWidth / 2)
             Spacer(
                 Modifier
                     .wrapContentSize(Alignment.BottomStart)
@@ -155,4 +150,16 @@ internal fun TransactionScreenTabRow(
             )
         }
     }
+}
+
+@Preview
+@Composable
+private fun PreviewTransactionScreenTabRow() = GooseTheme {
+    var currentSelectedTab by remember { mutableIntStateOf(0) }
+    TransactionScreenTabRow(
+        modifier = Modifier,
+        selectedTabIndex = currentSelectedTab,
+        offsetFraction = 0F,
+        onTabSelected = { currentSelectedTab = it }
+    )
 }

@@ -93,6 +93,7 @@ internal fun TransactionScreen(
                                 TransactionScreenTabRow(
                                     modifier = Modifier.width(120.dp),
                                     selectedTabIndex = pagerState.currentPage,
+                                    offsetFraction = pagerState.currentPageOffsetFraction,
                                     onTabSelected = { index ->
                                         scope.launch { pagerState.animateScrollToPage(index) }
                                     }
