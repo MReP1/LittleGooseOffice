@@ -47,11 +47,11 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
 import kotlinx.coroutines.launch
 import little.goose.account.R
-import little.goose.account.data.entities.Transaction
 import little.goose.account.ui.transaction.TransactionScreenIntent
 import little.goose.common.utils.TimeType
 import little.goose.common.utils.toChineseMonthDayTime
 import little.goose.design.system.component.dialog.TimeSelectorBottomSheet
+import java.util.Date
 import kotlin.math.pow
 
 @Composable
@@ -59,7 +59,8 @@ fun TransactionContentEditBar(
     modifier: Modifier = Modifier,
     isDescriptionEdit: Boolean,
     onIsDescriptionEditChange: (Boolean) -> Unit,
-    transaction: Transaction,
+    time: Date,
+    description: String,
     onTransactionChange: (TransactionScreenIntent.ChangeTransaction) -> Unit,
 ) {
     var isShowTimeSelector by remember { mutableStateOf(false) }
@@ -73,7 +74,7 @@ fun TransactionContentEditBar(
                     isShowTimeSelector = false
                 }
             },
-            initTime = transaction.time,
+            initTime = time,
             type = TimeType.DATE_TIME,
             bottomSheetState = bottomSheetState,
             onConfirm = {
@@ -118,7 +119,7 @@ fun TransactionContentEditBar(
                 Icon(imageVector = Icons.Rounded.CalendarToday, contentDescription = "Calendar")
                 Spacer(modifier = Modifier.width(8.dp))
                 Text(
-                    text = transaction.time.toChineseMonthDayTime(),
+                    text = time.toChineseMonthDayTime(),
                     style = MaterialTheme.typography.bodySmall
                 )
             }
@@ -144,7 +145,7 @@ fun TransactionContentEditBar(
             ) {
                 if (!isDescriptionEdit) {
                     Text(
-                        text = transaction.description.ifBlank {
+                        text = description.ifBlank {
                             stringResource(id = R.string.description) + "..."
                         },
                         style = MaterialTheme.typography.bodySmall,
@@ -156,10 +157,10 @@ fun TransactionContentEditBar(
                     var textFieldValue by remember {
                         mutableStateOf(
                             TextFieldValue(
-                                text = transaction.description,
+                                text = description,
                                 selection = TextRange(
                                     start = 0,
-                                    end = transaction.description.length
+                                    end = description.length
                                 )
                             )
                         )
@@ -192,9 +193,9 @@ fun TransactionContentEditBar(
                         )
                     )
 
-                    DisposableEffect(transaction) {
-                        if (textFieldValue.text != transaction.description) {
-                            textFieldValue = textFieldValue.copy(text = transaction.description)
+                    DisposableEffect(description) {
+                        if (textFieldValue.text != description) {
+                            textFieldValue = textFieldValue.copy(text = description)
                         }
                         onDispose { }
                     }

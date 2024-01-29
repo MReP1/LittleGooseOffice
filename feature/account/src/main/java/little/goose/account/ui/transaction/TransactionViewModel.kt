@@ -4,7 +4,10 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.NonCancellable
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.ensureActive
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -16,21 +19,24 @@ import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import little.goose.account.data.constants.AccountConstant.EXPENSE
 import little.goose.account.data.constants.AccountConstant.INCOME
 import little.goose.account.data.entities.Transaction
 import little.goose.account.data.holder.AccountConfigDataHolder
 import little.goose.account.data.models.IconDisplayType
+import little.goose.account.data.models.TransactionIcon
 import little.goose.account.logic.GetTransactionByIdFlowUseCase
 import little.goose.account.logic.InsertTransactionUseCase
+import little.goose.account.logic.MoneyCalculator
 import little.goose.account.logic.UpdateTransactionUseCase
 import little.goose.account.ui.component.TransactionEditSurfaceState
 import little.goose.account.ui.transaction.icon.TransactionIconHelper
 import little.goose.common.utils.getDate
 import little.goose.common.utils.getMonth
 import little.goose.common.utils.getYear
-import little.goose.common.utils.log
 import little.goose.common.utils.setDate
 import little.goose.common.utils.setMonth
 import little.goose.common.utils.setYear
@@ -38,6 +44,11 @@ import java.math.BigDecimal
 import java.util.Calendar
 import java.util.Date
 import javax.inject.Inject
+
+sealed class TransactionEvent {
+    data object WriteSuccess : TransactionEvent()
+    data object CantBeZero : TransactionEvent()
+}
 
 @HiltViewModel
 class TransactionViewModel @Inject constructor(
@@ -54,25 +65,7 @@ class TransactionViewModel @Inject constructor(
         .map { it.transactionConfig.iconDisplayType }
         .stateIn(scope = viewModelScope, SharingStarted.Eagerly, IconDisplayType.ICON_ONLY)
 
-    private val defaultTransaction
-        get() = Transaction(
-            time = args.time?.let {
-                val time = Calendar.getInstance().apply { timeInMillis = it }
-                Calendar.getInstance().apply {
-                    setYear(time.getYear())
-                    setMonth(time.getMonth())
-                    setDate(time.getDate())
-                }.time
-            } ?: Date(),
-            icon_id = TransactionIconHelper.expenseIconList.first().id,
-            content = TransactionIconHelper.expenseIconList.first().name
-        )
-
-    enum class Event {
-        WriteSuccess, CantBeZero
-    }
-
-    private val _event: MutableSharedFlow<Event> = MutableSharedFlow()
+    private val _event: MutableSharedFlow<TransactionEvent> = MutableSharedFlow()
     val event = _event.asSharedFlow()
 
     private val _transaction: MutableStateFlow<Transaction?> = MutableStateFlow(null)
@@ -96,14 +89,34 @@ class TransactionViewModel @Inject constructor(
             initialValue = TransactionIconHelper.incomeIconList.first()
         )
 
+    private val calculator = MoneyCalculator()
+
     internal val transactionScreenState = combine(
-        transaction.filterNotNull(), iconDisplayType, expenseIcon, incomeIcon,
-    ) { transaction, iconDisplayType, expenseIcon, incomeIcon ->
-        log("expenseIcon $expenseIcon incomeIcon $incomeIcon")
+        transaction.filterNotNull(),
+        iconDisplayType,
+        expenseIcon, incomeIcon,
+        calculator.money,
+        calculator.isContainOperator
+    ) {
+        val transaction = it[0] as Transaction
+        val iconDisplayType = it[1] as IconDisplayType
+        val expenseIcon = it[2] as TransactionIcon
+        val incomeIcon = it[3] as TransactionIcon
+        val money = it[4] as String
+        val isContainOperator = it[5] as Boolean
+
+        val isExpense = transaction.type == EXPENSE
         TransactionScreenState.Success(
-            pageIndex = if (transaction.type == EXPENSE) 0 else 1,
+            pageIndex = if (isExpense) 0 else 1,
             topBarState = TransactionScreenTopBarState(iconDisplayType = iconDisplayType),
-            editSurfaceState = TransactionEditSurfaceState(transaction = transaction),
+            editSurfaceState = TransactionEditSurfaceState(
+                money = money,
+                content = transaction.content,
+                iconId = (if (isExpense) expenseIcon else incomeIcon).iconResId,
+                time = transaction.time,
+                isContainOperator = isContainOperator,
+                description = transaction.description
+            ),
             iconPagerState = TransactionScreenIconPagerState(
                 iconDisplayType = iconDisplayType,
                 expenseSelectedIcon = expenseIcon,
@@ -118,25 +131,27 @@ class TransactionViewModel @Inject constructor(
 
     init {
         viewModelScope.launch {
-            _transaction.value = args.transactionId?.let { id ->
+            val transaction = args.transactionId?.let { id ->
                 getTransactionByIdFlowUseCase(id).map {
                     if (it.type == EXPENSE) it.copy(money = it.money.abs()) else it
                 }.first()
-            } ?: defaultTransaction
+            } ?: generateDefaultTransaction()
+            _transaction.value = transaction
+            calculator.setMoney(transaction.money)
+
+            calculator.money.collect { money ->
+                runCatching { BigDecimal(money) }.getOrNull()?.let { bd ->
+                    _transaction.update { it!!.copy(money = bd) }
+                }
+            }
         }
     }
 
     internal fun action(intent: TransactionScreenIntent) {
         val currentTransaction = _transaction.value ?: return
         when (intent) {
-            is TransactionScreenIntent.TransactionOperation.Done -> {
-                val transaction = currentTransaction.copy(money = intent.money)
-                writeDatabase(transaction, false)
-            }
-
-            is TransactionScreenIntent.TransactionOperation.Again -> {
-                val transaction = currentTransaction.copy(money = intent.money)
-                writeDatabase(transaction, true)
+            is TransactionScreenIntent.TransactionOperation -> {
+                handleOperation(intent)
             }
 
             is TransactionScreenIntent.ChangeIconDisplayType -> {
@@ -158,10 +173,53 @@ class TransactionViewModel @Inject constructor(
         }
     }
 
-    private fun writeDatabase(transaction: Transaction, isAgain: Boolean) {
+    private fun handleOperation(operation: TransactionScreenIntent.TransactionOperation) {
+        when (operation) {
+            TransactionScreenIntent.TransactionOperation.Done -> {
+                calculator.operate()
+                withWriteDatabase {
+                    // 若点击完成，则结束记账
+                    _event.emit(TransactionEvent.WriteSuccess)
+                }
+            }
+
+            TransactionScreenIntent.TransactionOperation.Again -> {
+                calculator.operate()
+                withWriteDatabase {
+                    _transaction.value = generateDefaultTransaction()
+                    calculator.setMoney(BigDecimal(0))
+                }
+            }
+
+            is TransactionScreenIntent.TransactionOperation.AppendEnd -> {
+                calculator.appendMoneyEnd(operation.char)
+            }
+
+            is TransactionScreenIntent.TransactionOperation.ModifyOther -> {
+                calculator.modifyOther(operation.logic)
+            }
+        }
+    }
+
+    private var writeJob: Job? = null
+
+    private fun withWriteDatabase(action: suspend () -> Unit) {
+        val currentTransaction = _transaction.value ?: return
+        val transaction = currentTransaction.copy(money = BigDecimal(calculator.money.value))
+        writeJob?.takeUnless(Job::isCompleted)?.let { return }
+        writeJob = viewModelScope.launch {
+            withContext(NonCancellable) { writeDatabase(transaction) }
+            ensureActive()
+            // 若点击完成，则结束记账
+            action()
+            delay(1000L)
+        }
+    }
+
+    private suspend fun writeDatabase(transaction: Transaction) {
         // 检查金额是否为空
         if (transaction.money == BigDecimal.ZERO) {
-            viewModelScope.launch { _event.emit(Event.CantBeZero) }
+            _event.emit(TransactionEvent.CantBeZero)
             return
         }
 
@@ -172,21 +230,26 @@ class TransactionViewModel @Inject constructor(
             transaction.copy(money = transaction.money.negate())
         } else transaction
 
-        viewModelScope.launch(NonCancellable) {
-            // 写入数据库
-            if (tra.id == null) {
-                insertTransactionUseCase(tra)
-            } else {
-                updateTransactionUseCase(tra)
-            }
-
-            if (!isAgain) {
-                // 若点击完成，则结束记账
-                _event.emit(Event.WriteSuccess)
-            } else {
-                // 若点击下一笔，则需要重置Transaction
-                _transaction.value = defaultTransaction
-            }
+        // 写入数据库
+        if (tra.id == null) {
+            insertTransactionUseCase(tra)
+        } else {
+            updateTransactionUseCase(tra)
         }
+    }
+
+    private fun generateDefaultTransaction(): Transaction {
+        return Transaction(
+            time = args.time?.let {
+                val time = Calendar.getInstance().apply { timeInMillis = it }
+                Calendar.getInstance().apply {
+                    setYear(time.getYear())
+                    setMonth(time.getMonth())
+                    setDate(time.getDate())
+                }.time
+            } ?: Date(),
+            icon_id = TransactionIconHelper.expenseIconList.first().id,
+            content = TransactionIconHelper.expenseIconList.first().name
+        )
     }
 }

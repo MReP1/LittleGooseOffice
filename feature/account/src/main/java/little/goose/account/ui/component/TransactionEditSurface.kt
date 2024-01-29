@@ -27,11 +27,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.DisposableEffect
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.Stable
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -39,16 +35,20 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import little.goose.account.data.entities.Transaction
-import little.goose.account.logic.MoneyCalculator
+import little.goose.account.R
 import little.goose.account.ui.transaction.TransactionScreenIntent
 import little.goose.account.ui.transaction.icon.TransactionIconHelper
 import little.goose.design.system.util.Display
-import java.math.BigDecimal
+import java.util.Date
 
 @Stable
 internal data class TransactionEditSurfaceState(
-    val transaction: Transaction = Transaction()
+    val money: String = "",
+    val content: String = "",
+    val iconId: Int = R.drawable.icon_eat,
+    val time: Date = Date(),
+    val isContainOperator: Boolean = false,
+    val description: String = ""
 )
 
 @OptIn(ExperimentalLayoutApi::class)
@@ -59,27 +59,6 @@ internal fun TransactionEditSurface(
     onTransactionChangeIntent: (TransactionScreenIntent.ChangeTransaction) -> Unit,
     onOperationIntent: (TransactionScreenIntent.TransactionOperation) -> Unit,
 ) {
-    val moneyCalculator = remember { MoneyCalculator(state.transaction.money) }
-
-    DisposableEffect(state.transaction.money) {
-        moneyCalculator.setMoney(state.transaction.money)
-        onDispose { }
-    }
-
-    val isContainOperator by moneyCalculator.isContainOperator.collectAsState()
-    val money by moneyCalculator.money.collectAsState()
-
-    LaunchedEffect(moneyCalculator) {
-        moneyCalculator.money.collect { moneyStr ->
-            runCatching {
-                BigDecimal(moneyStr)
-            }.getOrNull()?.let { money ->
-                onTransactionChangeIntent(
-                    TransactionScreenIntent.ChangeTransaction.Money(money)
-                )
-            }
-        }
-    }
 
     Column(
         modifier = modifier.animateContentSize(
@@ -87,19 +66,20 @@ internal fun TransactionEditSurface(
         )
     ) {
 
-        val iconAndContent = remember(state.transaction.icon_id, state.transaction.content) {
-            IconAndContent(state.transaction.icon_id, state.transaction.content)
+        val iconAndContent = remember(state.iconId, state.content) {
+            IconAndContent(state.iconId, state.content)
         }
         TransactionContentItem(
             modifier = Modifier.fillMaxWidth(),
             iconAndContent = iconAndContent,
-            money = money
+            money = state.money
         )
 
         val (isDescriptionEdit, onIsDescriptionEditChange) = remember { mutableStateOf(false) }
         TransactionContentEditBar(
-            transaction = state.transaction,
             isDescriptionEdit = isDescriptionEdit,
+            time = state.time,
+            description = state.description,
             onIsDescriptionEditChange = onIsDescriptionEditChange,
             onTransactionChange = onTransactionChangeIntent
         )
@@ -118,26 +98,18 @@ internal fun TransactionEditSurface(
                     }
                 } else 288.dp),
             onNumClick = {
-                moneyCalculator.appendMoneyEnd(it.digitToChar())
+                onOperationIntent(TransactionScreenIntent.TransactionOperation.AppendEnd(it.digitToChar()))
             },
             onAgainClick = {
-                moneyCalculator.operate()
-                onOperationIntent(
-                    TransactionScreenIntent.TransactionOperation.Again(
-                        money = BigDecimal(moneyCalculator.money.value)
-                    )
-                )
+                onOperationIntent(TransactionScreenIntent.TransactionOperation.Again)
             },
             onDoneClick = {
-                moneyCalculator.operate()
-                onOperationIntent(
-                    TransactionScreenIntent.TransactionOperation.Done(
-                        money = BigDecimal(moneyCalculator.money.value)
-                    )
-                )
+                onOperationIntent(TransactionScreenIntent.TransactionOperation.Done)
             },
-            onOperatorClick = moneyCalculator::modifyOther,
-            isContainOperator = isContainOperator
+            onOperatorClick = {
+                onOperationIntent(TransactionScreenIntent.TransactionOperation.ModifyOther(it))
+            },
+            isContainOperator = state.isContainOperator
         )
 
     }
@@ -214,14 +186,7 @@ private fun TransactionContentItem(
 @Composable
 private fun PreviewTransactionEditSurface() {
     TransactionEditSurface(
-        state = TransactionEditSurfaceState(
-            transaction = Transaction(
-                id = 0,
-                icon_id = 0,
-                content = "饮食",
-                money = BigDecimal(0)
-            )
-        ),
+        state = TransactionEditSurfaceState(),
         onOperationIntent = {},
         onTransactionChangeIntent = {}
     )

@@ -16,13 +16,11 @@ sealed class MoneyCalculatorLogic {
     }
 }
 
-class MoneyCalculator(
-    initMoney: BigDecimal
-) {
+class MoneyCalculator {
 
-    private val moneySb = StringBuilder(initMoney.toPlainString())
+    private val moneySb = StringBuilder("0")
 
-    private val _money = MutableStateFlow(initMoney.toPlainString())
+    private val _money = MutableStateFlow("0")
     val money: StateFlow<String> = _money
 
     private val _isContainOperator = MutableStateFlow(false)
@@ -73,6 +71,7 @@ class MoneyCalculator(
                 backSpace()
                 _isContainOperator.value = moneySb.containsOperation()
             }
+
             MoneyCalculatorLogic.DOT -> {
                 if (moneySb.contains('.')) {
                     val indexOfDot = moneySb.indexOf('.')  //第一个小数点
@@ -86,12 +85,15 @@ class MoneyCalculator(
                     appendMoneyEnd('.')
                 }
             }
+
             MoneyCalculatorLogic.Operator.PLUS -> {
                 preOperate(MoneyCalculatorLogic.Operator.PLUS)
             }
+
             MoneyCalculatorLogic.Operator.SUB -> {
                 preOperate(MoneyCalculatorLogic.Operator.SUB)
             }
+
             MoneyCalculatorLogic.Operator.RESULT -> {
                 operate()
                 _isContainOperator.value = moneySb.containsOperation()
@@ -158,9 +160,11 @@ class MoneyCalculator(
             MoneyCalculatorLogic.Operator.PLUS -> {
                 operate('+')
             }
+
             MoneyCalculatorLogic.Operator.SUB -> {
                 operate('-')
             }
+
             MoneyCalculatorLogic.Operator.RESULT -> {
                 operate()
             }

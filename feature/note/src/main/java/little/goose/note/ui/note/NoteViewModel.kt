@@ -142,9 +142,7 @@ class NoteViewModel @Inject constructor(
                                 createCollectFocusJob(block.id, mis)
                             }
                         },
-                        focusRequester = focusRequesterMap.getOrPut(block.id) {
-                            FocusRequester()
-                        }
+                        focusRequester = focusRequesterMap.getOrPut(block.id, ::FocusRequester)
                     )
                 },
                 onBlockDelete = ::deleteNoteContentBlock,

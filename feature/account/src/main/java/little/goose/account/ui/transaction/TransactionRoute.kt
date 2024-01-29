@@ -115,11 +115,11 @@ fun TransactionRoute(
     LaunchedEffect(viewModel.event) {
         viewModel.event.collect { event ->
             when (event) {
-                TransactionViewModel.Event.WriteSuccess -> {
+                TransactionEvent.WriteSuccess -> {
                     onBack()
                 }
 
-                TransactionViewModel.Event.CantBeZero -> {
+                TransactionEvent.CantBeZero -> {
                     snackbarHostState.showSnackbar(
                         message = context.getString(R.string.money_cant_be_zero),
                         withDismissAction = true,

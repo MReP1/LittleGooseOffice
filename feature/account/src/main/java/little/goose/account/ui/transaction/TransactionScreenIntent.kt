@@ -2,13 +2,17 @@ package little.goose.account.ui.transaction
 
 import little.goose.account.data.models.IconDisplayType
 import little.goose.account.data.models.TransactionIcon
+import little.goose.account.logic.MoneyCalculatorLogic
 import java.math.BigDecimal
 import java.util.Date
 
 sealed class TransactionScreenIntent {
+
     sealed class TransactionOperation : TransactionScreenIntent() {
-        data class Done(val money: BigDecimal) : TransactionOperation()
-        data class Again(val money: BigDecimal) : TransactionOperation()
+        data object Done : TransactionOperation()
+        data object Again : TransactionOperation()
+        data class AppendEnd(val char: Char) : TransactionOperation()
+        data class ModifyOther(val logic: MoneyCalculatorLogic) : TransactionOperation()
     }
 
     open class ChangeTransaction : TransactionScreenIntent() {
@@ -25,10 +29,6 @@ sealed class TransactionScreenIntent {
 
         data class Time(
             override val time: Date
-        ) : ChangeTransaction()
-
-        data class Money(
-            override val money: BigDecimal
         ) : ChangeTransaction()
 
         data class Icon(
