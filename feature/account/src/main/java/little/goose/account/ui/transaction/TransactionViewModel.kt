@@ -1,5 +1,9 @@
 package little.goose.account.ui.transaction
 
+import androidx.compose.foundation.text2.input.TextFieldState
+import androidx.compose.foundation.text2.input.delete
+import androidx.compose.foundation.text2.input.insert
+import androidx.compose.foundation.text2.input.textAsFlow
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -12,7 +16,6 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.asSharedFlow
-import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.filterNotNull
@@ -68,10 +71,9 @@ class TransactionViewModel @Inject constructor(
     private val _event: MutableSharedFlow<TransactionEvent> = MutableSharedFlow()
     val event = _event.asSharedFlow()
 
-    private val _transaction: MutableStateFlow<Transaction?> = MutableStateFlow(null)
-    val transaction = _transaction.asStateFlow()
+    private val transaction: MutableStateFlow<Transaction?> = MutableStateFlow(null)
 
-    private val expenseIcon = transaction.filterNotNull()
+    private val expenseIcon = this.transaction.filterNotNull()
         .filter { it.type == EXPENSE }
         .map { transaction ->
             TransactionIconHelper.expenseIconList.find { it.id == transaction.icon_id }
@@ -80,7 +82,7 @@ class TransactionViewModel @Inject constructor(
             initialValue = TransactionIconHelper.expenseIconList.first()
         )
 
-    private val incomeIcon = transaction.filterNotNull()
+    private val incomeIcon = this.transaction.filterNotNull()
         .filter { it.type == INCOME }
         .map { transaction ->
             TransactionIconHelper.incomeIconList.find { it.id == transaction.icon_id }
@@ -91,12 +93,16 @@ class TransactionViewModel @Inject constructor(
 
     private val calculator = MoneyCalculator()
 
+    private val descriptionTextFieldState = TextFieldState(initialText = "")
+
+    private val isEditDescription = MutableStateFlow(false)
+
     internal val transactionScreenState = combine(
-        transaction.filterNotNull(),
+        this.transaction.filterNotNull(),
         iconDisplayType,
         expenseIcon, incomeIcon,
-        calculator.money,
-        calculator.isContainOperator
+        calculator.money, calculator.isContainOperator,
+        isEditDescription
     ) {
         val transaction = it[0] as Transaction
         val iconDisplayType = it[1] as IconDisplayType
@@ -104,6 +110,7 @@ class TransactionViewModel @Inject constructor(
         val incomeIcon = it[3] as TransactionIcon
         val money = it[4] as String
         val isContainOperator = it[5] as Boolean
+        val isEditDescription = it[6] as Boolean
 
         val isExpense = transaction.type == EXPENSE
         TransactionScreenState.Success(
@@ -115,7 +122,8 @@ class TransactionViewModel @Inject constructor(
                 iconId = (if (isExpense) expenseIcon else incomeIcon).iconResId,
                 time = transaction.time,
                 isContainOperator = isContainOperator,
-                description = transaction.description
+                descriptionTextFieldState = descriptionTextFieldState,
+                isEditDescription = isEditDescription
             ),
             iconPagerState = TransactionScreenIconPagerState(
                 iconDisplayType = iconDisplayType,
@@ -136,19 +144,33 @@ class TransactionViewModel @Inject constructor(
                     if (it.type == EXPENSE) it.copy(money = it.money.abs()) else it
                 }.first()
             } ?: generateDefaultTransaction()
-            _transaction.value = transaction
             calculator.setMoney(transaction.money)
+            descriptionTextFieldState.edit { insert(0, transaction.description) }
+            this@TransactionViewModel.transaction.value = transaction
 
-            calculator.money.collect { money ->
-                runCatching { BigDecimal(money) }.getOrNull()?.let { bd ->
-                    _transaction.update { it!!.copy(money = bd) }
+            launch {
+                calculator.money.collect { money ->
+                    runCatching { BigDecimal(money) }.getOrNull()?.let { bd ->
+                        this@TransactionViewModel.transaction.update { it!!.copy(money = bd) }
+                    }
+                }
+            }
+            launch {
+                descriptionTextFieldState.textAsFlow().collect { description ->
+                    if (description.contains('\n')) {
+                        descriptionTextFieldState.edit { description.dropLast(1) }
+                        return@collect
+                    }
+                    this@TransactionViewModel.transaction.update {
+                        it!!.copy(description = description.toString())
+                    }
                 }
             }
         }
     }
 
     internal fun action(intent: TransactionScreenIntent) {
-        val currentTransaction = _transaction.value ?: return
+        val currentTransaction = this.transaction.value ?: return
         when (intent) {
             is TransactionScreenIntent.TransactionOperation -> {
                 handleOperation(intent)
@@ -161,7 +183,7 @@ class TransactionViewModel @Inject constructor(
             }
 
             is TransactionScreenIntent.ChangeTransaction -> {
-                _transaction.value = currentTransaction.copy(
+                this.transaction.value = currentTransaction.copy(
                     type = intent.type ?: currentTransaction.type,
                     icon_id = intent.iconId ?: currentTransaction.icon_id,
                     content = intent.content ?: currentTransaction.content,
@@ -169,6 +191,10 @@ class TransactionViewModel @Inject constructor(
                     description = intent.description ?: currentTransaction.description,
                     time = intent.time ?: currentTransaction.time
                 )
+            }
+
+            is TransactionScreenIntent.ChangeIsEditDescription -> {
+                isEditDescription.value = intent.isEditDescription
             }
         }
     }
@@ -186,8 +212,9 @@ class TransactionViewModel @Inject constructor(
             TransactionScreenIntent.TransactionOperation.Again -> {
                 calculator.operate()
                 withWriteDatabase {
-                    _transaction.value = generateDefaultTransaction()
+                    this.transaction.value = generateDefaultTransaction()
                     calculator.setMoney(BigDecimal(0))
+                    descriptionTextFieldState.edit { delete(0, length) }
                 }
             }
 
@@ -204,7 +231,7 @@ class TransactionViewModel @Inject constructor(
     private var writeJob: Job? = null
 
     private fun withWriteDatabase(action: suspend () -> Unit) {
-        val currentTransaction = _transaction.value ?: return
+        val currentTransaction = this.transaction.value ?: return
         val transaction = currentTransaction.copy(money = BigDecimal(calculator.money.value))
         writeJob?.takeUnless(Job::isCompleted)?.let { return }
         writeJob = viewModelScope.launch {

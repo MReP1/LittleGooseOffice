@@ -23,10 +23,6 @@ sealed class TransactionScreenIntent {
         open val time: Date? = null
         open val iconId: Int? = null
 
-        data class Description(
-            override val description: String
-        ) : ChangeTransaction()
-
         data class Time(
             override val time: Date
         ) : ChangeTransaction()
@@ -57,5 +53,9 @@ sealed class TransactionScreenIntent {
 
     data class ChangeIconDisplayType(
         val iconDisplayType: IconDisplayType
+    ) : TransactionScreenIntent()
+
+    data class ChangeIsEditDescription(
+        val isEditDescription: Boolean
     ) : TransactionScreenIntent()
 }

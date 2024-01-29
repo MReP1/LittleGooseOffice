@@ -12,9 +12,11 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.text2.BasicTextField2
+import androidx.compose.foundation.text2.input.TextFieldLineLimits
+import androidx.compose.foundation.text2.input.TextFieldState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.CalendarToday
 import androidx.compose.material.icons.rounded.Done
@@ -39,9 +41,7 @@ import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.input.ImeAction
-import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
@@ -60,8 +60,8 @@ fun TransactionContentEditBar(
     isDescriptionEdit: Boolean,
     onIsDescriptionEditChange: (Boolean) -> Unit,
     time: Date,
-    description: String,
     onTransactionChange: (TransactionScreenIntent.ChangeTransaction) -> Unit,
+    descriptionTextFieldState: TextFieldState
 ) {
     var isShowTimeSelector by remember { mutableStateOf(false) }
     val scope = rememberCoroutineScope()
@@ -145,7 +145,7 @@ fun TransactionContentEditBar(
             ) {
                 if (!isDescriptionEdit) {
                     Text(
-                        text = description.ifBlank {
+                        text = descriptionTextFieldState.text.toString().ifBlank {
                             stringResource(id = R.string.description) + "..."
                         },
                         style = MaterialTheme.typography.bodySmall,
@@ -154,51 +154,27 @@ fun TransactionContentEditBar(
                     )
                 } else {
                     val focusRequester = remember { FocusRequester() }
-                    var textFieldValue by remember {
-                        mutableStateOf(
-                            TextFieldValue(
-                                text = description,
-                                selection = TextRange(
-                                    start = 0,
-                                    end = description.length
-                                )
-                            )
+                    val lineLimits = remember {
+                        TextFieldLineLimits.MultiLine(
+                            minHeightInLines = 1,
+                            maxHeightInLines = 2
                         )
                     }
 
-                    BasicTextField(
+                    BasicTextField2(
                         modifier = Modifier
                             .focusRequester(focusRequester)
                             .padding(end = 32.dp),
-                        value = textFieldValue,
+                        state = descriptionTextFieldState,
                         textStyle = MaterialTheme.typography.bodySmall,
-                        onValueChange = {
-                            if (it.text.lastOrNull() == '\n') {
-                                onIsDescriptionEditChange(false)
-                                return@BasicTextField
-                            }
-                            textFieldValue = it
-                            onTransactionChange(
-                                TransactionScreenIntent.ChangeTransaction.Description(it.text)
-                            )
-                        },
-                        maxLines = 2,
+                        lineLimits = lineLimits,
                         keyboardOptions = KeyboardOptions(
                             imeAction = ImeAction.Done
                         ),
                         keyboardActions = KeyboardActions(
-                            onDone = {
-                                onIsDescriptionEditChange(false)
-                            }
+                            onDone = { onIsDescriptionEditChange(false) }
                         )
                     )
-
-                    DisposableEffect(description) {
-                        if (textFieldValue.text != description) {
-                            textFieldValue = textFieldValue.copy(text = description)
-                        }
-                        onDispose { }
-                    }
 
                     DisposableEffect(focusRequester) {
                         focusRequester.requestFocus()

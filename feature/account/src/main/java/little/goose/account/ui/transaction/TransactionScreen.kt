@@ -120,8 +120,9 @@ internal fun TransactionScreen(
                         TransactionEditSurface(
                             modifier = Modifier.navigationBarsPadding(),
                             state = transactionScreenState.editSurfaceState,
-                            onTransactionChangeIntent = action,
-                            onOperationIntent = action
+                            onTransactionChange = action,
+                            onOperationIntent = action,
+                            onIsDescriptionEditChange = action
                         )
                     }
                 )

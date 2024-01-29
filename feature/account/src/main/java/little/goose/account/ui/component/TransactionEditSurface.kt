@@ -23,12 +23,12 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text2.input.TextFieldState
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Stable
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -48,7 +48,8 @@ internal data class TransactionEditSurfaceState(
     val iconId: Int = R.drawable.icon_eat,
     val time: Date = Date(),
     val isContainOperator: Boolean = false,
-    val description: String = ""
+    val isEditDescription: Boolean = false,
+    val descriptionTextFieldState: TextFieldState = TextFieldState("")
 )
 
 @OptIn(ExperimentalLayoutApi::class)
@@ -56,8 +57,9 @@ internal data class TransactionEditSurfaceState(
 internal fun TransactionEditSurface(
     modifier: Modifier = Modifier,
     state: TransactionEditSurfaceState,
-    onTransactionChangeIntent: (TransactionScreenIntent.ChangeTransaction) -> Unit,
+    onTransactionChange: (TransactionScreenIntent.ChangeTransaction) -> Unit,
     onOperationIntent: (TransactionScreenIntent.TransactionOperation) -> Unit,
+    onIsDescriptionEditChange: (TransactionScreenIntent.ChangeIsEditDescription) -> Unit
 ) {
 
     Column(
@@ -75,20 +77,21 @@ internal fun TransactionEditSurface(
             money = state.money
         )
 
-        val (isDescriptionEdit, onIsDescriptionEditChange) = remember { mutableStateOf(false) }
         TransactionContentEditBar(
-            isDescriptionEdit = isDescriptionEdit,
+            isDescriptionEdit = state.isEditDescription,
             time = state.time,
-            description = state.description,
-            onIsDescriptionEditChange = onIsDescriptionEditChange,
-            onTransactionChange = onTransactionChangeIntent
+            onIsDescriptionEditChange = {
+                onIsDescriptionEditChange(TransactionScreenIntent.ChangeIsEditDescription(it))
+            },
+            onTransactionChange = onTransactionChange,
+            descriptionTextFieldState = state.descriptionTextFieldState
         )
 
         val density = LocalDensity.current
         Calculator(
             modifier = Modifier
                 .fillMaxWidth()
-                .height(if (WindowInsets.isImeVisible && isDescriptionEdit) {
+                .height(if (WindowInsets.isImeVisible && state.isEditDescription) {
                     with(density) {
                         val bottom = WindowInsets.imeAnimationTarget
                             .exclude(WindowInsets.navigationBars)
@@ -188,6 +191,7 @@ private fun PreviewTransactionEditSurface() {
     TransactionEditSurface(
         state = TransactionEditSurfaceState(),
         onOperationIntent = {},
-        onTransactionChangeIntent = {}
+        onTransactionChange = {},
+        onIsDescriptionEditChange = {}
     )
 }
