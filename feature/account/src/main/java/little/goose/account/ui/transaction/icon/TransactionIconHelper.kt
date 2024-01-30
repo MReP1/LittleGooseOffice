@@ -67,6 +67,14 @@ object TransactionIconHelper {
     val expenseIconList = iconMap.values.filter { it.type == EXPENSE }
     val incomeIconList = iconMap.values.filter { it.type == INCOME }
 
+    fun getTransactionIconOrDefault(
+        type: Int,
+        iconId: Int,
+        default: TransactionIcon = (if (type == EXPENSE) expenseIconList else incomeIconList).first()
+    ): TransactionIcon {
+        return iconMap[iconId]?.takeIf { it.type == type } ?: default
+    }
+
     fun getIcon(iconId: Int): Icon {
         val icon = iconMap[iconId]
         val iconResId = icon?.iconResId ?: 1

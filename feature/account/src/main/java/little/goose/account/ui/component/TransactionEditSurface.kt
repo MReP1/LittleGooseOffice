@@ -24,6 +24,8 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text2.input.TextFieldState
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.Adb
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -35,17 +37,16 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import little.goose.account.R
 import little.goose.account.ui.transaction.TransactionScreenIntent
-import little.goose.account.ui.transaction.icon.TransactionIconHelper
 import little.goose.design.system.util.Display
+import little.goose.design.system.util.Icon
 import java.util.Date
 
 @Stable
 internal data class TransactionEditSurfaceState(
     val money: String = "",
     val content: String = "",
-    val iconId: Int = R.drawable.icon_eat,
+    val icon: Icon = Icon.Vector(icon = Icons.Rounded.Adb),
     val time: Date = Date(),
     val isContainOperator: Boolean = false,
     val isEditDescription: Boolean = false,
@@ -68,8 +69,8 @@ internal fun TransactionEditSurface(
         )
     ) {
 
-        val iconAndContent = remember(state.iconId, state.content) {
-            IconAndContent(state.iconId, state.content)
+        val iconAndContent = remember(state.icon, state.content) {
+            IconAndContent(state.icon, state.content)
         }
         TransactionContentItem(
             modifier = Modifier.fillMaxWidth(),
@@ -119,7 +120,7 @@ internal fun TransactionEditSurface(
 }
 
 private data class IconAndContent(
-    val iconId: Int,
+    val icon: Icon,
     val content: String
 )
 
@@ -171,7 +172,7 @@ private fun TransactionContentItem(
                 Row(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    TransactionIconHelper.getIcon(iac.iconId).Display(
+                    iac.icon.Display(
                         modifier = Modifier.size(32.dp),
                         contentDescription = iac.content
                     )

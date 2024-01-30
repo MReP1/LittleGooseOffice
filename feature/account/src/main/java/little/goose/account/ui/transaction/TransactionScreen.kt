@@ -65,13 +65,22 @@ internal fun TransactionScreen(
                     snapshotFlow { pagerState.currentPage }.drop(1).collect { currentPage ->
                         val iconState = currentTransactionScreenState.iconPagerState
                         val isExpense = currentPage == 0
-                        val newIcon =
-                            if (isExpense) iconState.expenseSelectedIcon else iconState.incomeSelectedIcon
-                        val changeIcon = TransactionScreenIntent.ChangeTransaction.Icon(newIcon)
-                        val changeType = TransactionScreenIntent.ChangeTransaction.Type(
-                            if (isExpense) AccountConstant.EXPENSE else AccountConstant.INCOME
+                        val type = if (isExpense) {
+                            AccountConstant.EXPENSE
+                        } else {
+                            AccountConstant.INCOME
+                        }
+                        val newIcon = if (isExpense) {
+                            iconState.expenseSelectedIcon
+                        } else {
+                            iconState.incomeSelectedIcon
+                        }
+                        val changeIcon = TransactionScreenIntent.ChangeTransaction.Icon(
+                            type = type,
+                            iconId = newIcon.id,
+                            content = newIcon.name
                         )
-                        action(changeIcon + changeType)
+                        action(changeIcon)
                     }
                 }
                 Scaffold(

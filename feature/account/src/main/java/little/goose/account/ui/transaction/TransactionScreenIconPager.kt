@@ -6,6 +6,8 @@ import androidx.compose.foundation.pager.PagerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Stable
 import androidx.compose.ui.Modifier
+import little.goose.account.data.constants.AccountConstant.EXPENSE
+import little.goose.account.data.constants.AccountConstant.INCOME
 import little.goose.account.data.models.IconDisplayType
 import little.goose.account.data.models.TransactionIcon
 import little.goose.account.ui.component.IconsBoard
@@ -35,7 +37,7 @@ internal fun TransactionScreenIconPager(
                 icons = TransactionIconHelper.expenseIconList,
                 onIconClick = {
                     onIconChangeIntent(
-                        TransactionScreenIntent.ChangeTransaction.Icon(it.id, it.name)
+                        TransactionScreenIntent.ChangeTransaction.Icon(EXPENSE, it.id, it.name)
                     )
                 },
                 selectedIcon = state.expenseSelectedIcon,
@@ -47,7 +49,7 @@ internal fun TransactionScreenIconPager(
                 icons = TransactionIconHelper.incomeIconList,
                 onIconClick = {
                     onIconChangeIntent(
-                        TransactionScreenIntent.ChangeTransaction.Icon(it.id, it.name)
+                        TransactionScreenIntent.ChangeTransaction.Icon(INCOME, it.id, it.name)
                     )
                 },
                 selectedIcon = state.incomeSelectedIcon,
