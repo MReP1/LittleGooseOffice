@@ -114,7 +114,7 @@ class TransactionViewModel @Inject constructor(
                 getTransactionByIdFlowUseCase(id).map {
                     if (it.type == EXPENSE) it.copy(money = it.money.abs()) else it
                 }.first()
-            } ?: generateDefaultTransaction()
+            } ?: generateDefaultTransaction(EXPENSE)
             this@TransactionViewModel.transactionDataHolder.value =
                 TransactionScreenDataHolder.fromTransaction(transaction)
             calculator.setMoney(transaction.money)
@@ -194,7 +194,9 @@ class TransactionViewModel @Inject constructor(
                 calculator.operate()
                 withWriteDatabase {
                     transactionDataHolder.update {
-                        TransactionScreenDataHolder.fromTransaction(generateDefaultTransaction())
+                        TransactionScreenDataHolder.fromTransaction(
+                            generateDefaultTransaction(it!!.type)
+                        )
                     }
                     calculator.setMoney(BigDecimal(0))
                     descriptionTextFieldState.edit { delete(0, length) }
@@ -252,7 +254,7 @@ class TransactionViewModel @Inject constructor(
         }
     }
 
-    private fun generateDefaultTransaction(): Transaction {
+    private fun generateDefaultTransaction(type: Int): Transaction {
         return Transaction(
             time = args.time?.let {
                 val time = Calendar.getInstance().apply { timeInMillis = it }
@@ -262,8 +264,9 @@ class TransactionViewModel @Inject constructor(
                     setDate(time.getDate())
                 }.time
             } ?: Date(),
-            icon_id = TransactionIconHelper.expenseIconList.first().id,
-            content = TransactionIconHelper.expenseIconList.first().name
+            type = type,
+            icon_id = if (type == EXPENSE) TransactionIconHelper.expenseIconList.first().id else TransactionIconHelper.incomeIconList.first().id,
+            content = if (type == EXPENSE) TransactionIconHelper.expenseIconList.first().name else TransactionIconHelper.incomeIconList.first().name
         )
     }
 }
