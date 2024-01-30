@@ -255,6 +255,8 @@ class TransactionViewModel @Inject constructor(
     }
 
     private fun generateDefaultTransaction(type: Int): Transaction {
+        val iconList = if (type == EXPENSE) TransactionIconHelper.expenseIconList else TransactionIconHelper.incomeIconList
+        val icon = iconList.first()
         return Transaction(
             time = args.time?.let {
                 val time = Calendar.getInstance().apply { timeInMillis = it }
@@ -265,8 +267,8 @@ class TransactionViewModel @Inject constructor(
                 }.time
             } ?: Date(),
             type = type,
-            icon_id = if (type == EXPENSE) TransactionIconHelper.expenseIconList.first().id else TransactionIconHelper.incomeIconList.first().id,
-            content = if (type == EXPENSE) TransactionIconHelper.expenseIconList.first().name else TransactionIconHelper.incomeIconList.first().name
+            icon_id = icon.id,
+            content = icon.name
         )
     }
 }
