@@ -157,8 +157,12 @@ class TransactionViewModel @Inject constructor(
             }
             launch {
                 descriptionTextFieldState.textAsFlow().collect { description ->
-                    if (description.contains('\n')) {
-                        descriptionTextFieldState.edit { description.dropLast(1) }
+                    val feedIndex = description.lastIndexOf('\n')
+                    if (feedIndex >= 0) {
+                        descriptionTextFieldState.edit {
+                            delete(feedIndex, feedIndex + 1)
+                        }
+                        isEditDescription.value = false
                         return@collect
                     }
                     this@TransactionViewModel.transaction.update {
