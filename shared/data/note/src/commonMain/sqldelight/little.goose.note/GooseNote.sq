@@ -1,0 +1,51 @@
+CREATE TABLE GooseNote(
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    title TEXT NOT NULL DEFAULT "",
+    time INTEGER NOT NULL
+);
+
+CREATE TABLE GooseNoteContentBlock(
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    noteId INTEGER NOT NULL,
+    content TEXT NOT NULL DEFAULT "",
+    sectionIndex INTEGER NOT NULL
+);
+
+insertOrReplaceNote {
+    INSERT OR REPLACE INTO GooseNote(id, title, time)
+    VALUES (?, ?, ?);
+    SELECT last_insert_rowid();
+}
+
+getNote:
+    SELECT * FROM GooseNote
+    WHERE id = :id;
+
+getNoteWithContent {
+    SELECT * FROM GooseNote
+    JOIN GooseNoteContentBlock
+    ON GooseNote.id = GooseNoteContentBlock.noteId
+    WHERE GooseNote.id = :noteId
+    ORDER BY GooseNoteContentBlock.sectionIndex ASC;
+}
+
+insertOrReplaceNoteContentBlock {
+    INSERT OR REPLACE INTO GooseNoteContentBlock
+    VALUES (?, ?, ?, ?);
+    SELECT last_insert_rowid();
+}
+
+deleteNoteContentBlock:
+    DELETE FROM GooseNoteContentBlock
+    WHERE id = :id;
+
+deleteNoteContentBlockWithNoteId:
+    DELETE FROM GooseNoteContentBlock
+    WHERE noteId = :noteId;
+
+deleteNoteAndItsBlocks {
+    DELETE FROM GooseNote
+    WHERE id = :id;
+    DELETE FROM GooseNoteContentBlock
+    WHERE noteId = :id;
+}

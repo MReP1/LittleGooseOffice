@@ -2,7 +2,6 @@ plugins {
     alias(libs.plugins.goose.android.application)
     alias(libs.plugins.goose.android.compose)
     alias(libs.plugins.goose.android.hilt)
-    alias(libs.plugins.goose.koin)
 }
 
 android {
@@ -61,5 +60,8 @@ dependencies {
     implementation(project(":core:common"))
     implementation(project(":feature:settings"))
     implementation(project(":appwidget"))
+
+    compileOnly(libs.koin.core)
+    implementation(libs.koin.android)
 
 }

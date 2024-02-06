@@ -42,10 +42,6 @@ gradlePlugin {
             id = libs.plugins.goose.android.room.get().pluginId
             implementationClass = "plugin.RoomConventionPlugin"
         }
-        register("koin") {
-            id = libs.plugins.goose.koin.get().pluginId
-            implementationClass = "plugin.KoinConventionPlugin"
-        }
         register("kotlinMultiplatform") {
             id = libs.plugins.goose.kotlin.multiplatform.get().pluginId
             implementationClass = "plugin.KotlinMultiplatformConventionPlugin"
