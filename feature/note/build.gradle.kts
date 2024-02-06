@@ -21,11 +21,12 @@ dependencies {
     implementation(project(":core:ui"))
 
     // Markdown note
-    implementation(libs.compose.markdown)
+    implementation(libs.compose.markdown.android)
 
     implementation(libs.androidx.compose.navigation)
     implementation(libs.androidx.hilt.navigation.compose)
     implementation(libs.androidx.lifecycle.runtime.compose)
 
     implementation(libs.androidx.activity.ktx)
+    implementation(project(":shared:feature:note"))
 }

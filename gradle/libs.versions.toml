@@ -20,7 +20,7 @@ androidxConstraintLayoutCompose = "1.0.1"
 androidxMetrics = "1.0.0-beta01"
 androidLifecycle = "2.7.0"
 composeCalendar = "2.5.0-beta01"
-composeMarkdown = "0.6.1"
+composeMarkdown = "0.12.0"
 junit4 = "4.13.2"
 kotlin = "1.9.22"
 kotlinMultiplatfromCompose = "1.6.0-beta01"
@@ -69,7 +69,8 @@ androidx-test-ext = { group = "androidx.test.ext", name = "junit-ktx", version.r
 androidx-test-espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "androidxEspresso" }
 androidx-startUp-runtime = { group = "androidx.startup", name = "startup-runtime", version.ref = "androidxStartUp" }
 compose-calendar = { group = "com.kizitonwose.calendar", name = "compose", version.ref = "composeCalendar" }
-compose-markdown = { group = "com.mikepenz", name = "multiplatform-markdown-renderer-android", version.ref = "composeMarkdown" }
+compose-markdown-android = { group = "com.mikepenz", name = "multiplatform-markdown-renderer-android", version.ref = "composeMarkdown" }
+compose-markdown = { group = "com.mikepenz", name = "multiplatform-markdown-renderer", version.ref = "composeMarkdown" }
 protobuf-kotlin-lite = { group = "com.google.protobuf", name = "protobuf-kotlin-lite", version.ref = "protobuf" }
 protobuf-protoc = { group = "com.google.protobuf", name = "protoc", version.ref = "protobuf" }
 google-android-material = { group = "com.google.android.material", name = "material", version.ref = "androidMaterial" }

@@ -37,7 +37,6 @@ import little.goose.note.data.entities.Note
 import little.goose.note.data.entities.NoteContentBlock
 import little.goose.note.logic.DeleteNoteContentBlockUseCase
 import little.goose.note.logic.DeleteNotesAndItsBlocksUseCase
-import little.goose.note.logic.FormatType
 import little.goose.note.logic.GetNoteFlowUseCase
 import little.goose.note.logic.GetNoteWithContentMapFlowUseCase
 import little.goose.note.logic.InsertNoteContentBlockUseCase
@@ -47,7 +46,11 @@ import little.goose.note.logic.UpdateNoteContentBlocksUseCase
 import little.goose.note.logic.UpdateNoteUseCase
 import little.goose.note.logic.content
 import little.goose.note.logic.note
-import little.goose.note.logic.orderListNum
+import little.goose.note.ui.NoteBlockState
+import little.goose.note.ui.NoteBottomBarState
+import little.goose.note.ui.NoteContentState
+import little.goose.note.util.FormatType
+import little.goose.note.util.orderListNum
 import java.util.Date
 import javax.inject.Inject
 import kotlin.time.Duration.Companion.seconds
@@ -235,7 +238,7 @@ class NoteViewModel @Inject constructor(
             }
         }
         noteWithContent.value = buildMap { put(nwc.note, newBlocks) }
-        _event.emit(NoteScreenEvent.AddNoteBlock(insertedBlock))
+        _event.emit(NoteScreenEvent.AddNoteBlock(noteContentBlockId))
         return noteContentBlockId
     }
 

@@ -1,7 +1,8 @@
-package little.goose.note.ui.note
+package little.goose.note.ui
 
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsFocusedAsState
@@ -11,11 +12,11 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text2.BasicTextField2
 import androidx.compose.foundation.text2.input.TextFieldState
-import androidx.compose.foundation.text2.input.rememberTextFieldState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Delete
 import androidx.compose.material3.DismissDirection
 import androidx.compose.material3.DismissValue
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
@@ -35,10 +36,10 @@ import androidx.compose.ui.draw.scale
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.SolidColor
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 
+@OptIn(ExperimentalFoundationApi::class, ExperimentalMaterial3Api::class)
 @Composable
 fun NoteContentBlockItem(
     modifier: Modifier = Modifier,
@@ -116,6 +117,7 @@ fun NoteContentBlockItem(
 
 }
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun NoteContentBlockTextField(
     modifier: Modifier,
@@ -142,23 +144,4 @@ fun NoteContentBlockTextField(
             cursorBrush = SolidColor(LocalContentColor.current)
         )
     }
-}
-
-@Preview
-@Composable
-private fun PreviewNoteContentBlockItem() {
-    NoteContentBlockItem(
-        modifier = Modifier.fillMaxWidth(),
-        textFieldState = rememberTextFieldState(initialText = "Hello Horld!"),
-        onBlockDelete = {}
-    )
-}
-
-@Preview
-@Composable
-private fun PreviewNoteContentBlockTextField() {
-    NoteContentBlockTextField(
-        modifier = Modifier.fillMaxWidth(),
-        textFieldState = rememberTextFieldState(initialText = "Hello Horld!")
-    )
 }

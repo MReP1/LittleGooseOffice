@@ -1,25 +1,23 @@
-package little.goose.note.ui.note
+package little.goose.note.ui
 
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.ime
-import androidx.compose.foundation.layout.isImeVisible
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.union
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.rounded.FormatListBulleted
 import androidx.compose.material.icons.rounded.Add
 import androidx.compose.material.icons.rounded.EditNote
-import androidx.compose.material.icons.rounded.FormatListBulleted
 import androidx.compose.material.icons.rounded.FormatListNumbered
 import androidx.compose.material.icons.rounded.FormatQuote
 import androidx.compose.material.icons.rounded.Preview
@@ -32,11 +30,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Stable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import little.goose.design.system.theme.GooseTheme
-import little.goose.note.logic.FormatType
-import little.goose.note.ui.component.FormatHeaderIcon
+import little.goose.note.util.FormatType
 
 @Stable
 sealed class NoteBottomBarState {
@@ -52,12 +47,11 @@ sealed class NoteBottomBarState {
         val onFormat: (FormatType) -> Unit = {},
         val onBlockAdd: () -> Unit = {},
     ) : NoteBottomBarState()
-    
+
 }
 
-@OptIn(ExperimentalLayoutApi::class)
 @Composable
-internal fun NoteBottomBar(
+fun NoteBottomBar(
     modifier: Modifier = Modifier,
     state: NoteBottomBarState
 ) {
@@ -67,11 +61,7 @@ internal fun NoteBottomBar(
     ) {
         Column(
             modifier = Modifier.windowInsetsPadding(
-                if (WindowInsets.isImeVisible) {
-                    WindowInsets.ime.union(BottomAppBarDefaults.windowInsets)
-                } else {
-                    BottomAppBarDefaults.windowInsets
-                }
+                WindowInsets.ime.union(BottomAppBarDefaults.windowInsets)
             ),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
@@ -133,7 +123,7 @@ private fun NoteBottomBarRow(
                     }
                 ) {
                     Icon(
-                        imageVector = Icons.Rounded.FormatListBulleted,
+                        imageVector = Icons.AutoMirrored.Rounded.FormatListBulleted,
                         contentDescription = "UnorderedList"
                     )
                 }
@@ -188,28 +178,4 @@ private fun NoteBottomBarRow(
 
         Spacer(modifier = Modifier.width(12.dp))
     }
-}
-
-@Preview
-@Composable
-private fun PreviewNoteBottomBarEditing() = GooseTheme {
-    NoteBottomBar(
-        state = NoteBottomBarState.Editing()
-    )
-}
-
-@Preview
-@Composable
-private fun PreviewNoteBottomBarLoading() = GooseTheme {
-    NoteBottomBar(
-        state = NoteBottomBarState.Loading
-    )
-}
-
-@Preview
-@Composable
-private fun PreviewNoteBottomBarPreview() = GooseTheme {
-    NoteBottomBar(
-        state = NoteBottomBarState.Preview()
-    )
 }

@@ -1,4 +1,4 @@
-package little.goose.note.logic
+package little.goose.note.util
 
 sealed class FormatType(val value: String) {
 

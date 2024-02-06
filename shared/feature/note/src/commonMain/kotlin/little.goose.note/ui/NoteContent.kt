@@ -1,5 +1,8 @@
-package little.goose.note.ui.note
+@file:OptIn(ExperimentalFoundationApi::class)
 
+package little.goose.note.ui
+
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -19,20 +22,16 @@ import androidx.compose.foundation.text2.input.TextFieldState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Stable
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.mikepenz.markdown.Markdown
-import com.mikepenz.markdown.MarkdownDefaults
-import little.goose.common.utils.generateUnitId
-import little.goose.ui.screen.LittleGooseLoadingScreen
+import com.mikepenz.markdown.compose.Markdown
+import com.mikepenz.markdown.model.markdownColor
+import com.mikepenz.markdown.model.markdownTypography
 
 @Stable
 sealed class NoteContentState {
@@ -76,9 +75,7 @@ fun NoteContent(
             }
 
             NoteContentState.Loading -> {
-                LittleGooseLoadingScreen(
-                    modifier = Modifier.fillMaxSize()
-                )
+                // TODO Loading Screen
             }
 
             is NoteContentState.Preview -> {
@@ -97,33 +94,29 @@ fun MarkdownContent(
     state: NoteContentState.Preview
 ) {
     val scrollState = rememberScrollState()
-    val colorScheme = MaterialTheme.colorScheme
     Markdown(
         content = state.content,
         modifier = modifier
             .verticalScroll(scrollState)
             .padding(16.dp),
-        colors = MarkdownDefaults.markdownColors(
-            textColor = MaterialTheme.colorScheme.onBackground,
-            backgroundColor = MaterialTheme.colorScheme.onSurface,
-            codeBackgroundColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.1f),
-            colorByType = { colorScheme.onBackground }
+        colors = markdownColor(
+            text = MaterialTheme.colorScheme.onBackground,
+            codeBackground = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.1f),
         ),
-        typography = MarkdownDefaults.markdownTypography(
+        typography = markdownTypography(
             h1 = MaterialTheme.typography.headlineLarge,
             h2 = MaterialTheme.typography.headlineMedium,
             h3 = MaterialTheme.typography.headlineSmall,
             h4 = MaterialTheme.typography.titleLarge,
             h5 = MaterialTheme.typography.titleMedium.copy(fontSize = 18.sp),
             h6 = MaterialTheme.typography.titleSmall.copy(fontSize = 16.sp),
-            body1 = MaterialTheme.typography.bodyMedium,
-            body2 = MaterialTheme.typography.bodySmall,
+            text = MaterialTheme.typography.bodyMedium,
         )
     )
 }
 
 @Composable
-private fun NoteEditContent(
+fun NoteEditContent(
     modifier: Modifier = Modifier,
     state: NoteContentState.Edit,
     onAddBlock: () -> Unit,
@@ -181,32 +174,5 @@ private fun NoteEditContent(
                 interactionSource = contentState.interaction
             )
         }
-    }
-}
-
-@Preview
-@Composable
-fun PreviewNoteEditContent() {
-    Surface(
-        modifier = Modifier.fillMaxSize()
-    ) {
-        val state = remember {
-            NoteContentState.Edit(
-                titleState = TextFieldState(),
-                contentStateList = List(10) {
-                    NoteBlockState(
-                        id = generateUnitId(),
-                        contentState = TextFieldState(
-                            initialText = System.currentTimeMillis().toString()
-                        )
-                    )
-                }
-            )
-        }
-        NoteEditContent(
-            state = state,
-            modifier = Modifier.fillMaxSize(),
-            onAddBlock = {}
-        )
     }
 }
