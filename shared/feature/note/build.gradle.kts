@@ -28,6 +28,11 @@ kotlin {
             implementation(compose.materialIconsExtended)
             implementation(compose.components.resources)
             implementation(project(":shared:common"))
+            implementation(project(":shared:data:note"))
+            implementation(libs.voyager.navigator)
+            implementation(libs.voyager.koin)
+            implementation(libs.voyager.screenModel)
+            implementation(libs.voyager.transitions)
         }
         androidMain.dependencies {
             implementation(libs.koin.android)

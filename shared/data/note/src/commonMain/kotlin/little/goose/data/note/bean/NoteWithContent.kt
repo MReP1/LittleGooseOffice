@@ -1,9 +1,8 @@
 package little.goose.data.note.bean
 
-import littlegoosenote.GooseNote
 import littlegoosenote.GooseNoteContentBlock
 
 data class NoteWithContent(
-    val note: GooseNote,
+    val note: Note,
     val content: List<GooseNoteContentBlock>
 )
