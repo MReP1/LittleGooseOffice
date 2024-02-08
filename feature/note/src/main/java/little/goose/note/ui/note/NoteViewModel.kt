@@ -35,6 +35,7 @@ import kotlinx.coroutines.launch
 import little.goose.note.data.constants.KEY_NOTE_ID
 import little.goose.note.data.entities.Note
 import little.goose.note.data.entities.NoteContentBlock
+import little.goose.note.event.NoteScreenEvent
 import little.goose.note.logic.DeleteNoteContentBlockUseCase
 import little.goose.note.logic.DeleteNotesAndItsBlocksUseCase
 import little.goose.note.logic.GetNoteFlowUseCase

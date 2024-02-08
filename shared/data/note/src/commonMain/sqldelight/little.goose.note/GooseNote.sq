@@ -11,11 +11,12 @@ CREATE TABLE GooseNoteContentBlock(
     sectionIndex INTEGER NOT NULL
 );
 
-insertOrReplaceNote {
+insertOrReplaceNote:
     INSERT OR REPLACE INTO GooseNote(id, title, time)
-    VALUES (?, ?, ?);
-    SELECT last_insert_rowid();
-}
+    VALUES (:id, :title, :time);
+
+lastInsertedNoteRowId:
+    SELECT last_insert_rowid() FROM GooseNote;
 
 getNote:
     SELECT * FROM GooseNote
@@ -29,11 +30,16 @@ getNoteWithContent {
     ORDER BY GooseNoteContentBlock.sectionIndex ASC;
 }
 
-insertOrReplaceNoteContentBlock {
+getNoteContentBlocks:
+    SELECT * FROM GooseNoteContentBlock
+    WHERE noteId = :noteId;
+
+insertOrReplaceNoteContentBlock:
     INSERT OR REPLACE INTO GooseNoteContentBlock
     VALUES (?, ?, ?, ?);
-    SELECT last_insert_rowid();
-}
+
+lastInsertedNoteContentBlockId:
+    SELECT last_insert_rowid() FROM GooseNoteContentBlock;
 
 deleteNoteContentBlock:
     DELETE FROM GooseNoteContentBlock

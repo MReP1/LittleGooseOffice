@@ -6,6 +6,8 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import kotlinx.coroutines.SupervisorJob
+import little.goose.data.note.local.NoteDataBase
+import little.goose.data.note.local.SqlDelightNoteDatabase
 import little.goose.note.GooseNoteDatabase
 import noteDatabaseDriver
 import org.koin.core.qualifier.named
@@ -27,6 +29,10 @@ val noteDatabaseModule = module {
     single<GooseNoteDatabase> {
         val factory = get<GooseNoteDriverFactory>()
         GooseNoteDatabase(factory.create())
+    }
+
+    single<NoteDataBase> {
+        SqlDelightNoteDatabase(get())
     }
 
 }

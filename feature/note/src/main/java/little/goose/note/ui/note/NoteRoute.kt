@@ -21,12 +21,9 @@ import kotlinx.coroutines.android.awaitFrame
 import little.goose.common.constants.DEEP_LINK_THEME_AND_HOST
 import little.goose.note.data.constants.KEY_NOTE
 import little.goose.note.data.constants.KEY_NOTE_ID
+import little.goose.note.event.NoteScreenEvent
 import little.goose.note.ui.NoteContentState
 import little.goose.note.ui.NoteScreen
-
-sealed class NoteScreenEvent {
-    data class AddNoteBlock(val id: Long) : NoteScreenEvent()
-}
 
 sealed class NoteNavigatingType {
     data object Add : NoteNavigatingType()

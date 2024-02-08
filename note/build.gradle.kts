@@ -28,7 +28,12 @@ dependencies {
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.rumtime.ktx)
     implementation(libs.androidx.activity.compose)
+    implementation(project(":shared:feature:note"))
     implementation(project(":core:design-system"))
+
+    compileOnly(libs.koin.core)
+    implementation(libs.koin.android)
+
     testImplementation(libs.junit4)
     androidTestImplementation(libs.junit)
     androidTestImplementation(libs.androidx.test.espresso.core)
