@@ -14,6 +14,7 @@ import little.goose.data.note.bean.Note
 import little.goose.data.note.bean.NoteContentBlock
 import little.goose.data.note.bean.NoteWithContent
 import little.goose.note.GooseNoteDatabase
+import log
 
 class SqlDelightNoteDatabase(
     private val database: GooseNoteDatabase
@@ -40,18 +41,18 @@ class SqlDelightNoteDatabase(
             val noteQuery = database.gooseNoteQueries.getNote(noteId)
             val noteContentBlockQuery = database.gooseNoteQueries.getNoteContentBlocks(noteId)
             val noteListener = Query.Listener {
-                println("noteListener")
+                log("noteListener")
                 channel.trySend(Unit)
             }
             val noteContentBlockListener = Query.Listener {
-                println("noteContentBlockListener!")
+                log("noteContentBlockListener!")
                 channel.trySend(Unit)
             }
             noteQuery.addListener(noteListener)
             noteContentBlockQuery.addListener(noteContentBlockListener)
             try {
                 for (item in channel) {
-                    println("fetch something in channel")
+                    log("fetch something in channel")
                     var note: Note? = null
                     val blocks = mutableListOf<NoteContentBlock>()
                     database.gooseNoteQueries.getNoteWithContent(
@@ -65,7 +66,7 @@ class SqlDelightNoteDatabase(
                     }.executeAsList()
                     val actualNote = note
                         ?: database.gooseNoteQueries.getNote(noteId).executeAsOneOrNull()?.let {
-                            println("execute On or null")
+                            log("execute On or null")
                             Note(id = it.id, title = it.title, time = it.time)
                         }
                     actualNote?.let {
