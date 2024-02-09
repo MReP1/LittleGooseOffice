@@ -9,7 +9,7 @@ import cafe.adriel.voyager.core.screen.Screen
 import cafe.adriel.voyager.navigator.LocalNavigator
 import cafe.adriel.voyager.navigator.currentOrThrow
 import kotlinx.coroutines.flow.MutableSharedFlow
-import little.goose.data.note.local.NoteDataBase
+import little.goose.data.note.domain.GetNoteWithContentFlowUseCase
 import little.goose.note.ui.home.NoteHomeScreen
 import little.goose.note.ui.home.NoteItemState
 import little.goose.shared.common.MviHolder
@@ -53,9 +53,10 @@ object NoteHomeScreen : Screen {
 
 @Composable
 internal fun NoteHomeMviHolder(): MviHolder<NoteHomeState, NoteHomeEvent, NoteHomeIntent> {
-    val database = getKoin().get<NoteDataBase>()
+    val koin = getKoin()
+    val getNoteWithContentFlow = remember(koin) { koin.get<GetNoteWithContentFlowUseCase>() }
     val noteHomeState by produceState<NoteHomeState>(NoteHomeState.Loading) {
-        database.getNoteWithContentFlow().collect { nwcList ->
+        getNoteWithContentFlow().collect { nwcList ->
             val states = nwcList.map { nwc ->
                 NoteItemState(
                     id = nwc.note.id!!,
