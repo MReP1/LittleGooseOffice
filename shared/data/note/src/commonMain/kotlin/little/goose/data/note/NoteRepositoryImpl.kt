@@ -26,8 +26,8 @@ class NoteRepositoryImpl(
         return dataBase.deleteNoteAndItsBlocks(noteId)
     }
 
-    override suspend fun deleteBlock(noteId: Long) {
-        return dataBase.deleteBlock(noteId)
+    override suspend fun deleteBlock(id: Long) {
+        return dataBase.deleteBlock(id)
     }
 
     override suspend fun deleteBlockWithNoteId(noteId: Long) {

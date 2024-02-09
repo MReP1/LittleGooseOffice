@@ -33,7 +33,12 @@ import kotlinx.coroutines.launch
 import little.goose.data.note.bean.Note
 import little.goose.data.note.bean.NoteContentBlock
 import little.goose.data.note.bean.NoteWithContent
-import little.goose.data.note.local.NoteDataBase
+import little.goose.data.note.domain.DeleteBlockUseCase
+import little.goose.data.note.domain.DeleteNoteAndItsBlocksUseCase
+import little.goose.data.note.domain.GetNoteWithContentFlowWithNoteIdUseCase
+import little.goose.data.note.domain.InsertOrReplaceNoteContentBlockUseCase
+import little.goose.data.note.domain.InsertOrReplaceNoteContentBlocksUseCase
+import little.goose.data.note.domain.InsertOrReplaceNoteUseCase
 import little.goose.note.event.NoteScreenEvent
 import little.goose.note.ui.note.NoteBlockState
 import little.goose.note.ui.note.NoteBottomBarState
@@ -44,7 +49,15 @@ import little.goose.shared.common.getCurrentTimeMillis
 import kotlin.time.Duration.Companion.seconds
 
 @OptIn(ExperimentalFoundationApi::class, ExperimentalCoroutinesApi::class)
-class NoteScreenModel(noteId: Long, private val noteDataBase: NoteDataBase) : ScreenModel {
+class NoteScreenModel(
+    noteId: Long,
+    private val insertOrReplaceNoteContentBlocks: InsertOrReplaceNoteContentBlocksUseCase,
+    private val getNoteWithContentFlowWithNoteId: GetNoteWithContentFlowWithNoteIdUseCase,
+    private val insertOrReplaceNoteContentBlock: InsertOrReplaceNoteContentBlockUseCase,
+    private val insertOrReplaceNote: InsertOrReplaceNoteUseCase,
+    private val deleteNoteAndItsBlocks: DeleteNoteAndItsBlocksUseCase,
+    private val deleteNoteContentBlockUseCase: DeleteBlockUseCase
+) : ScreenModel {
 
     private val noteIdFlow = MutableStateFlow(noteId)
     private val noteWithContent = MutableStateFlow<NoteWithContent?>(null)
@@ -69,7 +82,7 @@ class NoteScreenModel(noteId: Long, private val noteDataBase: NoteDataBase) : Sc
                 flowOf(NoteWithContent(Note(), emptyList()))
             } else {
                 // If pass from outside or insert note to database.
-                noteDataBase.getNoteWithContentFlow(nId)
+                getNoteWithContentFlowWithNoteId(nId)
             }
         }.onEach { noteWithContent.value = it }.launchIn(screenModelScope)
     }
@@ -149,7 +162,7 @@ class NoteScreenModel(noteId: Long, private val noteDataBase: NoteDataBase) : Sc
                 val movingBlocks = mutableListOf<NoteContentBlock>()
                 nwc.content.forEachIndexed { index, block ->
                     if (block.id == blockId) {
-                        deleteNoteContentBlock(blockId)
+                        deleteNoteContentBlockUseCase(blockId)
                         collectFocusJobMap.remove(blockId)?.cancel()
                         collectUpdateJobMap.remove(blockId)?.cancel()
                         focusRequesterMap.remove(blockId)
@@ -164,7 +177,7 @@ class NoteScreenModel(noteId: Long, private val noteDataBase: NoteDataBase) : Sc
                         }
                     }
                 }
-                noteDataBase.insertOrReplaceNoteContentBlocks(movingBlocks)
+                insertOrReplaceNoteContentBlocks(movingBlocks)
             }
             noteWithContent.value = NoteWithContent(nwc.note, newBlocks)
         }
@@ -174,7 +187,7 @@ class NoteScreenModel(noteId: Long, private val noteDataBase: NoteDataBase) : Sc
         var nwc = noteWithContent.value ?: return null
         val insertingBlock = if (block.noteId == null) {
             // If this note doesn't exit, insert the note first.
-            val noteId = noteDataBase.insertOrReplaceNote(nwc.note)
+            val noteId = insertOrReplaceNote(nwc.note)
             nwc = nwc.copy(nwc.note.copy(id = noteId))
             noteWithContent.value = nwc
             noteIdFlow.value = noteId
@@ -182,7 +195,7 @@ class NoteScreenModel(noteId: Long, private val noteDataBase: NoteDataBase) : Sc
         } else block
 
         // Insert the content block
-        val noteContentBlockId = noteDataBase.insertOrReplaceNoteContentBlock(insertingBlock)
+        val noteContentBlockId = insertOrReplaceNoteContentBlock(insertingBlock)
         val insertedBlock = insertingBlock.copy(id = noteContentBlockId)
 
         val newBlocks = if (nwc.content.size.toLong() == insertedBlock.sectionIndex) {
@@ -204,7 +217,7 @@ class NoteScreenModel(noteId: Long, private val noteDataBase: NoteDataBase) : Sc
                         }
                     }
                 }
-                noteDataBase.insertOrReplaceNoteContentBlocks(movingBlocks)
+                insertOrReplaceNoteContentBlocks(movingBlocks)
             }
         }
         noteWithContent.value = nwc.copy(content = newBlocks)
@@ -215,9 +228,9 @@ class NoteScreenModel(noteId: Long, private val noteDataBase: NoteDataBase) : Sc
     private suspend fun updateTitle(title: CharSequence) {
         noteWithContent.value?.note?.copy(title = title.toString())?.let { note ->
             if (noteIdFlow.value != -1L) {
-                noteDataBase.insertOrReplaceNote(note)
+                insertOrReplaceNote(note)
             } else {
-                val noteId = noteDataBase.insertOrReplaceNote(note = note)
+                val noteId = insertOrReplaceNote(note = note)
                 noteIdFlow.value = noteId
             }
         }
@@ -317,7 +330,7 @@ class NoteScreenModel(noteId: Long, private val noteDataBase: NoteDataBase) : Sc
                 } else charSequence
             }.debounce(0.8.seconds).collect { textFieldCharSequence ->
                 noteWithContent.value?.content?.find { it.id == blockId }?.let { block ->
-                    noteDataBase.insertOrReplaceNoteContentBlock(
+                    insertOrReplaceNoteContentBlock(
                         block.copy(content = textFieldCharSequence.toString())
                     )
                 }
@@ -332,9 +345,9 @@ class NoteScreenModel(noteId: Long, private val noteDataBase: NoteDataBase) : Sc
         val note = nwc.note.takeIf { it.id != null } ?: return
         screenModelScope.launch(NonCancellable) {
             if (nwc.content.isEmpty()) {
-                noteDataBase.deleteNoteAndItsBlocks(note.id!!)
+                deleteNoteAndItsBlocks(note.id!!)
             } else {
-                noteDataBase.insertOrReplaceNote(note.copy(time = getCurrentTimeMillis()))
+                insertOrReplaceNote(note.copy(time = getCurrentTimeMillis()))
             }
         }
     }

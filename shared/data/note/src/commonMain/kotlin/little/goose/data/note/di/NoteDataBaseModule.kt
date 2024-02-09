@@ -41,4 +41,6 @@ val noteDatabaseModule = module {
         NoteRepositoryImpl(get())
     }
 
+    includes(noteUseCaseModule)
+
 }

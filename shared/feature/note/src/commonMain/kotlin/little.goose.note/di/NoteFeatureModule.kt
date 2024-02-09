@@ -11,7 +11,7 @@ val noteFeatureModule = module {
     includes(noteDatabaseModule)
 
     factory<NoteScreenModel> {
-        NoteScreenModel(it[0], get())
+        NoteScreenModel(it[0], get(), get(), get(), get(), get(), get())
     }
 
     factoryOf(::NoteHomeScreenModel)
