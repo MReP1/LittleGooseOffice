@@ -1,7 +1,7 @@
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.tooling.preview.Preview
-import little.goose.note.ui.NoteBottomBar
-import little.goose.note.ui.NoteBottomBarState
+import little.goose.note.ui.note.NoteBottomBar
+import little.goose.note.ui.note.NoteBottomBarState
 
 @Preview
 @Composable

@@ -22,11 +22,24 @@ getNote:
     SELECT * FROM GooseNote
     WHERE id = :id;
 
-getNoteWithContent {
+getAllNote:
+    SELECT * FROM GooseNote;
+
+getAllNoteContentBlock:
+    SELECT * FROM GooseNoteContentBlock;
+
+getNoteWithContentWithNoteId {
     SELECT * FROM GooseNote
     JOIN GooseNoteContentBlock
     ON GooseNote.id = GooseNoteContentBlock.noteId
     WHERE GooseNote.id = :noteId
+    ORDER BY GooseNoteContentBlock.sectionIndex ASC;
+}
+
+getNoteWithContents {
+    SELECT * FROM GooseNote
+    JOIN GooseNoteContentBlock
+    ON GooseNote.id = GooseNoteContentBlock.noteId
     ORDER BY GooseNoteContentBlock.sectionIndex ASC;
 }
 

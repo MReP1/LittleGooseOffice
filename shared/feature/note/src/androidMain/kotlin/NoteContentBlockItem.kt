@@ -6,8 +6,8 @@ import androidx.compose.foundation.text2.input.rememberTextFieldState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
-import little.goose.note.ui.NoteContentBlockItem
-import little.goose.note.ui.NoteContentBlockTextField
+import little.goose.note.ui.note.NoteContentBlockItem
+import little.goose.note.ui.note.NoteContentBlockTextField
 
 @Preview
 @Composable

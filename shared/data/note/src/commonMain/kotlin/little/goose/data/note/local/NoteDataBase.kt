@@ -23,4 +23,5 @@ interface NoteDataBase {
 
     suspend fun insertOrReplaceNoteContentBlocks(noteContentBlock: List<NoteContentBlock>)
 
+    fun getNoteWithContentFlow(): Flow<List<NoteWithContent>>
 }

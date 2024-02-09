@@ -1,4 +1,4 @@
-package little.goose.note.ui
+package little.goose.note.ui.note
 
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.animateFloatAsState

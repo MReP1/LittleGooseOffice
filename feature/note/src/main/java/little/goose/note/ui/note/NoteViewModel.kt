@@ -47,9 +47,6 @@ import little.goose.note.logic.UpdateNoteContentBlocksUseCase
 import little.goose.note.logic.UpdateNoteUseCase
 import little.goose.note.logic.content
 import little.goose.note.logic.note
-import little.goose.note.ui.NoteBlockState
-import little.goose.note.ui.NoteBottomBarState
-import little.goose.note.ui.NoteContentState
 import little.goose.note.util.FormatType
 import little.goose.note.util.orderListNum
 import java.util.Date

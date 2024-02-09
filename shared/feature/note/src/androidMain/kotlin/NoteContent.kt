@@ -6,9 +6,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
-import little.goose.note.ui.NoteBlockState
-import little.goose.note.ui.NoteContentState
-import little.goose.note.ui.NoteEditContent
+import little.goose.note.ui.note.NoteBlockState
+import little.goose.note.ui.note.NoteContentState
+import little.goose.note.ui.note.NoteEditContent
 import little.goose.shared.common.generateUnitId
 
 @OptIn(ExperimentalFoundationApi::class)

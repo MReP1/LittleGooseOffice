@@ -5,5 +5,5 @@ import cafe.adriel.voyager.navigator.Navigator
 
 @Composable
 fun NoteApp() {
-    Navigator(NoteScreen(-1))
+    Navigator(NoteHomeScreen)
 }

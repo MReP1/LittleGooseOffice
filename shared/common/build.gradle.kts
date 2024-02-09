@@ -19,15 +19,15 @@ kotlin {
 
     sourceSets {
         commonMain.dependencies {
-            //put your multiplatform dependencies here
+            implementation(libs.kotlinx.coroutines.core)
         }
         commonTest.dependencies {
 
         }
-        androidMain {
-
+        androidMain.dependencies {
+            implementation(libs.kotlinx.coroutines.android)
         }
-        iosMain {
+        iosMain.dependencies {
 
         }
     }

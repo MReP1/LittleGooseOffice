@@ -35,9 +35,9 @@ import little.goose.data.note.bean.NoteContentBlock
 import little.goose.data.note.bean.NoteWithContent
 import little.goose.data.note.local.NoteDataBase
 import little.goose.note.event.NoteScreenEvent
-import little.goose.note.ui.NoteBlockState
-import little.goose.note.ui.NoteBottomBarState
-import little.goose.note.ui.NoteContentState
+import little.goose.note.ui.note.NoteBlockState
+import little.goose.note.ui.note.NoteBottomBarState
+import little.goose.note.ui.note.NoteContentState
 import little.goose.note.util.FormatType
 import little.goose.note.util.orderListNum
 import little.goose.shared.common.getCurrentTimeMillis

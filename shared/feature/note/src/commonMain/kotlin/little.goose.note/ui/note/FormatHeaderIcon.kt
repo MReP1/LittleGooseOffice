@@ -1,6 +1,6 @@
 @file:OptIn(ExperimentalResourceApi::class)
 
-package little.goose.note.ui
+package little.goose.note.ui.note
 
 import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.layout.Row

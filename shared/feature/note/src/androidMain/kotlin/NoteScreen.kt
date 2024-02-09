@@ -5,10 +5,10 @@ import androidx.compose.foundation.text2.input.rememberTextFieldState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
-import little.goose.note.ui.NoteBlockState
-import little.goose.note.ui.NoteBottomBarState
-import little.goose.note.ui.NoteContentState
-import little.goose.note.ui.NoteScreen
+import little.goose.note.ui.note.NoteBlockState
+import little.goose.note.ui.note.NoteBottomBarState
+import little.goose.note.ui.note.NoteContentState
+import little.goose.note.ui.note.NoteScreen
 
 @Preview
 @Composable

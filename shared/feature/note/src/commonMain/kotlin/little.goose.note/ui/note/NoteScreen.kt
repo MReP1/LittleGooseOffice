@@ -1,4 +1,4 @@
-package little.goose.note.ui
+package little.goose.note.ui.note
 
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth

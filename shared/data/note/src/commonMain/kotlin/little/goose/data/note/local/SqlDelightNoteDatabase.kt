@@ -14,7 +14,6 @@ import little.goose.data.note.bean.Note
 import little.goose.data.note.bean.NoteContentBlock
 import little.goose.data.note.bean.NoteWithContent
 import little.goose.note.GooseNoteDatabase
-import log
 
 class SqlDelightNoteDatabase(
     private val database: GooseNoteDatabase
@@ -41,21 +40,18 @@ class SqlDelightNoteDatabase(
             val noteQuery = database.gooseNoteQueries.getNote(noteId)
             val noteContentBlockQuery = database.gooseNoteQueries.getNoteContentBlocks(noteId)
             val noteListener = Query.Listener {
-                log("noteListener")
                 channel.trySend(Unit)
             }
             val noteContentBlockListener = Query.Listener {
-                log("noteContentBlockListener!")
                 channel.trySend(Unit)
             }
             noteQuery.addListener(noteListener)
             noteContentBlockQuery.addListener(noteContentBlockListener)
             try {
                 for (item in channel) {
-                    log("fetch something in channel")
                     var note: Note? = null
                     val blocks = mutableListOf<NoteContentBlock>()
-                    database.gooseNoteQueries.getNoteWithContent(
+                    database.gooseNoteQueries.getNoteWithContentWithNoteId(
                         noteId
                     ) { id: Long, title: String, time: Long,
                         blockId: Long, noteId: Long, content: String, sectionIndex: Long ->
@@ -66,7 +62,6 @@ class SqlDelightNoteDatabase(
                     }.executeAsList()
                     val actualNote = note
                         ?: database.gooseNoteQueries.getNote(noteId).executeAsOneOrNull()?.let {
-                            log("execute On or null")
                             Note(id = it.id, title = it.title, time = it.time)
                         }
                     actualNote?.let {
@@ -76,6 +71,42 @@ class SqlDelightNoteDatabase(
             } finally {
                 noteQuery.removeListener(noteListener)
                 noteContentBlockQuery.removeListener(noteContentBlockListener)
+            }
+        }.flowOn(Dispatchers.IO)
+    }
+
+    override fun getNoteWithContentFlow(): Flow<List<NoteWithContent>> {
+        return flow<List<NoteWithContent>> {
+            val channel = Channel<Unit>(Channel.CONFLATED)
+            channel.trySend(Unit)
+            val allNoteQuery = database.gooseNoteQueries.getAllNote()
+            val allNoteContentBlockQuery = database.gooseNoteQueries.getAllNoteContentBlock()
+            val noteListener = Query.Listener {
+                channel.trySend(Unit)
+            }
+            val noteContentBlockListener = Query.Listener {
+                channel.trySend(Unit)
+            }
+            allNoteQuery.addListener(noteListener)
+            allNoteContentBlockQuery.addListener(noteContentBlockListener)
+            try {
+                val map = mutableMapOf<Note, MutableList<NoteContentBlock>>()
+                var resultList = mutableListOf<NoteWithContent>()
+                for (item in channel) {
+                    database.gooseNoteQueries.getNoteWithContents { id: Long, title: String, time: Long, blockId: Long, noteId: Long, content: String, sectionIndex: Long ->
+                        map.getOrPut(Note(id, title, time)) { mutableListOf() }.add(
+                            NoteContentBlock(blockId, noteId, content, sectionIndex)
+                        )
+                    }.executeAsList()
+                    map.forEach { (note, blocks) ->
+                        resultList.add(NoteWithContent(note, blocks))
+                    }
+                    emit(resultList)
+                    resultList = mutableListOf()
+                }
+            } finally {
+                allNoteQuery.removeListener(noteListener)
+                allNoteContentBlockQuery.removeListener(noteContentBlockListener)
             }
         }.flowOn(Dispatchers.IO)
     }
@@ -115,6 +146,5 @@ class SqlDelightNoteDatabase(
             }
         }
     }
-
 
 }

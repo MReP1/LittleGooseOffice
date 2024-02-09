@@ -1,4 +1,4 @@
-package little.goose.note.ui
+package little.goose.note.ui.note
 
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.ArrowBack
