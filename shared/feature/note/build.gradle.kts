@@ -29,6 +29,7 @@ kotlin {
             implementation(compose.components.resources)
             implementation(project(":shared:common"))
             implementation(project(":shared:data:note"))
+            implementation(project(":shared:design"))
             implementation(libs.koin.compose)
             implementation(libs.voyager.navigator)
             implementation(libs.voyager.koin)

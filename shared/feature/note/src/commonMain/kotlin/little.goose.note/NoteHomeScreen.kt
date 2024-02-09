@@ -1,6 +1,7 @@
 package little.goose.note
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.produceState
 import androidx.compose.runtime.remember
@@ -32,20 +33,27 @@ object NoteHomeScreen : Screen {
     @Composable
     override fun Content() {
         val navigator = LocalNavigator.currentOrThrow
-        val database = getKoin().get<NoteDataBase>()
-        val (state, event, action) = NoteHomeMviHolder(database)
+        val (state, event, action) = NoteHomeMviHolder()
+
         NoteHomeScreen(
             state = state,
             onNoteItemClick = { noteId ->
                 navigator.push(NoteScreen(noteId))
             }
         )
+
+        LaunchedEffect(event) {
+            event.collect {
+
+            }
+        }
     }
 
 }
 
 @Composable
-internal fun NoteHomeMviHolder(database: NoteDataBase): MviHolder<NoteHomeState, NoteHomeEvent, NoteHomeIntent> {
+internal fun NoteHomeMviHolder(): MviHolder<NoteHomeState, NoteHomeEvent, NoteHomeIntent> {
+    val database = getKoin().get<NoteDataBase>()
     val noteHomeState by produceState<NoteHomeState>(NoteHomeState.Loading) {
         database.getNoteWithContentFlow().collect { nwcList ->
             val states = nwcList.map { nwc ->
