@@ -6,6 +6,8 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import kotlinx.coroutines.SupervisorJob
+import little.goose.data.note.NoteRepository
+import little.goose.data.note.NoteRepositoryImpl
 import little.goose.data.note.local.NoteDataBase
 import little.goose.data.note.local.SqlDelightNoteDatabase
 import little.goose.note.GooseNoteDatabase
@@ -33,6 +35,10 @@ val noteDatabaseModule = module {
 
     single<NoteDataBase> {
         SqlDelightNoteDatabase(get())
+    }
+
+    single<NoteRepository> {
+        NoteRepositoryImpl(get())
     }
 
 }

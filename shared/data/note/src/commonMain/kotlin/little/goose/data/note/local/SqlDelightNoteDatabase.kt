@@ -39,12 +39,8 @@ class SqlDelightNoteDatabase(
             channel.trySend(Unit)
             val noteQuery = database.gooseNoteQueries.getNote(noteId)
             val noteContentBlockQuery = database.gooseNoteQueries.getNoteContentBlocks(noteId)
-            val noteListener = Query.Listener {
-                channel.trySend(Unit)
-            }
-            val noteContentBlockListener = Query.Listener {
-                channel.trySend(Unit)
-            }
+            val noteListener = Query.Listener { channel.trySend(Unit) }
+            val noteContentBlockListener = Query.Listener { channel.trySend(Unit) }
             noteQuery.addListener(noteListener)
             noteContentBlockQuery.addListener(noteContentBlockListener)
             try {
@@ -81,12 +77,8 @@ class SqlDelightNoteDatabase(
             channel.trySend(Unit)
             val allNoteQuery = database.gooseNoteQueries.getAllNote()
             val allNoteContentBlockQuery = database.gooseNoteQueries.getAllNoteContentBlock()
-            val noteListener = Query.Listener {
-                channel.trySend(Unit)
-            }
-            val noteContentBlockListener = Query.Listener {
-                channel.trySend(Unit)
-            }
+            val noteListener = Query.Listener { channel.trySend(Unit) }
+            val noteContentBlockListener = Query.Listener { channel.trySend(Unit) }
             allNoteQuery.addListener(noteListener)
             allNoteContentBlockQuery.addListener(noteContentBlockListener)
             try {
@@ -137,9 +129,9 @@ class SqlDelightNoteDatabase(
         }
     }
 
-    override suspend fun insertOrReplaceNoteContentBlocks(noteContentBlock: List<NoteContentBlock>) {
+    override suspend fun insertOrReplaceNoteContentBlocks(noteContentBlocks: List<NoteContentBlock>) {
         return database.transaction {
-            noteContentBlock.forEach { block ->
+            noteContentBlocks.forEach { block ->
                 database.gooseNoteQueries.insertOrReplaceNoteContentBlock(
                     block.id, block.noteId!!, block.content, block.sectionIndex
                 )
