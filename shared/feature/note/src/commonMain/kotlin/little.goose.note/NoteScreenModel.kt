@@ -299,7 +299,7 @@ class NoteScreenModel(
     @OptIn(FlowPreview::class)
     private suspend fun createCollectUpdateJob(blockId: Long, textFieldState: TextFieldState) {
         collectUpdateJobMap[blockId]?.cancel()
-        collectUpdateJobMap[blockId] = screenModelScope.launch {
+        collectUpdateJobMap[blockId] = screenModelScope.launch(NonCancellable) {
             textFieldState.textAsFlow().map { charSequence ->
                 val nwc = noteWithContent.value ?: return@map charSequence
                 val blockIndex = nwc.content.indexOfLast { it.id == blockId }.takeIf { it != -1 }

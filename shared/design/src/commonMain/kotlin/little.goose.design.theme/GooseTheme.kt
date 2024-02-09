@@ -9,6 +9,15 @@ enum class ThemeType {
 }
 
 @Composable
+fun ThemeType.isDarkTheme(): Boolean {
+    return when (this) {
+        ThemeType.LIGHT -> false
+        ThemeType.DART -> true
+        ThemeType.FOLLOW_SYSTEM -> isSystemInDarkTheme()
+    }
+}
+
+@Composable
 fun GooseTheme(
     themeType: ThemeType,
     content: @Composable () -> Unit

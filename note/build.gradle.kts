@@ -29,7 +29,7 @@ dependencies {
     implementation(libs.androidx.lifecycle.rumtime.ktx)
     implementation(libs.androidx.activity.compose)
     implementation(project(":shared:feature:note"))
-    implementation(project(":core:design-system"))
+    implementation(project(":shared:design"))
 
     compileOnly(libs.koin.core)
     implementation(libs.koin.android)

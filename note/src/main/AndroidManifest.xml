@@ -12,7 +12,9 @@
         <activity
                 android:name=".MainActivity"
                 android:exported="true"
-                android:theme="@style/Theme.Account">
+                android:theme="@style/Theme.Account"
+                android:launchMode="singleTask"
+                android:windowSoftInputMode="adjustResize">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
