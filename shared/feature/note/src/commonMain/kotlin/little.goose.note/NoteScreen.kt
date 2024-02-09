@@ -7,26 +7,22 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
-import cafe.adriel.voyager.core.model.rememberScreenModel
 import cafe.adriel.voyager.core.screen.Screen
+import cafe.adriel.voyager.koin.getScreenModel
 import cafe.adriel.voyager.navigator.LocalNavigator
 import cafe.adriel.voyager.navigator.currentOrThrow
 import kotlinx.coroutines.delay
-import little.goose.data.note.local.NoteDataBase
 import little.goose.note.event.NoteScreenEvent
 import little.goose.note.ui.note.NoteContentState
 import little.goose.note.ui.note.NoteScreen
-import org.koin.compose.getKoin
+import org.koin.core.parameter.parametersOf
 
 data class NoteScreen(val noteId: Long) : Screen {
 
     @Composable
     override fun Content() {
         val navigator = LocalNavigator.currentOrThrow
-        val noteDatabase = getKoin().get<NoteDataBase>()
-        val screenModel = rememberScreenModel(noteId.toString()) {
-            NoteScreenModel(noteId, noteDatabase)
-        }
+        val screenModel = getScreenModel<NoteScreenModel> { parametersOf(noteId) }
         val contentState by screenModel.noteContentState.collectAsState()
         val bottomBarState by screenModel.noteBottomBarState.collectAsState()
 
