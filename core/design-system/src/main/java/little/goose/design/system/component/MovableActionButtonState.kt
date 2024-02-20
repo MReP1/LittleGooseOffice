@@ -30,10 +30,10 @@ import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.android.awaitFrame
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.coroutineScope
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 @Stable
@@ -90,10 +90,8 @@ class MovableActionButtonState {
 
     private suspend fun waitForInit() {
         if (radius == 0) {
-            while (true) {
-                delay(16)
-                if (radius != 0) break
-            }
+            awaitFrame()
+            waitForInit()
         }
     }
 
