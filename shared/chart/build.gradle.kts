@@ -1,6 +1,6 @@
 plugins {
     alias(libs.plugins.goose.kotlin.multiplatform)
-    alias(libs.plugins.jetbrains.compose)
+    alias(libs.plugins.goose.compose.multiplatform)
 }
 
 kotlin {

@@ -46,5 +46,9 @@ gradlePlugin {
             id = libs.plugins.goose.kotlin.multiplatform.get().pluginId
             implementationClass = "plugin.KotlinMultiplatformConventionPlugin"
         }
+        register("composeMultiplatform") {
+            id = libs.plugins.goose.compose.multiplatform.get().pluginId
+            implementationClass = "plugin.KmpComposePlugin"
+        }
     }
 }

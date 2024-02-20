@@ -15,6 +15,7 @@ class ComposeConventionPlugin : Plugin<Project> {
                 configureCompose(libs)
             }
             applyDependencies(libs)
+            applyComposeStrongSkippingMode()
         }
     }
 

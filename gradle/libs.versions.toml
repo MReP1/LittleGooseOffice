@@ -101,6 +101,7 @@ voyager-koin = { module = "cafe.adriel.voyager:voyager-koin", version.ref = "voy
 android-gradlePlugin = { group = "com.android.tools.build", name = "gradle", version.ref = "androidGradlePlugin" }
 kotlin-gradlePlugin = { group = "org.jetbrains.kotlin", name = "kotlin-gradle-plugin", version.ref = "kotlin" }
 ksp-gradlePlugin = { group = "com.google.devtools.ksp", name = "com.google.devtools.ksp.gradle.plugin", version.ref = "ksp" }
+compose-multiplatform-gradlePlugin = { group = "org.jetbrains.compose", name = "compose-gradle-plugin", version.ref = "kotlinMultiplatfromCompose" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "androidGradlePlugin" }
@@ -119,5 +120,5 @@ goose-android-library = { id = "goose.android.library", version = "unspecified" 
 goose-android-hilt = { id = "goose.android.hilt", version = "unspecified" }
 goose-android-compose = { id = "goose.android.compose", version = "unspecified" }
 goose-android-room = { id = "goose.android.room", version = "unspecified" }
-goose-koin = { id = "goose.koin", version = "unspecified" }
 goose-kotlin-multiplatform = { id = "goose.kotlin.multiplatform", version = "unspecified" }
+goose-compose-multiplatform = { id = "goose.compose.multiplatform", version = "unspecified" }
