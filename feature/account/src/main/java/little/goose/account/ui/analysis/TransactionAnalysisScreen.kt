@@ -10,6 +10,7 @@ import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material3.BottomSheetScaffold
 import androidx.compose.material3.SheetValue
 import androidx.compose.material3.rememberBottomSheetScaffoldState
+import androidx.compose.material3.rememberStandardBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
@@ -37,7 +38,18 @@ fun TransactionAnalysisScreen(
     val scope = rememberCoroutineScope()
     val pagerState = rememberPagerState(initialPage = 0, pageCount = { 3 })
 
-    val scaffoldState = rememberBottomSheetScaffoldState()
+    val scaffoldState = rememberBottomSheetScaffoldState(
+        // Fixme custom remember state which can save skipHiddenState.
+        bottomSheetState = rememberStandardBottomSheetState(
+            confirmValueChange = { sheetValue ->
+                when (sheetValue) {
+                    SheetValue.Hidden -> false
+                    SheetValue.Expanded -> true
+                    SheetValue.PartiallyExpanded -> true
+                }
+            }
+        )
+    )
 
     BottomSheetScaffold(
         modifier = modifier,
