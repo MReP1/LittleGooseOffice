@@ -16,11 +16,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.composed
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.LayoutCoordinates
@@ -227,57 +225,4 @@ fun MovableActionButton(
             )
         }
     }
-}
-
-@Stable
-class MovableState {
-    var minOffsetX = 0F
-    var maxOffsetX = 0F
-    var minOffsetY = 0F
-    var maxOffsetY = 0F
-}
-
-fun Modifier.movableInParent() = composed {
-    val offset = remember { Animatable(Offset(0F, 0F), Offset.VectorConverter) }
-    val movableState = remember { MovableState() }
-    val scope = rememberCoroutineScope()
-
-    this
-        .onPlaced {
-            val parentSize = it.parentCoordinates?.size ?: IntSize(0, 0)
-            val size = it.size
-            movableState.minOffsetX = -it.positionInParent().x
-            movableState.minOffsetY = -it.positionInParent().y
-            movableState.maxOffsetY = parentSize.height - size.height - it.positionInParent().y
-            movableState.maxOffsetX = parentSize.width - size.width - it.positionInParent().x
-        }
-        .offset {
-            IntOffset(offset.value.x.toInt(), offset.value.y.toInt())
-        }
-        .pointerInput(Unit) {
-            detectDragGestures(
-                onDragStart = {
-                    scope.launch(Dispatchers.Main.immediate) {
-                        offset.snapTo(Offset.Zero)
-                    }
-                },
-                onDragEnd = {
-                    scope.launch(Dispatchers.Main.immediate) {
-                        offset.animateTo(
-                            targetValue = Offset.Zero,
-                            animationSpec = tween(140, 0, FastOutLinearInEasing)
-                        )
-                    }
-                },
-                onDrag = { _, dragAmount ->
-                    scope.launch(Dispatchers.Main.immediate) {
-                        val x = (dragAmount.x + offset.value.x)
-                            .coerceIn(movableState.minOffsetX, movableState.maxOffsetX)
-                        val y = (dragAmount.y + offset.value.y)
-                            .coerceIn(movableState.minOffsetY, movableState.maxOffsetY)
-                        offset.snapTo(Offset(x, y))
-                    }
-                }
-            )
-        }
 }

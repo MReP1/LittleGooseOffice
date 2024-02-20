@@ -1,8 +1,8 @@
 package little.goose.ui.modifier
 
+import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.composed
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
 import androidx.compose.ui.input.nestedscroll.NestedScrollSource
@@ -13,6 +13,7 @@ import androidx.compose.ui.unit.Velocity
 import androidx.compose.ui.unit.dp
 import kotlin.properties.Delegates
 
+@Composable
 fun Modifier.nestedPull(
     onPull: (pullDelta: Float, threshold: Float) -> Float,
     threshold: Dp = 64.dp,
@@ -20,7 +21,7 @@ fun Modifier.nestedPull(
     onRelease: suspend (flingVelocity: Float) -> Float,
     reverseDirection: Boolean = false,
     enabled: Boolean = true
-) = composed {
+): Modifier {
     val density = LocalDensity.current
     val connection = remember(density, threshold, enabled, reverseDirection) {
         PullNestedScrollConnection(
@@ -28,7 +29,7 @@ fun Modifier.nestedPull(
             passThreshold, onPull, onRelease, reverseDirection, enabled
         )
     }
-    nestedScroll(connection)
+    return nestedScroll(connection)
 }
 
 class PullNestedScrollConnection(
