@@ -28,5 +28,7 @@ dependencies {
     implementation(libs.androidx.lifecycle.runtime.compose)
 
     implementation(libs.androidx.activity.ktx)
-    implementation(project(":shared:feature:note"))
+    api(project(":shared:feature:note"))
+
+    implementation(libs.voyager.navigator)
 }

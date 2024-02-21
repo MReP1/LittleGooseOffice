@@ -21,14 +21,14 @@ class SqlDelightNoteDatabase(
 
     override fun getNoteFlow(noteId: Long): Flow<Note> {
         return database.gooseNoteQueries
-            .getNote(noteId) { id, title, time -> Note(id, title, time) }
+            .getNote(noteId) { id, title, time, _ -> Note(id, title, time) }
             .asFlow()
             .mapNotNull { it.executeAsOneOrNull() }
     }
 
     override suspend fun insertOrReplaceNote(note: Note): Long = withContext(Dispatchers.IO) {
         database.gooseNoteQueries.transactionWithResult {
-            database.gooseNoteQueries.insertOrReplaceNote(note.id, note.title, note.time)
+            database.gooseNoteQueries.insertOrReplaceNote(note.id, note.title, note.time, "")
             database.gooseNoteQueries.lastInsertedNoteRowId().executeAsList().first()
         }
     }
@@ -49,12 +49,12 @@ class SqlDelightNoteDatabase(
                     val blocks = mutableListOf<NoteContentBlock>()
                     database.gooseNoteQueries.getNoteWithContentWithNoteId(
                         noteId
-                    ) { id: Long, title: String, time: Long,
-                        blockId: Long, noteId: Long, content: String, sectionIndex: Long ->
+                    ) { id: Long, title: String, time: Long, _,
+                        blockId: Long, noteId: Long?, sectionIndex: Long, blockContent: String ->
                         if (note == null) {
                             note = Note(id, title, time)
                         }
-                        blocks.add(NoteContentBlock(blockId, noteId, content, sectionIndex))
+                        blocks.add(NoteContentBlock(blockId, noteId, blockContent, sectionIndex))
                     }.executeAsList()
                     val actualNote = note
                         ?: database.gooseNoteQueries.getNote(noteId).executeAsOneOrNull()?.let {
@@ -85,11 +85,13 @@ class SqlDelightNoteDatabase(
                 val map = mutableMapOf<Note, MutableList<NoteContentBlock>>()
                 var resultList = mutableListOf<NoteWithContent>()
                 for (item in channel) {
-                    database.gooseNoteQueries.getNoteWithContents { id: Long, title: String, time: Long, blockId: Long, noteId: Long, content: String, sectionIndex: Long ->
-                        map.getOrPut(Note(id, title, time)) { mutableListOf() }.add(
-                            NoteContentBlock(blockId, noteId, content, sectionIndex)
-                        )
-                    }.executeAsList()
+                    database.gooseNoteQueries
+                        .getNoteWithContents { id: Long, title: String, time: Long, _,
+                                               blockId: Long, noteId: Long?, sectionIndex: Long, blockContent: String ->
+                            map.getOrPut(Note(id, title, time)) { mutableListOf() }.add(
+                                NoteContentBlock(blockId, noteId, blockContent, sectionIndex)
+                            )
+                        }.executeAsList()
                     map.forEach { (note, blocks) ->
                         resultList.add(NoteWithContent(note, blocks))
                     }
@@ -122,8 +124,8 @@ class SqlDelightNoteDatabase(
             database.gooseNoteQueries.insertOrReplaceNoteContentBlock(
                 noteContentBlock.id,
                 noteContentBlock.noteId!!,
+                noteContentBlock.sectionIndex,
                 noteContentBlock.content,
-                noteContentBlock.sectionIndex
             )
             database.gooseNoteQueries.lastInsertedNoteContentBlockId().executeAsList().first()
         }
@@ -133,7 +135,7 @@ class SqlDelightNoteDatabase(
         return database.transaction {
             noteContentBlocks.forEach { block ->
                 database.gooseNoteQueries.insertOrReplaceNoteContentBlock(
-                    block.id, block.noteId!!, block.content, block.sectionIndex
+                    block.id, block.noteId!!, block.sectionIndex, block.content
                 )
             }
         }

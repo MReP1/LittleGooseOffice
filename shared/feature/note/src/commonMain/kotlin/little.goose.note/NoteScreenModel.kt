@@ -43,6 +43,7 @@ import little.goose.note.event.NoteScreenEvent
 import little.goose.note.ui.note.NoteBlockState
 import little.goose.note.ui.note.NoteBottomBarState
 import little.goose.note.ui.note.NoteContentState
+import little.goose.note.ui.note.NoteScreenState
 import little.goose.note.util.FormatType
 import little.goose.note.util.orderListNum
 import little.goose.shared.common.getCurrentTimeMillis
@@ -87,7 +88,7 @@ class NoteScreenModel(
         }.onEach { noteWithContent.value = it }.launchIn(screenModelScope)
     }
 
-    val noteContentState = combine(
+    private val noteContentState = combine(
         noteWithContent.filterNotNull(),
         isPreviewStateFlow
     ) { nwc, isPreview ->
@@ -137,7 +138,7 @@ class NoteScreenModel(
         NoteContentState.Loading
     )
 
-    val noteBottomBarState = combine(
+    private val noteBottomBarState = combine(
         noteWithContent.filterNotNull(),
         isPreviewStateFlow
     ) { _, isPreview ->
@@ -153,6 +154,16 @@ class NoteScreenModel(
             )
         }
     }.stateIn(screenModelScope, SharingStarted.WhileSubscribed(5000L), NoteBottomBarState.Loading)
+
+    val noteScreenState = combine(
+        noteContentState, noteBottomBarState
+    ) { noteContentState, noteBottomBarState ->
+        NoteScreenState(noteContentState, noteBottomBarState)
+    }.stateIn(
+        screenModelScope,
+        SharingStarted.WhileSubscribed(5000L),
+        NoteScreenState(noteContentState.value, noteBottomBarState.value)
+    )
 
     private fun deleteNoteContentBlock(blockId: Long) {
         screenModelScope.launch {

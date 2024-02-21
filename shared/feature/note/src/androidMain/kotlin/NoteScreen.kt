@@ -9,6 +9,7 @@ import little.goose.note.ui.note.NoteBlockState
 import little.goose.note.ui.note.NoteBottomBarState
 import little.goose.note.ui.note.NoteContentState
 import little.goose.note.ui.note.NoteScreen
+import little.goose.note.ui.note.NoteScreenState
 
 @Preview
 @Composable
@@ -16,8 +17,7 @@ fun PreviewNoteScreenLoading() {
     NoteScreen(
         onBack = {},
         modifier = Modifier.fillMaxSize(),
-        noteContentState = NoteContentState.Loading,
-        bottomBarState = NoteBottomBarState.Loading,
+        noteScreenState = NoteScreenState(NoteContentState.Loading, NoteBottomBarState.Loading),
         blockColumnState = rememberLazyListState()
     )
 }
@@ -29,17 +29,19 @@ fun PreviewNoteScreenEditing() {
     NoteScreen(
         onBack = {},
         modifier = Modifier.fillMaxSize(),
-        noteContentState = NoteContentState.Edit(
-            titleState = rememberTextFieldState(System.currentTimeMillis().toString()),
-            contentStateList = List(10) {
-                NoteBlockState(
-                    it.toLong(),
-                    rememberTextFieldState(System.currentTimeMillis().toString())
-                )
-            },
-            onBlockDelete = {}
+        noteScreenState = NoteScreenState(
+            NoteContentState.Edit(
+                titleState = rememberTextFieldState(System.currentTimeMillis().toString()),
+                contentStateList = List(10) {
+                    NoteBlockState(
+                        it.toLong(),
+                        rememberTextFieldState(System.currentTimeMillis().toString())
+                    )
+                },
+                onBlockDelete = {}
+            ),
+            NoteBottomBarState.Editing()
         ),
-        bottomBarState = NoteBottomBarState.Editing(),
         blockColumnState = rememberLazyListState()
     )
 }
@@ -50,8 +52,9 @@ fun PreviewNoteScreenPreviewing() {
     NoteScreen(
         onBack = {},
         modifier = Modifier.fillMaxSize(),
-        noteContentState = NoteContentState.Preview(
-            content = """
+        noteScreenState = NoteScreenState(
+            NoteContentState.Preview(
+                content = """
                 # Title
                 
                 ## Title2
@@ -59,8 +62,9 @@ fun PreviewNoteScreenPreviewing() {
                 Hello world!
                 
             """.trimIndent()
+            ),
+            NoteBottomBarState.Preview()
         ),
-        bottomBarState = NoteBottomBarState.Preview(),
         blockColumnState = rememberLazyListState()
     )
 }

@@ -8,12 +8,16 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 
+data class NoteScreenState(
+    val contentState: NoteContentState,
+    val bottomBarState: NoteBottomBarState
+)
+
 @Composable
 fun NoteScreen(
     onBack: () -> Unit,
     modifier: Modifier = Modifier,
-    noteContentState: NoteContentState,
-    bottomBarState: NoteBottomBarState,
+    noteScreenState: NoteScreenState,
     blockColumnState: LazyListState
 ) {
     Scaffold(
@@ -26,9 +30,10 @@ fun NoteScreen(
         },
         content = { paddingValues ->
             NoteContent(
-                state = noteContentState,
+                state = noteScreenState.contentState,
                 blockColumnState = blockColumnState,
-                onAddBlock = (bottomBarState as? NoteBottomBarState.Editing)?.onBlockAdd ?: {},
+                onAddBlock = (noteScreenState.bottomBarState as? NoteBottomBarState.Editing)?.onBlockAdd
+                    ?: {},
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(paddingValues)
@@ -36,7 +41,7 @@ fun NoteScreen(
         },
         bottomBar = {
             NoteBottomBar(
-                state = bottomBarState,
+                state = noteScreenState.bottomBarState,
                 modifier = Modifier.fillMaxWidth()
             )
         }

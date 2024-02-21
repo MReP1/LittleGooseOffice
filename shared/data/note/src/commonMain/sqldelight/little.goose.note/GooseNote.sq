@@ -1,70 +1,71 @@
-CREATE TABLE GooseNote(
+CREATE TABLE note(
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     title TEXT NOT NULL DEFAULT "",
-    time INTEGER NOT NULL
+    time INTEGER NOT NULL,
+    content TEXT NOT NULL DEFAULT ""
 );
 
-CREATE TABLE GooseNoteContentBlock(
+CREATE TABLE note_content_block(
     id INTEGER PRIMARY KEY AUTOINCREMENT,
-    noteId INTEGER NOT NULL,
-    content TEXT NOT NULL DEFAULT "",
-    sectionIndex INTEGER NOT NULL
+    note_id INTEGER,
+    `index` INTEGER NOT NULL,
+    content TEXT NOT NULL DEFAULT ""
 );
 
 insertOrReplaceNote:
-    INSERT OR REPLACE INTO GooseNote(id, title, time)
-    VALUES (:id, :title, :time);
+    INSERT OR REPLACE INTO note(id, title, time, content)
+    VALUES (:id, :title, :time, :content);
 
 lastInsertedNoteRowId:
-    SELECT last_insert_rowid() FROM GooseNote;
+    SELECT last_insert_rowid() FROM note;
 
 getNote:
-    SELECT * FROM GooseNote
+    SELECT * FROM note
     WHERE id = :id;
 
 getAllNote:
-    SELECT * FROM GooseNote;
+    SELECT * FROM note;
 
 getAllNoteContentBlock:
-    SELECT * FROM GooseNoteContentBlock;
+    SELECT * FROM note_content_block;
 
 getNoteWithContentWithNoteId {
-    SELECT * FROM GooseNote
-    JOIN GooseNoteContentBlock
-    ON GooseNote.id = GooseNoteContentBlock.noteId
-    WHERE GooseNote.id = :noteId
-    ORDER BY GooseNoteContentBlock.sectionIndex ASC;
+    SELECT * FROM note
+    JOIN note_content_block
+    ON note.id = note_content_block.note_id
+    WHERE note.id = :noteId
+    ORDER BY note_content_block.`index` ASC;
 }
 
 getNoteWithContents {
-    SELECT * FROM GooseNote
-    JOIN GooseNoteContentBlock
-    ON GooseNote.id = GooseNoteContentBlock.noteId
-    ORDER BY GooseNoteContentBlock.sectionIndex ASC;
+    SELECT * FROM note
+    JOIN note_content_block
+    ON note.id = note_content_block.note_id
+    ORDER BY note_content_block.`index` ASC;
 }
 
 getNoteContentBlocks:
-    SELECT * FROM GooseNoteContentBlock
-    WHERE noteId = :noteId;
+    SELECT * FROM note_content_block
+    WHERE note_id = :noteId;
 
 insertOrReplaceNoteContentBlock:
-    INSERT OR REPLACE INTO GooseNoteContentBlock
+    INSERT OR REPLACE INTO note_content_block
     VALUES (?, ?, ?, ?);
 
 lastInsertedNoteContentBlockId:
-    SELECT last_insert_rowid() FROM GooseNoteContentBlock;
+    SELECT last_insert_rowid() FROM note_content_block;
 
 deleteNoteContentBlock:
-    DELETE FROM GooseNoteContentBlock
+    DELETE FROM note_content_block
     WHERE id = :id;
 
 deleteNoteContentBlockWithNoteId:
-    DELETE FROM GooseNoteContentBlock
-    WHERE noteId = :noteId;
+    DELETE FROM note_content_block
+    WHERE note_id = :noteId;
 
 deleteNoteAndItsBlocks {
-    DELETE FROM GooseNote
+    DELETE FROM note
     WHERE id = :id;
-    DELETE FROM GooseNoteContentBlock
-    WHERE noteId = :id;
+    DELETE FROM note_content_block
+    WHERE note_id = :id;
 }

@@ -1,15 +1,10 @@
 package little.goose.note.ui.note
 
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavOptionsBuilder
@@ -17,11 +12,11 @@ import androidx.navigation.NavType
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import androidx.navigation.navDeepLink
-import kotlinx.coroutines.android.awaitFrame
+import cafe.adriel.voyager.navigator.Navigator
 import little.goose.common.constants.DEEP_LINK_THEME_AND_HOST
+import little.goose.note.NoteScreen
 import little.goose.note.data.constants.KEY_NOTE
 import little.goose.note.data.constants.KEY_NOTE_ID
-import little.goose.note.event.NoteScreenEvent
 
 sealed class NoteNavigatingType {
     data object Add : NoteNavigatingType()
@@ -67,6 +62,7 @@ fun NavGraphBuilder.noteRoute(onBack: () -> Unit) {
             modifier = Modifier
                 .fillMaxSize()
                 .shadow(36.dp, clip = false),
+            it.arguments!!.getLong(KEY_NOTE_ID),
             onBack = onBack
         )
     }
@@ -75,45 +71,8 @@ fun NavGraphBuilder.noteRoute(onBack: () -> Unit) {
 @Composable
 internal fun NoteRoute(
     modifier: Modifier = Modifier,
+    noteId: Long,
     onBack: () -> Unit
 ) {
-    val viewModel = hiltViewModel<NoteViewModel>()
-
-    val contentState by viewModel.noteContentState.collectAsState()
-    val bottomBarState by viewModel.noteBottomBarState.collectAsState()
-
-    val blockColumnState = rememberLazyListState()
-
-    NoteScreen(
-        onBack = onBack,
-        modifier = modifier,
-        bottomBarState = bottomBarState,
-        noteContentState = contentState,
-        blockColumnState = blockColumnState
-    )
-
-    LaunchedEffect(viewModel.event) {
-        viewModel.event.collect { event ->
-            when (event) {
-                is NoteScreenEvent.AddNoteBlock -> {
-                    val editState = contentState as? NoteContentState.Edit ?: return@collect
-                    val blockIndex = editState.contentStateList.indexOfLast {
-                        it.id == event.id
-                    }
-                    awaitFrame()
-                    if (blockIndex != -1) {
-                        // 标题占了一个位置，所以要 +1
-                        blockColumnState.animateScrollToItem(blockIndex + 1, 0)
-                    }
-                    // 申请焦点
-                    runCatching {
-                        editState.contentStateList
-                            .getOrNull(blockIndex)
-                            ?.focusRequester
-                            ?.requestFocus()
-                    }
-                }
-            }
-        }
-    }
+    Navigator(NoteScreen(noteId))
 }

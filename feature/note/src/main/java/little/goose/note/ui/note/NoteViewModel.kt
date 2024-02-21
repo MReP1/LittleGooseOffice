@@ -169,6 +169,16 @@ class NoteViewModel @Inject constructor(
         }
     }.stateIn(viewModelScope, WhileSubscribed(5000L), NoteBottomBarState.Loading)
 
+    val noteScreenState = combine(
+        noteContentState, noteBottomBarState
+    ) { noteContentState, noteBottomBarState ->
+        NoteScreenState(noteContentState, noteBottomBarState)
+    }.stateIn(
+        viewModelScope,
+        WhileSubscribed(5000L),
+        NoteScreenState(noteContentState.value, noteBottomBarState.value)
+    )
+
     private fun deleteNoteContentBlock(blockId: Long) {
         viewModelScope.launch {
             val nwc = noteWithContent.value ?: return@launch

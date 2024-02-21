@@ -23,24 +23,23 @@ data class NoteScreen(val noteId: Long) : Screen {
     override fun Content() {
         val navigator = LocalNavigator.currentOrThrow
         val screenModel = getScreenModel<NoteScreenModel> { parametersOf(noteId) }
-        val contentState by screenModel.noteContentState.collectAsState()
-        val bottomBarState by screenModel.noteBottomBarState.collectAsState()
+        val screenState by screenModel.noteScreenState.collectAsState()
 
         val blockColumnState = rememberLazyListState()
 
         NoteScreen(
             onBack = navigator::pop,
             modifier = Modifier.fillMaxSize(),
-            bottomBarState = bottomBarState,
-            noteContentState = contentState,
+            noteScreenState = screenState,
             blockColumnState = blockColumnState
         )
 
-        LaunchedEffect(Unit) {
+        LaunchedEffect(screenModel.event) {
             screenModel.event.collect { event ->
                 when (event) {
                     is NoteScreenEvent.AddNoteBlock -> {
-                        val editState = contentState as? NoteContentState.Edit ?: return@collect
+                        val editState =
+                            screenState.contentState as? NoteContentState.Edit ?: return@collect
                         val blockIndex = editState.contentStateList.indexOfLast {
                             it.id == event.id
                         }
