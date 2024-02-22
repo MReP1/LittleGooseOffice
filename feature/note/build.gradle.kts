@@ -28,7 +28,11 @@ dependencies {
     implementation(libs.androidx.lifecycle.runtime.compose)
 
     implementation(libs.androidx.activity.ktx)
-    api(project(":shared:feature:note"))
+    implementation(project(":shared:feature:note"))
+    implementation(project(":shared:data:note"))
 
-    implementation(libs.voyager.navigator)
+    compileOnly(libs.koin.core)
+    implementation(libs.koin.compose)
+    implementation(libs.koin.android)
+    implementation(libs.koin.androidx.compose)
 }

@@ -1,6 +1,5 @@
 package little.goose.note
 
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -11,10 +10,10 @@ import cafe.adriel.voyager.core.screen.Screen
 import cafe.adriel.voyager.koin.getScreenModel
 import cafe.adriel.voyager.navigator.LocalNavigator
 import cafe.adriel.voyager.navigator.currentOrThrow
-import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.Flow
 import little.goose.note.event.NoteScreenEvent
-import little.goose.note.ui.note.NoteContentState
 import little.goose.note.ui.note.NoteScreen
+import little.goose.note.ui.note.NoteScreenState
 import org.koin.core.parameter.parametersOf
 
 data class NoteScreen(val noteId: Long) : Screen {
@@ -23,39 +22,42 @@ data class NoteScreen(val noteId: Long) : Screen {
     override fun Content() {
         val navigator = LocalNavigator.currentOrThrow
         val screenModel = getScreenModel<NoteScreenModel> { parametersOf(noteId) }
-        val screenState by screenModel.noteScreenState.collectAsState()
-
-        val blockColumnState = rememberLazyListState()
-
-        NoteScreen(
-            onBack = navigator::pop,
-            modifier = Modifier.fillMaxSize(),
-            noteScreenState = screenState,
-            blockColumnState = blockColumnState
+        val screenState by screenModel.noteScreenStateHolder.noteScreenState.collectAsState()
+        NoteRoute(
+            event = screenModel.noteScreenStateHolder.event,
+            screenState = screenState,
+            onBack = navigator::pop
         )
+    }
 
-        LaunchedEffect(screenModel.event) {
-            screenModel.event.collect { event ->
-                when (event) {
-                    is NoteScreenEvent.AddNoteBlock -> {
-                        val editState =
-                            screenState.contentState as? NoteContentState.Edit ?: return@collect
-                        val blockIndex = editState.contentStateList.indexOfLast {
-                            it.id == event.id
-                        }
-                        delay(20)
-                        if (blockIndex != -1) {
-                            // 标题占了一个位置，所以要 +1
-                            blockColumnState.animateScrollToItem(blockIndex + 1, 0)
-                        }
-                        // 申请焦点
-                        runCatching {
-                            editState.contentStateList
-                                .getOrNull(blockIndex)
-                                ?.focusRequester
-                                ?.requestFocus()
-                        }
+}
+
+@Composable
+fun NoteRoute(
+    modifier: Modifier = Modifier,
+    onBack: () -> Unit,
+    event: Flow<NoteScreenEvent>,
+    screenState: NoteScreenState
+) {
+    val blockColumnState = rememberLazyListState()
+
+    NoteScreen(
+        modifier = modifier,
+        onBack = onBack,
+        noteScreenState = screenState,
+        blockColumnState = blockColumnState
+    )
+
+    LaunchedEffect(event) {
+        event.collect { event ->
+            when (event) {
+                is NoteScreenEvent.AddNoteBlock -> {
+                    if (event.blockIndex != -1) {
+                        // 标题占了一个位置，所以要 +1
+                        blockColumnState.animateScrollToItem(event.blockIndex + 1, 0)
                     }
+                    // 申请焦点
+                    runCatching { event.focusRequester.requestFocus() }
                 }
             }
         }

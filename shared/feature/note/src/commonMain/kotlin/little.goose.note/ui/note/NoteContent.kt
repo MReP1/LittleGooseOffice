@@ -49,7 +49,7 @@ sealed class NoteContentState {
 
 
 @Stable
-class NoteBlockState(
+data class NoteBlockState(
     val id: Long,
     val contentState: TextFieldState,
     val interaction: MutableInteractionSource = MutableInteractionSource(),

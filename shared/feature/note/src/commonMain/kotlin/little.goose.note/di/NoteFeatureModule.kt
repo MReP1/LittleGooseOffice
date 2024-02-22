@@ -6,7 +6,7 @@ import little.goose.note.NoteScreenModel
 import org.koin.core.module.dsl.factoryOf
 import org.koin.dsl.module
 
-val noteFeatureModule = module {
+val sharedNoteFeatureModule = module {
 
     includes(noteDatabaseModule)
 
