@@ -39,9 +39,7 @@ sealed class NoteContentState {
 
     data class Edit(
         val titleState: TextFieldState,
-        val contentStateList: List<NoteBlockState>,
-        val onBlockDelete: (Long) -> Unit = {},
-        val onBlockAdd: () -> Unit = {}
+        val contentStateList: List<NoteBlockState>
     ) : NoteContentState()
 
     data class Preview(val content: String) : NoteContentState()
@@ -60,8 +58,8 @@ data class NoteBlockState(
 fun NoteContent(
     modifier: Modifier = Modifier,
     state: NoteContentState,
-    onAddBlock: () -> Unit,
-    blockColumnState: LazyListState
+    blockColumnState: LazyListState,
+    action: (NoteScreenIntent) -> Unit
 ) {
     Box(modifier = modifier) {
         when (state) {
@@ -69,7 +67,7 @@ fun NoteContent(
                 NoteEditContent(
                     modifier = Modifier.fillMaxSize(),
                     state = state,
-                    onAddBlock = onAddBlock,
+                    action = action,
                     blockColumnState = blockColumnState
                 )
             }
@@ -119,7 +117,7 @@ fun MarkdownContent(
 fun NoteEditContent(
     modifier: Modifier = Modifier,
     state: NoteContentState.Edit,
-    onAddBlock: () -> Unit,
+    action: (NoteScreenIntent) -> Unit,
     blockColumnState: LazyListState = rememberLazyListState()
 ) {
     LazyColumn(
@@ -141,9 +139,7 @@ fun NoteEditContent(
                     color = LocalContentColor.current
                 ),
                 keyboardActions = KeyboardActions(
-                    onDone = {
-                        onAddBlock()
-                    }
+                    onDone = { action(NoteScreenIntent.AddBlockToBottom) }
                 ),
                 decorator = {
                     if (state.titleState.text.isEmpty()) {
@@ -169,7 +165,9 @@ fun NoteEditContent(
                     .fillMaxWidth()
                     .animateItemPlacement(),
                 textFieldState = contentState.contentState,
-                onBlockDelete = { state.onBlockDelete(contentState.id) },
+                onBlockDelete = {
+                    action(NoteScreenIntent.DeleteBlock(contentState.id))
+                },
                 focusRequester = contentState.focusRequester,
                 interactionSource = contentState.interaction
             )

@@ -1,6 +1,5 @@
 package little.goose.note
 
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.interaction.FocusInteraction
 import androidx.compose.foundation.interaction.InteractionSource
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -43,13 +42,14 @@ import little.goose.note.event.NoteScreenEvent
 import little.goose.note.ui.note.NoteBlockState
 import little.goose.note.ui.note.NoteBottomBarState
 import little.goose.note.ui.note.NoteContentState
+import little.goose.note.ui.note.NoteScreenIntent
+import little.goose.note.ui.note.NoteScreenMode
 import little.goose.note.ui.note.NoteScreenState
 import little.goose.note.util.FormatType
 import little.goose.note.util.orderListNum
 import little.goose.shared.common.getCurrentTimeMillis
 import kotlin.time.Duration.Companion.seconds
 
-@OptIn(ExperimentalFoundationApi::class)
 class NoteScreenStateHolder(
     noteId: Long,
     private val coroutineScope: CoroutineScope,
@@ -75,6 +75,12 @@ class NoteScreenStateHolder(
 
     private val _event = MutableSharedFlow<NoteScreenEvent>()
     val event = _event.asSharedFlow()
+
+    val format = Format(
+        getBlocks = { noteWithContent.value?.content },
+        getFocusingId = focusingBlockId::value,
+        getContentBlockTextFieldState = contentBlockTextFieldState::get
+    )
 
     init {
         noteIdFlow.flatMapLatest { nId ->
@@ -127,9 +133,7 @@ class NoteScreenStateHolder(
                         },
                         focusRequester = focusRequesterMap.getOrPut(block.id!!, ::FocusRequester)
                     )
-                },
-                onBlockDelete = ::deleteNoteContentBlock,
-                onBlockAdd = ::addBlockToBottom
+                }
             )
         }
     }.stateIn(
@@ -143,15 +147,9 @@ class NoteScreenStateHolder(
         isPreviewStateFlow
     ) { _, isPreview ->
         if (isPreview) {
-            NoteBottomBarState.Preview(
-                onChangeToEditMode = { isPreviewStateFlow.value = false },
-            )
+            NoteBottomBarState.Preview
         } else {
-            NoteBottomBarState.Editing(
-                onChangeToPreviewMode = { isPreviewStateFlow.value = true },
-                onFormat = ::format,
-                onBlockAdd = ::addBlockToBottom
-            )
+            NoteBottomBarState.Editing
         }
     }.stateIn(coroutineScope, SharingStarted.WhileSubscribed(5000L), NoteBottomBarState.Loading)
 
@@ -164,6 +162,20 @@ class NoteScreenStateHolder(
         SharingStarted.WhileSubscribed(5000L),
         NoteScreenState(noteContentState.value, noteBottomBarState.value)
     )
+
+    val action = fun(intent: NoteScreenIntent) {
+        when (intent) {
+            is NoteScreenIntent.Format -> format(intent.formatType)
+            NoteScreenIntent.AddBlockToBottom -> addBlockToBottom()
+            is NoteScreenIntent.DeleteBlock -> deleteNoteContentBlock(intent.id)
+            is NoteScreenIntent.ChangeNoteScreenMode -> {
+                isPreviewStateFlow.value = when (intent.mode) {
+                    NoteScreenMode.Preview -> true
+                    NoteScreenMode.Edit -> false
+                }
+            }
+        }
+    }
 
     private fun deleteNoteContentBlock(blockId: Long) {
         coroutineScope.launch {
@@ -265,32 +277,6 @@ class NoteScreenStateHolder(
         }
     }
 
-    private fun format(formatType: FormatType) {
-        val realType = if (formatType is FormatType.List.Ordered) {
-            // if formatting ordered list, we need to find if pre block is ordered list and get its number.
-            val blocks = noteWithContent.value?.content ?: return
-            val focusingId = focusingBlockId.value ?: return
-            val focusingContentBlock = blocks.findLast { it.id == focusingId } ?: return
-            if (focusingContentBlock.sectionIndex > 0L) {
-                blocks.findLast {
-                    it.sectionIndex == focusingContentBlock.sectionIndex - 1
-                }?.content?.orderListNum?.let { preNum ->
-                    FormatType.List.Ordered(preNum + 1)
-                } ?: formatType
-            } else formatType
-        } else formatType
-
-        focusingBlockId.value?.let(contentBlockTextFieldState::get)?.let { tfs ->
-            tfs.edit {
-                if (asCharSequence().startsWith(realType.value)) {
-                    delete(0, realType.value.length)
-                } else {
-                    insert(0, realType.value)
-                }
-            }
-        }
-    }
-
     private suspend fun createCollectFocusJob(blockId: Long, interactionSource: InteractionSource) {
         collectFocusJobMap[blockId]?.cancel()
         collectFocusJobMap[blockId] = coroutineScope.launch {
@@ -365,4 +351,35 @@ class NoteScreenStateHolder(
         }
     }
 
+}
+
+@Suppress("FunctionName")
+fun Format(
+    getBlocks: () -> List<NoteContentBlock>?,
+    getFocusingId: () -> Long?,
+    getContentBlockTextFieldState: (id: Long) -> TextFieldState?
+) = fun(formatType: FormatType) {
+    val focusingId = getFocusingId() ?: return
+    val realType = if (formatType is FormatType.List.Ordered) {
+        // if formatting ordered list, we need to consider if pre block is ordered list and get its number.
+        val blocks = getBlocks() ?: return
+        val focusingContentBlock = blocks.findLast { it.id == focusingId } ?: return
+        if (focusingContentBlock.sectionIndex > 0L) {
+            blocks.findLast {
+                it.sectionIndex == focusingContentBlock.sectionIndex - 1
+            }?.content?.orderListNum?.let { preNum ->
+                FormatType.List.Ordered(preNum + 1)
+            } ?: formatType
+        } else formatType
+    } else formatType
+
+    getContentBlockTextFieldState(focusingId)?.let { tfs ->
+        tfs.edit {
+            if (asCharSequence().startsWith(realType.value)) {
+                delete(0, realType.value.length)
+            } else {
+                insert(0, realType.value)
+            }
+        }
+    }
 }

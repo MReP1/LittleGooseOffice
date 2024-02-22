@@ -67,7 +67,8 @@ fun NavGraphBuilder.noteRoute(onBack: () -> Unit) {
                 .shadow(36.dp, clip = false),
             onBack = onBack,
             event = viewModel.noteScreenStateHolder.event,
-            screenState = screenState
+            screenState = screenState,
+            action = viewModel.noteScreenStateHolder.action
         )
     }
 }

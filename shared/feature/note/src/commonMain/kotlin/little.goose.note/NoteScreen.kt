@@ -13,6 +13,7 @@ import cafe.adriel.voyager.navigator.currentOrThrow
 import kotlinx.coroutines.flow.Flow
 import little.goose.note.event.NoteScreenEvent
 import little.goose.note.ui.note.NoteScreen
+import little.goose.note.ui.note.NoteScreenIntent
 import little.goose.note.ui.note.NoteScreenState
 import org.koin.core.parameter.parametersOf
 
@@ -26,7 +27,8 @@ data class NoteScreen(val noteId: Long) : Screen {
         NoteRoute(
             event = screenModel.noteScreenStateHolder.event,
             screenState = screenState,
-            onBack = navigator::pop
+            onBack = navigator::pop,
+            action = screenModel.noteScreenStateHolder.action
         )
     }
 
@@ -37,7 +39,8 @@ fun NoteRoute(
     modifier: Modifier = Modifier,
     onBack: () -> Unit,
     event: Flow<NoteScreenEvent>,
-    screenState: NoteScreenState
+    screenState: NoteScreenState,
+    action: (NoteScreenIntent) -> Unit
 ) {
     val blockColumnState = rememberLazyListState()
 
@@ -45,7 +48,8 @@ fun NoteRoute(
         modifier = modifier,
         onBack = onBack,
         noteScreenState = screenState,
-        blockColumnState = blockColumnState
+        blockColumnState = blockColumnState,
+        action = action
     )
 
     LaunchedEffect(event) {

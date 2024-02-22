@@ -34,7 +34,7 @@ fun PreviewNoteEditContent() {
         NoteEditContent(
             state = state,
             modifier = Modifier.fillMaxSize(),
-            onAddBlock = {}
+            action = {}
         )
     }
 }

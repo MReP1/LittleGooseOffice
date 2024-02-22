@@ -18,7 +18,8 @@ fun PreviewNoteScreenLoading() {
         onBack = {},
         modifier = Modifier.fillMaxSize(),
         noteScreenState = NoteScreenState(NoteContentState.Loading, NoteBottomBarState.Loading),
-        blockColumnState = rememberLazyListState()
+        blockColumnState = rememberLazyListState(),
+        action = {}
     )
 }
 
@@ -38,11 +39,11 @@ fun PreviewNoteScreenEditing() {
                         rememberTextFieldState(System.currentTimeMillis().toString())
                     )
                 },
-                onBlockDelete = {}
             ),
-            NoteBottomBarState.Editing()
+            NoteBottomBarState.Editing
         ),
-        blockColumnState = rememberLazyListState()
+        blockColumnState = rememberLazyListState(),
+        action = {}
     )
 }
 
@@ -63,8 +64,9 @@ fun PreviewNoteScreenPreviewing() {
                 
             """.trimIndent()
             ),
-            NoteBottomBarState.Preview()
+            NoteBottomBarState.Preview
         ),
-        blockColumnState = rememberLazyListState()
+        blockColumnState = rememberLazyListState(),
+        action = {}
     )
 }

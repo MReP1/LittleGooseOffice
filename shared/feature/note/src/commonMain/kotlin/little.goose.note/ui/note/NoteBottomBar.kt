@@ -38,22 +38,17 @@ sealed class NoteBottomBarState {
 
     data object Loading : NoteBottomBarState()
 
-    data class Preview(
-        val onChangeToEditMode: () -> Unit = {}
-    ) : NoteBottomBarState()
+    data object Preview : NoteBottomBarState()
 
-    data class Editing(
-        val onChangeToPreviewMode: () -> Unit = {},
-        val onFormat: (FormatType) -> Unit = {},
-        val onBlockAdd: () -> Unit = {},
-    ) : NoteBottomBarState()
+    data object Editing : NoteBottomBarState()
 
 }
 
 @Composable
 fun NoteBottomBar(
     modifier: Modifier = Modifier,
-    state: NoteBottomBarState
+    state: NoteBottomBarState,
+    action: (NoteScreenIntent) -> Unit
 ) {
     Surface(
         modifier = modifier,
@@ -66,7 +61,9 @@ fun NoteBottomBar(
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             if (state is NoteBottomBarState.Editing) {
-                IconButton(onClick = state.onBlockAdd) {
+                IconButton(onClick = {
+                    action(NoteScreenIntent.AddBlockToBottom)
+                }) {
                     Icon(
                         imageVector = Icons.Rounded.Add,
                         contentDescription = "add note"
@@ -77,7 +74,8 @@ fun NoteBottomBar(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(vertical = 4.dp),
-                state = state
+                state = state,
+                action = action
             )
         }
     }
@@ -86,7 +84,8 @@ fun NoteBottomBar(
 @Composable
 private fun NoteBottomBarRow(
     modifier: Modifier,
-    state: NoteBottomBarState
+    state: NoteBottomBarState,
+    action: (NoteScreenIntent) -> Unit
 ) {
     Row(modifier) {
         when (state) {
@@ -115,11 +114,13 @@ private fun NoteBottomBarRow(
             ) {
                 FormatHeaderIcon(
                     modifier = Modifier,
-                    onHeaderClick = state.onFormat
+                    onHeaderClick = {
+                        action(NoteScreenIntent.Format(it))
+                    }
                 )
                 IconButton(
                     onClick = {
-                        state.onFormat(FormatType.List.Unordered)
+                        action(NoteScreenIntent.Format(FormatType.List.Unordered))
                     }
                 ) {
                     Icon(
@@ -129,7 +130,7 @@ private fun NoteBottomBarRow(
                 }
                 IconButton(
                     onClick = {
-                        state.onFormat(FormatType.List.Ordered(1))
+                        action(NoteScreenIntent.Format(FormatType.List.Ordered(1)))
                     }
                 ) {
                     Icon(
@@ -139,7 +140,7 @@ private fun NoteBottomBarRow(
                 }
                 IconButton(
                     onClick = {
-                        state.onFormat(FormatType.Quote)
+                        action(NoteScreenIntent.Format(FormatType.Quote))
                     }
                 ) {
                     Icon(
@@ -154,8 +155,14 @@ private fun NoteBottomBarRow(
             FloatingActionButton(
                 onClick = {
                     when (state) {
-                        is NoteBottomBarState.Editing -> state.onChangeToPreviewMode()
-                        is NoteBottomBarState.Preview -> state.onChangeToEditMode()
+                        is NoteBottomBarState.Editing -> action(
+                            NoteScreenIntent.ChangeNoteScreenMode(NoteScreenMode.Preview)
+                        )
+
+                        is NoteBottomBarState.Preview -> action(
+                            NoteScreenIntent.ChangeNoteScreenMode(NoteScreenMode.Edit)
+                        )
+
                         NoteBottomBarState.Loading -> Unit
                     }
                 }

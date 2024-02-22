@@ -7,7 +7,8 @@ import little.goose.note.ui.note.NoteBottomBarState
 @Composable
 private fun PreviewNoteBottomBarEditing() {
     NoteBottomBar(
-        state = NoteBottomBarState.Editing()
+        state = NoteBottomBarState.Editing,
+        action = {}
     )
 }
 
@@ -15,7 +16,8 @@ private fun PreviewNoteBottomBarEditing() {
 @Composable
 private fun PreviewNoteBottomBarLoading() {
     NoteBottomBar(
-        state = NoteBottomBarState.Loading
+        state = NoteBottomBarState.Loading,
+        action = {}
     )
 }
 
@@ -23,6 +25,7 @@ private fun PreviewNoteBottomBarLoading() {
 @Composable
 private fun PreviewNoteBottomBarPreview() {
     NoteBottomBar(
-        state = NoteBottomBarState.Preview()
+        state = NoteBottomBarState.Preview,
+        action = {}
     )
 }

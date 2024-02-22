@@ -20,7 +20,8 @@ fun NoteScreen(
     onBack: () -> Unit,
     modifier: Modifier = Modifier,
     noteScreenState: NoteScreenState,
-    blockColumnState: LazyListState
+    blockColumnState: LazyListState,
+    action: (NoteScreenIntent) -> Unit
 ) {
     Scaffold(
         modifier = modifier,
@@ -34,17 +35,17 @@ fun NoteScreen(
             NoteContent(
                 state = noteScreenState.contentState,
                 blockColumnState = blockColumnState,
-                onAddBlock = (noteScreenState.bottomBarState as? NoteBottomBarState.Editing)?.onBlockAdd
-                    ?: {},
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(paddingValues)
+                    .padding(paddingValues),
+                action = action
             )
         },
         bottomBar = {
             NoteBottomBar(
                 state = noteScreenState.bottomBarState,
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier.fillMaxWidth(),
+                action = action
             )
         }
     )

@@ -2,6 +2,8 @@ package plugin
 
 import org.gradle.api.Plugin
 import org.gradle.api.Project
+import org.gradle.kotlin.dsl.configure
+import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
 
 class KmpComposePlugin : Plugin<Project> {
 
@@ -11,6 +13,15 @@ class KmpComposePlugin : Plugin<Project> {
                 apply(libs.findPlugin("jetbrains-compose").get().get().pluginId)
             }
             applyComposeStrongSkippingMode()
+
+            extensions.configure<KotlinMultiplatformExtension> {
+                compilerOptions {
+                    freeCompilerArgs.addAll(
+                        "-opt-in=androidx.compose.foundation.ExperimentalFoundationApi",
+                        "-opt-in=kotlinx.coroutines.ExperimentalCoroutinesApi"
+                    )
+                }
+            }
         }
     }
 
