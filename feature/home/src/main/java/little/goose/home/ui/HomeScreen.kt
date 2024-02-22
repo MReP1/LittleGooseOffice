@@ -25,6 +25,7 @@ import little.goose.home.data.HomePage
 import little.goose.home.ui.index.IndexState
 import little.goose.memorial.ui.MemorialHomeState
 import little.goose.note.ui.NoteColumnState
+import little.goose.note.ui.NotebookIntent
 import little.goose.search.SearchType
 import java.time.format.TextStyle
 import java.util.Date
@@ -46,7 +47,8 @@ fun HomeScreen(
     onNavigateToTransaction: (transactionId: Long?, date: Date?) -> Unit,
     onNavigateToNote: (noteId: Long?) -> Unit,
     onNavigateToSearch: (SearchType) -> Unit,
-    onNavigateToAccountAnalysis: () -> Unit
+    onNavigateToAccountAnalysis: () -> Unit,
+    noteAction: (NotebookIntent) -> Unit
 ) {
     val scope = rememberCoroutineScope()
     val currentHomePage = remember(pagerState.currentPage) {
@@ -119,7 +121,8 @@ fun HomeScreen(
                     onNavigateToAccountAnalysis,
                     noteColumnState,
                     memorialHomeState,
-                    accountHomeState
+                    accountHomeState,
+                    noteAction = noteAction
                 )
             },
             bottomBar = {

@@ -27,6 +27,7 @@ import little.goose.design.system.theme.GooseTheme
 import little.goose.note.data.entities.Note
 import little.goose.note.data.entities.NoteContentBlock
 import little.goose.note.ui.NoteColumnState
+import little.goose.note.ui.NotebookIntent
 import little.goose.search.SearchState
 import little.goose.search.component.SearchScreen
 import little.goose.ui.screen.LittleGooseEmptyScreen
@@ -80,6 +81,7 @@ internal fun SearchNoteRoute(
         state = searchNoteState,
         snackbarHostState = snackbarHostState,
         onNavigateToNote = onNavigateToNote,
+        action = viewModel::action,
         onBack = onBack
     )
 }
@@ -89,6 +91,7 @@ fun SearchNoteScreen(
     modifier: Modifier = Modifier,
     state: SearchNoteState,
     snackbarHostState: SnackbarHostState,
+    action: (NotebookIntent) -> Unit,
     onNavigateToNote: (Long) -> Unit,
     onBack: () -> Unit
 ) {
@@ -159,6 +162,7 @@ fun SearchNoteScreen(
                         modifier = Modifier.fillMaxSize(),
                         noteColumnState = state.data,
                         onNavigateToNote = onNavigateToNote,
+                        action = action
                     )
                 }
             }
@@ -182,6 +186,7 @@ private fun PreviewSearchNoteScreen() = GooseTheme {
         ),
         snackbarHostState = SnackbarHostState(),
         onNavigateToNote = {},
+        action = {},
         onBack = {}
     )
 }

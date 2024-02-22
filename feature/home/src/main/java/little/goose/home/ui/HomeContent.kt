@@ -25,6 +25,7 @@ import little.goose.memorial.ui.MemorialHome
 import little.goose.memorial.ui.MemorialHomeState
 import little.goose.note.ui.NoteColumnState
 import little.goose.note.ui.NotebookHome
+import little.goose.note.ui.NotebookIntent
 import little.goose.search.SearchType
 import java.util.Date
 
@@ -43,7 +44,8 @@ fun HomePageContent(
     onNavigateToAccountAnalysis: () -> Unit,
     noteColumnState: NoteColumnState,
     memorialHomeState: MemorialHomeState,
-    accountHomeState: AccountHomeState
+    accountHomeState: AccountHomeState,
+    noteAction: (NotebookIntent) -> Unit
 ) {
     val buttonState = remember { MovableActionButtonState() }
 
@@ -94,7 +96,8 @@ fun HomePageContent(
                         modifier = Modifier.fillMaxSize(),
                         noteColumnState = noteColumnState,
                         onNavigateToNote = onNavigateToNote,
-                        onNavigateToSearch = { onNavigateToSearch(SearchType.Note) }
+                        onNavigateToSearch = { onNavigateToSearch(SearchType.Note) },
+                        action = noteAction
                     )
                 }
 
@@ -125,8 +128,8 @@ fun HomePageContent(
                 isMultiSelecting = isMultiSelecting,
                 currentHomePage = currentHomePage,
                 onDeleteNotes = {
-                    noteColumnState.deleteNotes(noteColumnState.multiSelectedNotes.toList())
-                    noteColumnState.cancelMultiSelecting()
+                    noteAction(NotebookIntent.DeleteNotes(noteColumnState.multiSelectedNotes.toList()))
+                    noteAction(NotebookIntent.CancelMultiSelecting)
                 },
                 onNavigateToNewNote = {
                     onNavigateToNote(null)
@@ -147,12 +150,12 @@ fun HomePageContent(
                     memorialHomeState.memorialColumnState.cancelMultiSelecting()
                 },
                 onNavigateToNewMemorial = onNavigateToMemorialAdd,
-                onSelectAllNotes = noteColumnState.selectAllNotes,
+                onSelectAllNotes = { noteAction(NotebookIntent.SelectAllNotes) },
                 onSelectAllTransactions = accountHomeState.transactionColumnState.selectAllTransactions,
                 onSelectAllMemorials = memorialHomeState.memorialColumnState.selectAllMemorial,
                 onCancelTransactionsMultiSelecting = accountHomeState.transactionColumnState.cancelMultiSelecting,
                 onCancelMemorialsMultiSelecting = memorialHomeState.memorialColumnState.cancelMultiSelecting,
-                onCancelNotesMultiSelecting = noteColumnState.cancelMultiSelecting
+                onCancelNotesMultiSelecting = { noteAction(NotebookIntent.CancelMultiSelecting) }
             )
         }
     }

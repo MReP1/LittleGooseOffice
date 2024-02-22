@@ -146,7 +146,8 @@ fun HomeRoute(
             onNavigateToMemorialAdd = onNavigateToMemorialAdd,
             onNavigateToMemorial = onNavigateToMemorial,
             onNavigateToAccountAnalysis = onNavigateToAccountAnalysis,
-            onNavigateToTransactionScreen = onNavigateToTransactionScreen
+            onNavigateToTransactionScreen = onNavigateToTransactionScreen,
+            noteAction = notebookViewModel::action
         )
 
         LaunchedEffect(

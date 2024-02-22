@@ -22,7 +22,8 @@ fun NotebookHome(
     modifier: Modifier = Modifier,
     noteColumnState: NoteColumnState,
     onNavigateToNote: (noteId: Long) -> Unit,
-    onNavigateToSearch: () -> Unit
+    onNavigateToSearch: () -> Unit,
+    action: (NotebookIntent) -> Unit
 ) {
     PullSurface(
         modifier = modifier,
@@ -45,6 +46,9 @@ fun NotebookHome(
                 state = noteColumnState,
                 onNoteClick = { note ->
                     note.id?.run(onNavigateToNote)
+                },
+                onSelectNote = { note, selected ->
+                    action(NotebookIntent.SelectNote(note, selected))
                 }
             )
         }
@@ -61,6 +65,7 @@ fun PreviewNotebookHome() = GooseTheme {
             )
         ),
         onNavigateToNote = {},
-        onNavigateToSearch = {}
+        onNavigateToSearch = {},
+        action = {}
     )
 }

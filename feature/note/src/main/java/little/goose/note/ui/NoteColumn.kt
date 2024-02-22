@@ -28,18 +28,15 @@ import little.goose.note.logic.notes
 data class NoteColumnState(
     val noteWithContents: Map<Note, List<NoteContentBlock>> = emptyMap(),
     val isMultiSelecting: Boolean = false,
-    val multiSelectedNotes: Set<Note> = emptySet(),
-    val onSelectNote: (item: Note, selected: Boolean) -> Unit = { _, _ -> },
-    val selectAllNotes: () -> Unit = {},
-    val cancelMultiSelecting: () -> Unit = {},
-    val deleteNotes: (notes: List<Note>) -> Unit = {}
+    val multiSelectedNotes: Set<Note> = emptySet()
 )
 
 @Composable
 fun NoteColumn(
     modifier: Modifier = Modifier,
     state: NoteColumnState,
-    onNoteClick: (Note) -> Unit
+    onNoteClick: (Note) -> Unit,
+    onSelectNote: (item: Note, selected: Boolean) -> Unit
 ) {
     val notes = remember(state.noteWithContents) { state.noteWithContents.notes }
     LazyColumn(
@@ -58,9 +55,9 @@ fun NoteColumn(
                         note = note,
                         noteContentBlocks = noteContentBlocks,
                         isMultiSelecting = state.isMultiSelecting,
-                        onNoteSelect = state.onSelectNote,
                         isSelected = state.multiSelectedNotes.contains(note),
-                        onNoteClick = onNoteClick
+                        onNoteClick = onNoteClick,
+                        onNoteSelect = onSelectNote
                     )
                 }
             )
@@ -148,7 +145,8 @@ private fun PreviewNoteColumn() {
     NoteColumn(
         modifier = Modifier.fillMaxSize(),
         state = noteColumnState,
-        onNoteClick = {}
+        onNoteClick = {},
+        onSelectNote = { _, _ -> }
     )
 }
 

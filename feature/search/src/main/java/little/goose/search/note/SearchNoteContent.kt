@@ -24,18 +24,19 @@ import little.goose.design.system.component.MovableActionButton
 import little.goose.design.system.component.MovableActionButtonState
 import little.goose.design.system.component.dialog.DeleteDialog
 import little.goose.design.system.component.dialog.DeleteDialogState
-import little.goose.design.system.theme.GooseTheme
 import little.goose.note.data.entities.Note
 import little.goose.note.data.entities.NoteContentBlock
 import little.goose.note.ui.NoteColumn
 import little.goose.note.ui.NoteColumnState
+import little.goose.note.ui.NotebookIntent
 
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
 internal fun SearchNoteContent(
     modifier: Modifier = Modifier,
     noteColumnState: NoteColumnState,
-    onNavigateToNote: (Long) -> Unit
+    onNavigateToNote: (Long) -> Unit,
+    action: (NotebookIntent) -> Unit
 ) {
     if (noteColumnState.noteWithContents.isNotEmpty()) {
         NoteColumn(
@@ -43,6 +44,9 @@ internal fun SearchNoteContent(
             state = noteColumnState,
             onNoteClick = { note ->
                 note.id?.let { onNavigateToNote(it) }
+            },
+            onSelectNote = { note, selected ->
+                action(NotebookIntent.SelectNote(note, selected))
             }
         )
     }
@@ -71,20 +75,20 @@ internal fun SearchNoteContent(
                 },
                 onMainButtonClick = {
                     deleteDialogState.show(onConfirm = {
-                        noteColumnState.deleteNotes(noteColumnState.multiSelectedNotes.toList())
+                        action(NotebookIntent.DeleteNotes(noteColumnState.multiSelectedNotes.toList()))
                     })
                 },
                 topSubButtonContent = {
                     Icon(imageVector = Icons.Rounded.DoneAll, contentDescription = "Select All")
                 },
                 onTopSubButtonClick = {
-                    noteColumnState.selectAllNotes()
+                    action(NotebookIntent.SelectAllNotes)
                 },
                 bottomSubButtonContent = {
                     Icon(imageVector = Icons.Rounded.RemoveDone, contentDescription = "Cancel")
                 },
                 onBottomSubButtonClick = {
-                    noteColumnState.cancelMultiSelecting()
+                    action(NotebookIntent.CancelMultiSelecting)
                 }
             )
         }
@@ -95,7 +99,7 @@ internal fun SearchNoteContent(
 
 @Preview
 @Composable
-private fun PreviewSearchNoteContent() = GooseTheme {
+private fun PreviewSearchNoteContent() {
     SearchNoteContent(
         noteColumnState = NoteColumnState(
             noteWithContents = mapOf(
@@ -106,6 +110,7 @@ private fun PreviewSearchNoteContent() = GooseTheme {
             isMultiSelecting = false,
             multiSelectedNotes = emptySet()
         ),
-        onNavigateToNote = {}
+        onNavigateToNote = {},
+        action = {}
     )
 }

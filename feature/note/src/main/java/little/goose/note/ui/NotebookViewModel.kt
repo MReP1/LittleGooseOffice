@@ -46,11 +46,7 @@ class NotebookViewModel @Inject constructor(
         NoteColumnState(
             noteWithContents = noteWithContents,
             multiSelectedNotes = multiSelectedNotes,
-            isMultiSelecting = multiSelectedNotes.isNotEmpty(),
-            onSelectNote = ::selectNote,
-            selectAllNotes = ::selectAllNotes,
-            cancelMultiSelecting = ::cancelMultiSelecting,
-            deleteNotes = ::deleteNotes
+            isMultiSelecting = multiSelectedNotes.isNotEmpty()
         )
     }.stateIn(
         scope = viewModelScope,
@@ -58,11 +54,7 @@ class NotebookViewModel @Inject constructor(
         initialValue = NoteColumnState(
             noteWithContents = noteWithContents.value,
             multiSelectedNotes = multiSelectedNotes.value,
-            isMultiSelecting = multiSelectedNotes.value.isNotEmpty(),
-            onSelectNote = ::selectNote,
-            selectAllNotes = ::selectAllNotes,
-            cancelMultiSelecting = ::cancelMultiSelecting,
-            deleteNotes = ::deleteNotes
+            isMultiSelecting = multiSelectedNotes.value.isNotEmpty()
         )
     )
 
@@ -70,6 +62,15 @@ class NotebookViewModel @Inject constructor(
         deleteNotesEventUseCase().onEach {
             _event.emit(Event.DeleteNotes(it))
         }.launchIn(viewModelScope)
+    }
+
+    fun action(intent: NotebookIntent) {
+        when (intent) {
+            NotebookIntent.CancelMultiSelecting -> cancelMultiSelecting()
+            NotebookIntent.SelectAllNotes -> selectAllNotes()
+            is NotebookIntent.DeleteNotes -> deleteNotes(intent.notes)
+            is NotebookIntent.SelectNote -> selectNote(intent.note, intent.selectNote)
+        }
     }
 
     private fun selectNote(note: Note, selected: Boolean) {

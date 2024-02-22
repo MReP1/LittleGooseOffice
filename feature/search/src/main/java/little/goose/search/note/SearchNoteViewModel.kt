@@ -19,6 +19,7 @@ import little.goose.note.logic.DeleteNotesAndItsBlocksUseCase
 import little.goose.note.logic.DeleteNotesEventUseCase
 import little.goose.note.logic.GetNoteWithContentMapFlowByKeyword
 import little.goose.note.ui.NoteColumnState
+import little.goose.note.ui.NotebookIntent
 import javax.inject.Inject
 
 @HiltViewModel
@@ -63,11 +64,7 @@ class SearchNoteViewModel @Inject constructor(
                     NoteColumnState(
                         noteWithContents = nwc,
                         multiSelectedNotes = multiSelectedNotes,
-                        isMultiSelecting = multiSelectedNotes.isNotEmpty(),
-                        onSelectNote = ::selectNote,
-                        selectAllNotes = ::selectAllNote,
-                        deleteNotes = ::deleteNotes,
-                        cancelMultiSelecting = ::cancelNotesMultiSelecting,
+                        isMultiSelecting = multiSelectedNotes.isNotEmpty()
                     ),
                     search = ::search
                 )
@@ -75,10 +72,16 @@ class SearchNoteViewModel @Inject constructor(
         }.launchIn(viewModelScope)
     }
 
-    private fun selectNote(
-        note: Note,
-        selected: Boolean
-    ) {
+    fun action(intent: NotebookIntent) {
+        when (intent) {
+            NotebookIntent.CancelMultiSelecting -> cancelNotesMultiSelecting()
+            NotebookIntent.SelectAllNotes -> selectAllNote()
+            is NotebookIntent.DeleteNotes -> deleteNotes(intent.notes)
+            is NotebookIntent.SelectNote -> selectNote(intent.note, intent.selectNote)
+        }
+    }
+
+    private fun selectNote(note: Note, selected: Boolean) {
         multiSelectedNotes.value = multiSelectedNotes.value.toMutableSet()
             .apply {
                 if (selected) add(note) else remove(note)
