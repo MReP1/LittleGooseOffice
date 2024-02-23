@@ -1,3 +1,5 @@
+@file:Suppress("FunctionName")
+
 package little.goose.note.logic
 
 import androidx.compose.foundation.text2.input.TextFieldState
@@ -7,8 +9,7 @@ import little.goose.data.note.bean.NoteContentBlock
 import little.goose.note.util.FormatType
 import little.goose.note.util.orderListNum
 
-@Suppress("FunctionName")
-fun Formatter(
+fun TextFormatter(
     getBlocks: () -> List<NoteContentBlock>?,
     getFocusingId: () -> Long?,
     getContentBlockTextFieldState: (id: Long) -> TextFieldState?

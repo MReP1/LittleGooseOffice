@@ -23,6 +23,15 @@ class KotlinMultiplatformConventionPlugin : Plugin<Project> {
                 jvmToolchain(AndroidConfigConventions.JAVA_VERSION.toString().toInt())
             }
 
+            extensions.configure<KotlinMultiplatformExtension> {
+                compilerOptions {
+                    freeCompilerArgs.addAll(
+                        "-opt-in=kotlinx.coroutines.ExperimentalCoroutinesApi",
+                        "-opt-in=kotlinx.coroutines.FlowPreview"
+                    )
+                }
+            }
+
             applyAndroid<LibraryExtension> {
                 configureAndroidLibrary()
 

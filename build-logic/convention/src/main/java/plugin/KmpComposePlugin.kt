@@ -18,7 +18,6 @@ class KmpComposePlugin : Plugin<Project> {
                 compilerOptions {
                     freeCompilerArgs.addAll(
                         "-opt-in=androidx.compose.foundation.ExperimentalFoundationApi",
-                        "-opt-in=kotlinx.coroutines.ExperimentalCoroutinesApi"
                     )
                 }
             }
