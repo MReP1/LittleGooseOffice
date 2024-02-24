@@ -63,7 +63,7 @@ class NoteScreenStateHolder(
     ) -> Unit = NoteContentBlockDeleter(
         coroutineScope = coroutineScope,
         getNoteWithContent = noteWithContent::value,
-        updateNoteWithContent = { noteWithContent.value = it },
+        updateNoteWithContent = noteWithContent::value::set,
         insertOrReplaceNoteContentBlocks = insertOrReplaceNoteContentBlocks,
         deleter = { blockId ->
             deleteNoteContentBlockUseCase(blockId)
@@ -83,12 +83,13 @@ class NoteScreenStateHolder(
         block: NoteContentBlock
     ) -> Long = ContentBlockAdder(
         getNoteWithContent = noteWithContent::value,
-        updateNoteWithContent = { noteWithContent.value = it },
+        updateNoteWithContent = noteWithContent::value::set,
         insertOrReplaceNote = insertOrReplaceNote,
-        updateNoteId = { noteIdFlow.value = it },
+        updateNoteId = noteIdFlow::value::set,
         focusRequesterMap = cacheHolder.focusRequesterMap,
         emitEvent = _event::emit,
-        insertOrReplaceNoteContentBlock, insertOrReplaceNoteContentBlocks
+        insertOrReplaceNoteContentBlock = insertOrReplaceNoteContentBlock,
+        insertOrReplaceNoteContentBlocks = insertOrReplaceNoteContentBlocks
     )
 
     private val addBlockToBottom: suspend () -> Unit = BottomBlockAdder(
@@ -103,11 +104,11 @@ class NoteScreenStateHolder(
     ) -> NoteContentState = ContentStateMapper(
         coroutineScope = coroutineScope,
         getNoteWithContent = noteWithContent::value,
-        updateNoteWithContent = { noteWithContent.value = it },
+        updateNoteWithContent = noteWithContent::value::set,
         getNoteId = noteIdFlow::value,
-        updateNoteId = { noteIdFlow.value = it },
+        updateNoteId = noteIdFlow::value::set,
         getFocusingId = ::focusingBlockId,
-        updateFocusingId = { focusingBlockId = it },
+        updateFocusingId = ::focusingBlockId::set,
         addContentBlock = addContentBlock,
         insertOrReplaceNote = insertOrReplaceNote,
         cacheHolder = cacheHolder,
