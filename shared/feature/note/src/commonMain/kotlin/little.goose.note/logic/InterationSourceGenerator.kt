@@ -15,7 +15,7 @@ internal fun InteractionSourceGetter(
     coroutineScope: CoroutineScope,
     mutableInteractionSourceMap: MutableMap<Long, MutableInteractionSource>,
     collectFocusJobMap: MutableMap<Long, Job>,
-    getFocusId: () -> Long?,
+    getFocusingId: () -> Long?,
     updateFocusingId: (Long?) -> Unit
 ): (Long) -> MutableInteractionSource = { blockId ->
     mutableInteractionSourceMap.getOrPut(blockId) {
@@ -25,7 +25,7 @@ internal fun InteractionSourceGetter(
                     when (interaction) {
                         is FocusInteraction.Focus -> updateFocusingId(blockId)
                         is FocusInteraction.Unfocus -> {
-                            if (blockId == getFocusId()) {
+                            if (blockId == getFocusingId()) {
                                 updateFocusingId(null)
                             }
                         }

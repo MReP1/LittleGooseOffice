@@ -2,7 +2,6 @@ package little.goose.note.logic
 
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.text2.input.TextFieldState
-import androidx.compose.foundation.text2.input.placeCursorAtEnd
 import androidx.compose.ui.focus.FocusRequester
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -31,7 +30,6 @@ import little.goose.data.note.domain.InsertOrReplaceNoteContentBlockUseCase
 import little.goose.data.note.domain.InsertOrReplaceNoteContentBlocksUseCase
 import little.goose.data.note.domain.InsertOrReplaceNoteUseCase
 import little.goose.note.event.NoteScreenEvent
-import little.goose.note.ui.note.NoteBlockState
 import little.goose.note.ui.note.NoteBottomBarState
 import little.goose.note.ui.note.NoteContentState
 import little.goose.note.ui.note.NoteScreenIntent
@@ -62,12 +60,6 @@ class NoteScreenStateHolder(
     private val _event = MutableSharedFlow<NoteScreenEvent>()
     val event = _event.asSharedFlow()
 
-    private val titleState: TextFieldState = TitleTextFieldState(
-        coroutineScope = coroutineScope, getNoteWithContent = noteWithContent::value,
-        getNoteId = noteIdFlow::value, updateNoteId = { noteIdFlow.value = it },
-        insertOrReplaceNote = insertOrReplaceNote
-    )
-
     private val deleteNoteContentBlock: suspend (
         id: Long
     ) -> Unit = NoteContentBlockDeleter(
@@ -93,16 +85,6 @@ class NoteScreenStateHolder(
         getContentBlockTextFieldState = contentBlockTextFieldStateMap::get
     )
 
-    private val generateInteractionSource: (
-        id: Long
-    ) -> MutableInteractionSource = InteractionSourceGetter(
-        coroutineScope = coroutineScope,
-        mutableInteractionSourceMap = mutableInteractionSourceMap,
-        collectFocusJobMap = collectFocusJobMap,
-        getFocusId = focusingBlockId::value,
-        updateFocusingId = { focusingBlockId.value = it }
-    )
-
     private val addContentBlock: suspend (
         block: NoteContentBlock
     ) -> Long = ContentBlockAdder(
@@ -115,29 +97,32 @@ class NoteScreenStateHolder(
         insertOrReplaceNoteContentBlock, insertOrReplaceNoteContentBlocks
     )
 
-    private val getTextFieldState: (
-        blockId: Long,
-        content: String
-    ) -> TextFieldState = TextFieldStateGetter(
-        coroutineScope = coroutineScope,
-        getNoteWithContent = noteWithContent::value,
-        updateNoteWithContent = { noteWithContent.value = it },
-        addContentBlock = addContentBlock,
-        contentBlockTextFieldStateMap = contentBlockTextFieldStateMap,
-        collectUpdateJobMap = collectUpdateJobMap,
-        insertOrReplaceNoteContentBlock = insertOrReplaceNoteContentBlock
-    )
-
     private val addBlockToBottom: suspend () -> Unit = BottomBlockAdder(
         getBottomIndex = { noteWithContent.value?.content?.size ?: 0 },
         getNoteId = noteIdFlow::value,
         addContentBlock = addContentBlock
     )
 
-    private val generatorMarkdownText: (
-        title: String,
-        blocks: List<NoteContentBlock>
-    ) -> String = MarkdownTextGenerator()
+    private val mapContentState: (
+        noteWithContent: NoteWithContent,
+        mode: NoteScreenMode
+    ) -> NoteContentState = ContentStateMapper(
+        coroutineScope = coroutineScope,
+        getNoteWithContent = noteWithContent::value,
+        updateNoteWithContent = { noteWithContent.value = it },
+        getNoteId = noteIdFlow::value,
+        updateNoteId = { noteIdFlow.value = it },
+        getFocusingId = focusingBlockId::value,
+        updateFocusingId = { focusingBlockId.value = it },
+        addContentBlock = addContentBlock,
+        insertOrReplaceNote = insertOrReplaceNote,
+        contentBlockTextFieldStateMap = contentBlockTextFieldStateMap,
+        collectUpdateJobMap = collectUpdateJobMap,
+        collectFocusJobMap = collectFocusJobMap,
+        focusRequesterMap = focusRequesterMap,
+        mutableInteractionSourceMap = mutableInteractionSourceMap,
+        insertOrReplaceNoteContentBlock = insertOrReplaceNoteContentBlock,
+    )
 
     val noteScreenState = combine(
         noteWithContent.filterNotNull(), noteScreenMode
@@ -181,37 +166,6 @@ class NoteScreenStateHolder(
                 getNoteWithContentFlowWithNoteId(nId)
             }
         }.onEach { noteWithContent.value = it }.launchIn(coroutineScope)
-    }
-
-    private fun mapContentState(
-        noteWithContent: NoteWithContent,
-        noteScreenMode: NoteScreenMode
-    ): NoteContentState {
-        return when (noteScreenMode) {
-            NoteScreenMode.Preview -> NoteContentState.Preview(
-                content = generatorMarkdownText(noteWithContent.note.title, noteWithContent.content)
-            )
-
-            NoteScreenMode.Edit -> NoteContentState.Edit(
-                titleState = titleState.apply {
-                    if (!text.contentEquals(noteWithContent.note.title)) {
-                        edit {
-                            replace(0, length, noteWithContent.note.title)
-                            placeCursorAtEnd()
-                        }
-                    }
-                },
-                contentStateList = noteWithContent.content.map { block ->
-                    val blockId = block.id!!
-                    NoteBlockState(
-                        id = blockId,
-                        contentState = getTextFieldState(blockId, block.content),
-                        interaction = generateInteractionSource(blockId),
-                        focusRequester = focusRequesterMap.getOrPut(blockId, ::FocusRequester)
-                    )
-                }
-            )
-        }
     }
 
     fun clear() {
