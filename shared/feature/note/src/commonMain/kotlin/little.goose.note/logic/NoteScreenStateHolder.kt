@@ -137,7 +137,7 @@ class NoteScreenStateHolder(
     private val generatorMarkdownText: (
         title: String,
         blocks: List<NoteContentBlock>
-    ) -> String = MarkdownTextGenetor()
+    ) -> String = MarkdownTextGenerator()
 
     val noteScreenState = combine(
         noteWithContent.filterNotNull(), noteScreenMode

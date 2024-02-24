@@ -1,8 +1,10 @@
+@file:Suppress("FunctionName")
+
 package little.goose.note.logic
 
 import little.goose.data.note.bean.NoteContentBlock
 
-internal fun MarkdownTextGenetor(): (title: String, blocks: List<NoteContentBlock>) -> String {
+internal fun MarkdownTextGenerator(): (title: String, blocks: List<NoteContentBlock>) -> String {
     var currentTitle: String? = null
     var currentBlocks: List<NoteContentBlock>? = null
     var currentResult: String? = null
