@@ -1,4 +1,4 @@
-package little.goose.note
+package little.goose.note.logic
 
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.text2.input.TextFieldState
@@ -31,14 +31,6 @@ import little.goose.data.note.domain.InsertOrReplaceNoteContentBlockUseCase
 import little.goose.data.note.domain.InsertOrReplaceNoteContentBlocksUseCase
 import little.goose.data.note.domain.InsertOrReplaceNoteUseCase
 import little.goose.note.event.NoteScreenEvent
-import little.goose.note.logic.BottomBlockAdder
-import little.goose.note.logic.ContentBlockAdder
-import little.goose.note.logic.InteractionSourceGetter
-import little.goose.note.logic.MarkdownTextGenetor
-import little.goose.note.logic.NoteContentBlockDeleter
-import little.goose.note.logic.TextFieldStateGetter
-import little.goose.note.logic.TextFormatter
-import little.goose.note.logic.TitleTextFieldState
 import little.goose.note.ui.note.NoteBlockState
 import little.goose.note.ui.note.NoteBottomBarState
 import little.goose.note.ui.note.NoteContentState

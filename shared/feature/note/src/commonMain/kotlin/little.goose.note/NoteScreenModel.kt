@@ -8,6 +8,7 @@ import little.goose.data.note.domain.GetNoteWithContentFlowWithNoteIdUseCase
 import little.goose.data.note.domain.InsertOrReplaceNoteContentBlockUseCase
 import little.goose.data.note.domain.InsertOrReplaceNoteContentBlocksUseCase
 import little.goose.data.note.domain.InsertOrReplaceNoteUseCase
+import little.goose.note.logic.NoteScreenStateHolder
 
 class NoteScreenModel(
     noteId: Long,
