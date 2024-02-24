@@ -52,11 +52,7 @@ class NoteScreenStateHolder(
     private val noteWithContent = MutableStateFlow<NoteWithContent?>(null)
     private val focusingBlockId = MutableStateFlow<Long?>(null)
     private val noteScreenMode = MutableStateFlow(NoteScreenMode.Edit)
-    private val contentBlockTextFieldStateMap = mutableMapOf<Long, TextFieldState>()
-    private val collectFocusJobMap = mutableMapOf<Long, Job>()
-    private val collectUpdateJobMap = mutableMapOf<Long, Job>()
-    private val focusRequesterMap = mutableMapOf<Long, FocusRequester>()
-    private val mutableInteractionSourceMap = mutableMapOf<Long, MutableInteractionSource>()
+    private val cacheHolder = NoteScreenCacheHolder()
     private val _event = MutableSharedFlow<NoteScreenEvent>()
     val event = _event.asSharedFlow()
 
@@ -69,11 +65,7 @@ class NoteScreenStateHolder(
         insertOrReplaceNoteContentBlocks = insertOrReplaceNoteContentBlocks,
         deleter = { blockId ->
             deleteNoteContentBlockUseCase(blockId)
-            collectFocusJobMap.remove(blockId)?.cancel()
-            collectUpdateJobMap.remove(blockId)?.cancel()
-            focusRequesterMap.remove(blockId)
-            mutableInteractionSourceMap.remove(blockId)
-            contentBlockTextFieldStateMap.remove(blockId)
+            cacheHolder.clearCache(blockId)
         }
     )
 
@@ -82,7 +74,7 @@ class NoteScreenStateHolder(
     ) -> Unit = TextFormatter(
         getBlocks = { noteWithContent.value?.content },
         getFocusingId = focusingBlockId::value,
-        getContentBlockTextFieldState = contentBlockTextFieldStateMap::get
+        getContentBlockTextFieldState = cacheHolder.contentBlockTextFieldStateMap::get
     )
 
     private val addContentBlock: suspend (
@@ -92,7 +84,7 @@ class NoteScreenStateHolder(
         updateNoteWithContent = { noteWithContent.value = it },
         insertOrReplaceNote = insertOrReplaceNote,
         updateNoteId = { noteIdFlow.value = it },
-        focusRequesterMap = focusRequesterMap,
+        focusRequesterMap = cacheHolder.focusRequesterMap,
         emitEvent = _event::emit,
         insertOrReplaceNoteContentBlock, insertOrReplaceNoteContentBlocks
     )
@@ -116,11 +108,7 @@ class NoteScreenStateHolder(
         updateFocusingId = { focusingBlockId.value = it },
         addContentBlock = addContentBlock,
         insertOrReplaceNote = insertOrReplaceNote,
-        contentBlockTextFieldStateMap = contentBlockTextFieldStateMap,
-        collectUpdateJobMap = collectUpdateJobMap,
-        collectFocusJobMap = collectFocusJobMap,
-        focusRequesterMap = focusRequesterMap,
-        mutableInteractionSourceMap = mutableInteractionSourceMap,
+        cacheHolder = cacheHolder,
         insertOrReplaceNoteContentBlock = insertOrReplaceNoteContentBlock,
     )
 
@@ -181,4 +169,20 @@ class NoteScreenStateHolder(
         }
     }
 
+}
+
+internal class NoteScreenCacheHolder {
+    val contentBlockTextFieldStateMap = mutableMapOf<Long, TextFieldState>()
+    val collectFocusJobMap = mutableMapOf<Long, Job>()
+    val collectUpdateJobMap = mutableMapOf<Long, Job>()
+    val focusRequesterMap = mutableMapOf<Long, FocusRequester>()
+    val mutableInteractionSourceMap = mutableMapOf<Long, MutableInteractionSource>()
+
+    fun clearCache(blockId: Long) {
+        collectFocusJobMap.remove(blockId)?.cancel()
+        collectUpdateJobMap.remove(blockId)?.cancel()
+        focusRequesterMap.remove(blockId)
+        mutableInteractionSourceMap.remove(blockId)
+        contentBlockTextFieldStateMap.remove(blockId)
+    }
 }

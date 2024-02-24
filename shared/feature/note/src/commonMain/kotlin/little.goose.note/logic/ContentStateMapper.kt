@@ -7,7 +7,6 @@ import androidx.compose.foundation.text2.input.TextFieldState
 import androidx.compose.foundation.text2.input.placeCursorAtEnd
 import androidx.compose.ui.focus.FocusRequester
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Job
 import little.goose.data.note.bean.NoteContentBlock
 import little.goose.data.note.bean.NoteWithContent
 import little.goose.data.note.domain.InsertOrReplaceNoteContentBlockUseCase
@@ -26,11 +25,7 @@ internal fun ContentStateMapper(
     updateFocusingId: (Long?) -> Unit,
     addContentBlock: suspend (NoteContentBlock) -> Long?,
     insertOrReplaceNote: InsertOrReplaceNoteUseCase,
-    contentBlockTextFieldStateMap: MutableMap<Long, TextFieldState>,
-    collectUpdateJobMap: MutableMap<Long, Job>,
-    collectFocusJobMap: MutableMap<Long, Job>,
-    focusRequesterMap: MutableMap<Long, FocusRequester>,
-    mutableInteractionSourceMap: MutableMap<Long, MutableInteractionSource>,
+    cacheHolder: NoteScreenCacheHolder,
     insertOrReplaceNoteContentBlock: InsertOrReplaceNoteContentBlockUseCase
 ): (NoteWithContent, NoteScreenMode) -> NoteContentState {
 
@@ -55,8 +50,8 @@ internal fun ContentStateMapper(
         getNoteWithContent = getNoteWithContent,
         updateNoteWithContent = updateNoteWithContent,
         addContentBlock = addContentBlock,
-        contentBlockTextFieldStateMap = contentBlockTextFieldStateMap,
-        collectUpdateJobMap = collectUpdateJobMap,
+        contentBlockTextFieldStateMap = cacheHolder.contentBlockTextFieldStateMap,
+        collectUpdateJobMap = cacheHolder.collectUpdateJobMap,
         insertOrReplaceNoteContentBlock = insertOrReplaceNoteContentBlock
     )
 
@@ -64,8 +59,8 @@ internal fun ContentStateMapper(
         id: Long
     ) -> MutableInteractionSource = InteractionSourceGetter(
         coroutineScope = coroutineScope,
-        mutableInteractionSourceMap = mutableInteractionSourceMap,
-        collectFocusJobMap = collectFocusJobMap,
+        mutableInteractionSourceMap = cacheHolder.mutableInteractionSourceMap,
+        collectFocusJobMap = cacheHolder.collectFocusJobMap,
         getFocusingId = getFocusingId,
         updateFocusingId = updateFocusingId
     )
@@ -91,7 +86,9 @@ internal fun ContentStateMapper(
                         id = blockId,
                         contentState = getTextFieldState(blockId, block.content),
                         interaction = generateInteractionSource(blockId),
-                        focusRequester = focusRequesterMap.getOrPut(blockId, ::FocusRequester)
+                        focusRequester = cacheHolder.focusRequesterMap.getOrPut(
+                            blockId, ::FocusRequester
+                        )
                     )
                 }
             )
