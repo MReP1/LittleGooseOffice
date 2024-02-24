@@ -8,7 +8,7 @@ import little.goose.data.note.bean.NoteContentBlock
 import little.goose.data.note.bean.NoteWithContent
 import little.goose.note.event.NoteScreenEvent
 
-fun BottomBlockAdder(
+internal fun BottomBlockAdder(
     getBottomIndex: () -> Int,
     getNoteId: () -> Long,
     addContentBlock: suspend (block: NoteContentBlock) -> Long
@@ -25,7 +25,7 @@ fun BottomBlockAdder(
     }
 }
 
-fun ContentBlockAdder(
+internal fun ContentBlockAdder(
     getNoteWithContent: () -> NoteWithContent?,
     updateNoteWithContent: (NoteWithContent?) -> Unit,
     insertOrReplaceNote: suspend (Note) -> Long,

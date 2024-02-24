@@ -18,12 +18,12 @@ fun TextFieldStateGetter(
     getNoteWithContent: () -> NoteWithContent?,
     updateNoteWithContent: (NoteWithContent?) -> Unit,
     addContentBlock: suspend (NoteContentBlock) -> Long?,
-    contentBlockTextFieldState: MutableMap<Long, TextFieldState>,
+    contentBlockTextFieldStateMap: MutableMap<Long, TextFieldState>,
     collectUpdateJobMap: MutableMap<Long, Job>,
     insertOrReplaceNoteContentBlock: suspend (NoteContentBlock) -> Long
 ): (Long, String) -> TextFieldState {
     return { blockId, blockContent ->
-        contentBlockTextFieldState.getOrPut(blockId) {
+        contentBlockTextFieldStateMap.getOrPut(blockId) {
             TextFieldState(blockContent).also { textFieldState ->
                 collectUpdateJobMap[blockId]?.cancel()
                 collectUpdateJobMap[blockId] = coroutineScope.launch {

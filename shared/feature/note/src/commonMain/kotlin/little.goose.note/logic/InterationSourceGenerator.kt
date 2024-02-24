@@ -11,7 +11,7 @@ import kotlinx.coroutines.launch
 /**
  * Create InteractionSource and observe it's focus status.
  */
-fun InteractionSourceGetter(
+internal fun InteractionSourceGetter(
     coroutineScope: CoroutineScope,
     mutableInteractionSourceMap: MutableMap<Long, MutableInteractionSource>,
     collectFocusJobMap: MutableMap<Long, Job>,

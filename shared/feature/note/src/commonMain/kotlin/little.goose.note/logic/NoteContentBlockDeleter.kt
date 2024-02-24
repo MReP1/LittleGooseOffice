@@ -8,7 +8,7 @@ import kotlinx.coroutines.launch
 import little.goose.data.note.bean.NoteContentBlock
 import little.goose.data.note.bean.NoteWithContent
 
-fun NoteContentBlockDeleter(
+internal fun NoteContentBlockDeleter(
     coroutineScope: CoroutineScope,
     getNoteWithContent: () -> NoteWithContent?,
     updateNoteWithContent: (NoteWithContent?) -> Unit,
