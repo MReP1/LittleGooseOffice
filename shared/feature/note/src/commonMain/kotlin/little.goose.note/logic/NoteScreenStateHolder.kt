@@ -95,14 +95,13 @@ class NoteScreenStateHolder(
 
     private val generateInteractionSource: (
         id: Long
-    ) -> MutableInteractionSource =
-        InteractionSourceGetter(
-            coroutineScope = coroutineScope,
-            mutableInteractionSourceMap = mutableInteractionSourceMap,
-            collectFocusJobMap = collectFocusJobMap,
-            getFocusId = focusingBlockId::value,
-            updateFocusingId = { focusingBlockId.value = it }
-        )
+    ) -> MutableInteractionSource = InteractionSourceGetter(
+        coroutineScope = coroutineScope,
+        mutableInteractionSourceMap = mutableInteractionSourceMap,
+        collectFocusJobMap = collectFocusJobMap,
+        getFocusId = focusingBlockId::value,
+        updateFocusingId = { focusingBlockId.value = it }
+    )
 
     private val addContentBlock: suspend (
         block: NoteContentBlock
