@@ -62,13 +62,15 @@ class NoteScreenStateHolder(
     private val _event = MutableSharedFlow<NoteScreenEvent>()
     val event = _event.asSharedFlow()
 
-    private val titleState = TitleTextFieldState(
-        coroutineScope, noteWithContent::value,
-        noteIdFlow::value, { noteIdFlow.value = it },
-        insertOrReplaceNote
+    private val titleState: TextFieldState = TitleTextFieldState(
+        coroutineScope = coroutineScope, getNoteWithContent = noteWithContent::value,
+        getNoteId = noteIdFlow::value, updateNoteId = { noteIdFlow.value = it },
+        insertOrReplaceNote = insertOrReplaceNote
     )
 
-    private val deleteNoteContentBlock = NoteContentBlockDeleter(
+    private val deleteNoteContentBlock: suspend (
+        id: Long
+    ) -> Unit = NoteContentBlockDeleter(
         coroutineScope = coroutineScope,
         getNoteWithContent = noteWithContent::value,
         updateNoteWithContent = { noteWithContent.value = it },
@@ -83,21 +85,28 @@ class NoteScreenStateHolder(
         }
     )
 
-    private val format: (FormatType) -> Unit = TextFormatter(
+    private val format: (
+        type: FormatType
+    ) -> Unit = TextFormatter(
         getBlocks = { noteWithContent.value?.content },
         getFocusingId = focusingBlockId::value,
         getContentBlockTextFieldState = contentBlockTextFieldStateMap::get
     )
 
-    private val generateInteractionSource = InteractionSourceGetter(
-        coroutineScope = coroutineScope,
-        mutableInteractionSourceMap = mutableInteractionSourceMap,
-        collectFocusJobMap = collectFocusJobMap,
-        getFocusId = focusingBlockId::value,
-        updateFocusingId = { focusingBlockId.value = it }
-    )
+    private val generateInteractionSource: (
+        id: Long
+    ) -> MutableInteractionSource =
+        InteractionSourceGetter(
+            coroutineScope = coroutineScope,
+            mutableInteractionSourceMap = mutableInteractionSourceMap,
+            collectFocusJobMap = collectFocusJobMap,
+            getFocusId = focusingBlockId::value,
+            updateFocusingId = { focusingBlockId.value = it }
+        )
 
-    private val addContentBlock: suspend (block: NoteContentBlock) -> Long = ContentBlockAdder(
+    private val addContentBlock: suspend (
+        block: NoteContentBlock
+    ) -> Long = ContentBlockAdder(
         getNoteWithContent = noteWithContent::value,
         updateNoteWithContent = { noteWithContent.value = it },
         insertOrReplaceNote = insertOrReplaceNote,
@@ -107,7 +116,10 @@ class NoteScreenStateHolder(
         insertOrReplaceNoteContentBlock, insertOrReplaceNoteContentBlocks
     )
 
-    private val getTextFieldState = TextFieldStateGetter(
+    private val getTextFieldState: (
+        blockId: Long,
+        content: String
+    ) -> TextFieldState = TextFieldStateGetter(
         coroutineScope = coroutineScope,
         getNoteWithContent = noteWithContent::value,
         updateNoteWithContent = { noteWithContent.value = it },
@@ -117,13 +129,16 @@ class NoteScreenStateHolder(
         insertOrReplaceNoteContentBlock = insertOrReplaceNoteContentBlock
     )
 
-    private val addBlockToBottom = BottomBlockAdder(
+    private val addBlockToBottom: suspend () -> Unit = BottomBlockAdder(
         getBottomIndex = { noteWithContent.value?.content?.size ?: 0 },
         getNoteId = noteIdFlow::value,
         addContentBlock = addContentBlock
     )
 
-    private val generatorMarkdownText = MarkdownTextGenetor()
+    private val generatorMarkdownText: (
+        title: String,
+        blocks: List<NoteContentBlock>
+    ) -> String = MarkdownTextGenetor()
 
     val noteScreenState = combine(
         noteWithContent.filterNotNull(), noteScreenMode
