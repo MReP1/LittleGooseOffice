@@ -10,10 +10,16 @@ import androidx.compose.runtime.Stable
 import androidx.compose.ui.Modifier
 
 @Stable
-data class NoteScreenState(
-    val contentState: NoteContentState,
-    val bottomBarState: NoteBottomBarState
-)
+sealed class NoteScreenState {
+
+    data object Loading : NoteScreenState()
+
+    data class Success(
+        val contentState: NoteContentState,
+        val bottomBarState: NoteBottomBarState
+    ) : NoteScreenState()
+
+}
 
 @Composable
 fun NoteScreen(
@@ -32,18 +38,29 @@ fun NoteScreen(
             )
         },
         content = { paddingValues ->
-            NoteContent(
-                state = noteScreenState.contentState,
-                blockColumnState = blockColumnState,
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(paddingValues),
-                action = action
-            )
+            when (noteScreenState) {
+                NoteScreenState.Loading -> {
+                    // Loading Screen
+                }
+
+                is NoteScreenState.Success -> {
+                    NoteContent(
+                        state = noteScreenState.contentState,
+                        blockColumnState = blockColumnState,
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .padding(paddingValues),
+                        action = action
+                    )
+                }
+            }
         },
         bottomBar = {
             NoteBottomBar(
-                state = noteScreenState.bottomBarState,
+                state = when (noteScreenState) {
+                    NoteScreenState.Loading -> NoteBottomBarState.Loading
+                    is NoteScreenState.Success -> noteScreenState.bottomBarState
+                },
                 modifier = Modifier.fillMaxWidth(),
                 action = action
             )

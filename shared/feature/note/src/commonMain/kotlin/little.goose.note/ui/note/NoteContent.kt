@@ -35,7 +35,6 @@ import com.mikepenz.markdown.model.markdownTypography
 
 @Stable
 sealed class NoteContentState {
-    data object Loading : NoteContentState()
 
     data class Edit(
         val titleState: TextFieldState,
@@ -43,6 +42,7 @@ sealed class NoteContentState {
     ) : NoteContentState()
 
     data class Preview(val content: String) : NoteContentState()
+
 }
 
 
@@ -70,10 +70,6 @@ fun NoteContent(
                     action = action,
                     blockColumnState = blockColumnState
                 )
-            }
-
-            NoteContentState.Loading -> {
-                // TODO Loading Screen
             }
 
             is NoteContentState.Preview -> {

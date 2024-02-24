@@ -17,7 +17,7 @@ fun PreviewNoteScreenLoading() {
     NoteScreen(
         onBack = {},
         modifier = Modifier.fillMaxSize(),
-        noteScreenState = NoteScreenState(NoteContentState.Loading, NoteBottomBarState.Loading),
+        noteScreenState = NoteScreenState.Loading,
         blockColumnState = rememberLazyListState(),
         action = {}
     )
@@ -30,7 +30,7 @@ fun PreviewNoteScreenEditing() {
     NoteScreen(
         onBack = {},
         modifier = Modifier.fillMaxSize(),
-        noteScreenState = NoteScreenState(
+        noteScreenState = NoteScreenState.Success(
             NoteContentState.Edit(
                 titleState = rememberTextFieldState(System.currentTimeMillis().toString()),
                 contentStateList = List(10) {
@@ -53,7 +53,7 @@ fun PreviewNoteScreenPreviewing() {
     NoteScreen(
         onBack = {},
         modifier = Modifier.fillMaxSize(),
-        noteScreenState = NoteScreenState(
+        noteScreenState = NoteScreenState.Success(
             NoteContentState.Preview(
                 content = """
                 # Title

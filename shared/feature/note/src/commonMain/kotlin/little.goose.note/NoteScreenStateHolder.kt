@@ -128,65 +128,46 @@ class NoteScreenStateHolder(
         addContentBlock = addContentBlock
     )
 
-    private val noteContentState = combine(
+    val noteScreenState = combine(
         noteWithContent.filterNotNull(),
         isPreviewStateFlow
     ) { nwc, isPreview ->
-        if (isPreview) {
-            NoteContentState.Preview(
-                buildString {
-                    if (nwc.note.title.isNotBlank()) {
-                        append("# ${nwc.note.title}\n\n")
-                    }
-                    append(nwc.content.joinToString("\n\n") { it.content })
-                }
-            )
-        } else {
-            NoteContentState.Edit(
-                titleState = titleState.apply {
-                    if (!text.contentEquals(nwc.note.title)) {
-                        edit {
-                            replace(0, length, nwc.note.title)
-                            placeCursorAtEnd()
+        NoteScreenState.Success(
+            contentState = if (isPreview) {
+                NoteContentState.Preview(
+                    content = generatorMarkdownText(nwc.note.title, nwc.content)
+                )
+            } else {
+                NoteContentState.Edit(
+                    titleState = titleState.apply {
+                        if (!text.contentEquals(nwc.note.title)) {
+                            edit {
+                                replace(0, length, nwc.note.title)
+                                placeCursorAtEnd()
+                            }
                         }
+                    },
+                    contentStateList = nwc.content.map { block ->
+                        val blockId = block.id!!
+                        NoteBlockState(
+                            id = blockId,
+                            contentState = getTextFieldState(blockId, block.content),
+                            interaction = generateInteractionSource(blockId),
+                            focusRequester = focusRequesterMap.getOrPut(blockId, ::FocusRequester)
+                        )
                     }
-                },
-                contentStateList = nwc.content.map { block ->
-                    val blockId = block.id!!
-                    NoteBlockState(
-                        id = blockId,
-                        contentState = getTextFieldState(blockId, block.content),
-                        interaction = generateInteractionSource(blockId),
-                        focusRequester = focusRequesterMap.getOrPut(blockId, ::FocusRequester)
-                    )
-                }
-            )
-        }
+                )
+            },
+            bottomBarState = if (isPreview) {
+                NoteBottomBarState.Preview
+            } else {
+                NoteBottomBarState.Editing
+            }
+        )
     }.stateIn(
         coroutineScope,
         SharingStarted.WhileSubscribed(5000L),
-        NoteContentState.Loading
-    )
-
-    private val noteBottomBarState = combine(
-        noteWithContent.filterNotNull(),
-        isPreviewStateFlow
-    ) { _, isPreview ->
-        if (isPreview) {
-            NoteBottomBarState.Preview
-        } else {
-            NoteBottomBarState.Editing
-        }
-    }.stateIn(coroutineScope, SharingStarted.WhileSubscribed(5000L), NoteBottomBarState.Loading)
-
-    val noteScreenState = combine(
-        noteContentState, noteBottomBarState
-    ) { noteContentState, noteBottomBarState ->
-        NoteScreenState(noteContentState, noteBottomBarState)
-    }.stateIn(
-        coroutineScope,
-        SharingStarted.WhileSubscribed(5000L),
-        NoteScreenState(noteContentState.value, noteBottomBarState.value)
+        NoteScreenState.Loading
     )
 
     val action = fun(intent: NoteScreenIntent) {
@@ -222,6 +203,15 @@ class NoteScreenStateHolder(
                 getNoteWithContentFlowWithNoteId(nId)
             }
         }.onEach { noteWithContent.value = it }.launchIn(coroutineScope)
+    }
+
+    private fun generatorMarkdownText(title: String, content: List<NoteContentBlock>): String {
+        return buildString {
+            if (title.isNotBlank()) {
+                append("# ${title}\n\n")
+            }
+            append(content.joinToString("\n\n") { it.content })
+        }
     }
 
     fun clear() {
