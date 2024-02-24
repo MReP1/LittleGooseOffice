@@ -50,9 +50,11 @@ class NoteScreenStateHolder(
 ) {
     private val noteIdFlow = MutableStateFlow(noteId)
     private val noteWithContent = MutableStateFlow<NoteWithContent?>(null)
-    private val focusingBlockId = MutableStateFlow<Long?>(null)
     private val noteScreenMode = MutableStateFlow(NoteScreenMode.Edit)
     private val cacheHolder = NoteScreenCacheHolder()
+
+    private var focusingBlockId: Long? = null
+
     private val _event = MutableSharedFlow<NoteScreenEvent>()
     val event = _event.asSharedFlow()
 
@@ -73,7 +75,7 @@ class NoteScreenStateHolder(
         type: FormatType
     ) -> Unit = TextFormatter(
         getBlocks = { noteWithContent.value?.content },
-        getFocusingId = focusingBlockId::value,
+        getFocusingId = ::focusingBlockId,
         getContentBlockTextFieldState = cacheHolder.contentBlockTextFieldStateMap::get
     )
 
@@ -104,8 +106,8 @@ class NoteScreenStateHolder(
         updateNoteWithContent = { noteWithContent.value = it },
         getNoteId = noteIdFlow::value,
         updateNoteId = { noteIdFlow.value = it },
-        getFocusingId = focusingBlockId::value,
-        updateFocusingId = { focusingBlockId.value = it },
+        getFocusingId = ::focusingBlockId,
+        updateFocusingId = { focusingBlockId = it },
         addContentBlock = addContentBlock,
         insertOrReplaceNote = insertOrReplaceNote,
         cacheHolder = cacheHolder,
