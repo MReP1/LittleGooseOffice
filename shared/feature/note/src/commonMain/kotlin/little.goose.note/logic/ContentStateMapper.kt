@@ -5,8 +5,11 @@ package little.goose.note.logic
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.text2.input.TextFieldState
 import androidx.compose.foundation.text2.input.placeCursorAtEnd
+import androidx.compose.foundation.text2.input.textAsFlow
 import androidx.compose.ui.focus.FocusRequester
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import little.goose.data.note.bean.NoteContentBlock
 import little.goose.data.note.bean.NoteWithContent
 import little.goose.data.note.domain.InsertOrReplaceNoteContentBlockUseCase
@@ -29,13 +32,16 @@ internal fun ContentStateMapper(
     insertOrReplaceNoteContentBlock: InsertOrReplaceNoteContentBlockUseCase
 ): (NoteWithContent, NoteScreenMode) -> NoteContentState {
 
-    val titleState = TitleTextFieldState(
-        coroutineScope = coroutineScope,
-        getNoteWithContent = getNoteWithContent,
-        getNoteId = getNoteId,
-        updateNoteId = updateNoteId,
-        insertOrReplaceNote = insertOrReplaceNote
-    )
+    val titleState = TextFieldState().apply {
+        textAsFlow().onEach { title ->
+            getNoteWithContent()?.note?.copy(title = title.toString())?.let { note ->
+                val id = insertOrReplaceNote(note)
+                if (getNoteId() == -1L) {
+                    updateNoteId(id)
+                }
+            }
+        }.launchIn(coroutineScope)
+    }
 
     val generatorMarkdownText: (
         title: String,
