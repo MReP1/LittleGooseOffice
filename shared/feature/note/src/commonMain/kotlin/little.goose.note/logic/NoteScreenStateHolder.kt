@@ -20,6 +20,7 @@ import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.sync.Mutex
 import little.goose.data.note.bean.Note
 import little.goose.data.note.bean.NoteContentBlock
 import little.goose.data.note.bean.NoteWithContent
@@ -52,6 +53,7 @@ class NoteScreenStateHolder(
     private val noteWithContent = MutableStateFlow<NoteWithContent?>(null)
     private val noteScreenMode = MutableStateFlow(NoteScreenMode.Edit)
     private val cacheHolder = NoteScreenCacheHolder()
+    private val dataBaseMutex = Mutex()
 
     private var focusingBlockId: Long? = null
 
@@ -61,7 +63,7 @@ class NoteScreenStateHolder(
     private val deleteNoteContentBlock: suspend (
         id: Long
     ) -> Unit = NoteContentBlockDeleter(
-        coroutineScope = coroutineScope,
+        mutex = dataBaseMutex,
         getNoteWithContent = noteWithContent::value,
         updateNoteWithContent = noteWithContent::value::set,
         insertOrReplaceNoteContentBlocks = insertOrReplaceNoteContentBlocks,
@@ -82,6 +84,7 @@ class NoteScreenStateHolder(
     private val addContentBlock: suspend (
         block: NoteContentBlock
     ) -> Long = ContentBlockAdder(
+        mutex = dataBaseMutex,
         getNoteWithContent = noteWithContent::value,
         updateNoteWithContent = noteWithContent::value::set,
         insertOrReplaceNote = insertOrReplaceNote,
@@ -133,11 +136,11 @@ class NoteScreenStateHolder(
                 format(intent.formatType)
             }
 
-            NoteScreenIntent.AddBlockToBottom -> coroutineScope.launch {
+            NoteScreenIntent.AddBlockToBottom -> coroutineScope.launch(Dispatchers.IO) {
                 addBlockToBottom()
             }
 
-            is NoteScreenIntent.DeleteBlock -> coroutineScope.launch {
+            is NoteScreenIntent.DeleteBlock -> coroutineScope.launch(Dispatchers.IO) {
                 deleteNoteContentBlock(intent.id)
             }
 
