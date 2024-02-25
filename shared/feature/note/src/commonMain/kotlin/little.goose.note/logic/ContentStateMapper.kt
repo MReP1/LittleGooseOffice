@@ -61,7 +61,7 @@ internal fun ContentStateMapper(
         insertOrReplaceNoteContentBlock = insertOrReplaceNoteContentBlock
     )
 
-    val generateInteractionSource: (
+    val getInteractionSource: (
         id: Long
     ) -> MutableInteractionSource = InteractionSourceGetter(
         coroutineScope = coroutineScope,
@@ -70,6 +70,12 @@ internal fun ContentStateMapper(
         getFocusingId = getFocusingId,
         updateFocusingId = updateFocusingId
     )
+
+    val getFocusRequester: (
+        id: Long
+    ) -> FocusRequester = { blockId ->
+        cacheHolder.focusRequesterMap.getOrPut(blockId, ::FocusRequester)
+    }
 
     return { noteWithContent, noteScreenMode ->
         when (noteScreenMode) {
@@ -91,10 +97,8 @@ internal fun ContentStateMapper(
                     NoteBlockState(
                         id = blockId,
                         contentState = getTextFieldState(blockId, block.content),
-                        interaction = generateInteractionSource(blockId),
-                        focusRequester = cacheHolder.focusRequesterMap.getOrPut(
-                            blockId, ::FocusRequester
-                        )
+                        interaction = getInteractionSource(blockId),
+                        focusRequester = getFocusRequester(blockId)
                     )
                 }
             )
