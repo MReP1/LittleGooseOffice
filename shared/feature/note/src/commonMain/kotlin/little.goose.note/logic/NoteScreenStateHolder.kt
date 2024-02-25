@@ -136,11 +136,11 @@ class NoteScreenStateHolder(
                 format(intent.formatType)
             }
 
-            NoteScreenIntent.AddBlockToBottom -> coroutineScope.launch(Dispatchers.IO) {
+            NoteScreenIntent.AddBlockToBottom -> coroutineScope.launch {
                 addBlockToBottom()
             }
 
-            is NoteScreenIntent.DeleteBlock -> coroutineScope.launch(Dispatchers.IO) {
+            is NoteScreenIntent.DeleteBlock -> coroutineScope.launch {
                 deleteNoteContentBlock(intent.id)
             }
 
