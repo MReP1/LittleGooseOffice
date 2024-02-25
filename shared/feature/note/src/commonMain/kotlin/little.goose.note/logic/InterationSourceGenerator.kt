@@ -20,6 +20,7 @@ internal fun InteractionSourceGetter(
 ): (Long) -> MutableInteractionSource = { blockId ->
     mutableInteractionSourceMap.getOrPut(blockId) {
         MutableInteractionSource().also { mis ->
+            collectFocusJobMap[blockId]?.cancel()
             collectFocusJobMap[blockId] = coroutineScope.launch {
                 mis.interactions.collect { interaction ->
                     when (interaction) {
