@@ -1,7 +1,5 @@
 package little.goose.note.ui
 
-import little.goose.note.data.entities.Note
-
 sealed class NotebookIntent {
 
     data object SelectAllNotes : NotebookIntent()
@@ -9,11 +7,11 @@ sealed class NotebookIntent {
     data object CancelMultiSelecting : NotebookIntent()
 
     data class DeleteNotes(
-        val notes: List<Note>
+        val noteIds: List<Long>
     ) : NotebookIntent()
 
     data class SelectNote(
-        val note: Note,
+        val noteId: Long,
         val selectNote: Boolean
     ) : NotebookIntent()
 

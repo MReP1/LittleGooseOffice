@@ -5,7 +5,7 @@ import little.goose.data.note.bean.Note
 import little.goose.data.note.bean.NoteContentBlock
 import little.goose.data.note.bean.NoteWithContent
 
-interface NoteDataBase {
+interface NoteDatabase {
 
     fun getNoteFlow(noteId: Long): Flow<Note>
 
@@ -14,6 +14,8 @@ interface NoteDataBase {
     fun getNoteWithContentFlow(noteId: Long): Flow<NoteWithContent>
 
     suspend fun deleteNoteAndItsBlocks(noteId: Long)
+
+    suspend fun deleteNoteAndItsBlocksList(noteIds: List<Long>)
 
     suspend fun deleteBlock(id: Long)
 
@@ -24,4 +26,6 @@ interface NoteDataBase {
     suspend fun insertOrReplaceNoteContentBlocks(noteContentBlocks: List<NoteContentBlock>)
 
     fun getNoteWithContentFlow(): Flow<List<NoteWithContent>>
+
+    fun getNoteWithContentFlowByKeyword(keyword: String): Flow<List<NoteWithContent>>
 }

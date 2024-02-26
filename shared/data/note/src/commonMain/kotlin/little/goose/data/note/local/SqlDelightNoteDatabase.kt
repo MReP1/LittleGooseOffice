@@ -17,7 +17,7 @@ import little.goose.note.GooseNoteDatabase
 
 class SqlDelightNoteDatabase(
     private val database: GooseNoteDatabase
-) : NoteDataBase {
+) : NoteDatabase {
 
     override fun getNoteFlow(noteId: Long): Flow<Note> {
         return database.gooseNoteQueries
@@ -82,7 +82,7 @@ class SqlDelightNoteDatabase(
             allNoteQuery.addListener(noteListener)
             allNoteContentBlockQuery.addListener(noteContentBlockListener)
             try {
-                val map = mutableMapOf<Note, MutableList<NoteContentBlock>>()
+                var map = mutableMapOf<Note, MutableList<NoteContentBlock>>()
                 var resultList = mutableListOf<NoteWithContent>()
                 for (item in channel) {
                     database.gooseNoteQueries
@@ -95,7 +95,44 @@ class SqlDelightNoteDatabase(
                     map.forEach { (note, blocks) ->
                         resultList.add(NoteWithContent(note, blocks))
                     }
+                    resultList.sortByDescending { it.note.time }
                     emit(resultList)
+                    map = mutableMapOf()
+                    resultList = mutableListOf()
+                }
+            } finally {
+                allNoteQuery.removeListener(noteListener)
+                allNoteContentBlockQuery.removeListener(noteContentBlockListener)
+            }
+        }.flowOn(Dispatchers.IO)
+    }
+
+    override fun getNoteWithContentFlowByKeyword(keyword: String): Flow<List<NoteWithContent>> {
+        return flow<List<NoteWithContent>> {
+            val channel = Channel<Unit>(Channel.CONFLATED)
+            channel.trySend(Unit)
+            val allNoteQuery = database.gooseNoteQueries.getAllNote()
+            val allNoteContentBlockQuery = database.gooseNoteQueries.getAllNoteContentBlock()
+            val noteListener = Query.Listener { channel.trySend(Unit) }
+            val noteContentBlockListener = Query.Listener { channel.trySend(Unit) }
+            try {
+                var map = mutableMapOf<Note, MutableList<NoteContentBlock>>()
+                var resultList = mutableListOf<NoteWithContent>()
+                for (item in channel) {
+                    database.gooseNoteQueries.getNoteWithContentsByKeyword(
+                        keyword
+                    ) { id: Long, title: String, time: Long, _,
+                        blockId: Long, noteId: Long?, sectionIndex: Long, blockContent: String ->
+                        map.getOrPut(Note(id, title, time)) { mutableListOf() }.add(
+                            NoteContentBlock(blockId, noteId, blockContent, sectionIndex)
+                        )
+                    }.executeAsList()
+                    map.forEach { (note, blocks) ->
+                        resultList.add(NoteWithContent(note, blocks))
+                    }
+                    resultList.sortByDescending { it.note.time }
+                    emit(resultList)
+                    map = mutableMapOf()
                     resultList = mutableListOf()
                 }
             } finally {
@@ -107,6 +144,14 @@ class SqlDelightNoteDatabase(
 
     override suspend fun deleteNoteAndItsBlocks(noteId: Long) = withContext(Dispatchers.IO) {
         database.gooseNoteQueries.deleteNoteAndItsBlocks(noteId)
+    }
+
+    override suspend fun deleteNoteAndItsBlocksList(noteIds: List<Long>) {
+        database.transaction {
+            noteIds.forEach { noteId ->
+                database.gooseNoteQueries.deleteNoteAndItsBlocks(noteId)
+            }
+        }
     }
 
     override suspend fun deleteBlock(id: Long) = withContext(Dispatchers.IO) {

@@ -19,13 +19,10 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
 import little.goose.design.system.component.MovableActionButton
 import little.goose.design.system.component.MovableActionButtonState
 import little.goose.design.system.component.dialog.DeleteDialog
 import little.goose.design.system.component.dialog.DeleteDialogState
-import little.goose.note.data.entities.Note
-import little.goose.note.data.entities.NoteContentBlock
 import little.goose.note.ui.NoteColumn
 import little.goose.note.ui.NoteColumnState
 import little.goose.note.ui.NotebookIntent
@@ -38,15 +35,13 @@ internal fun SearchNoteContent(
     onNavigateToNote: (Long) -> Unit,
     action: (NotebookIntent) -> Unit
 ) {
-    if (noteColumnState.noteWithContents.isNotEmpty()) {
+    if (noteColumnState.noteItemStateList.isNotEmpty()) {
         NoteColumn(
             modifier = modifier.fillMaxSize(),
             state = noteColumnState,
-            onNoteClick = { note ->
-                note.id?.let { onNavigateToNote(it) }
-            },
-            onSelectNote = { note, selected ->
-                action(NotebookIntent.SelectNote(note, selected))
+            onNoteClick = onNavigateToNote,
+            onSelectNote = { noteId, selected ->
+                action(NotebookIntent.SelectNote(noteId, selected))
             }
         )
     }
@@ -95,22 +90,4 @@ internal fun SearchNoteContent(
     }
 
     DeleteDialog(state = deleteDialogState)
-}
-
-@Preview
-@Composable
-private fun PreviewSearchNoteContent() {
-    SearchNoteContent(
-        noteColumnState = NoteColumnState(
-            noteWithContents = mapOf(
-                Note() to listOf(NoteContentBlock(content = "Preview")),
-                Note() to listOf(NoteContentBlock(content = "Preview")),
-                Note() to listOf(NoteContentBlock(content = "Preview"))
-            ),
-            isMultiSelecting = false,
-            multiSelectedNotes = emptySet()
-        ),
-        onNavigateToNote = {},
-        action = {}
-    )
 }

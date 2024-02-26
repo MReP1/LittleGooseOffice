@@ -25,4 +25,9 @@ dependencies {
     implementation(project(":feature:account"))
     implementation(project(":feature:settings"))
     implementation(project(":core:ui"))
+
+    compileOnly(libs.koin.core)
+    implementation(libs.koin.compose)
+    implementation(libs.koin.android)
+    implementation(libs.koin.androidx.compose)
 }

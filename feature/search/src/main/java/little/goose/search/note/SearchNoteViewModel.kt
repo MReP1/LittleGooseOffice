@@ -2,7 +2,6 @@ package little.goose.search.note
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -12,24 +11,20 @@ import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.launchIn
-import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
-import little.goose.note.data.entities.Note
-import little.goose.note.logic.DeleteNotesAndItsBlocksUseCase
-import little.goose.note.logic.DeleteNotesEventUseCase
-import little.goose.note.logic.GetNoteWithContentMapFlowByKeyword
+import little.goose.data.note.domain.DeleteNoteAndItsBlocksListUseCase
+import little.goose.data.note.domain.GetNoteWithContentByKeywordFlowUseCase
 import little.goose.note.ui.NoteColumnState
+import little.goose.note.ui.NoteItemState
 import little.goose.note.ui.NotebookIntent
-import javax.inject.Inject
 
-@HiltViewModel
-class SearchNoteViewModel @Inject constructor(
-    private val getNoteWithContentMapFlowByKeyword: GetNoteWithContentMapFlowByKeyword,
-    private val deleteNotesAndItsBlocksUseCase: DeleteNotesAndItsBlocksUseCase,
-    deleteNotesEventUseCase: DeleteNotesEventUseCase
+class SearchNoteViewModel(
+    private val getNoteWithContentByKeywordFlowUseCase: GetNoteWithContentByKeywordFlowUseCase,
+    private val deleteNoteAndItsBlocksListUseCase: DeleteNoteAndItsBlocksListUseCase
 ) : ViewModel() {
 
-    private val multiSelectedNotes = MutableStateFlow<Set<Note>>(emptySet())
+    private val multiSelectedNotes = MutableStateFlow<Set<Long>>(emptySet())
 
     private val _searchNoteEvent = MutableSharedFlow<SearchNoteEvent>()
     val searchNoteEvent: SharedFlow<SearchNoteEvent> = _searchNoteEvent.asSharedFlow()
@@ -40,12 +35,6 @@ class SearchNoteViewModel @Inject constructor(
 
     private var searchingJob: Job? = null
 
-    init {
-        deleteNotesEventUseCase().onEach {
-            _searchNoteEvent.emit(SearchNoteEvent.DeleteNotes(it))
-        }.launchIn(viewModelScope)
-    }
-
     fun search(keyword: String) {
         if (keyword.isBlank()) {
             _searchNoteState.value = SearchNoteState.Empty(::search)
@@ -54,7 +43,13 @@ class SearchNoteViewModel @Inject constructor(
         _searchNoteState.value = SearchNoteState.Loading(::search)
         searchingJob?.cancel()
         searchingJob = combine(
-            getNoteWithContentMapFlowByKeyword(keyword),
+            getNoteWithContentByKeywordFlowUseCase(keyword).map {
+                buildMap {
+                    for (nwc in it) {
+                        put(nwc.note, nwc.content)
+                    }
+                }
+            },
             multiSelectedNotes
         ) { nwc, multiSelectedNotes ->
             _searchNoteState.value = if (nwc.isEmpty()) {
@@ -62,7 +57,13 @@ class SearchNoteViewModel @Inject constructor(
             } else {
                 SearchNoteState.Success(
                     NoteColumnState(
-                        noteWithContents = nwc,
+                        noteItemStateList = nwc.map { (note, noteContentBlocks) ->
+                            NoteItemState(
+                                note.id!!,
+                                note.title,
+                                noteContentBlocks.firstOrNull()?.content ?: ""
+                            )
+                        },
                         multiSelectedNotes = multiSelectedNotes,
                         isMultiSelecting = multiSelectedNotes.isNotEmpty()
                     ),
@@ -76,30 +77,30 @@ class SearchNoteViewModel @Inject constructor(
         when (intent) {
             NotebookIntent.CancelMultiSelecting -> cancelNotesMultiSelecting()
             NotebookIntent.SelectAllNotes -> selectAllNote()
-            is NotebookIntent.DeleteNotes -> deleteNotes(intent.notes)
-            is NotebookIntent.SelectNote -> selectNote(intent.note, intent.selectNote)
+            is NotebookIntent.DeleteNotes -> deleteNotes(intent.noteIds)
+            is NotebookIntent.SelectNote -> selectNote(intent.noteId, intent.selectNote)
         }
     }
 
-    private fun selectNote(note: Note, selected: Boolean) {
+    private fun selectNote(noteId: Long, selected: Boolean) {
         multiSelectedNotes.value = multiSelectedNotes.value.toMutableSet()
             .apply {
-                if (selected) add(note) else remove(note)
+                if (selected) add(noteId) else remove(noteId)
             }
     }
 
     private fun selectAllNote() {
         multiSelectedNotes.value = (searchNoteState.value as? SearchNoteState.Success)
-            ?.data?.noteWithContents?.keys ?: return
+            ?.data?.noteItemStateList?.map { it.id }?.toSet() ?: return
     }
 
     private fun cancelNotesMultiSelecting() {
         multiSelectedNotes.value = emptySet()
     }
 
-    private fun deleteNotes(notes: List<Note>) {
+    private fun deleteNotes(noteIds: List<Long>) {
         viewModelScope.launch {
-            deleteNotesAndItsBlocksUseCase(notes)
+            deleteNoteAndItsBlocksListUseCase(noteIds)
             cancelNotesMultiSelecting()
         }
     }

@@ -39,6 +39,7 @@ import little.goose.memorial.ui.MemorialHomeViewModel
 import little.goose.note.ui.NotebookViewModel
 import little.goose.search.SearchType
 import little.goose.ui.screen.LittleGooseEmptyScreen
+import org.koin.androidx.compose.koinViewModel
 import java.util.Date
 
 const val ROUTE_HOME = "home"
@@ -122,7 +123,7 @@ fun HomeRoute(
         val indexViewModel = hiltViewModel<IndexViewModel>()
         val accountHomeViewModel = hiltViewModel<AccountHomeViewModel>()
         val memorialHomeViewModel = hiltViewModel<MemorialHomeViewModel>()
-        val notebookViewModel = hiltViewModel<NotebookViewModel>()
+        val notebookViewModel = koinViewModel<NotebookViewModel>()
 
         val noteColumnState by notebookViewModel.noteColumnState.collectAsState()
         val indexState by indexViewModel.indexState.collectAsState()

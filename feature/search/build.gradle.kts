@@ -17,5 +17,11 @@ dependencies {
     implementation(project(":core:common"))
     implementation(project(":feature:memorial"))
     implementation(project(":feature:note"))
+    implementation(project(":shared:data:note"))
     implementation(project(":feature:account"))
+
+    compileOnly(libs.koin.core)
+    implementation(libs.koin.compose)
+    implementation(libs.koin.android)
+    implementation(libs.koin.androidx.compose)
 }

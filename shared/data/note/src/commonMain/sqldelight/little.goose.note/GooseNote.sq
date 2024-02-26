@@ -44,6 +44,14 @@ getNoteWithContents {
     ORDER BY note_content_block.`index` ASC;
 }
 
+getNoteWithContentsByKeyword {
+    SELECT * FROM note
+    JOIN note_content_block
+    ON note.id = note_content_block.note_id
+    WHERE note.title LIKE '%'|| :keyWord ||'%' OR note_content_block.content LIKE '%'|| :keyWord ||'%'
+    ORDER BY note_content_block.`index` ASC;
+}
+
 getNoteContentBlocks:
     SELECT * FROM note_content_block
     WHERE note_id = :noteId;

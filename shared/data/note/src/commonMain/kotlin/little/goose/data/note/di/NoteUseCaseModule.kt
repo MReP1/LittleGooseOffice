@@ -2,8 +2,10 @@ package little.goose.data.note.di
 
 import little.goose.data.note.domain.DeleteBlockUseCase
 import little.goose.data.note.domain.DeleteBlockWithNoteIdUseCase
+import little.goose.data.note.domain.DeleteNoteAndItsBlocksListUseCase
 import little.goose.data.note.domain.DeleteNoteAndItsBlocksUseCase
 import little.goose.data.note.domain.GetNoteFlowUseCase
+import little.goose.data.note.domain.GetNoteWithContentByKeywordFlowUseCase
 import little.goose.data.note.domain.GetNoteWithContentFlowUseCase
 import little.goose.data.note.domain.GetNoteWithContentFlowWithNoteIdUseCase
 import little.goose.data.note.domain.InsertOrReplaceNoteContentBlockUseCase
@@ -31,5 +33,9 @@ val noteUseCaseModule = module {
     factoryOf(::InsertOrReplaceNoteContentBlocksUseCase)
 
     factoryOf(::InsertOrReplaceNoteUseCase)
+
+    factoryOf(::DeleteNoteAndItsBlocksListUseCase)
+
+    factoryOf(::GetNoteWithContentByKeywordFlowUseCase)
 
 }

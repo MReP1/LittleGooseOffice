@@ -4,10 +4,10 @@ import kotlinx.coroutines.flow.Flow
 import little.goose.data.note.bean.Note
 import little.goose.data.note.bean.NoteContentBlock
 import little.goose.data.note.bean.NoteWithContent
-import little.goose.data.note.local.NoteDataBase
+import little.goose.data.note.local.NoteDatabase
 
 class NoteRepositoryImpl(
-    private val dataBase: NoteDataBase
+    private val dataBase: NoteDatabase
 ) : NoteRepository {
 
     override fun getNoteFlow(noteId: Long): Flow<Note> {
@@ -24,6 +24,10 @@ class NoteRepositoryImpl(
 
     override suspend fun deleteNoteAndItsBlocks(noteId: Long) {
         return dataBase.deleteNoteAndItsBlocks(noteId)
+    }
+
+    override suspend fun deleteNoteAndItsBlocksList(noteIds: List<Long>) {
+        return dataBase.deleteNoteAndItsBlocksList(noteIds)
     }
 
     override suspend fun deleteBlock(id: Long) {
@@ -46,4 +50,7 @@ class NoteRepositoryImpl(
         return dataBase.getNoteWithContentFlow()
     }
 
+    override fun getNoteWithContentFlowByKeyword(keyword: String): Flow<List<NoteWithContent>> {
+        return dataBase.getNoteWithContentFlowByKeyword(keyword)
+    }
 }

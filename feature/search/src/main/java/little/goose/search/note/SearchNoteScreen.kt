@@ -20,18 +20,15 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.tooling.preview.Preview
-import androidx.hilt.navigation.compose.hiltViewModel
 import kotlinx.coroutines.flow.collectLatest
-import little.goose.design.system.theme.GooseTheme
-import little.goose.note.data.entities.Note
-import little.goose.note.data.entities.NoteContentBlock
+import little.goose.data.note.bean.Note
 import little.goose.note.ui.NoteColumnState
 import little.goose.note.ui.NotebookIntent
 import little.goose.search.SearchState
 import little.goose.search.component.SearchScreen
 import little.goose.ui.screen.LittleGooseEmptyScreen
 import little.goose.ui.screen.LittleGooseLoadingScreen
+import org.koin.androidx.compose.koinViewModel
 
 sealed interface SearchNoteState : SearchState {
     data class Loading(
@@ -59,7 +56,7 @@ internal fun SearchNoteRoute(
     onBack: () -> Unit
 ) {
     val context = LocalContext.current
-    val viewModel = hiltViewModel<SearchNoteViewModel>()
+    val viewModel = koinViewModel<SearchNoteViewModel>()
     val searchNoteState by viewModel.searchNoteState.collectAsState()
 
     val snackbarHostState = remember { SnackbarHostState() }
@@ -168,25 +165,4 @@ fun SearchNoteScreen(
             }
         }
     }
-}
-
-@Preview
-@Composable
-private fun PreviewSearchNoteScreen() = GooseTheme {
-    SearchNoteScreen(
-        state = SearchNoteState.Success(
-            data = NoteColumnState(
-                noteWithContents = mapOf(
-                    Note() to listOf(NoteContentBlock(content = "Preview"))
-                ),
-                isMultiSelecting = false,
-                multiSelectedNotes = emptySet()
-            ),
-            search = {}
-        ),
-        snackbarHostState = SnackbarHostState(),
-        onNavigateToNote = {},
-        action = {},
-        onBack = {}
-    )
 }

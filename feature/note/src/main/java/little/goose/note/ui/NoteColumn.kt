@@ -16,46 +16,46 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import little.goose.note.data.entities.Note
-import little.goose.note.data.entities.NoteContentBlock
-import little.goose.note.logic.notes
 
 data class NoteColumnState(
-    val noteWithContents: Map<Note, List<NoteContentBlock>> = emptyMap(),
+    val noteItemStateList: List<NoteItemState> = emptyList(),
     val isMultiSelecting: Boolean = false,
-    val multiSelectedNotes: Set<Note> = emptySet()
+    val multiSelectedNotes: Set<Long> = emptySet()
+)
+
+data class NoteItemState(
+    val id: Long,
+    val title: String,
+    val content: String
 )
 
 @Composable
 fun NoteColumn(
     modifier: Modifier = Modifier,
     state: NoteColumnState,
-    onNoteClick: (Note) -> Unit,
-    onSelectNote: (item: Note, selected: Boolean) -> Unit
+    onNoteClick: (Long) -> Unit,
+    onSelectNote: (item: Long, selected: Boolean) -> Unit
 ) {
-    val notes = remember(state.noteWithContents) { state.noteWithContents.notes }
     LazyColumn(
         modifier = modifier,
         contentPadding = PaddingValues(horizontal = 16.dp, vertical = 12.dp),
         verticalArrangement = Arrangement.spacedBy(8.dp),
         content = {
             items(
-                count = notes.size,
-                key = { index -> notes[index].id ?: -1 },
+                count = state.noteItemStateList.size,
+                key = { index -> state.noteItemStateList[index].id },
                 itemContent = {
-                    val note = notes[it]
-                    val noteContentBlocks = state.noteWithContents[note] ?: emptyList()
+                    val itemState = state.noteItemStateList[it]
                     NoteItem(
                         modifier = Modifier.fillMaxWidth(),
-                        note = note,
-                        noteContentBlocks = noteContentBlocks,
+                        noteId = itemState.id,
+                        title = itemState.title,
+                        content = itemState.content,
                         isMultiSelecting = state.isMultiSelecting,
-                        isSelected = state.multiSelectedNotes.contains(note),
+                        isSelected = state.multiSelectedNotes.contains(itemState.id),
                         onNoteClick = onNoteClick,
                         onNoteSelect = onSelectNote
                     )
@@ -68,12 +68,13 @@ fun NoteColumn(
 @Composable
 fun NoteItem(
     modifier: Modifier = Modifier,
-    note: Note,
-    noteContentBlocks: List<NoteContentBlock>,
+    noteId: Long,
+    title: String,
+    content: String,
     isMultiSelecting: Boolean,
-    onNoteSelect: (Note, Boolean) -> Unit,
+    onNoteSelect: (Long, Boolean) -> Unit,
     isSelected: Boolean,
-    onNoteClick: (Note) -> Unit
+    onNoteClick: (Long) -> Unit
 ) {
     Surface(
         modifier = modifier,
@@ -87,13 +88,13 @@ fun NoteItem(
                 .combinedClickable(
                     onClick = {
                         if (isMultiSelecting) {
-                            onNoteSelect(note, !isSelected)
+                            onNoteSelect(noteId, !isSelected)
                         } else {
-                            onNoteClick(note)
+                            onNoteClick(noteId)
                         }
                     },
                     onLongClick = {
-                        onNoteSelect(note, !isSelected)
+                        onNoteSelect(noteId, !isSelected)
                     }
                 )
         ) {
@@ -102,11 +103,8 @@ fun NoteItem(
                     .fillMaxSize()
                     .padding(12.dp)
             ) {
-                Text(text = note.title.ifBlank { "Untitled" })
-                val firstNoteContentBlock = noteContentBlocks.firstOrNull()
-                if (firstNoteContentBlock != null) {
-                    Text(text = firstNoteContentBlock.content)
-                }
+                Text(text = title.ifBlank { "Untitled" })
+                Text(text = content)
             }
             if (isSelected) {
                 Icon(
@@ -120,48 +118,4 @@ fun NoteItem(
             }
         }
     }
-}
-
-@Preview
-@Composable
-private fun PreviewNoteColumn() {
-    val noteColumnState = remember {
-        val notes = List(10) {
-            Note.generateRandomNote()
-        }
-        val map = buildMap {
-            notes.forEach { note ->
-                put(note, List(10) {
-                    NoteContentBlock.generateRandom(note.id)
-                })
-            }
-        }
-        NoteColumnState(
-            noteWithContents = map,
-            isMultiSelecting = true,
-            mutableSetOf()
-        )
-    }
-    NoteColumn(
-        modifier = Modifier.fillMaxSize(),
-        state = noteColumnState,
-        onNoteClick = {},
-        onSelectNote = { _, _ -> }
-    )
-}
-
-@Preview(widthDp = 390, heightDp = 120)
-@Composable
-private fun PreviewNoteItem() {
-    val note = Note.generateRandomNote()
-    NoteItem(
-        note = note,
-        noteContentBlocks = List(10) {
-            NoteContentBlock.generateRandom(noteId = note.id)
-        },
-        isMultiSelecting = false,
-        onNoteSelect = { _, _ -> },
-        isSelected = false,
-        onNoteClick = {}
-    )
 }

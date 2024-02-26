@@ -8,7 +8,7 @@ import kotlinx.coroutines.IO
 import kotlinx.coroutines.SupervisorJob
 import little.goose.data.note.NoteRepository
 import little.goose.data.note.NoteRepositoryImpl
-import little.goose.data.note.local.NoteDataBase
+import little.goose.data.note.local.NoteDatabase
 import little.goose.data.note.local.SqlDelightNoteDatabase
 import little.goose.note.GooseNoteDatabase
 import noteDatabaseDriver
@@ -33,7 +33,7 @@ val noteDatabaseModule = module {
         GooseNoteDatabase(factory.create())
     }
 
-    single<NoteDataBase> {
+    single<NoteDatabase> {
         SqlDelightNoteDatabase(get())
     }
 

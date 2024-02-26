@@ -11,6 +11,8 @@ interface NoteRepository {
 
     fun getNoteWithContentFlow(): Flow<List<NoteWithContent>>
 
+    fun getNoteWithContentFlowByKeyword(keyword: String): Flow<List<NoteWithContent>>
+
     suspend fun insertOrReplaceNoteContentBlocks(noteContentBlocks: List<NoteContentBlock>)
 
     suspend fun insertOrReplaceNoteContentBlock(noteContentBlock: NoteContentBlock): Long
@@ -20,6 +22,8 @@ interface NoteRepository {
     suspend fun deleteBlock(id: Long)
 
     suspend fun deleteNoteAndItsBlocks(noteId: Long)
+
+    suspend fun deleteNoteAndItsBlocksList(noteIds: List<Long>)
 
     fun getNoteWithContentFlow(noteId: Long): Flow<NoteWithContent>
 
