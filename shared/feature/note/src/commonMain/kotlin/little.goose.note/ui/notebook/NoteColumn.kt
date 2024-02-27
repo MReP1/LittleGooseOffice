@@ -1,4 +1,4 @@
-package little.goose.note.ui
+package little.goose.note.ui.notebook
 
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
@@ -19,18 +19,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.unit.dp
-
-data class NoteColumnState(
-    val noteItemStateList: List<NoteItemState> = emptyList(),
-    val isMultiSelecting: Boolean = false,
-    val multiSelectedNotes: Set<Long> = emptySet()
-)
-
-data class NoteItemState(
-    val id: Long,
-    val title: String,
-    val content: String
-)
 
 @Composable
 fun NoteColumn(

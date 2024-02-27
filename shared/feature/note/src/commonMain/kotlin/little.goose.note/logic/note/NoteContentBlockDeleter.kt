@@ -1,6 +1,6 @@
 @file:Suppress("FunctionName")
 
-package little.goose.note.logic
+package little.goose.note.logic.note
 
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock

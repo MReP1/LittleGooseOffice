@@ -1,6 +1,6 @@
 @file:Suppress("FunctionName")
 
-package little.goose.note.logic
+package little.goose.note.logic.note
 
 import androidx.compose.ui.focus.FocusRequester
 import kotlinx.coroutines.sync.Mutex

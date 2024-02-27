@@ -152,15 +152,14 @@ fun HomeRoute(
         )
 
         LaunchedEffect(
-            accountHomeViewModel.event, memorialHomeViewModel.event, notebookViewModel.event
+            accountHomeViewModel.event, memorialHomeViewModel.event
         ) {
             merge(
-                accountHomeViewModel.event, memorialHomeViewModel.event, notebookViewModel.event
+                accountHomeViewModel.event, memorialHomeViewModel.event
             ).collect { event ->
                 when (event) {
                     is AccountHomeViewModel.Event.DeleteTransactions,
-                    is MemorialHomeViewModel.Event.DeleteMemorials,
-                    is NotebookViewModel.Event.DeleteNotes -> {
+                    is MemorialHomeViewModel.Event.DeleteMemorials -> {
                         snackbarHostState.showSnackbar(
                             message = context.getString(little.goose.common.R.string.deleted),
                             withDismissAction = true

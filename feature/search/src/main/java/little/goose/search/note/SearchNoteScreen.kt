@@ -21,32 +21,22 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import kotlinx.coroutines.flow.collectLatest
-import little.goose.data.note.bean.Note
-import little.goose.note.ui.NoteColumnState
-import little.goose.note.ui.NotebookIntent
-import little.goose.search.SearchState
+import little.goose.note.ui.notebook.NoteColumnState
 import little.goose.search.component.SearchScreen
 import little.goose.ui.screen.LittleGooseEmptyScreen
 import little.goose.ui.screen.LittleGooseLoadingScreen
 import org.koin.androidx.compose.koinViewModel
 
-sealed interface SearchNoteState : SearchState {
-    data class Loading(
-        override val search: (String) -> Unit
-    ) : SearchNoteState
+sealed interface SearchNoteState {
+    data object Loading : SearchNoteState
 
-    data class Success(
-        val data: NoteColumnState,
-        override val search: (String) -> Unit
-    ) : SearchNoteState
+    data class Success(val data: NoteColumnState) : SearchNoteState
 
-    data class Empty(
-        override val search: (String) -> Unit
-    ) : SearchNoteState
+    data object Empty : SearchNoteState
 }
 
 sealed interface SearchNoteEvent {
-    data class DeleteNotes(val notes: List<Note>) : SearchNoteEvent
+    data object DeleteNotes : SearchNoteEvent
 }
 
 @Composable
@@ -64,7 +54,7 @@ internal fun SearchNoteRoute(
     LaunchedEffect(Unit) {
         viewModel.searchNoteEvent.collectLatest { event ->
             when (event) {
-                is SearchNoteEvent.DeleteNotes -> {
+                SearchNoteEvent.DeleteNotes -> {
                     snackbarHostState.showSnackbar(
                         message = context.getString(little.goose.common.R.string.deleted)
                     )
@@ -88,7 +78,7 @@ fun SearchNoteScreen(
     modifier: Modifier = Modifier,
     state: SearchNoteState,
     snackbarHostState: SnackbarHostState,
-    action: (NotebookIntent) -> Unit,
+    action: (SearchNoteIntent) -> Unit,
     onNavigateToNote: (Long) -> Unit,
     onBack: () -> Unit
 ) {
@@ -98,7 +88,7 @@ fun SearchNoteScreen(
         keyword = keyword,
         onKeywordChange = {
             keyword = it
-            state.search(it)
+            action(SearchNoteIntent.Search(it))
         },
         snackbarHostState = snackbarHostState,
         onBack = onBack
@@ -159,7 +149,7 @@ fun SearchNoteScreen(
                         modifier = Modifier.fillMaxSize(),
                         noteColumnState = state.data,
                         onNavigateToNote = onNavigateToNote,
-                        action = action
+                        action = { action(SearchNoteIntent.NotebookIntent(it)) }
                     )
                 }
             }

@@ -72,4 +72,5 @@ dependencies {
 
     implementation(project(":shared:chart"))
     implementation(project(":shared:common"))
+    implementation(project(":shared:ui"))
 }

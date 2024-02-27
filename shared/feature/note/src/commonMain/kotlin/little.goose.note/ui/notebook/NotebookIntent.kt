@@ -1,4 +1,4 @@
-package little.goose.note.ui
+package little.goose.note.ui.notebook
 
 sealed class NotebookIntent {
 

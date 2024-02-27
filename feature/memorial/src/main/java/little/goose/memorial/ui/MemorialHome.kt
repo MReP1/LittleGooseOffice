@@ -19,7 +19,7 @@ import little.goose.design.system.theme.GooseTheme
 import little.goose.memorial.data.entities.Memorial
 import little.goose.memorial.ui.component.MemorialColumn
 import little.goose.memorial.ui.component.MemorialTitle
-import little.goose.ui.icon.PullToSearchIcon
+import little.goose.shared.ui.icon.PullToSearchIcon
 import little.goose.ui.surface.PullSurface
 
 @Composable

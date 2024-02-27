@@ -22,6 +22,7 @@ dependencies {
     implementation(project(":feature:search"))
     implementation(project(":feature:memorial"))
     implementation(project(":feature:note"))
+    implementation(project(":shared:feature:note"))
     implementation(project(":feature:account"))
     implementation(project(":feature:settings"))
     implementation(project(":core:ui"))

@@ -23,9 +23,9 @@ import little.goose.home.ui.index.IndexHome
 import little.goose.home.ui.index.IndexHomeState
 import little.goose.memorial.ui.MemorialHome
 import little.goose.memorial.ui.MemorialHomeState
-import little.goose.note.ui.NoteColumnState
 import little.goose.note.ui.NotebookHome
-import little.goose.note.ui.NotebookIntent
+import little.goose.note.ui.notebook.NoteColumnState
+import little.goose.note.ui.notebook.NotebookIntent
 import little.goose.search.SearchType
 import java.util.Date
 
@@ -45,7 +45,7 @@ fun HomePageContent(
     noteColumnState: NoteColumnState,
     memorialHomeState: MemorialHomeState,
     accountHomeState: AccountHomeState,
-    noteAction: (NotebookIntent) -> Unit
+    noteAction: (little.goose.note.ui.notebook.NotebookIntent) -> Unit
 ) {
     val buttonState = remember { MovableActionButtonState() }
 

@@ -1,4 +1,4 @@
-package little.goose.ui.icon
+package little.goose.shared.ui.icon
 
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.layout.defaultMinSize
@@ -20,7 +20,7 @@ import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.role
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
-import java.lang.Float.min
+import kotlin.math.min
 
 @Stable
 private data class PullToSearchIconCacheCurrentState(var state: Boolean)

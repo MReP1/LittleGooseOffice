@@ -23,9 +23,9 @@ import little.goose.design.system.component.MovableActionButton
 import little.goose.design.system.component.MovableActionButtonState
 import little.goose.design.system.component.dialog.DeleteDialog
 import little.goose.design.system.component.dialog.DeleteDialogState
-import little.goose.note.ui.NoteColumn
-import little.goose.note.ui.NoteColumnState
-import little.goose.note.ui.NotebookIntent
+import little.goose.note.ui.notebook.NoteColumn
+import little.goose.note.ui.notebook.NoteColumnState
+import little.goose.note.ui.notebook.NotebookIntent
 
 @OptIn(ExperimentalLayoutApi::class)
 @Composable

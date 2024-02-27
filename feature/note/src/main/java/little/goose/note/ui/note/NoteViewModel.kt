@@ -10,7 +10,7 @@ import little.goose.data.note.domain.InsertOrReplaceNoteContentBlockUseCase
 import little.goose.data.note.domain.InsertOrReplaceNoteContentBlocksUseCase
 import little.goose.data.note.domain.InsertOrReplaceNoteUseCase
 import little.goose.note.data.constants.KEY_NOTE_ID
-import little.goose.note.logic.NoteScreenStateHolder
+import little.goose.note.logic.note.NoteScreenStateHolder
 
 class NoteViewModel(
     savedStateHandle: SavedStateHandle,

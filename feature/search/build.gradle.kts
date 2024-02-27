@@ -18,6 +18,7 @@ dependencies {
     implementation(project(":feature:memorial"))
     implementation(project(":feature:note"))
     implementation(project(":shared:data:note"))
+    implementation(project(":shared:feature:note"))
     implementation(project(":feature:account"))
 
     compileOnly(libs.koin.core)

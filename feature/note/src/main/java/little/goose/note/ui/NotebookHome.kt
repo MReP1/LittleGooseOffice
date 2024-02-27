@@ -10,7 +10,9 @@ import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.unit.dp
 import little.goose.common.utils.progressWith
-import little.goose.ui.icon.PullToSearchIcon
+import little.goose.note.ui.notebook.NoteColumn
+import little.goose.note.ui.notebook.NoteColumnState
+import little.goose.note.ui.notebook.NotebookIntent
 import little.goose.ui.surface.PullSurface
 
 @Composable
@@ -25,7 +27,7 @@ fun NotebookHome(
         modifier = modifier,
         onPull = onNavigateToSearch,
         backgroundContent = { progress ->
-            PullToSearchIcon(
+            little.goose.shared.ui.icon.PullToSearchIcon(
                 modifier = Modifier
                     .padding(top = 6.dp)
                     .size(48.dp)

@@ -15,7 +15,6 @@ dependencies {
 
     implementation(libs.google.android.material)
 
-    // 富文本
     implementation(project(":core:design-system"))
     implementation(project(":core:common"))
     implementation(project(":core:ui"))
@@ -30,6 +29,7 @@ dependencies {
     implementation(libs.androidx.activity.ktx)
     implementation(project(":shared:feature:note"))
     implementation(project(":shared:data:note"))
+    implementation(project(":shared:ui"))
 
     compileOnly(libs.koin.core)
     implementation(libs.koin.compose)

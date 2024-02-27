@@ -1,6 +1,6 @@
 @file:Suppress("FunctionName")
 
-package little.goose.note.logic
+package little.goose.note.logic.note
 
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.text2.input.TextFieldState

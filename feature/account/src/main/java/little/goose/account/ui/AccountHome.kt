@@ -34,7 +34,7 @@ import little.goose.design.system.component.dialog.rememberDialogState
 import little.goose.design.system.theme.GooseTheme
 import little.goose.design.system.theme.LocalWindowSizeClass
 import little.goose.design.system.util.PreviewMultipleScreenSizes
-import little.goose.ui.icon.PullToSearchIcon
+import little.goose.shared.ui.icon.PullToSearchIcon
 import little.goose.ui.surface.PullSurface
 
 @Composable
