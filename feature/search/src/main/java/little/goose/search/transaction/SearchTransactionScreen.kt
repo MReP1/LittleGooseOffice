@@ -25,8 +25,8 @@ import little.goose.account.data.entities.Transaction
 import little.goose.account.ui.component.TransactionColumnState
 import little.goose.search.SearchState
 import little.goose.search.component.SearchScreen
-import little.goose.ui.screen.LittleGooseEmptyScreen
-import little.goose.ui.screen.LittleGooseLoadingScreen
+import little.goose.shared.ui.screen.LittleGooseEmptyScreen
+import little.goose.shared.ui.screen.LittleGooseLoadingScreen
 
 sealed interface SearchTransactionState : SearchState {
     data class Empty(

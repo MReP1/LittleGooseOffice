@@ -31,11 +31,10 @@ import little.goose.common.utils.setMonth
 import little.goose.common.utils.setYear
 import little.goose.design.system.component.dialog.TimeSelectorCenterDialog
 import little.goose.design.system.component.dialog.rememberDialogState
-import little.goose.design.system.theme.GooseTheme
 import little.goose.design.system.theme.LocalWindowSizeClass
 import little.goose.design.system.util.PreviewMultipleScreenSizes
 import little.goose.shared.ui.icon.PullToSearchIcon
-import little.goose.ui.surface.PullSurface
+import little.goose.shared.ui.surface.PullSurface
 
 @Composable
 fun AccountHome(
@@ -152,7 +151,7 @@ fun AccountHome(
 
 @PreviewMultipleScreenSizes
 @Composable
-private fun PreviewAccountHome() = GooseTheme {
+private fun PreviewAccountHome() {
     val accountHomeState = remember { AccountHomeState() }
     AccountHome(
         modifier = Modifier.fillMaxSize(),

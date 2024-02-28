@@ -34,7 +34,6 @@ dependencies {
     // Compose
     implementation(libs.androidx.activity.compose)
     implementation(project(":core:design-system"))
-    implementation(project(":core:ui"))
     implementation(libs.androidx.compose.navigation)
     implementation(libs.androidx.hilt.navigation.compose)
     androidTestImplementation(libs.androidx.compose.ui.test)
@@ -60,6 +59,7 @@ dependencies {
     implementation(project(":core:common"))
     implementation(project(":feature:settings"))
     implementation(project(":appwidget"))
+    implementation(project(":shared:ui"))
 
     compileOnly(libs.koin.core)
     implementation(libs.koin.android)

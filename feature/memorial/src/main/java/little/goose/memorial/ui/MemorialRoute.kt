@@ -80,7 +80,7 @@ import little.goose.memorial.data.entities.Memorial
 import little.goose.memorial.ui.component.MemorialCard
 import little.goose.memorial.ui.component.MemorialText
 import little.goose.memorial.utils.appendTimeSuffix
-import little.goose.ui.screen.LittleGooseLoadingScreen
+import little.goose.shared.ui.screen.LittleGooseLoadingScreen
 import java.util.Date
 
 const val ROUTE_MEMORIAL = "memorial"

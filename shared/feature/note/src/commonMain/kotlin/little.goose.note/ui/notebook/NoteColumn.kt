@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material3.Icon
@@ -33,10 +34,9 @@ fun NoteColumn(
         verticalArrangement = Arrangement.spacedBy(8.dp),
         content = {
             items(
-                count = state.noteItemStateList.size,
-                key = { index -> state.noteItemStateList[index].id },
-                itemContent = {
-                    val itemState = state.noteItemStateList[it]
+                items = state.noteItemStateList,
+                key = { it.id },
+                itemContent = { itemState ->
                     NoteItem(
                         modifier = Modifier.fillMaxWidth(),
                         noteId = itemState.id,

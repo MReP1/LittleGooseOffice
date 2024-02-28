@@ -14,7 +14,6 @@ dependencies {
 
     implementation(project(":core:design-system"))
     implementation(project(":core:common"))
-    implementation(project(":core:ui"))
     implementation(project(":shared:ui"))
 
     implementation(libs.androidx.compose.navigation)

@@ -27,7 +27,7 @@ import little.goose.account.data.constants.AccountConstant
 import little.goose.account.ui.component.TransactionEditSurface
 import little.goose.account.ui.component.TransactionEditSurfaceState
 import little.goose.design.system.theme.GooseTheme
-import little.goose.ui.screen.LittleGooseLoadingScreen
+import little.goose.shared.ui.screen.LittleGooseLoadingScreen
 
 internal sealed class TransactionScreenState {
 

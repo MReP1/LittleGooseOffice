@@ -28,8 +28,8 @@ import little.goose.memorial.data.entities.Memorial
 import little.goose.memorial.ui.MemorialColumnState
 import little.goose.search.SearchState
 import little.goose.search.component.SearchScreen
-import little.goose.ui.screen.LittleGooseEmptyScreen
-import little.goose.ui.screen.LittleGooseLoadingScreen
+import little.goose.shared.ui.screen.LittleGooseEmptyScreen
+import little.goose.shared.ui.screen.LittleGooseLoadingScreen
 
 sealed interface SearchMemorialState : SearchState {
     data class Empty(

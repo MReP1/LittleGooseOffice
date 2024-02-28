@@ -13,7 +13,8 @@ import little.goose.common.utils.progressWith
 import little.goose.note.ui.notebook.NoteColumn
 import little.goose.note.ui.notebook.NoteColumnState
 import little.goose.note.ui.notebook.NotebookIntent
-import little.goose.ui.surface.PullSurface
+import little.goose.shared.ui.icon.PullToSearchIcon
+import little.goose.shared.ui.surface.PullSurface
 
 @Composable
 fun NotebookHome(
@@ -27,7 +28,7 @@ fun NotebookHome(
         modifier = modifier,
         onPull = onNavigateToSearch,
         backgroundContent = { progress ->
-            little.goose.shared.ui.icon.PullToSearchIcon(
+            PullToSearchIcon(
                 modifier = Modifier
                     .padding(top = 6.dp)
                     .size(48.dp)

@@ -38,7 +38,7 @@ import little.goose.home.ui.index.IndexViewModel
 import little.goose.memorial.ui.MemorialHomeViewModel
 import little.goose.note.ui.NotebookViewModel
 import little.goose.search.SearchType
-import little.goose.ui.screen.LittleGooseEmptyScreen
+import little.goose.shared.ui.screen.LittleGooseEmptyScreen
 import org.koin.androidx.compose.koinViewModel
 import java.util.Date
 

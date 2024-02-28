@@ -7,6 +7,8 @@ import little.goose.office.di.jankStatsModule
 import little.goose.search.di.searchNoteModule
 import org.koin.android.ext.koin.androidContext
 import org.koin.core.context.startKoin
+import org.koin.dsl.module
+import vibrator
 
 @HiltAndroidApp
 class AccountApplication : Application() {
@@ -16,7 +18,12 @@ class AccountApplication : Application() {
 
         startKoin {
             androidContext(this@AccountApplication)
-            modules(jankStatsModule, noteFeatureModule, searchNoteModule)
+            modules(
+                module { vibrator() },
+                jankStatsModule,
+                noteFeatureModule,
+                searchNoteModule
+            )
         }
     }
 }

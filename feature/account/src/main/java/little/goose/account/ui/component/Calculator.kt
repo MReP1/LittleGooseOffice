@@ -1,22 +1,27 @@
 package little.goose.account.ui.component
 
-import android.os.Build
-import android.os.VibrationEffect
-import android.os.Vibrator
-import androidx.compose.foundation.layout.*
+import Vibration
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxScope
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.Backspace
-import androidx.compose.material3.*
+import androidx.compose.material.icons.automirrored.rounded.Backspace
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ProvideTextStyle
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.tooling.preview.Preview
 import little.goose.account.R
 import little.goose.account.logic.MoneyCalculatorLogic
-import little.goose.design.system.theme.GooseTheme
+import rememberVibrator
 
 @Composable
 fun Calculator(
@@ -28,18 +33,9 @@ fun Calculator(
     isContainOperator: Boolean
 ) {
     Column(modifier = modifier) {
-        val context = LocalContext.current
-        val vibrator = remember(context) {
-            runCatching { context.getSystemService(Vibrator::class.java) }.getOrNull()
-        }
+        val vibrator = rememberVibrator()
         val clickVibrate = remember(vibrator) {
-            {
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-                    vibrator?.vibrate(VibrationEffect.createPredefined(VibrationEffect.EFFECT_CLICK))
-                } else {
-                    vibrator?.vibrate(VibrationEffect.createOneShot(16, 180))
-                }
-            }
+            { vibrator.vibrate(Vibration.ClickShot) }
         }
         Row(
             modifier = Modifier
@@ -65,7 +61,7 @@ fun Calculator(
                     onOperatorClick(MoneyCalculatorLogic.BACKSPACE)
                 }
             ) {
-                Icon(imageVector = Icons.Rounded.Backspace, contentDescription = "BackSpace")
+                Icon(imageVector = Icons.AutoMirrored.Rounded.Backspace, contentDescription = "BackSpace")
             }
         }
 
@@ -194,16 +190,4 @@ private fun Cell(
             content = content
         )
     }
-}
-
-@Preview(heightDp = 380)
-@Composable
-fun PreviewCalculator() = GooseTheme {
-    Calculator(
-        onNumClick = {},
-        onAgainClick = {},
-        onDoneClick = {},
-        onOperatorClick = {},
-        isContainOperator = false
-    )
 }

@@ -13,7 +13,7 @@ kotlin {
         iosSimulatorArm64()
     ).forEach { iosTarget ->
         iosTarget.binaries.framework {
-            baseName = "ui"
+            baseName = "shared.ui"
             isStatic = true
         }
     }
@@ -25,11 +25,21 @@ kotlin {
                 implementation(compose.foundation)
                 implementation(compose.material3)
                 implementation(compose.materialIconsExtended)
+                implementation(compose.components.resources)
                 implementation(project(":shared:common"))
+                implementation(libs.koin.compose)
+                compileOnly(libs.koin.core)
             }
         }
         androidMain {
+            dependencies {
+                implementation(libs.koin.android)
+            }
+        }
+        iosMain {
+            dependencies {
 
+            }
         }
     }
 }
@@ -39,4 +49,6 @@ android {
 
     sourceSets["main"].manifest.srcFile("src/androidMain/AndroidManifest.xml")
     sourceSets["main"].res.srcDirs("src/androidMain/res")
+    sourceSets["main"].resources.srcDirs("src/commonMain/resources")
+
 }

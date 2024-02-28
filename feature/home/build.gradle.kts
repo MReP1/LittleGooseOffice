@@ -25,7 +25,7 @@ dependencies {
     implementation(project(":shared:feature:note"))
     implementation(project(":feature:account"))
     implementation(project(":feature:settings"))
-    implementation(project(":core:ui"))
+    implementation(project(":shared:ui"))
 
     compileOnly(libs.koin.core)
     implementation(libs.koin.compose)

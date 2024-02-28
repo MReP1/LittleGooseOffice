@@ -23,8 +23,8 @@ import androidx.compose.ui.platform.LocalContext
 import kotlinx.coroutines.flow.collectLatest
 import little.goose.note.ui.notebook.NoteColumnState
 import little.goose.search.component.SearchScreen
-import little.goose.ui.screen.LittleGooseEmptyScreen
-import little.goose.ui.screen.LittleGooseLoadingScreen
+import little.goose.shared.ui.screen.LittleGooseEmptyScreen
+import little.goose.shared.ui.screen.LittleGooseLoadingScreen
 import org.koin.androidx.compose.koinViewModel
 
 sealed interface SearchNoteState {

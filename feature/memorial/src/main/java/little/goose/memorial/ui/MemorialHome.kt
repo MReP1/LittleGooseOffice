@@ -20,7 +20,7 @@ import little.goose.memorial.data.entities.Memorial
 import little.goose.memorial.ui.component.MemorialColumn
 import little.goose.memorial.ui.component.MemorialTitle
 import little.goose.shared.ui.icon.PullToSearchIcon
-import little.goose.ui.surface.PullSurface
+import little.goose.shared.ui.surface.PullSurface
 
 @Composable
 fun MemorialHome(
