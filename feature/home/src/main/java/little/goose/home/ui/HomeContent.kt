@@ -23,8 +23,8 @@ import little.goose.home.ui.index.IndexHome
 import little.goose.home.ui.index.IndexHomeState
 import little.goose.memorial.ui.MemorialHome
 import little.goose.memorial.ui.MemorialHomeState
-import little.goose.note.ui.NotebookHome
 import little.goose.note.ui.notebook.NoteColumnState
+import little.goose.note.ui.notebook.NotebookHome
 import little.goose.note.ui.notebook.NotebookIntent
 import little.goose.search.SearchType
 import java.util.Date

@@ -11,14 +11,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.scale
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import little.goose.common.utils.generateUnitId
-import little.goose.common.utils.progressWith
-import little.goose.design.system.theme.GooseTheme
-import little.goose.memorial.data.entities.Memorial
 import little.goose.memorial.ui.component.MemorialColumn
 import little.goose.memorial.ui.component.MemorialTitle
+import little.goose.shared.common.utils.progressWith
 import little.goose.shared.ui.icon.PullToSearchIcon
 import little.goose.shared.ui.surface.PullSurface
 
@@ -65,21 +61,5 @@ fun MemorialHome(
                 )
             }
         }
-    )
-}
-
-@Preview
-@Composable
-fun PreviewMemorialHome() = GooseTheme {
-    MemorialHome(
-        modifier = Modifier.fillMaxSize(),
-        memorialHomeState = MemorialHomeState(
-            topMemorial = Memorial(content = "HelloWorld", isTop = true),
-            memorialColumnState = MemorialColumnState(
-                listOf(Memorial(id = generateUnitId()))
-            )
-        ),
-        onNavigateToMemorial = {},
-        onNavigateToSearch = {}
     )
 }

@@ -29,6 +29,7 @@ dependencies {
     implementation(project(":shared:feature:note"))
     implementation(project(":shared:data:note"))
     implementation(project(":shared:ui"))
+    implementation(project(":shared:common"))
 
     compileOnly(libs.koin.core)
     implementation(libs.koin.compose)

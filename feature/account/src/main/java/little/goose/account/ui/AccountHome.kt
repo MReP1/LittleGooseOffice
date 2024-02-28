@@ -26,13 +26,13 @@ import little.goose.common.utils.TimeType
 import little.goose.common.utils.calendar
 import little.goose.common.utils.getMonth
 import little.goose.common.utils.getYear
-import little.goose.common.utils.progressWith
 import little.goose.common.utils.setMonth
 import little.goose.common.utils.setYear
 import little.goose.design.system.component.dialog.TimeSelectorCenterDialog
 import little.goose.design.system.component.dialog.rememberDialogState
 import little.goose.design.system.theme.LocalWindowSizeClass
 import little.goose.design.system.util.PreviewMultipleScreenSizes
+import little.goose.shared.common.utils.progressWith
 import little.goose.shared.ui.icon.PullToSearchIcon
 import little.goose.shared.ui.surface.PullSurface
 

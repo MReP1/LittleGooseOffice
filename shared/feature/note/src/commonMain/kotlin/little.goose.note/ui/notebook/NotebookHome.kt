@@ -1,4 +1,4 @@
-package little.goose.note.ui
+package little.goose.note.ui.notebook
 
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.offset
@@ -9,10 +9,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.unit.dp
-import little.goose.common.utils.progressWith
-import little.goose.note.ui.notebook.NoteColumn
-import little.goose.note.ui.notebook.NoteColumnState
-import little.goose.note.ui.notebook.NotebookIntent
+import little.goose.shared.common.utils.progressWith
 import little.goose.shared.ui.icon.PullToSearchIcon
 import little.goose.shared.ui.surface.PullSurface
 
