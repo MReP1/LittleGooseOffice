@@ -1,5 +1,6 @@
 package little.goose.data.note.local
 
+import app.cash.sqldelight.ExecutableQuery
 import app.cash.sqldelight.Query
 import app.cash.sqldelight.coroutines.asFlow
 import kotlinx.coroutines.Dispatchers
@@ -72,6 +73,18 @@ class SqlDelightNoteDatabase(
     }
 
     override fun getNoteWithContentFlow(): Flow<List<NoteWithContent>> {
+        return getNoteWithContentFlow(database.gooseNoteQueries::getNoteWithContents)
+    }
+
+    override fun getNoteWithContentFlowByKeyword(keyword: String): Flow<List<NoteWithContent>> {
+        return getNoteWithContentFlow {
+            database.gooseNoteQueries.getNoteWithContentsByKeyword(keyword, it)
+        }
+    }
+
+    private fun getNoteWithContentFlow(
+        fetcher: (mapper: (id: Long, title: String, time: Long, content: String, blockId: Long, noteId: Long?, index: Long, blockContent: String) -> Unit) -> ExecutableQuery<Unit>
+    ): Flow<List<NoteWithContent>> {
         return flow<List<NoteWithContent>> {
             val channel = Channel<Unit>(Channel.CONFLATED)
             channel.trySend(Unit)
@@ -85,44 +98,8 @@ class SqlDelightNoteDatabase(
                 var map = mutableMapOf<Note, MutableList<NoteContentBlock>>()
                 var resultList = mutableListOf<NoteWithContent>()
                 for (item in channel) {
-                    database.gooseNoteQueries
-                        .getNoteWithContents { id: Long, title: String, time: Long, _,
-                                               blockId: Long, noteId: Long?, sectionIndex: Long, blockContent: String ->
-                            map.getOrPut(Note(id, title, time)) { mutableListOf() }.add(
-                                NoteContentBlock(blockId, noteId, blockContent, sectionIndex)
-                            )
-                        }.executeAsList()
-                    map.forEach { (note, blocks) ->
-                        resultList.add(NoteWithContent(note, blocks))
-                    }
-                    resultList.sortByDescending { it.note.time }
-                    emit(resultList)
-                    map = mutableMapOf()
-                    resultList = mutableListOf()
-                }
-            } finally {
-                allNoteQuery.removeListener(noteListener)
-                allNoteContentBlockQuery.removeListener(noteContentBlockListener)
-            }
-        }.flowOn(Dispatchers.IO)
-    }
-
-    override fun getNoteWithContentFlowByKeyword(keyword: String): Flow<List<NoteWithContent>> {
-        return flow<List<NoteWithContent>> {
-            val channel = Channel<Unit>(Channel.CONFLATED)
-            channel.trySend(Unit)
-            val allNoteQuery = database.gooseNoteQueries.getAllNote()
-            val allNoteContentBlockQuery = database.gooseNoteQueries.getAllNoteContentBlock()
-            val noteListener = Query.Listener { channel.trySend(Unit) }
-            val noteContentBlockListener = Query.Listener { channel.trySend(Unit) }
-            try {
-                var map = mutableMapOf<Note, MutableList<NoteContentBlock>>()
-                var resultList = mutableListOf<NoteWithContent>()
-                for (item in channel) {
-                    database.gooseNoteQueries.getNoteWithContentsByKeyword(
-                        keyword
-                    ) { id: Long, title: String, time: Long, _,
-                        blockId: Long, noteId: Long?, sectionIndex: Long, blockContent: String ->
+                    fetcher { id: Long, title: String, time: Long, _,
+                              blockId: Long, noteId: Long?, sectionIndex: Long, blockContent: String ->
                         map.getOrPut(Note(id, title, time)) { mutableListOf() }.add(
                             NoteContentBlock(blockId, noteId, blockContent, sectionIndex)
                         )

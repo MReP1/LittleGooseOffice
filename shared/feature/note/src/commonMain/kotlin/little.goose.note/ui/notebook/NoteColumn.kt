@@ -43,7 +43,7 @@ fun NoteColumn(
                         title = itemState.title,
                         content = itemState.content,
                         isMultiSelecting = state.isMultiSelecting,
-                        isSelected = state.multiSelectedNotes.contains(itemState.id),
+                        isSelected = itemState.isSelected,
                         onNoteClick = onNoteClick,
                         onNoteSelect = onSelectNote
                     )

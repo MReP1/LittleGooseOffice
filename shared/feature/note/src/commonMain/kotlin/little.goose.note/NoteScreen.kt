@@ -24,7 +24,7 @@ data class NoteScreen(val noteId: Long) : Screen {
         val navigator = LocalNavigator.currentOrThrow
         val screenModel = getScreenModel<NoteScreenModel> { parametersOf(noteId) }
         val screenState by screenModel.noteScreenStateHolder.noteScreenState.collectAsState()
-        NoteRoute(
+        NoteScreenRoute(
             event = screenModel.noteScreenStateHolder.event,
             screenState = screenState,
             onBack = navigator::pop,
@@ -35,7 +35,7 @@ data class NoteScreen(val noteId: Long) : Screen {
 }
 
 @Composable
-fun NoteRoute(
+fun NoteScreenRoute(
     modifier: Modifier = Modifier,
     onBack: () -> Unit,
     event: Flow<NoteScreenEvent>,

@@ -2,7 +2,6 @@ package little.goose.search.note
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -11,15 +10,14 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.launchIn
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import little.goose.data.note.domain.DeleteNoteAndItsBlocksListUseCase
 import little.goose.data.note.domain.GetNoteWithContentByKeywordFlowUseCase
 import little.goose.note.ui.notebook.NoteColumnState
 import little.goose.note.ui.notebook.NoteItemState
+import little.goose.note.ui.notebook.NotebookIntent
 
 class SearchNoteViewModel(
     private val getNoteWithContentByKeywordFlowUseCase: GetNoteWithContentByKeywordFlowUseCase,
@@ -43,26 +41,22 @@ class SearchNoteViewModel(
         }
         _searchNoteState.value = SearchNoteState.Loading
         searchingJob?.cancel()
-        val noteStateListFlow = getNoteWithContentByKeywordFlowUseCase(keyword).map { nwcList ->
-            nwcList.map { nwc ->
-                NoteItemState(
-                    id = nwc.note.id!!,
-                    title = nwc.note.title,
-                    content = nwc.content.firstOrNull()?.content ?: ""
-                )
-            }
-        }.flowOn(Dispatchers.IO)
         searchingJob = combine(
-            noteStateListFlow,
-            multiSelectedNotes
-        ) { noteStateList, multiSelectedNotes ->
-            _searchNoteState.value = if (noteStateList.isEmpty()) {
+            getNoteWithContentByKeywordFlowUseCase(keyword), multiSelectedNotes
+        ) { nwcList, multiSelectedNotes ->
+            _searchNoteState.value = if (nwcList.isEmpty()) {
                 SearchNoteState.Empty
             } else {
                 SearchNoteState.Success(
                     NoteColumnState(
-                        noteItemStateList = noteStateList,
-                        multiSelectedNotes = multiSelectedNotes,
+                        noteItemStateList = nwcList.map { nwc ->
+                            NoteItemState(
+                                id = nwc.note.id!!,
+                                title = nwc.note.title,
+                                content = nwc.content.firstOrNull()?.content ?: "",
+                                isSelected = multiSelectedNotes.contains(nwc.note.id!!)
+                            )
+                        },
                         isMultiSelecting = multiSelectedNotes.isNotEmpty()
                     )
                 )
@@ -74,12 +68,15 @@ class SearchNoteViewModel(
         when (intent) {
             is SearchNoteIntent.NotebookIntent -> {
                 when (val notebookIntent = intent.intent) {
-                    little.goose.note.ui.notebook.NotebookIntent.CancelMultiSelecting -> cancelNotesMultiSelecting()
-                    little.goose.note.ui.notebook.NotebookIntent.SelectAllNotes -> selectAllNote()
-                    is little.goose.note.ui.notebook.NotebookIntent.DeleteNotes -> deleteNotes(notebookIntent.noteIds)
-                    is little.goose.note.ui.notebook.NotebookIntent.SelectNote -> selectNote(
+                    NotebookIntent.CancelMultiSelecting -> cancelNotesMultiSelecting()
+                    NotebookIntent.SelectAllNotes -> selectAllNote()
+                    is NotebookIntent.DeleteMultiSelectingNotes -> deleteNotes(
+                        multiSelectedNotes.value.toList()
+                    )
+
+                    is NotebookIntent.SelectNote -> selectNote(
                         notebookIntent.noteId,
-                        notebookIntent.selectNote
+                        notebookIntent.selected
                     )
                 }
             }

@@ -23,9 +23,9 @@ import little.goose.home.ui.index.IndexHome
 import little.goose.home.ui.index.IndexHomeState
 import little.goose.memorial.ui.MemorialHome
 import little.goose.memorial.ui.MemorialHomeState
-import little.goose.note.ui.notebook.NoteColumnState
 import little.goose.note.ui.notebook.NotebookHome
 import little.goose.note.ui.notebook.NotebookIntent
+import little.goose.note.ui.notebook.rememberNotebookHomeStateHolder
 import little.goose.search.SearchType
 import java.util.Date
 
@@ -42,11 +42,11 @@ fun HomePageContent(
     onNavigateToNote: (noteId: Long?) -> Unit,
     onNavigateToSearch: (SearchType) -> Unit,
     onNavigateToAccountAnalysis: () -> Unit,
-    noteColumnState: NoteColumnState,
     memorialHomeState: MemorialHomeState,
-    accountHomeState: AccountHomeState,
-    noteAction: (little.goose.note.ui.notebook.NotebookIntent) -> Unit
+    accountHomeState: AccountHomeState
 ) {
+    val (noteColumnState, event, noteAction) = rememberNotebookHomeStateHolder()
+
     val buttonState = remember { MovableActionButtonState() }
 
     val isMultiSelecting = when (currentHomePage) {
@@ -128,8 +128,7 @@ fun HomePageContent(
                 isMultiSelecting = isMultiSelecting,
                 currentHomePage = currentHomePage,
                 onDeleteNotes = {
-                    noteAction(NotebookIntent.DeleteNotes(noteColumnState.multiSelectedNotes.toList()))
-                    noteAction(NotebookIntent.CancelMultiSelecting)
+                    noteAction(NotebookIntent.DeleteMultiSelectingNotes)
                 },
                 onNavigateToNewNote = {
                     onNavigateToNote(null)

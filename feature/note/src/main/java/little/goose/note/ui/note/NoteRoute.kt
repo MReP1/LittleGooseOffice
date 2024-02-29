@@ -14,7 +14,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import androidx.navigation.navDeepLink
 import little.goose.common.constants.DEEP_LINK_THEME_AND_HOST
-import little.goose.note.NoteRoute
+import little.goose.note.NoteScreenRoute
 import little.goose.note.data.constants.KEY_NOTE
 import little.goose.note.data.constants.KEY_NOTE_ID
 import org.koin.androidx.compose.koinViewModel
@@ -61,7 +61,7 @@ fun NavGraphBuilder.noteRoute(onBack: () -> Unit) {
     ) {
         val viewModel: NoteViewModel = koinViewModel()
         val screenState by viewModel.noteScreenStateHolder.noteScreenState.collectAsState()
-        NoteRoute(
+        NoteScreenRoute(
             modifier = Modifier
                 .fillMaxSize()
                 .shadow(36.dp, clip = false),

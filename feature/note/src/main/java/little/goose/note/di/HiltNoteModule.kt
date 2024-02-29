@@ -1,4 +1,4 @@
-package little.goose.note
+package little.goose.note.di
 
 import android.app.Application
 import dagger.Module

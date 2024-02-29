@@ -6,13 +6,11 @@ sealed class NotebookIntent {
 
     data object CancelMultiSelecting : NotebookIntent()
 
-    data class DeleteNotes(
-        val noteIds: List<Long>
-    ) : NotebookIntent()
+    data object DeleteMultiSelectingNotes : NotebookIntent()
 
     data class SelectNote(
         val noteId: Long,
-        val selectNote: Boolean
+        val selected: Boolean
     ) : NotebookIntent()
 
 }

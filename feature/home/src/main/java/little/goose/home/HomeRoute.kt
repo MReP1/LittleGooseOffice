@@ -36,10 +36,8 @@ import little.goose.home.ui.HomeScreen
 import little.goose.home.ui.HomeViewModel
 import little.goose.home.ui.index.IndexViewModel
 import little.goose.memorial.ui.MemorialHomeViewModel
-import little.goose.note.ui.NotebookViewModel
 import little.goose.search.SearchType
 import little.goose.shared.ui.screen.LittleGooseEmptyScreen
-import org.koin.androidx.compose.koinViewModel
 import java.util.Date
 
 const val ROUTE_HOME = "home"
@@ -123,9 +121,7 @@ fun HomeRoute(
         val indexViewModel = hiltViewModel<IndexViewModel>()
         val accountHomeViewModel = hiltViewModel<AccountHomeViewModel>()
         val memorialHomeViewModel = hiltViewModel<MemorialHomeViewModel>()
-        val notebookViewModel = koinViewModel<NotebookViewModel>()
 
-        val noteColumnState by notebookViewModel.noteColumnState.collectAsState()
         val indexState by indexViewModel.indexState.collectAsState()
         val accountHomeState by accountHomeViewModel.accountHomeState.collectAsState()
         val memorialHomeState by memorialHomeViewModel.memorialHomeState.collectAsState()
@@ -135,7 +131,6 @@ fun HomeRoute(
         HomeScreen(
             modifier = modifier.fillMaxSize(),
             pagerState = pagerState,
-            noteColumnState = noteColumnState,
             snackbarHostState = snackbarHostState,
             indexState = indexState,
             accountHomeState = accountHomeState,
@@ -148,7 +143,6 @@ fun HomeRoute(
             onNavigateToMemorial = onNavigateToMemorial,
             onNavigateToAccountAnalysis = onNavigateToAccountAnalysis,
             onNavigateToTransactionScreen = onNavigateToTransactionScreen,
-            noteAction = notebookViewModel::action
         )
 
         LaunchedEffect(

@@ -70,7 +70,7 @@ internal fun SearchNoteContent(
                 },
                 onMainButtonClick = {
                     deleteDialogState.show(onConfirm = {
-                        action(NotebookIntent.DeleteNotes(noteColumnState.multiSelectedNotes.toList()))
+                        action(NotebookIntent.DeleteMultiSelectingNotes)
                     })
                 },
                 topSubButtonContent = {
