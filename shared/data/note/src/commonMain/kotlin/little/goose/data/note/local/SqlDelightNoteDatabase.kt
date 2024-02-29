@@ -7,6 +7,8 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.mapNotNull
@@ -20,6 +22,9 @@ class SqlDelightNoteDatabase(
     private val database: GooseNoteDatabase
 ) : NoteDatabase {
 
+    private val _deleteNoteIdListSharedFlow = MutableSharedFlow<List<Long>>()
+    override val deleteNoteIdListFlow = _deleteNoteIdListSharedFlow.asSharedFlow()
+
     override fun getNoteFlow(noteId: Long): Flow<Note> {
         return database.gooseNoteQueries
             .getNote(noteId) { id, title, time, _ -> Note(id, title, time) }
@@ -27,10 +32,12 @@ class SqlDelightNoteDatabase(
             .mapNotNull { it.executeAsOneOrNull() }
     }
 
-    override suspend fun insertOrReplaceNote(note: Note): Long = withContext(Dispatchers.IO) {
-        database.gooseNoteQueries.transactionWithResult {
-            database.gooseNoteQueries.insertOrReplaceNote(note.id, note.title, note.time, "")
-            database.gooseNoteQueries.lastInsertedNoteRowId().executeAsList().first()
+    override suspend fun insertOrReplaceNote(note: Note): Long {
+        return withContext(Dispatchers.IO) {
+            database.gooseNoteQueries.transactionWithResult {
+                database.gooseNoteQueries.insertOrReplaceNote(note.id, note.title, note.time, "")
+                database.gooseNoteQueries.lastInsertedNoteRowId().executeAsList().first()
+            }
         }
     }
 
@@ -119,24 +126,34 @@ class SqlDelightNoteDatabase(
         }.flowOn(Dispatchers.IO)
     }
 
-    override suspend fun deleteNoteAndItsBlocks(noteId: Long) = withContext(Dispatchers.IO) {
-        database.gooseNoteQueries.deleteNoteAndItsBlocks(noteId)
-    }
-
-    override suspend fun deleteNoteAndItsBlocksList(noteIds: List<Long>) {
-        database.transaction {
-            noteIds.forEach { noteId ->
-                database.gooseNoteQueries.deleteNoteAndItsBlocks(noteId)
-            }
+    override suspend fun deleteNoteAndItsBlocks(noteId: Long) {
+        withContext(Dispatchers.IO) {
+            database.gooseNoteQueries.deleteNoteAndItsBlocks(noteId)
+            _deleteNoteIdListSharedFlow.emit(listOf(noteId))
         }
     }
 
-    override suspend fun deleteBlock(id: Long) = withContext(Dispatchers.IO) {
-        database.gooseNoteQueries.deleteNoteContentBlock(id)
+    override suspend fun deleteNoteAndItsBlocksList(noteIds: List<Long>) {
+        withContext(Dispatchers.IO) {
+            database.transaction {
+                noteIds.forEach { noteId ->
+                    database.gooseNoteQueries.deleteNoteAndItsBlocks(noteId)
+                }
+            }
+            _deleteNoteIdListSharedFlow.emit(noteIds)
+        }
     }
 
-    override suspend fun deleteBlockWithNoteId(noteId: Long) = withContext(Dispatchers.IO) {
-        database.gooseNoteQueries.deleteNoteContentBlockWithNoteId(noteId)
+    override suspend fun deleteBlock(id: Long) {
+        withContext(Dispatchers.IO) {
+            database.gooseNoteQueries.deleteNoteContentBlock(id)
+        }
+    }
+
+    override suspend fun deleteBlockWithNoteId(noteId: Long) {
+        withContext(Dispatchers.IO) {
+            database.gooseNoteQueries.deleteNoteContentBlockWithNoteId(noteId)
+        }
     }
 
     override suspend fun insertOrReplaceNoteContentBlock(

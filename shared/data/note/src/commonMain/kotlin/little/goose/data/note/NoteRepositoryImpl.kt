@@ -10,6 +10,8 @@ class NoteRepositoryImpl(
     private val dataBase: NoteDatabase
 ) : NoteRepository {
 
+    override val deleteNoteIdListFlow: Flow<List<Long>> = dataBase.deleteNoteIdListFlow
+
     override fun getNoteFlow(noteId: Long): Flow<Note> {
         return dataBase.getNoteFlow(noteId)
     }

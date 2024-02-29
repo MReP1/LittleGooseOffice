@@ -17,31 +17,34 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import little.goose.data.note.bean.NoteWithContent
 import little.goose.data.note.domain.DeleteNoteAndItsBlocksListUseCase
+import little.goose.data.note.domain.DeleteNoteIdListFlowUseCase
 import little.goose.data.note.domain.GetNoteWithContentFlowUseCase
 import little.goose.shared.ui.architecture.MviHolder
 import little.goose.shared.ui.architecture.mutableStateFlowAutoSaver
-import org.koin.compose.getKoin
+import org.koin.compose.koinInject
 
 @Composable
 fun rememberNotebookHomeStateHolder(): MviHolder<NoteColumnState, NotebookHomeEvent, NotebookIntent> {
-    val koin = getKoin()
     val coroutineScope = rememberCoroutineScope()
-
-    val getNoteWithContentFlowUseCase = remember(koin) {
-        koin.get<GetNoteWithContentFlowUseCase>()
-    }
-
-    val deleteNoteAndItsBlocksListUseCase = remember(koin) {
-        koin.get<DeleteNoteAndItsBlocksListUseCase>()
-    }
+    val getNoteWithContentFlowUseCase: GetNoteWithContentFlowUseCase = koinInject()
+    val deleteNoteAndItsBlocksListUseCase: DeleteNoteAndItsBlocksListUseCase = koinInject()
+    val deleteNoteIdListFlowUseCase: DeleteNoteIdListFlowUseCase = koinInject()
 
     val noteWithContents = remember(getNoteWithContentFlowUseCase) {
         getNoteWithContentFlowUseCase().stateIn(coroutineScope, SharingStarted.Eagerly, emptyList())
     }
 
-    val multiSelectedIds = rememberSaveable(
-        saver = mutableStateFlowAutoSaver()
-    ) { MutableStateFlow<Set<Long>>(emptySet()) }
+    val event = remember { MutableSharedFlow<NotebookHomeEvent>() }
+
+    LaunchedEffect(deleteNoteIdListFlowUseCase) {
+        deleteNoteIdListFlowUseCase().collect {
+            event.emit(NotebookHomeEvent.DeleteNote)
+        }
+    }
+
+    val multiSelectedIds = rememberSaveable(saver = mutableStateFlowAutoSaver()) {
+        MutableStateFlow<Set<Long>>(emptySet())
+    }
 
     var noteColumnSavableState by rememberSaveable(stateSaver = NoteColumnState.saver) {
         mutableStateOf(
@@ -65,8 +68,6 @@ fun rememberNotebookHomeStateHolder(): MviHolder<NoteColumnState, NotebookHomeEv
             noteColumnSavableState = it
         }
     }
-
-    val event = remember { MutableSharedFlow<NotebookHomeEvent>() }
 
     val action: (NotebookIntent) -> Unit = remember {
 

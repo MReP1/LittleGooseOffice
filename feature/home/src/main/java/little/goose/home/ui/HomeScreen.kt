@@ -24,6 +24,8 @@ import little.goose.design.system.util.paddingCutout
 import little.goose.home.data.HomePage
 import little.goose.home.ui.index.IndexState
 import little.goose.memorial.ui.MemorialHomeState
+import little.goose.note.ui.notebook.NoteColumnState
+import little.goose.note.ui.notebook.NotebookIntent
 import little.goose.search.SearchType
 import java.time.format.TextStyle
 import java.util.Date
@@ -37,6 +39,7 @@ fun HomeScreen(
     snackbarHostState: SnackbarHostState,
     indexState: IndexState,
     accountHomeState: AccountHomeState,
+    noteColumnState: NoteColumnState,
     onNavigateToSettings: () -> Unit,
     onNavigateToMemorialAdd: () -> Unit,
     onNavigateToMemorial: (memorialId: Long) -> Unit,
@@ -45,6 +48,7 @@ fun HomeScreen(
     onNavigateToNote: (noteId: Long?) -> Unit,
     onNavigateToSearch: (SearchType) -> Unit,
     onNavigateToAccountAnalysis: () -> Unit,
+    noteAction: (NotebookIntent) -> Unit
 ) {
     val scope = rememberCoroutineScope()
     val currentHomePage = remember(pagerState.currentPage) {
@@ -117,6 +121,8 @@ fun HomeScreen(
                     onNavigateToAccountAnalysis,
                     memorialHomeState,
                     accountHomeState,
+                    noteColumnState,
+                    noteAction
                 )
             },
             bottomBar = {

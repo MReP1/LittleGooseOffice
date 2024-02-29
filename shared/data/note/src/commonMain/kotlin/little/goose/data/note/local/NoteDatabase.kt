@@ -7,6 +7,8 @@ import little.goose.data.note.bean.NoteWithContent
 
 interface NoteDatabase {
 
+    val deleteNoteIdListFlow: Flow<List<Long>>
+
     fun getNoteFlow(noteId: Long): Flow<Note>
 
     suspend fun insertOrReplaceNote(note: Note): Long

@@ -23,9 +23,9 @@ import little.goose.home.ui.index.IndexHome
 import little.goose.home.ui.index.IndexHomeState
 import little.goose.memorial.ui.MemorialHome
 import little.goose.memorial.ui.MemorialHomeState
+import little.goose.note.ui.notebook.NoteColumnState
 import little.goose.note.ui.notebook.NotebookHome
 import little.goose.note.ui.notebook.NotebookIntent
-import little.goose.note.ui.notebook.rememberNotebookHomeStateHolder
 import little.goose.search.SearchType
 import java.util.Date
 
@@ -43,10 +43,10 @@ fun HomePageContent(
     onNavigateToSearch: (SearchType) -> Unit,
     onNavigateToAccountAnalysis: () -> Unit,
     memorialHomeState: MemorialHomeState,
-    accountHomeState: AccountHomeState
+    accountHomeState: AccountHomeState,
+    noteColumnState: NoteColumnState,
+    noteAction: (NotebookIntent) -> Unit
 ) {
-    val (noteColumnState, event, noteAction) = rememberNotebookHomeStateHolder()
-
     val buttonState = remember { MovableActionButtonState() }
 
     val isMultiSelecting = when (currentHomePage) {

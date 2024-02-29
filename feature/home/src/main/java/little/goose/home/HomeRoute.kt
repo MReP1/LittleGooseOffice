@@ -36,6 +36,8 @@ import little.goose.home.ui.HomeScreen
 import little.goose.home.ui.HomeViewModel
 import little.goose.home.ui.index.IndexViewModel
 import little.goose.memorial.ui.MemorialHomeViewModel
+import little.goose.note.ui.notebook.NotebookHomeEvent
+import little.goose.note.ui.notebook.rememberNotebookHomeStateHolder
 import little.goose.search.SearchType
 import little.goose.shared.ui.screen.LittleGooseEmptyScreen
 import java.util.Date
@@ -121,6 +123,7 @@ fun HomeRoute(
         val indexViewModel = hiltViewModel<IndexViewModel>()
         val accountHomeViewModel = hiltViewModel<AccountHomeViewModel>()
         val memorialHomeViewModel = hiltViewModel<MemorialHomeViewModel>()
+        val (noteColumnState, noteEvent, noteAction) = rememberNotebookHomeStateHolder()
 
         val indexState by indexViewModel.indexState.collectAsState()
         val accountHomeState by accountHomeViewModel.accountHomeState.collectAsState()
@@ -135,6 +138,7 @@ fun HomeRoute(
             indexState = indexState,
             accountHomeState = accountHomeState,
             memorialHomeState = memorialHomeState,
+            noteColumnState = noteColumnState,
             onNavigateToSettings = onNavigateToSettings,
             onNavigateToNote = onNavigateToNote,
             onNavigateToSearch = onNavigateToSearch,
@@ -143,17 +147,17 @@ fun HomeRoute(
             onNavigateToMemorial = onNavigateToMemorial,
             onNavigateToAccountAnalysis = onNavigateToAccountAnalysis,
             onNavigateToTransactionScreen = onNavigateToTransactionScreen,
+            noteAction = noteAction
         )
 
-        LaunchedEffect(
-            accountHomeViewModel.event, memorialHomeViewModel.event
-        ) {
+        LaunchedEffect(accountHomeViewModel.event, memorialHomeViewModel.event, noteEvent) {
             merge(
-                accountHomeViewModel.event, memorialHomeViewModel.event
+                accountHomeViewModel.event, memorialHomeViewModel.event, noteEvent
             ).collect { event ->
                 when (event) {
                     is AccountHomeViewModel.Event.DeleteTransactions,
-                    is MemorialHomeViewModel.Event.DeleteMemorials -> {
+                    is MemorialHomeViewModel.Event.DeleteMemorials,
+                    NotebookHomeEvent.DeleteNote -> {
                         snackbarHostState.showSnackbar(
                             message = context.getString(little.goose.common.R.string.deleted),
                             withDismissAction = true
