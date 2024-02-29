@@ -65,12 +65,12 @@ fun IndexHome(
 ) {
 
     val windowSizeClass = LocalWindowSizeClass.current
-    val isExpanded = windowSizeClass.widthSizeClass == WindowWidthSizeClass.Expanded
+    val isWidthCompat = windowSizeClass.widthSizeClass == WindowWidthSizeClass.Compact
     val isHeightCompat = windowSizeClass.heightSizeClass == WindowHeightSizeClass.Compact
 
     Row(modifier = modifier) {
 
-        if (isExpanded) {
+        if (!isWidthCompat) {
             Column(
                 modifier = Modifier.fillMaxHeight(),
                 verticalArrangement = Arrangement.Center
@@ -95,7 +95,7 @@ fun IndexHome(
                 .fillMaxHeight()
         ) {
 
-            if (!isExpanded) {
+            if (isWidthCompat) {
                 IndexCalendar(
                     modifier = Modifier
                         .fillMaxWidth()
