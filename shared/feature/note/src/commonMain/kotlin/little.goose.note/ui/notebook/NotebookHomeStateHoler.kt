@@ -69,12 +69,11 @@ fun rememberNotebookHomeStateHolder(): MviHolder<NoteColumnState, NotebookHomeEv
         }
     }
 
+    val cancelMultiSelecting = remember {
+        fun() { multiSelectedIds.value = emptySet() }
+    }
+
     val action: (NotebookIntent) -> Unit = remember {
-
-        fun cancelMultiSelecting() {
-            multiSelectedIds.value = emptySet()
-        }
-
         fun(intent: NotebookIntent) {
             when (intent) {
                 NotebookIntent.CancelMultiSelecting -> cancelMultiSelecting()
