@@ -4,7 +4,6 @@ import android.app.Application
 import dagger.hilt.android.HiltAndroidApp
 import little.goose.note.di.noteFeatureModule
 import little.goose.office.di.jankStatsModule
-import little.goose.search.di.searchNoteModule
 import org.koin.android.ext.koin.androidContext
 import org.koin.core.context.startKoin
 import org.koin.dsl.module
@@ -21,8 +20,7 @@ class AccountApplication : Application() {
             modules(
                 module { vibrator() },
                 jankStatsModule,
-                noteFeatureModule,
-                searchNoteModule
+                noteFeatureModule
             )
         }
     }

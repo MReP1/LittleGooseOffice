@@ -9,20 +9,25 @@ data class NoteColumnState(
     val isMultiSelecting: Boolean = false
 ) {
     companion object {
-        @Suppress("UNCHECKED_CAST")
+
         val saver = Saver<NoteColumnState, Any>(
-            save = {
-                listOf(it.isMultiSelecting, it.noteItemStateList)
-            },
-            restore = {
-                val (isMultiSelecting, saveItems) = it as List<*>
-                val items = saveItems as List<NoteItemState>
-                NoteColumnState(
-                    isMultiSelecting = isMultiSelecting as Boolean,
-                    noteItemStateList = items
-                )
-            }
+            save = { it.toSavable() },
+            restore = { NoteColumnState.fromSavable(it) }
         )
+
+        @Suppress("UNCHECKED_CAST")
+        fun fromSavable(savable: Any): NoteColumnState {
+            val (isMultiSelecting, saveItems) = savable as List<*>
+            val items = saveItems as List<NoteItemState>
+            return NoteColumnState(
+                isMultiSelecting = isMultiSelecting as Boolean,
+                noteItemStateList = items
+            )
+        }
+    }
+
+    fun toSavable(): Any {
+        return listOf(isMultiSelecting, noteItemStateList)
     }
 }
 

@@ -1,4 +1,4 @@
-package little.goose.search.note
+package little.goose.note.ui.search
 
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedContentTransitionScope
@@ -11,57 +11,15 @@ import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
-import kotlinx.coroutines.flow.collectLatest
-import little.goose.note.ui.search.SearchNoteEvent
-import little.goose.note.ui.search.SearchNoteIntent
-import little.goose.note.ui.search.SearchNoteState
 import little.goose.shared.ui.screen.LittleGooseEmptyScreen
 import little.goose.shared.ui.screen.LittleGooseLoadingScreen
 import little.goose.shared.ui.search.SearchScreen
-import org.koin.androidx.compose.koinViewModel
 
-@Composable
-internal fun SearchNoteRoute(
-    modifier: Modifier = Modifier,
-    onNavigateToNote: (Long) -> Unit,
-    onBack: () -> Unit
-) {
-    val context = LocalContext.current
-    val viewModel = koinViewModel<SearchNoteViewModel>()
-    val searchNoteState by viewModel.searchNoteState.collectAsState()
-
-    val snackbarHostState = remember { SnackbarHostState() }
-
-    LaunchedEffect(Unit) {
-        viewModel.searchNoteEvent.collectLatest { event ->
-            when (event) {
-                SearchNoteEvent.DeleteNotes -> {
-                    snackbarHostState.showSnackbar(
-                        message = context.getString(little.goose.common.R.string.deleted)
-                    )
-                }
-            }
-        }
-    }
-
-    SearchNoteScreen(
-        modifier = modifier,
-        state = searchNoteState,
-        snackbarHostState = snackbarHostState,
-        onNavigateToNote = onNavigateToNote,
-        action = viewModel::action,
-        onBack = onBack
-    )
-}
 
 @Composable
 fun SearchNoteScreen(

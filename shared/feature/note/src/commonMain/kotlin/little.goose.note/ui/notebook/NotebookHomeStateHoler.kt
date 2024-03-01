@@ -20,7 +20,7 @@ import little.goose.data.note.domain.DeleteNoteAndItsBlocksListUseCase
 import little.goose.data.note.domain.DeleteNoteIdListFlowUseCase
 import little.goose.data.note.domain.GetNoteWithContentFlowUseCase
 import little.goose.shared.ui.architecture.MviHolder
-import little.goose.shared.ui.architecture.mutableStateFlowAutoSaver
+import little.goose.shared.ui.architecture.autoMutableStateFlowSaver
 import org.koin.compose.koinInject
 
 @Composable
@@ -42,7 +42,7 @@ fun rememberNotebookHomeStateHolder(): MviHolder<NoteColumnState, NotebookHomeEv
         }
     }
 
-    val multiSelectedIds = rememberSaveable(saver = mutableStateFlowAutoSaver()) {
+    val multiSelectedIds = rememberSaveable(saver = autoMutableStateFlowSaver()) {
         MutableStateFlow<Set<Long>>(emptySet())
     }
 

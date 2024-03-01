@@ -1,11 +1,10 @@
-package little.goose.search.note
+package little.goose.note.ui.search
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.ime
-import androidx.compose.foundation.layout.isImeVisible
 import androidx.compose.foundation.layout.union
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.material.icons.Icons
@@ -55,11 +54,7 @@ internal fun SearchNoteContent(
             modifier = Modifier
                 .fillMaxSize()
                 .windowInsetsPadding(
-                    if (WindowInsets.isImeVisible) {
-                        WindowInsets.ime.union(BottomAppBarDefaults.windowInsets)
-                    } else {
-                        BottomAppBarDefaults.windowInsets
-                    }
+                    WindowInsets.ime.union(BottomAppBarDefaults.windowInsets)
                 )
         ) {
             MovableActionButton(
