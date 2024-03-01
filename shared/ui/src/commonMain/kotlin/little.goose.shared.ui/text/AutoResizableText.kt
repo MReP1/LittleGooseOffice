@@ -1,17 +1,10 @@
-package little.goose.design.system.component
+package little.goose.shared.ui.text
 
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
-import androidx.compose.ui.BiasAlignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
@@ -31,10 +24,8 @@ import androidx.compose.ui.text.TextMeasurer
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.drawText
 import androidx.compose.ui.text.rememberTextMeasurer
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Constraints
 import androidx.compose.ui.unit.takeOrElse
-import little.goose.design.system.theme.GooseTheme
 
 @Composable
 fun AutoResizableText(
@@ -235,42 +226,4 @@ private class ResizableTextModifierElement(
         // Show nothing in the inspector.
     }
 
-}
-
-@Preview(showBackground = true)
-@Composable
-private fun PreviewAutoResizedTextCenter() = GooseTheme {
-    PreviewAutoResizedText(alignment = Alignment.CenterHorizontally)
-}
-
-@Preview(showBackground = true)
-@Composable
-private fun PreviewAutoResizedTextEnd() = GooseTheme {
-    PreviewAutoResizedText(alignment = Alignment.End)
-}
-
-@Preview(showBackground = true)
-@Composable
-private fun PreviewAutoResizedTextStart() = GooseTheme {
-    PreviewAutoResizedText(alignment = Alignment.Start)
-}
-
-@Preview(showBackground = true)
-@Composable
-private fun PreviewAutoResizedTextOffset() = GooseTheme {
-    PreviewAutoResizedText(
-        alignment = BiasAlignment.Horizontal(-0.5F)
-    )
-}
-
-@Composable
-private fun PreviewAutoResizedText(alignment: Alignment.Horizontal) {
-    var count by remember { mutableIntStateOf(1) }
-    val text = remember(count) { "Hello World, Hello World. ".repeat(count) }
-    Box(
-        modifier = Modifier
-            .clickable { count++ }
-    ) {
-        AutoResizableText(text = text, textAlignment = alignment)
-    }
 }

@@ -20,14 +20,14 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
-import little.goose.design.system.component.MovableActionButton
-import little.goose.design.system.component.MovableActionButtonState
-import little.goose.design.system.component.dialog.DeleteDialog
-import little.goose.design.system.component.dialog.DeleteDialogState
 import little.goose.design.system.theme.GooseTheme
 import little.goose.memorial.data.entities.Memorial
 import little.goose.memorial.ui.MemorialColumnState
 import little.goose.memorial.ui.component.MemorialColumn
+import little.goose.shared.ui.button.MovableActionButton
+import little.goose.shared.ui.button.MovableActionButtonState
+import little.goose.shared.ui.dialog.DeleteDialog
+import little.goose.shared.ui.dialog.DeleteDialogState
 
 @OptIn(ExperimentalLayoutApi::class)
 @Composable

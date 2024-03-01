@@ -14,8 +14,8 @@ import little.goose.common.collections.CircularLinkList
 import little.goose.common.utils.DateTimeUtils
 import little.goose.common.utils.getMonth
 import little.goose.common.utils.getYear
-import little.goose.design.system.component.AutoResizableText
 import little.goose.memorial.data.entities.Memorial
+import little.goose.shared.ui.text.AutoResizableText
 import java.util.Calendar
 
 @Composable

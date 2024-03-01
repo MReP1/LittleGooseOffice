@@ -17,6 +17,9 @@ import little.goose.common.utils.TimeType
 import little.goose.design.system.component.TimeSelector
 import little.goose.design.system.component.TimeSelectorState
 import little.goose.design.system.theme.RoundedCorner24
+import little.goose.shared.ui.dialog.DialogState
+import little.goose.shared.ui.dialog.NormalDialog
+import little.goose.shared.ui.dialog.rememberDialogState
 import java.util.Date
 
 @Composable

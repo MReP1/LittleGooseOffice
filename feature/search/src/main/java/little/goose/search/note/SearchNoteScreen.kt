@@ -21,23 +21,13 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import kotlinx.coroutines.flow.collectLatest
-import little.goose.note.ui.notebook.NoteColumnState
-import little.goose.search.component.SearchScreen
+import little.goose.note.ui.search.SearchNoteEvent
+import little.goose.note.ui.search.SearchNoteIntent
+import little.goose.note.ui.search.SearchNoteState
 import little.goose.shared.ui.screen.LittleGooseEmptyScreen
 import little.goose.shared.ui.screen.LittleGooseLoadingScreen
+import little.goose.shared.ui.search.SearchScreen
 import org.koin.androidx.compose.koinViewModel
-
-sealed interface SearchNoteState {
-    data object Loading : SearchNoteState
-
-    data class Success(val data: NoteColumnState) : SearchNoteState
-
-    data object Empty : SearchNoteState
-}
-
-sealed interface SearchNoteEvent {
-    data object DeleteNotes : SearchNoteEvent
-}
 
 @Composable
 internal fun SearchNoteRoute(

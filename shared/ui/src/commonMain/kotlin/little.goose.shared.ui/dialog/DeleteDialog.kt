@@ -1,15 +1,16 @@
-package little.goose.design.system.component.dialog
+package little.goose.shared.ui.dialog
 
+import account.shared.ui.generated.resources.Res
+import account.shared.ui.generated.resources.confirm_delete
+import account.shared.ui.generated.resources.delete_description
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Delete
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Stable
-import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.tooling.preview.Preview
-import little.goose.design.system.R
-import little.goose.design.system.theme.GooseTheme
+import org.jetbrains.compose.resources.ExperimentalResourceApi
+import org.jetbrains.compose.resources.stringResource
 
 @Stable
 class DeleteDialogState {
@@ -34,6 +35,7 @@ class DeleteDialogState {
     }
 }
 
+@OptIn(ExperimentalResourceApi::class)
 @Composable
 fun DeleteDialog(
     state: DeleteDialogState,
@@ -52,16 +54,10 @@ fun DeleteDialog(
             Icon(imageVector = Icons.Rounded.Delete, contentDescription = "Delete")
         },
         title = {
-            Text(text = stringResource(id = R.string.confirm_delete))
+            Text(text = stringResource(Res.string.confirm_delete))
         },
         text = {
-            Text(text = stringResource(id = R.string.delete_description))
+            Text(text = stringResource(Res.string.delete_description))
         }
     )
-}
-
-@Preview
-@Composable
-private fun PreviewDeleteDialog() = GooseTheme {
-    DeleteDialog(state = DeleteDialogState().apply { show() })
 }

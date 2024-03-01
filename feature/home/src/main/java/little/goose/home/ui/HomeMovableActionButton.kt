@@ -9,11 +9,11 @@ import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
-import little.goose.design.system.component.MovableActionButton
-import little.goose.design.system.component.MovableActionButtonState
-import little.goose.design.system.component.dialog.DeleteDialog
-import little.goose.design.system.component.dialog.DeleteDialogState
 import little.goose.home.data.HomePage
+import little.goose.shared.ui.button.MovableActionButton
+import little.goose.shared.ui.button.MovableActionButtonState
+import little.goose.shared.ui.dialog.DeleteDialog
+import little.goose.shared.ui.dialog.DeleteDialogState
 
 
 @Composable

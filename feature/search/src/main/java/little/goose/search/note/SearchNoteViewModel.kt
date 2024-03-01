@@ -18,6 +18,9 @@ import little.goose.data.note.domain.GetNoteWithContentByKeywordFlowUseCase
 import little.goose.note.ui.notebook.NoteColumnState
 import little.goose.note.ui.notebook.NoteItemState
 import little.goose.note.ui.notebook.NotebookIntent
+import little.goose.note.ui.search.SearchNoteEvent
+import little.goose.note.ui.search.SearchNoteIntent
+import little.goose.note.ui.search.SearchNoteState
 
 class SearchNoteViewModel(
     private val getNoteWithContentByKeywordFlowUseCase: GetNoteWithContentByKeywordFlowUseCase,

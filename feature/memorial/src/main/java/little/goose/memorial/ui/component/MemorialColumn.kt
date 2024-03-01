@@ -12,11 +12,11 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import little.goose.design.system.component.dialog.DeleteDialog
-import little.goose.design.system.component.dialog.DeleteDialogState
 import little.goose.design.system.theme.GooseTheme
 import little.goose.memorial.data.entities.Memorial
 import little.goose.memorial.ui.MemorialColumnState
+import little.goose.shared.ui.dialog.DeleteDialog
+import little.goose.shared.ui.dialog.DeleteDialogState
 
 @Composable
 fun MemorialColumn(

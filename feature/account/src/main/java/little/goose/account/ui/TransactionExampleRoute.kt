@@ -50,10 +50,10 @@ import little.goose.common.constants.KEY_MONEY_TYPE
 import little.goose.common.constants.KEY_TIME
 import little.goose.common.constants.KEY_TIME_TYPE
 import little.goose.common.utils.TimeType
-import little.goose.design.system.component.MovableActionButton
-import little.goose.design.system.component.MovableActionButtonState
-import little.goose.design.system.component.dialog.DeleteDialog
-import little.goose.design.system.component.dialog.DeleteDialogState
+import little.goose.shared.ui.button.MovableActionButton
+import little.goose.shared.ui.button.MovableActionButtonState
+import little.goose.shared.ui.dialog.DeleteDialog
+import little.goose.shared.ui.dialog.DeleteDialogState
 import java.util.Date
 
 const val ROUTE_TRANSACTION_EXAMPLE = "transaction_example"

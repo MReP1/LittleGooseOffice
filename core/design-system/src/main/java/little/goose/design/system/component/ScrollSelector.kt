@@ -18,7 +18,8 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.mutableFloatStateOf
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
@@ -27,7 +28,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.platform.LocalDensity
-import androidx.compose.ui.text.ExperimentalTextApi
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.rememberTextMeasurer
 import androidx.compose.ui.unit.dp
@@ -40,7 +40,6 @@ import kotlinx.coroutines.flow.mapNotNull
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 
-@OptIn(ExperimentalTextApi::class)
 @Composable
 fun ScrollSelector(
     modifier: Modifier = Modifier,
@@ -64,9 +63,9 @@ fun ScrollSelector(
         with(density) { (topPadding + bottomPadding).toPx() } + textContentHeight
     }
 
-    val scrollingOutScale = remember { mutableStateOf(selectedScale) }
-    val scrollingInScale = remember { mutableStateOf(unselectedScale) }
-    var firstVisibleItemIndex by remember { mutableStateOf(state.firstVisibleItemIndex) }
+    val scrollingOutScale = remember { mutableFloatStateOf(selectedScale) }
+    val scrollingInScale = remember { mutableFloatStateOf(unselectedScale) }
+    var firstVisibleItemIndex by remember { mutableIntStateOf(state.firstVisibleItemIndex) }
 
     LaunchedEffect(state) {
 
@@ -75,8 +74,8 @@ fun ScrollSelector(
                 // 滑动时，根据滑动距离计算缩放比例
                 val progress = firstVisibleItemScrollOffset.toFloat() / contentHeight
                 val disparity = (currentSelectedScale - currentUnselectedScale) * progress
-                scrollingOutScale.value = currentSelectedScale - disparity
-                scrollingInScale.value = currentUnselectedScale + disparity
+                scrollingOutScale.floatValue = currentSelectedScale - disparity
+                scrollingInScale.floatValue = currentUnselectedScale + disparity
             }.launchIn(this)
 
         snapshotFlow { state.firstVisibleItemIndex }
@@ -152,8 +151,8 @@ fun ScrollSelector(
                         modifier = Modifier
                             .scale(
                                 when (index) {
-                                    firstVisibleItemIndex -> scrollingOutScale.value
-                                    firstVisibleItemIndex + 1 -> scrollingInScale.value
+                                    firstVisibleItemIndex -> scrollingOutScale.floatValue
+                                    firstVisibleItemIndex + 1 -> scrollingInScale.floatValue
                                     else -> currentUnselectedScale
                                 }
                             )

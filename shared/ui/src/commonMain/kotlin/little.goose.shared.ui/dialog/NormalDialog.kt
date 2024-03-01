@@ -1,4 +1,4 @@
-package little.goose.design.system.component.dialog
+package little.goose.shared.ui.dialog
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember

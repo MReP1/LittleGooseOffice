@@ -12,7 +12,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import little.goose.account.ui.AccountHome
 import little.goose.account.ui.AccountHomeState
-import little.goose.design.system.component.MovableActionButtonState
 import little.goose.design.system.theme.LocalWindowSizeClass
 import little.goose.home.data.ACCOUNT
 import little.goose.home.data.HOME
@@ -27,6 +26,7 @@ import little.goose.note.ui.notebook.NoteColumnState
 import little.goose.note.ui.notebook.NotebookHome
 import little.goose.note.ui.notebook.NotebookIntent
 import little.goose.search.SearchType
+import little.goose.shared.ui.button.MovableActionButtonState
 import java.util.Date
 
 @Composable

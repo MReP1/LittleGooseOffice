@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<resources>
+    <string name="confirm_delete">Confirm to delete?</string>
+    <string name="delete_description">Once deleted, it cannot be restored.</string>
+    <string name="delete">Delete</string>
+    <string name="confirm">Confirm</string>
+    <string name="cancel">Cancel</string>
+</resources>

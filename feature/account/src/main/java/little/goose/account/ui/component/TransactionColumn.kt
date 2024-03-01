@@ -22,10 +22,10 @@ import androidx.compose.ui.unit.dp
 import little.goose.account.data.constants.AccountConstant
 import little.goose.account.data.constants.AccountConstant.EXPENSE
 import little.goose.account.data.entities.Transaction
-import little.goose.design.system.component.dialog.DeleteDialog
-import little.goose.design.system.component.dialog.DeleteDialogState
 import little.goose.design.system.theme.GooseTheme
 import little.goose.design.system.theme.LocalWindowSizeClass
+import little.goose.shared.ui.dialog.DeleteDialog
+import little.goose.shared.ui.dialog.DeleteDialogState
 import java.math.BigDecimal
 
 @Stable

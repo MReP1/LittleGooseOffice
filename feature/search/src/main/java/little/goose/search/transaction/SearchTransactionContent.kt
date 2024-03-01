@@ -22,11 +22,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import little.goose.account.ui.component.TransactionColumn
 import little.goose.account.ui.component.TransactionColumnState
-import little.goose.design.system.component.MovableActionButton
-import little.goose.design.system.component.MovableActionButtonState
-import little.goose.design.system.component.dialog.DeleteDialog
-import little.goose.design.system.component.dialog.DeleteDialogState
 import little.goose.design.system.theme.GooseTheme
+import little.goose.shared.ui.button.MovableActionButton
+import little.goose.shared.ui.button.MovableActionButtonState
+import little.goose.shared.ui.dialog.DeleteDialog
+import little.goose.shared.ui.dialog.DeleteDialogState
 
 @OptIn(ExperimentalLayoutApi::class)
 @Composable

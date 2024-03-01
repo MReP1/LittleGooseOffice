@@ -19,11 +19,11 @@ import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
 import little.goose.common.utils.DateTimeUtils
 import little.goose.common.utils.toChineseYearMonDayWeek
-import little.goose.design.system.component.AutoResizableText
 import little.goose.memorial.R
 import little.goose.memorial.data.entities.Memorial
 import little.goose.memorial.utils.appendTimePrefix
 import little.goose.memorial.utils.appendTimeSuffix
+import little.goose.shared.ui.text.AutoResizableText
 import java.util.Calendar
 import java.util.Date
 

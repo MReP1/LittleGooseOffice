@@ -71,7 +71,6 @@ import little.goose.common.constants.KEY_TYPE
 import little.goose.common.utils.TimeType
 import little.goose.common.utils.toChineseYearMonDayWeek
 import little.goose.design.system.component.dialog.TimeSelectorCenterDialog
-import little.goose.design.system.component.dialog.rememberDialogState
 import little.goose.design.system.theme.GooseTheme
 import little.goose.memorial.R
 import little.goose.memorial.ROUTE_GRAPH_MEMORIAL
@@ -80,6 +79,7 @@ import little.goose.memorial.data.entities.Memorial
 import little.goose.memorial.ui.component.MemorialCard
 import little.goose.memorial.ui.component.MemorialText
 import little.goose.memorial.utils.appendTimeSuffix
+import little.goose.shared.ui.dialog.rememberDialogState
 import little.goose.shared.ui.screen.LittleGooseLoadingScreen
 import java.util.Date
 

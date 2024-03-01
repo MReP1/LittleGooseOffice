@@ -24,9 +24,9 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import little.goose.account.data.entities.Transaction
 import little.goose.account.ui.component.TransactionColumnState
 import little.goose.search.SearchState
-import little.goose.search.component.SearchScreen
 import little.goose.shared.ui.screen.LittleGooseEmptyScreen
 import little.goose.shared.ui.screen.LittleGooseLoadingScreen
+import little.goose.shared.ui.search.SearchScreen
 
 sealed interface SearchTransactionState : SearchState {
     data class Empty(
