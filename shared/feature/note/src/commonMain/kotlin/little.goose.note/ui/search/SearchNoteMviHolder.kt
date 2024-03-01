@@ -17,6 +17,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import little.goose.data.note.domain.DeleteNoteAndItsBlocksListUseCase
+import little.goose.data.note.domain.DeleteNoteIdListFlowUseCase
 import little.goose.data.note.domain.GetNoteWithContentByKeywordFlowUseCase
 import little.goose.note.ui.notebook.NoteColumnState
 import little.goose.note.ui.notebook.NoteItemState
@@ -26,7 +27,7 @@ import little.goose.shared.ui.architecture.autoMutableStateFlowSaver
 import org.koin.compose.koinInject
 
 @Composable
-fun rememberSearchNoteMviHolder(): MviHolder<SearchNoteState, SearchNoteEvent, SearchNoteIntent> {
+fun rememberSearchNoteStateHolder(): MviHolder<SearchNoteState, SearchNoteEvent, SearchNoteIntent> {
 
     val coroutineScope = rememberCoroutineScope()
 
@@ -36,8 +37,16 @@ fun rememberSearchNoteMviHolder(): MviHolder<SearchNoteState, SearchNoteEvent, S
     val deleteNoteAndItsBlocksListUseCase: DeleteNoteAndItsBlocksListUseCase =
         koinInject()
 
+    val deleteNoteIdListFlowUseCase: DeleteNoteIdListFlowUseCase = koinInject()
+
     val event = remember {
         MutableSharedFlow<SearchNoteEvent>()
+    }
+
+    LaunchedEffect(deleteNoteIdListFlowUseCase, event) {
+        deleteNoteIdListFlowUseCase().collect {
+            event.emit(SearchNoteEvent.DeleteNotes)
+        }
     }
 
     val multiSelectedNotes = rememberSaveable(saver = autoMutableStateFlowSaver()) {

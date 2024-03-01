@@ -36,7 +36,7 @@ fun rememberNotebookHomeStateHolder(): MviHolder<NoteColumnState, NotebookHomeEv
 
     val event = remember { MutableSharedFlow<NotebookHomeEvent>() }
 
-    LaunchedEffect(deleteNoteIdListFlowUseCase) {
+    LaunchedEffect(deleteNoteIdListFlowUseCase, event) {
         deleteNoteIdListFlowUseCase().collect {
             event.emit(NotebookHomeEvent.DeleteNote)
         }

@@ -9,7 +9,7 @@ import androidx.compose.ui.platform.LocalContext
 import kotlinx.coroutines.flow.collectLatest
 import little.goose.note.ui.search.SearchNoteEvent
 import little.goose.note.ui.search.SearchNoteScreen
-import little.goose.note.ui.search.rememberSearchNoteMviHolder
+import little.goose.note.ui.search.rememberSearchNoteStateHolder
 
 @Composable
 internal fun SearchNoteRoute(
@@ -19,7 +19,7 @@ internal fun SearchNoteRoute(
 ) {
     val context = LocalContext.current
 
-    val (state, event, action) = rememberSearchNoteMviHolder()
+    val (state, event, action) = rememberSearchNoteStateHolder()
 
     val snackbarHostState = remember { SnackbarHostState() }
 
