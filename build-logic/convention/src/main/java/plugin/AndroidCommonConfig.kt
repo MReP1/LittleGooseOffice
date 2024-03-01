@@ -47,7 +47,7 @@ internal fun LibraryExtension.configureAndroidLibrary() {
 }
 
 fun Project.configureKotlin(
-    commonExtension: CommonExtension<*, *, *, *, *>
+    commonExtension: CommonExtension<*, *, *, *, *, *>
 ) {
     with(commonExtension) {
         compileOptions {
@@ -80,7 +80,7 @@ fun Project.configureKotlin(
 
 }
 
-fun CommonExtension<*, *, *, *, *>.configureAndroidCommon() {
+fun CommonExtension<*, *, *, *, *, *>.configureAndroidCommon() {
     compileSdk = AndroidConfigConventions.COMPILE_SDK_VERSION
 
     defaultConfig {

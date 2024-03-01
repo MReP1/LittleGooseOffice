@@ -11,7 +11,7 @@ class ComposeConventionPlugin : Plugin<Project> {
 
     override fun apply(project: Project) {
         with(project) {
-            applyAndroid<CommonExtension<*, *, *, *, *>> {
+            applyAndroid<CommonExtension<*, *, *, *, *, *>> {
                 configureCompose(libs)
             }
             applyDependencies(libs)
@@ -19,7 +19,7 @@ class ComposeConventionPlugin : Plugin<Project> {
         }
     }
 
-    private fun CommonExtension<*, *, *, *, *>.configureCompose(libs: VersionCatalog) {
+    private fun CommonExtension<*, *, *, *, *, *>.configureCompose(libs: VersionCatalog) {
         buildFeatures {
             compose = true
         }
