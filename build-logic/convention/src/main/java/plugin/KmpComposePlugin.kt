@@ -18,7 +18,8 @@ class KmpComposePlugin : Plugin<Project> {
                 compilerOptions {
                     freeCompilerArgs.addAll(
                         "-opt-in=androidx.compose.foundation.ExperimentalFoundationApi",
-                        "-opt-in=org.jetbrains.compose.resources.ExperimentalResourceApi"
+                        "-opt-in=org.jetbrains.compose.resources.ExperimentalResourceApi",
+                        "-opt-in=androidx.compose.material3.ExperimentalMaterial3Api"
                     )
                 }
             }

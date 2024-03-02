@@ -30,15 +30,7 @@ dependencies {
     implementation(libs.androidx.activity.compose)
     implementation(project(":shared:feature:note"))
     implementation(project(":shared:design"))
-
+    implementation(project(":shared:ui"))
     compileOnly(libs.koin.core)
     implementation(libs.koin.android)
-
-    testImplementation(libs.junit4)
-    androidTestImplementation(libs.junit)
-    androidTestImplementation(libs.androidx.test.espresso.core)
-    androidTestImplementation(platform(libs.androidx.compose.bom))
-    androidTestImplementation(libs.androidx.compose.ui.test)
-    debugImplementation(libs.androidx.compose.ui.tooling)
-    debugImplementation(libs.androidx.compose.ui.testManifest)
 }

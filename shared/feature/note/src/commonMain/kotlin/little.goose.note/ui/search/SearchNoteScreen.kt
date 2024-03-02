@@ -18,16 +18,51 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import cafe.adriel.voyager.core.screen.Screen
+import cafe.adriel.voyager.navigator.LocalNavigator
+import cafe.adriel.voyager.navigator.currentOrThrow
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.collectLatest
+import little.goose.note.NoteScreen
 import little.goose.resource.GooseRes
 import little.goose.shared.ui.screen.LittleGooseEmptyScreen
 import little.goose.shared.ui.screen.LittleGooseLoadingScreen
 import little.goose.shared.ui.search.SearchScreen
 import org.jetbrains.compose.resources.getString
 
+object SearchNoteScreen : Screen {
+
+    @Composable
+    override fun Content() {
+        val navigator = LocalNavigator.currentOrThrow
+        SearchNoteRoute(
+            modifier = Modifier.fillMaxSize(),
+            onNavigateToNote = { navigator.push(NoteScreen(it)) },
+            onBack = navigator::pop
+        )
+    }
+
+}
+
 @Composable
-fun SearchNoteScreen(
+fun SearchNoteRoute(
+    modifier: Modifier = Modifier,
+    onNavigateToNote: (Long) -> Unit,
+    onBack: () -> Unit
+) {
+    val (state, event, action) = rememberSearchNoteStateHolder()
+    SearchNoteScreen(
+        modifier = modifier,
+        state = state,
+        event = event,
+        onNavigateToNote = onNavigateToNote,
+        action = action,
+        onBack = onBack
+    )
+}
+
+@Composable
+private fun SearchNoteScreen(
     modifier: Modifier = Modifier,
     state: SearchNoteState,
     event: Flow<SearchNoteEvent>,

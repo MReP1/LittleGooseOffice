@@ -6,8 +6,7 @@ import little.goose.note.di.noteFeatureModule
 import little.goose.office.di.jankStatsModule
 import org.koin.android.ext.koin.androidContext
 import org.koin.core.context.startKoin
-import org.koin.dsl.module
-import vibrator
+import vibratorModule
 
 @HiltAndroidApp
 class AccountApplication : Application() {
@@ -18,7 +17,7 @@ class AccountApplication : Application() {
         startKoin {
             androidContext(this@AccountApplication)
             modules(
-                module { vibrator() },
+                vibratorModule,
                 jankStatsModule,
                 noteFeatureModule
             )

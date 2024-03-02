@@ -26,7 +26,7 @@ class MainActivity : ComponentActivity() {
                 onDispose { }
             }
             GooseTheme(themeType = themeType) {
-                // TODO
+                NoteApp()
             }
         }
     }

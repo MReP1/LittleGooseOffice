@@ -1,6 +1,7 @@
 import androidx.compose.runtime.Composable
 import org.koin.compose.getKoin
 import org.koin.core.module.Module
+import org.koin.dsl.module
 
 sealed class Vibration {
 
@@ -15,6 +16,8 @@ expect class Vibrator {
     fun vibrate(effect: Vibration)
 
 }
+
+val vibratorModule = module { vibrator() }
 
 expect fun Module.vibrator()
 
