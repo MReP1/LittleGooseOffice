@@ -8,15 +8,16 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
-import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavType
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
+import little.goose.note.ui.search.SearchNoteRoute
 import little.goose.search.memorial.SearchMemorialRoute
-import little.goose.search.note.SearchNoteRoute
 import little.goose.search.transaction.SearchTransactionRoute
 
 const val ROUTE_SEARCH = "search"
@@ -60,9 +61,13 @@ fun NavGraphBuilder.searchRoute(
         )
     },
     popEnterTransition = null
-) {
+) { entry ->
+    val searchType = rememberSaveable(entry, saver = SearchType.saver) {
+        SearchType.fromValue(entry.arguments!!.getInt(SearchType.KEY_SEARCH_TYPE))
+    }
     SearchRoute(
         modifier = Modifier.fillMaxSize(),
+        searchType = searchType,
         onNavigateToNote = onNavigateToNote,
         onNavigateToMemorial = onNavigateToMemorial,
         onNavigateToTransactionScreen = onNavigateToTransactionScreen,
@@ -73,13 +78,13 @@ fun NavGraphBuilder.searchRoute(
 @Composable
 fun SearchRoute(
     modifier: Modifier = Modifier,
+    searchType: SearchType,
     onNavigateToMemorial: (memorialId: Long) -> Unit,
     onNavigateToTransactionScreen: (transactionId: Long) -> Unit,
     onNavigateToNote: (noteId: Long) -> Unit,
     onBack: () -> Unit
 ) {
-    val viewModel = hiltViewModel<SearchViewModel>()
-    when (viewModel.searchType) {
+    when (searchType) {
         SearchType.Memorial -> SearchMemorialRoute(
             modifier = modifier,
             onNavigateToMemorialDialog = onNavigateToMemorial,

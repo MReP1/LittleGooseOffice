@@ -1,18 +1,14 @@
 package little.goose.shared.ui.dialog
 
-import account.shared.ui.generated.resources.Res
-import account.shared.ui.generated.resources.cancel
-import account.shared.ui.generated.resources.confirm
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
-import org.jetbrains.compose.resources.ExperimentalResourceApi
+import little.goose.resource.GooseRes
 import org.jetbrains.compose.resources.stringResource
 
-@OptIn(ExperimentalResourceApi::class)
 @Composable
 fun SelectorDialog(
     state: DialogState,
@@ -32,7 +28,7 @@ fun SelectorDialog(
                         state.dismiss()
                     }
                 ) {
-                    Text(text = stringResource(Res.string.confirm))
+                    Text(text = stringResource(GooseRes.strings.confirm))
                 }
             },
             dismissButton = {
@@ -47,7 +43,7 @@ fun SelectorDialog(
                         )
                     )
                 ) {
-                    Text(text = stringResource(Res.string.cancel))
+                    Text(text = stringResource(GooseRes.strings.cancel))
                 }
             },
             text = text,

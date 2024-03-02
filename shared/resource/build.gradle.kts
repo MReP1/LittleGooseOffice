@@ -13,7 +13,7 @@ kotlin {
         iosSimulatorArm64()
     ).forEach { iosTarget ->
         iosTarget.binaries.framework {
-            baseName = "shared.ui"
+            baseName = "shared.resource"
             isStatic = true
         }
     }
@@ -25,18 +25,13 @@ kotlin {
             dependencies {
                 implementation(compose.runtime)
                 implementation(compose.foundation)
-                implementation(compose.material3)
-                implementation(compose.materialIconsExtended)
                 implementation(compose.components.resources)
-                implementation(project(":shared:common"))
-                implementation(project(":shared:resource"))
                 implementation(libs.koin.compose)
                 compileOnly(libs.koin.core)
             }
         }
         androidMain {
             dependencies {
-                implementation(libs.koin.android)
             }
         }
         iosMain {
@@ -48,7 +43,7 @@ kotlin {
 }
 
 android {
-    namespace = "little.goose.shared.ui"
+    namespace = "little.goose.shared.resource"
 
     sourceSets["main"].manifest.srcFile("src/androidMain/AndroidManifest.xml")
     sourceSets["main"].res.srcDirs("src/androidMain/res")

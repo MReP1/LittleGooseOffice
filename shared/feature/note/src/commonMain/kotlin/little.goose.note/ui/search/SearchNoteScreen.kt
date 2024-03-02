@@ -11,26 +11,45 @@ import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.collectLatest
+import little.goose.resource.GooseRes
 import little.goose.shared.ui.screen.LittleGooseEmptyScreen
 import little.goose.shared.ui.screen.LittleGooseLoadingScreen
 import little.goose.shared.ui.search.SearchScreen
-
+import org.jetbrains.compose.resources.getString
 
 @Composable
 fun SearchNoteScreen(
     modifier: Modifier = Modifier,
     state: SearchNoteState,
-    snackbarHostState: SnackbarHostState,
+    event: Flow<SearchNoteEvent>,
     action: (SearchNoteIntent) -> Unit,
     onNavigateToNote: (Long) -> Unit,
     onBack: () -> Unit
 ) {
     var keyword by rememberSaveable { mutableStateOf("") }
+    val snackbarHostState = remember { SnackbarHostState() }
+
+    LaunchedEffect(Unit) {
+        event.collectLatest { event ->
+            when (event) {
+                SearchNoteEvent.DeleteNotes -> {
+                    snackbarHostState.showSnackbar(
+                        message = getString(GooseRes.strings.deleted)
+                    )
+                }
+            }
+        }
+    }
+
     SearchScreen(
         modifier = modifier,
         keyword = keyword,

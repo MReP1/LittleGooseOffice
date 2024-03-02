@@ -1,5 +1,7 @@
 package little.goose.search
 
+import androidx.compose.runtime.saveable.Saver
+
 enum class SearchType(val value: Int) {
     Transaction(0), Note(1), Memorial(2);
 
@@ -13,5 +15,10 @@ enum class SearchType(val value: Int) {
                 else -> throw IllegalArgumentException("Unknown value: $value")
             }
         }
+
+        val saver = Saver<SearchType, Any>(
+            save = { it.value },
+            restore = { fromValue(it as Int) }
+        )
     }
 }
