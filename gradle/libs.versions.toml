@@ -97,7 +97,6 @@ voyager-navigator = { module = "cafe.adriel.voyager:voyager-navigator", version.
 voyager-screenModel = { module = "cafe.adriel.voyager:voyager-screenmodel", version.ref = "voyager" }
 voyager-transitions = { module = "cafe.adriel.voyager:voyager-transitions", version.ref = "voyager" }
 voyager-koin = { module = "cafe.adriel.voyager:voyager-koin", version.ref = "voyager" }
-moko-resources-compose = { module = "dev.icerock.moko:resources-compose", version.ref = "moko-resources" }
 
 # Dependencies of the included build-logic
 android-gradlePlugin = { group = "com.android.tools.build", name = "gradle", version.ref = "androidGradlePlugin" }
@@ -114,7 +113,6 @@ protobuf = { id = "com.google.protobuf", version.ref = "protobufPlugin" }
 kotlin-multiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }
 jetbrains-compose = { id = "org.jetbrains.compose", version.ref = "kotlinMultiplatfromCompose" }
 sqldelight = { id = "app.cash.sqldelight", version.ref = "sqldelight" }
-mokoResources = { id = "dev.icerock.mobile.multiplatform-resources", version.ref = "moko-resources" }
 
 # Plugins defined by this project
 goose-android-application = { id = "goose.android.app", version = "unspecified" }
