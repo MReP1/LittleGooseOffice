@@ -6,6 +6,7 @@ import androidx.compose.animation.core.VectorConverter
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -35,9 +36,18 @@ import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import little.goose.shared.ui.button.MovableActionButtonType.*
+
+enum class MovableActionButtonType {
+    BottomEnd,
+    BottomCenter
+}
 
 @Stable
-class MovableActionButtonState {
+class MovableActionButtonState(
+    private val type: MovableActionButtonType = BottomEnd,
+    internal val contentPadding: PaddingValues = PaddingValues(24.dp)
+) {
 
     private val _isExpended = mutableStateOf(false)
     val isExpended: State<Boolean> get() = _isExpended
@@ -69,10 +79,21 @@ class MovableActionButtonState {
         _isExpended.value = true
         coroutineScope {
             elevation.value = 6.dp
-            awaitAll(
-                async { topButtonOffset.animateTo(IntOffset(-shortDis, -longDis)) },
-                async { bottomButtonOffset.animateTo(IntOffset(-longDis, -shortDis)) }
-            )
+            when (type) {
+                BottomEnd -> {
+                    awaitAll(
+                        async { topButtonOffset.animateTo(IntOffset(-shortDis, -longDis)) },
+                        async { bottomButtonOffset.animateTo(IntOffset(-longDis, -shortDis)) }
+                    )
+                }
+
+                BottomCenter -> {
+                    awaitAll(
+                        async { topButtonOffset.animateTo(IntOffset(-longDis, 0)) },
+                        async { bottomButtonOffset.animateTo(IntOffset(longDis, 0)) }
+                    )
+                }
+            }
         }
     }
 
@@ -171,7 +192,7 @@ fun MovableActionButton(
             }
     ) {
         Box(
-            modifier = Modifier.padding(24.dp),
+            modifier = Modifier.padding(state.contentPadding),
             contentAlignment = Alignment.Center
         ) {
             FloatingActionButton(

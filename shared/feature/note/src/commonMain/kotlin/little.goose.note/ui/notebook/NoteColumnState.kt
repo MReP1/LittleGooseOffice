@@ -12,7 +12,7 @@ data class NoteColumnState(
 
         val saver = Saver<NoteColumnState, Any>(
             save = { it.toSavable() },
-            restore = { NoteColumnState.fromSavable(it) }
+            restore = { fromSavable(it) }
         )
 
         @Suppress("UNCHECKED_CAST")
