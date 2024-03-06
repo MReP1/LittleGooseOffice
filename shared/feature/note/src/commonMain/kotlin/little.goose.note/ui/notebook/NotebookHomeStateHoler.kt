@@ -2,9 +2,9 @@ package little.goose.note.ui.notebook
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.produceState
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -24,11 +24,10 @@ fun rememberNotebookHomeStateHolder(
     deleteNoteAndItsBlocksListUseCase: DeleteNoteAndItsBlocksListUseCase = koinInject(),
     deleteNoteIdListFlowUseCase: DeleteNoteIdListFlowUseCase = koinInject()
 ): MviHolder<NoteColumnState, NotebookHomeEvent, NotebookIntent> {
+
     val coroutineScope = rememberCoroutineScope()
 
-    val noteWithContents by produceState(emptyList<NoteWithContent>()) {
-        getNoteWithContentFlowUseCase().collect { value = it }
-    }
+    val noteWithContents by getNoteWithContentFlowUseCase().collectAsState(emptyList())
 
     val event = remember { MutableSharedFlow<NotebookHomeEvent>() }
 
