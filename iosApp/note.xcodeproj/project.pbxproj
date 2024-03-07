@@ -9,7 +9,6 @@
 /* Begin PBXBuildFile section */
 		B4842BFF2B93B248000777A3 /* noteApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = B4842BFE2B93B248000777A3 /* noteApp.swift */; };
 		B4842C012B93B248000777A3 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B4842C002B93B248000777A3 /* ContentView.swift */; };
-		B4842C032B93B248000777A3 /* Item.swift in Sources */ = {isa = PBXBuildFile; fileRef = B4842C022B93B248000777A3 /* Item.swift */; };
 		B4842C052B93B248000777A3 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = B4842C042B93B248000777A3 /* Assets.xcassets */; };
 		B4842C082B93B248000777A3 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = B4842C072B93B248000777A3 /* Preview Assets.xcassets */; };
 /* End PBXBuildFile section */
@@ -18,7 +17,6 @@
 		B4842BFB2B93B248000777A3 /* note.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = note.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		B4842BFE2B93B248000777A3 /* noteApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = noteApp.swift; sourceTree = "<group>"; };
 		B4842C002B93B248000777A3 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
-		B4842C022B93B248000777A3 /* Item.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Item.swift; sourceTree = "<group>"; };
 		B4842C042B93B248000777A3 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		B4842C072B93B248000777A3 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -55,7 +53,6 @@
 			children = (
 				B4842BFE2B93B248000777A3 /* noteApp.swift */,
 				B4842C002B93B248000777A3 /* ContentView.swift */,
-				B4842C022B93B248000777A3 /* Item.swift */,
 				B4842C042B93B248000777A3 /* Assets.xcassets */,
 				B4842C062B93B248000777A3 /* Preview Content */,
 			);
@@ -163,7 +160,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				B4842C012B93B248000777A3 /* ContentView.swift in Sources */,
-				B4842C032B93B248000777A3 /* Item.swift in Sources */,
 				B4842BFF2B93B248000777A3 /* noteApp.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -308,11 +304,13 @@
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
+				OTHER_LDFLAGS = "-lsqlite3";
 				PRODUCT_BUNDLE_IDENTIFIER = little.goose.note;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
@@ -339,11 +337,13 @@
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
+				OTHER_LDFLAGS = "-lsqlite3";
 				PRODUCT_BUNDLE_IDENTIFIER = little.goose.note;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;

@@ -43,6 +43,8 @@ kotlin {
             implementation(libs.androidx.compose.ui.tool.preview)
         }
         iosMain.dependencies {
+            implementation("co.touchlab:stately-common:2.0.5")
+            implementation(compose.material)
         }
     }
 
