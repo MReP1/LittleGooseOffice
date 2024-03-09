@@ -72,6 +72,7 @@ fun SearchScreen(
                 modifier = Modifier
                     .fillMaxSize()
                     .background(MaterialTheme.colorScheme.background)
+                    .windowInsetsPadding(WindowInsets.ime.union(BottomAppBarDefaults.windowInsets))
             ) {
                 content()
                 SnackbarHost(
@@ -79,9 +80,6 @@ fun SearchScreen(
                     modifier = Modifier
                         .fillMaxWidth()
                         .align(Alignment.BottomCenter)
-                        .windowInsetsPadding(
-                            WindowInsets.ime.union(BottomAppBarDefaults.windowInsets)
-                        )
                 ) {
                     Snackbar(snackbarData = it)
                 }
