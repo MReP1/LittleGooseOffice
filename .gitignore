@@ -14,6 +14,5 @@ local.properties
 /iosApp/note.xcodeproj/*
 !/iosApp/note.xcodeproj/project.pbxproj
 !/iosApp/note.xcodeproj/xcshareddata/
-!/iosApp/note.xcodeproj/project.xcworkspace/
 !/iosApp/note.xcworkspace/contents.xcworkspacedata
 **/xcshareddata/WorkspaceSettings.xcsettings
