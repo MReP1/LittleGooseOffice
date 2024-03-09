@@ -16,7 +16,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import little.goose.note.util.FormatType
-import org.jetbrains.compose.resources.DrawableResource
+import little.goose.resource.GooseRes
 import org.jetbrains.compose.resources.ExperimentalResourceApi
 import org.jetbrains.compose.resources.painterResource
 
@@ -44,7 +44,7 @@ fun FormatHeaderIcon(
                 onClick = { onHeaderClick(FormatType.Header.H1) }
             ) {
                 Icon(
-                    painter = painterResource(DrawableResource("icon_format_h1.xml")),
+                    painter = painterResource(GooseRes.Drawable.icon_format_h1),
                     contentDescription = "Header1"
                 )
             }
@@ -52,7 +52,7 @@ fun FormatHeaderIcon(
                 onClick = { onHeaderClick(FormatType.Header.H2) }
             ) {
                 Icon(
-                    painter = painterResource(DrawableResource("icon_format_h2.xml")),
+                    painter = painterResource(GooseRes.Drawable.icon_format_h2),
                     contentDescription = "Header2"
                 )
             }
@@ -60,7 +60,7 @@ fun FormatHeaderIcon(
                 onClick = { onHeaderClick(FormatType.Header.H3) }
             ) {
                 Icon(
-                    painter = painterResource(DrawableResource("icon_format_h3.xml")),
+                    painter = painterResource(GooseRes.Drawable.icon_format_h3),
                     contentDescription = "Header3"
                 )
             }
@@ -68,7 +68,7 @@ fun FormatHeaderIcon(
                 onClick = { onHeaderClick(FormatType.Header.H4) }
             ) {
                 Icon(
-                    painter = painterResource(DrawableResource("icon_format_h4.xml")),
+                    painter = painterResource(GooseRes.Drawable.icon_format_h4),
                     contentDescription = "Header4"
                 )
             }
@@ -76,7 +76,7 @@ fun FormatHeaderIcon(
                 onClick = { onHeaderClick(FormatType.Header.H5) }
             ) {
                 Icon(
-                    painter = painterResource(DrawableResource("icon_format_h5.xml")),
+                    painter = painterResource(GooseRes.Drawable.icon_format_h5),
                     contentDescription = "Header5"
                 )
             }
@@ -84,7 +84,7 @@ fun FormatHeaderIcon(
                 onClick = { onHeaderClick(FormatType.Header.H6) }
             ) {
                 Icon(
-                    painter = painterResource(DrawableResource("icon_format_h6.xml")),
+                    painter = painterResource(GooseRes.Drawable.icon_format_h6),
                     contentDescription = "Header6"
                 )
             }
