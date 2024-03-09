@@ -28,7 +28,7 @@ fun SelectorDialog(
                         state.dismiss()
                     }
                 ) {
-                    Text(text = stringResource(GooseRes.Strings.confirm))
+                    Text(text = stringResource(GooseRes.string.confirm))
                 }
             },
             dismissButton = {
@@ -43,7 +43,7 @@ fun SelectorDialog(
                         )
                     )
                 ) {
-                    Text(text = stringResource(GooseRes.Strings.cancel))
+                    Text(text = stringResource(GooseRes.string.cancel))
                 }
             },
             text = text,

@@ -16,6 +16,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
+import little.goose.resource.GooseRes
 import org.jetbrains.compose.resources.DrawableResource
 import org.jetbrains.compose.resources.ExperimentalResourceApi
 import org.jetbrains.compose.resources.painterResource
@@ -28,9 +29,9 @@ fun LittleGooseLoadingScreen(
     LoadingScreen(
         modifier = modifier,
         content = {
-            val normalGoose = painterResource(DrawableResource( "ic_little_goose.xml"))
-            val backGoose = painterResource(DrawableResource("ic_little_goose_back.xml"))
-            val foreGoose = painterResource(DrawableResource("ic_little_goose_fore.xml"))
+            val normalGoose = painterResource(GooseRes.drawable.ic_little_goose)
+            val backGoose = painterResource(GooseRes.drawable.ic_little_goose_back)
+            val foreGoose = painterResource(GooseRes.drawable.ic_little_goose_fore)
             var painter by remember { mutableStateOf(normalGoose) }
             Image(painter = painter, contentDescription = "Loading")
             LaunchedEffect(Unit) {

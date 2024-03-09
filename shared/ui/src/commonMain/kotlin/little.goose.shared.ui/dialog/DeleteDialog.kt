@@ -50,10 +50,10 @@ fun DeleteDialog(
             Icon(imageVector = Icons.Rounded.Delete, contentDescription = "Delete")
         },
         title = {
-            Text(text = stringResource(GooseRes.Strings.confirm_delete))
+            Text(text = stringResource(GooseRes.string.confirm_delete))
         },
         text = {
-            Text(text = stringResource(GooseRes.Strings.delete_description))
+            Text(text = stringResource(GooseRes.string.delete_description))
         }
     )
 }

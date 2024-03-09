@@ -44,7 +44,7 @@ fun FormatHeaderIcon(
                 onClick = { onHeaderClick(FormatType.Header.H1) }
             ) {
                 Icon(
-                    painter = painterResource(GooseRes.Drawable.icon_format_h1),
+                    painter = painterResource(GooseRes.drawable.icon_format_h1),
                     contentDescription = "Header1"
                 )
             }
@@ -52,7 +52,7 @@ fun FormatHeaderIcon(
                 onClick = { onHeaderClick(FormatType.Header.H2) }
             ) {
                 Icon(
-                    painter = painterResource(GooseRes.Drawable.icon_format_h2),
+                    painter = painterResource(GooseRes.drawable.icon_format_h2),
                     contentDescription = "Header2"
                 )
             }
@@ -60,7 +60,7 @@ fun FormatHeaderIcon(
                 onClick = { onHeaderClick(FormatType.Header.H3) }
             ) {
                 Icon(
-                    painter = painterResource(GooseRes.Drawable.icon_format_h3),
+                    painter = painterResource(GooseRes.drawable.icon_format_h3),
                     contentDescription = "Header3"
                 )
             }
@@ -68,7 +68,7 @@ fun FormatHeaderIcon(
                 onClick = { onHeaderClick(FormatType.Header.H4) }
             ) {
                 Icon(
-                    painter = painterResource(GooseRes.Drawable.icon_format_h4),
+                    painter = painterResource(GooseRes.drawable.icon_format_h4),
                     contentDescription = "Header4"
                 )
             }
@@ -76,7 +76,7 @@ fun FormatHeaderIcon(
                 onClick = { onHeaderClick(FormatType.Header.H5) }
             ) {
                 Icon(
-                    painter = painterResource(GooseRes.Drawable.icon_format_h5),
+                    painter = painterResource(GooseRes.drawable.icon_format_h5),
                     contentDescription = "Header5"
                 )
             }
@@ -84,7 +84,7 @@ fun FormatHeaderIcon(
                 onClick = { onHeaderClick(FormatType.Header.H6) }
             ) {
                 Icon(
-                    painter = painterResource(GooseRes.Drawable.icon_format_h6),
+                    painter = painterResource(GooseRes.drawable.icon_format_h6),
                     contentDescription = "Header6"
                 )
             }

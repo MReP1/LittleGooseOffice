@@ -6,7 +6,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import org.jetbrains.compose.resources.DrawableResource
+import little.goose.resource.GooseRes
 import org.jetbrains.compose.resources.ExperimentalResourceApi
 import org.jetbrains.compose.resources.painterResource
 
@@ -22,7 +22,7 @@ fun LittleGooseEmptyScreen(
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Image(
-            painter = painterResource(DrawableResource("ic_little_goose.xml")),
+            painter = painterResource(GooseRes.drawable.ic_little_goose),
             contentDescription = "Logo"
         )
         content()

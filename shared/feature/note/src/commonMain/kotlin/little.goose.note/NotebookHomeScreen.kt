@@ -60,7 +60,7 @@ fun NotebookHomeRoute(
     val snackbarHostState = remember { SnackbarHostState() }
     LaunchedEffect(event) {
         event.collect {
-            snackbarHostState.showSnackbar(getString(GooseRes.Strings.deleted))
+            snackbarHostState.showSnackbar(getString(GooseRes.string.deleted))
         }
     }
     NotebookHomeScreen(

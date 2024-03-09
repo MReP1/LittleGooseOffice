@@ -78,7 +78,7 @@ private fun SearchNoteScreen(
             when (event) {
                 SearchNoteEvent.DeleteNotes -> {
                     snackbarHostState.showSnackbar(
-                        message = getString(GooseRes.Strings.deleted)
+                        message = getString(GooseRes.string.deleted)
                     )
                 }
             }
