@@ -2,7 +2,6 @@ package little.goose.note.ui.notebook
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -10,6 +9,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import little.goose.data.note.bean.NoteWithContent
 import little.goose.data.note.domain.DeleteNoteAndItsBlocksListUseCase
@@ -27,8 +27,6 @@ fun rememberNotebookHomeStateHolder(
 
     val coroutineScope = rememberCoroutineScope()
 
-    val noteWithContents by getNoteWithContentFlowUseCase().collectAsState(emptyList())
-
     val event = remember { MutableSharedFlow<NotebookHomeEvent>() }
 
     LaunchedEffect(deleteNoteIdListFlowUseCase, event) {
@@ -41,14 +39,16 @@ fun rememberNotebookHomeStateHolder(
         mutableStateOf<Set<Long>>(emptySet())
     }
 
-    val noteColumnSavableState = rememberSaveable(
-        noteWithContents, multiSelectedIds,
-        saver = NoteColumnState.saver
+    var noteColumnSavableState by rememberSaveable(
+        multiSelectedIds, stateSaver = NoteColumnState.saver
     ) {
-        NoteColumnState(
-            noteItemStateList = mapToNoteItemStateList(noteWithContents, multiSelectedIds),
-            isMultiSelecting = multiSelectedIds.isNotEmpty()
-        )
+        mutableStateOf(mapColumnState(emptyList(), multiSelectedIds))
+    }
+
+    LaunchedEffect(getNoteWithContentFlowUseCase) {
+        getNoteWithContentFlowUseCase().collectLatest { noteWithContents ->
+            noteColumnSavableState = mapColumnState(noteWithContents, multiSelectedIds)
+        }
     }
 
     val cancelMultiSelecting = remember {
@@ -61,7 +61,9 @@ fun rememberNotebookHomeStateHolder(
                 NotebookIntent.CancelMultiSelecting -> cancelMultiSelecting()
 
                 NotebookIntent.SelectAllNotes -> {
-                    multiSelectedIds = noteWithContents.mapNotNull { it.note.id }.toSet()
+                    multiSelectedIds = noteColumnSavableState.noteItemStateList
+                        .map(NoteItemState::id)
+                        .toSet()
                 }
 
                 is NotebookIntent.DeleteMultiSelectingNotes -> {
@@ -85,18 +87,24 @@ fun rememberNotebookHomeStateHolder(
     }
 }
 
+fun mapColumnState(
+    noteWithContents: List<NoteWithContent>,
+    multiSelectedIds: Set<Long>
+): NoteColumnState = NoteColumnState(
+    mapToNoteItemStateList(noteWithContents, multiSelectedIds),
+    multiSelectedIds.isNotEmpty()
+)
+
 private fun mapToNoteItemStateList(
     noteWithContents: List<NoteWithContent>,
     multiSelectedIds: Set<Long>
-): List<NoteItemState> {
-    return noteWithContents.mapNotNull { noteWithContent ->
-        noteWithContent.note.id?.let { noteId ->
-            NoteItemState(
-                noteId,
-                noteWithContent.note.title,
-                noteWithContent.content.firstOrNull()?.content ?: "",
-                isSelected = multiSelectedIds.contains(noteId)
-            )
-        }
+): List<NoteItemState> = noteWithContents.mapNotNull { noteWithContent ->
+    noteWithContent.note.id?.let { noteId ->
+        NoteItemState(
+            noteId,
+            noteWithContent.note.title,
+            noteWithContent.content.firstOrNull()?.content ?: "",
+            isSelected = multiSelectedIds.contains(noteId)
+        )
     }
 }
