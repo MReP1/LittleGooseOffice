@@ -41,10 +41,8 @@ fun rememberNotebookHomeStateHolder(
         mutableStateOf<Set<Long>>(emptySet())
     }
 
-    val noteColumnSavableState by rememberSaveable(
-        noteWithContents, multiSelectedIds, stateSaver = NoteColumnState.saver
-    ) {
-        mutableStateOf(mapColumnState(noteWithContents, multiSelectedIds))
+    val noteColumnSavableState = remember(noteWithContents, multiSelectedIds) {
+        mapColumnState(noteWithContents, multiSelectedIds)
     }
 
     val cancelMultiSelecting = remember {
