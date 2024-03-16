@@ -2,6 +2,8 @@ package little.goose.note.ui.notebook
 
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.saveable.Saver
+import little.goose.shared.common.CommonParcelable
+import little.goose.shared.common.CommonParcelize
 
 @Stable
 data class NoteColumnState(
@@ -31,10 +33,11 @@ data class NoteColumnState(
     }
 }
 
+@CommonParcelize
 @Stable
 data class NoteItemState(
     val id: Long,
     val title: String,
     val content: String,
     val isSelected: Boolean
-)
+): CommonParcelable

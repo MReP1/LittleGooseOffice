@@ -18,6 +18,7 @@ class KotlinMultiplatformConventionPlugin : Plugin<Project> {
             with(pluginManager) {
                 apply(libs.findPlugin("android-library").get().get().pluginId)
                 apply(libs.findPlugin("kotlin-multiplatform").get().get().pluginId)
+                apply("kotlin-parcelize")
             }
 
             extensions.configure<KotlinMultiplatformExtension> {
