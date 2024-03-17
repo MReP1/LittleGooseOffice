@@ -26,6 +26,7 @@ import androidx.metrics.performance.JankStats
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 import little.goose.design.system.theme.GooseTheme
+import little.goose.shared.ui.screen.LittleGooseEmptyScreen
 import org.koin.android.scope.AndroidScopeComponent
 import org.koin.androidx.scope.activityScope
 import org.koin.core.scope.Scope
@@ -96,9 +97,19 @@ class MainActivity : AppCompatActivity(), AndroidScopeComponent {
 
             GooseTheme(themeConfig = appState.themeConfig, useGooseStyle = true) {
                 Surface(color = MaterialTheme.colorScheme.background) {
-                    MainScreen(
-                        modifier = Modifier.fillMaxSize()
-                    )
+                    when (appState) {
+                        AppState.Loading -> {
+                            LittleGooseEmptyScreen(
+                                modifier = Modifier.fillMaxSize()
+                            )
+                        }
+
+                        is AppState.Success -> {
+                            MainScreen(
+                                modifier = Modifier.fillMaxSize()
+                            )
+                        }
+                    }
                 }
             }
         }
