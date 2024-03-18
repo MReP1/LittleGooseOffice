@@ -22,7 +22,7 @@ import androidx.compose.ui.unit.max
 import androidx.compose.ui.unit.min
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import little.goose.ui.modifier.nestedPull
+import little.goose.shared.ui.modifier.nestedPull
 import rememberVibrator
 
 @Composable

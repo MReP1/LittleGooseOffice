@@ -1,4 +1,4 @@
-package little.goose.ui.modifier
+package little.goose.shared.ui.modifier
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
