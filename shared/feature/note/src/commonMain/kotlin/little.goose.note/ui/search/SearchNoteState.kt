@@ -1,13 +1,25 @@
 package little.goose.note.ui.search
 
+import androidx.compose.runtime.Stable
 import androidx.compose.runtime.saveable.Saver
 import little.goose.note.ui.notebook.NoteColumnState
 
+@Stable
+data class SearchNoteScreenState(
+    val keyword: String,
+    val state: SearchNoteState
+)
+
+@Stable
 sealed interface SearchNoteState {
+
+    @Stable
     data object Loading : SearchNoteState
 
-    data class Success(val keyword: String, val data: NoteColumnState) : SearchNoteState
+    @Stable
+    data class Success(val data: NoteColumnState) : SearchNoteState
 
+    @Stable
     data object Empty : SearchNoteState
 
     companion object {
@@ -16,7 +28,7 @@ sealed interface SearchNoteState {
                 when (state) {
                     Empty -> listOf(0)
                     Loading -> listOf(1)
-                    is Success -> listOf(2, state.keyword, state.data.toSavable())
+                    is Success -> listOf(2, state.data.toSavable())
                 }
             },
             restore = {
@@ -24,11 +36,7 @@ sealed interface SearchNoteState {
                 val type = savable[0] as Int
                 when (type) {
                     1 -> Loading
-                    2 -> Success(
-                        savable[1] as String,
-                        NoteColumnState.fromSavable(savable[2] as Any)
-                    )
-
+                    2 -> Success(NoteColumnState.fromSavable(savable[1] as Any))
                     else -> Empty
                 }
             }

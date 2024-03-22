@@ -12,11 +12,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import cafe.adriel.voyager.core.screen.Screen
 import cafe.adriel.voyager.navigator.LocalNavigator
@@ -53,7 +49,7 @@ fun SearchNoteRoute(
     val (state, event, action) = rememberSearchNoteStateHolder()
     SearchNoteScreen(
         modifier = modifier,
-        state = state,
+        screenState = state,
         event = event,
         onNavigateToNote = onNavigateToNote,
         action = action,
@@ -64,13 +60,12 @@ fun SearchNoteRoute(
 @Composable
 private fun SearchNoteScreen(
     modifier: Modifier = Modifier,
-    state: SearchNoteState,
+    screenState: SearchNoteScreenState,
     event: Flow<SearchNoteEvent>,
     action: (SearchNoteIntent) -> Unit,
     onNavigateToNote: (Long) -> Unit,
     onBack: () -> Unit
 ) {
-    var keyword by rememberSaveable { mutableStateOf("") }
     val snackbarHostState = remember { SnackbarHostState() }
 
     LaunchedEffect(Unit) {
@@ -87,11 +82,8 @@ private fun SearchNoteScreen(
 
     SearchScreen(
         modifier = modifier,
-        keyword = keyword,
-        onKeywordChange = {
-            keyword = it
-            action(SearchNoteIntent.Search(it))
-        },
+        keyword = screenState.keyword,
+        onKeywordChange = { action(SearchNoteIntent.Search(it)) },
         snackbarHostState = snackbarHostState,
         onBack = onBack
     ) {
@@ -130,7 +122,7 @@ private fun SearchNoteScreen(
                     )
                 }
             },
-            targetState = state,
+            targetState = screenState.state,
             label = "search note content"
         ) { state ->
             when (state) {

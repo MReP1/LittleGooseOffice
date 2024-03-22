@@ -27,7 +27,8 @@ import little.goose.shared.ui.architecture.autoMutableStateFlowSaver
 import org.koin.compose.koinInject
 
 @Composable
-fun rememberSearchNoteStateHolder(): MviHolder<SearchNoteState, SearchNoteEvent, SearchNoteIntent> {
+fun rememberSearchNoteStateHolder()
+        : MviHolder<SearchNoteScreenState, SearchNoteEvent, SearchNoteIntent> {
 
     val coroutineScope = rememberCoroutineScope()
 
@@ -61,13 +62,11 @@ fun rememberSearchNoteStateHolder(): MviHolder<SearchNoteState, SearchNoteEvent,
         mutableStateOf("")
     }
 
-    LaunchedEffect(keyword) {
-        (state as? SearchNoteState.Success)?.let { success ->
-            if (success.keyword == keyword) {
-                return@LaunchedEffect
-            }
-        }
+    val screenState = remember(keyword, state) {
+        SearchNoteScreenState(keyword, state)
+    }
 
+    LaunchedEffect(keyword) {
         if (keyword.isBlank()) {
             state = SearchNoteState.Empty
         } else {
@@ -80,7 +79,7 @@ fun rememberSearchNoteStateHolder(): MviHolder<SearchNoteState, SearchNoteEvent,
                     SearchNoteState.Empty
                 } else {
                     SearchNoteState.Success(
-                        keyword, NoteColumnState(
+                        NoteColumnState(
                             noteItemStateList = nwcList.map { nwc ->
                                 NoteItemState(
                                     id = nwc.note.id!!,
@@ -141,7 +140,7 @@ fun rememberSearchNoteStateHolder(): MviHolder<SearchNoteState, SearchNoteEvent,
         }
     }
 
-    return remember(state, event, action) {
-        MviHolder(state, event, action)
+    return remember(screenState, event, action) {
+        MviHolder(screenState, event, action)
     }
 }
