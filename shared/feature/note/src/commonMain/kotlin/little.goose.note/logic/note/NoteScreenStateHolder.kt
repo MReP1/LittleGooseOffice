@@ -177,7 +177,7 @@ class NoteScreenStateHolder(
 
 }
 
-internal class NoteScreenCacheHolder {
+class NoteScreenCacheHolder {
     val contentBlockTextFieldStateMap = mutableMapOf<Long, TextFieldState>()
     val collectFocusJobMap = mutableMapOf<Long, Job>()
     val collectUpdateJobMap = mutableMapOf<Long, Job>()

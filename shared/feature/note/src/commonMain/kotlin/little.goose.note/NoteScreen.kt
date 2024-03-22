@@ -3,32 +3,28 @@ package little.goose.note
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import cafe.adriel.voyager.core.screen.Screen
-import cafe.adriel.voyager.koin.getScreenModel
 import cafe.adriel.voyager.navigator.LocalNavigator
 import cafe.adriel.voyager.navigator.currentOrThrow
 import kotlinx.coroutines.flow.Flow
 import little.goose.note.event.NoteScreenEvent
+import little.goose.note.logic.note.rememberNoteScreenStateHolder
 import little.goose.note.ui.note.NoteScreen
 import little.goose.note.ui.note.NoteScreenIntent
 import little.goose.note.ui.note.NoteScreenState
-import org.koin.core.parameter.parametersOf
 
-data class NoteScreen(val noteId: Long) : Screen {
+data class NoteScreen(val noteId: Long, val title: String) : Screen {
 
     @Composable
     override fun Content() {
         val navigator = LocalNavigator.currentOrThrow
-        val screenModel = getScreenModel<NoteScreenModel> { parametersOf(noteId) }
-        val screenState by screenModel.noteScreenStateHolder.noteScreenState.collectAsState()
+        val (state, event, action) = rememberNoteScreenStateHolder(noteId, title)
         NoteScreenRoute(
-            event = screenModel.noteScreenStateHolder.event,
-            screenState = screenState,
+            event = event,
+            screenState = state,
             onBack = navigator::pop,
-            action = screenModel.noteScreenStateHolder.action
+            action = action
         )
     }
 

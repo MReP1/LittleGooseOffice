@@ -25,7 +25,7 @@ import androidx.compose.ui.unit.dp
 fun NoteColumn(
     modifier: Modifier = Modifier,
     state: NoteColumnState,
-    onNoteClick: (Long) -> Unit,
+    onNoteClick: (Long, String) -> Unit,
     onSelectNote: (item: Long, selected: Boolean) -> Unit
 ) {
     LazyColumn(
@@ -62,7 +62,7 @@ fun NoteItem(
     isMultiSelecting: Boolean,
     onNoteSelect: (Long, Boolean) -> Unit,
     isSelected: Boolean,
-    onNoteClick: (Long) -> Unit
+    onNoteClick: (Long, String) -> Unit
 ) {
     Surface(
         modifier = modifier,
@@ -78,7 +78,7 @@ fun NoteItem(
                         if (isMultiSelecting) {
                             onNoteSelect(noteId, !isSelected)
                         } else {
-                            onNoteClick(noteId)
+                            onNoteClick(noteId, title)
                         }
                     },
                     onLongClick = {

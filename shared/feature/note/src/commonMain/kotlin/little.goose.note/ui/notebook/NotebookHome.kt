@@ -17,7 +17,7 @@ import little.goose.shared.ui.surface.PullSurface
 fun NotebookHome(
     modifier: Modifier = Modifier,
     noteColumnState: NoteColumnState,
-    onNavigateToNote: (noteId: Long) -> Unit,
+    onNavigateToNote: (noteId: Long, title: String) -> Unit,
     onNavigateToSearch: () -> Unit,
     action: (NotebookIntent) -> Unit
 ) {

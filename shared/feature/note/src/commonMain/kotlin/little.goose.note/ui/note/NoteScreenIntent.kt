@@ -2,9 +2,6 @@ package little.goose.note.ui.note
 
 import little.goose.note.util.FormatType
 
-enum class NoteScreenMode {
-    Preview, Edit
-}
 
 sealed class NoteScreenIntent {
 

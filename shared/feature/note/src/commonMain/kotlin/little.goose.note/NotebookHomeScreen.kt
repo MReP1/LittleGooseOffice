@@ -43,7 +43,7 @@ object NotebookHomeScreen : Screen {
         val navigator = LocalNavigator.currentOrThrow
         NotebookHomeRoute(
             modifier = Modifier.fillMaxSize(),
-            onNavigateToNote = { navigator.push(NoteScreen(it)) },
+            onNavigateToNote = { id, title -> navigator.push(NoteScreen(id, title)) },
             onNavigateToSearch = { navigator.push(SearchNoteScreen) }
         )
     }
@@ -53,7 +53,7 @@ object NotebookHomeScreen : Screen {
 @Composable
 fun NotebookHomeRoute(
     modifier: Modifier,
-    onNavigateToNote: (Long) -> Unit,
+    onNavigateToNote: (Long, String) -> Unit,
     onNavigateToSearch: () -> Unit
 ) {
     val (state, event, action) = rememberNotebookHomeStateHolder()
@@ -79,7 +79,7 @@ private fun NotebookHomeScreen(
     snackbarHostState: SnackbarHostState,
     state: NoteColumnState,
     action: (NotebookIntent) -> Unit,
-    onNavigateToNote: (Long) -> Unit,
+    onNavigateToNote: (Long, String) -> Unit,
     onNavigateToSearch: () -> Unit
 ) {
     Scaffold(
@@ -128,7 +128,7 @@ private fun NotebookHomeScreen(
                             action(NotebookIntent.DeleteMultiSelectingNotes)
                         })
                     } else {
-                        onNavigateToNote(-1)
+                        onNavigateToNote(-1, "")
                     }
                 },
                 bottomSubButtonContent = {

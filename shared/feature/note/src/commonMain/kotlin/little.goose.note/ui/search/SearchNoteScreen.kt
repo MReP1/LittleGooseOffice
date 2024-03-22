@@ -37,7 +37,7 @@ object SearchNoteScreen : Screen {
         val navigator = LocalNavigator.currentOrThrow
         SearchNoteRoute(
             modifier = Modifier.fillMaxSize(),
-            onNavigateToNote = { navigator.push(NoteScreen(it)) },
+            onNavigateToNote = { id, title -> navigator.push(NoteScreen(id, title)) },
             onBack = navigator::pop
         )
     }
@@ -47,7 +47,7 @@ object SearchNoteScreen : Screen {
 @Composable
 fun SearchNoteRoute(
     modifier: Modifier = Modifier,
-    onNavigateToNote: (Long) -> Unit,
+    onNavigateToNote: (Long, String) -> Unit,
     onBack: () -> Unit
 ) {
     val (state, event, action) = rememberSearchNoteStateHolder()
@@ -67,7 +67,7 @@ private fun SearchNoteScreen(
     state: SearchNoteState,
     event: Flow<SearchNoteEvent>,
     action: (SearchNoteIntent) -> Unit,
-    onNavigateToNote: (Long) -> Unit,
+    onNavigateToNote: (Long, String) -> Unit,
     onBack: () -> Unit
 ) {
     var keyword by rememberSaveable { mutableStateOf("") }

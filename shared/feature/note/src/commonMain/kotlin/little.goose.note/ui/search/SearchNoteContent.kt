@@ -26,12 +26,11 @@ import little.goose.shared.ui.button.MovableActionButtonState
 import little.goose.shared.ui.dialog.DeleteDialog
 import little.goose.shared.ui.dialog.DeleteDialogState
 
-@OptIn(ExperimentalLayoutApi::class)
 @Composable
 internal fun SearchNoteContent(
     modifier: Modifier = Modifier,
     noteColumnState: NoteColumnState,
-    onNavigateToNote: (Long) -> Unit,
+    onNavigateToNote: (Long, String) -> Unit,
     action: (NotebookIntent) -> Unit
 ) {
     if (noteColumnState.noteItemStateList.isNotEmpty()) {
