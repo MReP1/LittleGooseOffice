@@ -12,6 +12,7 @@ import little.goose.data.note.domain.GetNoteWithContentFlowWithNoteIdUseCase
 import little.goose.data.note.domain.InsertOrReplaceNoteContentBlockUseCase
 import little.goose.data.note.domain.InsertOrReplaceNoteContentBlocksUseCase
 import little.goose.data.note.domain.InsertOrReplaceNoteUseCase
+import little.goose.data.note.domain.GetNoteWithContentResultByKeywordFlowUseCase
 import org.koin.core.module.dsl.factoryOf
 import org.koin.dsl.module
 
@@ -38,6 +39,8 @@ val noteUseCaseModule = module {
     factoryOf(::DeleteNoteAndItsBlocksListUseCase)
 
     factoryOf(::GetNoteWithContentByKeywordFlowUseCase)
+
+    factoryOf(::GetNoteWithContentResultByKeywordFlowUseCase)
 
     factoryOf(::DeleteNoteIdListFlowUseCase)
 

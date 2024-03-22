@@ -1,48 +1,40 @@
 package little.goose.note.ui.search
 
+import LocalDataResult
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.produceState
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.launchIn
-import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
+import little.goose.data.note.bean.NoteWithContent
 import little.goose.data.note.domain.DeleteNoteAndItsBlocksListUseCase
 import little.goose.data.note.domain.DeleteNoteIdListFlowUseCase
-import little.goose.data.note.domain.GetNoteWithContentByKeywordFlowUseCase
+import little.goose.data.note.domain.GetNoteWithContentResultByKeywordFlowUseCase
 import little.goose.note.ui.notebook.NoteColumnState
 import little.goose.note.ui.notebook.NoteItemState
 import little.goose.note.ui.notebook.NotebookIntent
 import little.goose.shared.ui.architecture.MviHolder
-import little.goose.shared.ui.architecture.autoMutableStateFlowSaver
 import org.koin.compose.koinInject
 
 @Composable
-fun rememberSearchNoteStateHolder()
-        : MviHolder<SearchNoteScreenState, SearchNoteEvent, SearchNoteIntent> {
+fun rememberSearchNoteStateHolder(
+    getNoteWithContentResultByKeywordFlowUseCase: GetNoteWithContentResultByKeywordFlowUseCase =
+        koinInject(),
+    deleteNoteAndItsBlocksListUseCase: DeleteNoteAndItsBlocksListUseCase = koinInject(),
+    deleteNoteIdListFlowUseCase: DeleteNoteIdListFlowUseCase = koinInject()
+): MviHolder<SearchNoteScreenState, SearchNoteEvent, SearchNoteIntent> {
 
     val coroutineScope = rememberCoroutineScope()
 
-    val getNoteWithContentByKeywordFlowUseCase: GetNoteWithContentByKeywordFlowUseCase =
-        koinInject()
-
-    val deleteNoteAndItsBlocksListUseCase: DeleteNoteAndItsBlocksListUseCase =
-        koinInject()
-
-    val deleteNoteIdListFlowUseCase: DeleteNoteIdListFlowUseCase = koinInject()
-
-    val event = remember {
-        MutableSharedFlow<SearchNoteEvent>()
-    }
+    val event = remember { MutableSharedFlow<SearchNoteEvent>() }
 
     LaunchedEffect(deleteNoteIdListFlowUseCase, event) {
         deleteNoteIdListFlowUseCase().collect {
@@ -50,37 +42,38 @@ fun rememberSearchNoteStateHolder()
         }
     }
 
-    val multiSelectedNotes = rememberSaveable(saver = autoMutableStateFlowSaver()) {
-        MutableStateFlow<Set<Long>>(emptySet())
-    }
-
-    var state by rememberSaveable(stateSaver = SearchNoteState.saver) {
-        mutableStateOf(SearchNoteState.Empty)
+    var multiSelectedNotes by rememberSaveable {
+        mutableStateOf<Set<Long>>(emptySet())
     }
 
     var keyword by rememberSaveable {
         mutableStateOf("")
     }
 
-    val screenState = remember(keyword, state) {
-        SearchNoteScreenState(keyword, state)
+    val noteWithContentsResult by produceState<LocalDataResult<List<NoteWithContent>>>(
+        LocalDataResult.Data(emptyList()), keyword
+    ) {
+        if (keyword.isBlank()) {
+            value = LocalDataResult.Data(emptyList())
+        } else {
+            getNoteWithContentResultByKeywordFlowUseCase(keyword).collect { value = it }
+        }
     }
 
-    LaunchedEffect(keyword) {
-        if (keyword.isBlank()) {
-            state = SearchNoteState.Empty
-        } else {
-            state = SearchNoteState.Loading
-            combine(
-                getNoteWithContentByKeywordFlowUseCase(keyword),
-                multiSelectedNotes
-            ) { nwcList, multiSelectedNotes ->
-                state = if (nwcList.isEmpty()) {
+    val state = rememberSaveable(
+        noteWithContentsResult, multiSelectedNotes,
+        saver = SearchNoteState.saver
+    ) {
+        when (val result = noteWithContentsResult) {
+            is LocalDataResult.Failure -> SearchNoteState.Empty
+            LocalDataResult.Loading -> SearchNoteState.Loading
+            is LocalDataResult.Data -> {
+                if (result.data.isEmpty()) {
                     SearchNoteState.Empty
                 } else {
                     SearchNoteState.Success(
                         NoteColumnState(
-                            noteItemStateList = nwcList.map { nwc ->
+                            noteItemStateList = result.data.map { nwc ->
                                 NoteItemState(
                                     id = nwc.note.id!!,
                                     title = nwc.note.title,
@@ -92,12 +85,12 @@ fun rememberSearchNoteStateHolder()
                         )
                     )
                 }
-            }.launchIn(this)
+            }
         }
     }
 
-    val cancelNotesMultiSelecting = remember {
-        fun() { multiSelectedNotes.value = emptySet() }
+    val screenState = remember(keyword, state) {
+        SearchNoteScreenState(keyword, state)
     }
 
     val mutex = remember { Mutex() }
@@ -107,22 +100,25 @@ fun rememberSearchNoteStateHolder()
             when (intent) {
                 is SearchNoteIntent.NotebookIntent -> {
                     when (val notebookIntent = intent.intent) {
-                        NotebookIntent.CancelMultiSelecting -> cancelNotesMultiSelecting()
+                        NotebookIntent.CancelMultiSelecting -> {
+                            multiSelectedNotes = emptySet()
+                        }
+
                         is NotebookIntent.DeleteMultiSelectingNotes -> coroutineScope.launch {
                             mutex.withLock {
-                                deleteNoteAndItsBlocksListUseCase(multiSelectedNotes.value.toList())
-                                cancelNotesMultiSelecting()
+                                deleteNoteAndItsBlocksListUseCase(multiSelectedNotes.toList())
+                                multiSelectedNotes = emptySet()
                             }
                         }
 
                         NotebookIntent.SelectAllNotes -> {
                             (state as? SearchNoteState.Success)
                                 ?.data?.noteItemStateList?.map { it.id }?.toSet()
-                                ?.let(multiSelectedNotes::value::set)
+                                ?.let { multiSelectedNotes = it }
                         }
 
-                        is NotebookIntent.SelectNote -> multiSelectedNotes.update {
-                            it.toMutableSet().apply {
+                        is NotebookIntent.SelectNote -> {
+                            multiSelectedNotes = multiSelectedNotes.toMutableSet().apply {
                                 if (notebookIntent.selected) {
                                     add(notebookIntent.noteId)
                                 } else {

@@ -31,6 +31,7 @@ kotlin {
             compileOnly(libs.koin.core)
             implementation(libs.sqldelight.coroutines.extensions)
             implementation(project(":shared:common"))
+            api(project(":shared:data:database"))
         }
         androidMain.dependencies {
             implementation(libs.sqldelight.android.driver)
