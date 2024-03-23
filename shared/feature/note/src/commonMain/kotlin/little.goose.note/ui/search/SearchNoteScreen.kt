@@ -46,11 +46,12 @@ fun SearchNoteRoute(
     onNavigateToNote: (Long) -> Unit,
     onBack: () -> Unit
 ) {
-    val (state, event, action) = rememberSearchNoteStateHolder()
+    val snackbarHostState = remember { SnackbarHostState() }
+    val (state, action) = rememberSearchNoteStateHolder(snackbarHostState)
     SearchNoteScreen(
         modifier = modifier,
         screenState = state,
-        event = event,
+        snackbarHostState = snackbarHostState,
         onNavigateToNote = onNavigateToNote,
         action = action,
         onBack = onBack
@@ -61,24 +62,11 @@ fun SearchNoteRoute(
 private fun SearchNoteScreen(
     modifier: Modifier = Modifier,
     screenState: SearchNoteScreenState,
-    event: Flow<SearchNoteEvent>,
+    snackbarHostState: SnackbarHostState,
     action: (SearchNoteIntent) -> Unit,
     onNavigateToNote: (Long) -> Unit,
     onBack: () -> Unit
 ) {
-    val snackbarHostState = remember { SnackbarHostState() }
-
-    LaunchedEffect(Unit) {
-        event.collectLatest { event ->
-            when (event) {
-                SearchNoteEvent.DeleteNotes -> {
-                    snackbarHostState.showSnackbar(
-                        message = getString(GooseRes.string.deleted)
-                    )
-                }
-            }
-        }
-    }
 
     SearchScreen(
         modifier = modifier,
