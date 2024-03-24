@@ -30,8 +30,8 @@ import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.mikepenz.markdown.compose.Markdown
-import com.mikepenz.markdown.model.markdownColor
-import com.mikepenz.markdown.model.markdownTypography
+import com.mikepenz.markdown.m3.markdownColor
+import com.mikepenz.markdown.m3.markdownTypography
 
 @Stable
 sealed class NoteContentState {

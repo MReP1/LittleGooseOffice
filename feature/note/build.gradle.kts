@@ -18,9 +18,6 @@ dependencies {
     implementation(project(":core:design-system"))
     implementation(project(":core:common"))
 
-    // Markdown note
-    implementation(libs.compose.markdown.android)
-
     implementation(libs.androidx.compose.navigation)
     implementation(libs.androidx.hilt.navigation.compose)
     implementation(libs.androidx.lifecycle.runtime.compose)

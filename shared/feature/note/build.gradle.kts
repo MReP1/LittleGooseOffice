@@ -22,6 +22,7 @@ kotlin {
         commonMain.dependencies {
             compileOnly(libs.koin.core)
             implementation(libs.compose.markdown)
+            implementation(libs.compose.markdown.m3)
             implementation(compose.runtime)
             implementation(compose.foundation)
             implementation(compose.material3)
