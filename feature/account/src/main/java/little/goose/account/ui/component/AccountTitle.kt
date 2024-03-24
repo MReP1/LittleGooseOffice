@@ -14,7 +14,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.DonutSmall
-import androidx.compose.material3.Divider
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -158,7 +158,7 @@ fun AccountTitle(
                                 textMeasurer = textMeasurer
                             )
                         }
-                        Divider(
+                        HorizontalDivider(
                             modifier = Modifier.padding(start = 8.dp, end = 16.dp),
                             color = MaterialTheme.colorScheme.surfaceVariant
                         )
