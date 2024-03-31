@@ -56,7 +56,7 @@ fun TextFieldStateGetter(
                             ))
                             block1Content
                         } else charSequence
-                    }.debounce(0.8.seconds).collect { textFieldCharSequence ->
+                    }.debounce(0.1.seconds).collect { textFieldCharSequence ->
                         getNoteWithContent()?.content?.find { it.id == blockId }?.let { block ->
                             insertOrReplaceNoteContentBlock(
                                 block.copy(content = textFieldCharSequence.toString())
