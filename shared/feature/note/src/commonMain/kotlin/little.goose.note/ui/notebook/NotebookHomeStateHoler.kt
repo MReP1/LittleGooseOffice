@@ -29,7 +29,7 @@ fun rememberNotebookHomeStateHolder(
 
     val coroutineScope = rememberCoroutineScope()
 
-    var noteWithContents: List<NoteItemState> by rememberSaveable {
+    var noteItems: List<NoteItem> by rememberSaveable {
         mutableStateOf(emptyList())
     }
 
@@ -37,10 +37,19 @@ fun rememberNotebookHomeStateHolder(
         mutableStateOf<Set<Long>>(emptySet())
     }
 
+    val noteItemStates = remember(noteItems, multiSelectedIds) {
+        noteItems.map { noteItem ->
+            NoteItemState(
+                noteItem.id, noteItem.title, noteItem.content,
+                multiSelectedIds.contains(noteItem.id)
+            )
+        }
+    }
+
     LaunchedEffect(getNoteWithContentFlowUseCase) {
         withContext(Dispatchers.Default) {
             getNoteWithContentFlowUseCase().collectLatest {
-                noteWithContents = mapToNoteItemStateList(it, multiSelectedIds)
+                noteItems = mapToNoteItemList(it)
             }
         }
     }
@@ -53,8 +62,8 @@ fun rememberNotebookHomeStateHolder(
         }
     }
 
-    val noteColumnSavableState = remember(noteWithContents, multiSelectedIds.isNotEmpty()) {
-        NoteColumnState(noteWithContents, multiSelectedIds.isNotEmpty())
+    val noteColumnSavableState = remember(noteItemStates, multiSelectedIds.isNotEmpty()) {
+        NoteColumnState(noteItemStates, multiSelectedIds.isNotEmpty())
     }
 
     val cancelMultiSelecting = remember {
@@ -67,7 +76,7 @@ fun rememberNotebookHomeStateHolder(
                 NotebookIntent.CancelMultiSelecting -> cancelMultiSelecting()
 
                 NotebookIntent.SelectAllNotes -> {
-                    multiSelectedIds = noteWithContents.map(NoteItemState::id).toSet()
+                    multiSelectedIds = noteItems.map(NoteItem::id).toSet()
                 }
 
                 is NotebookIntent.DeleteMultiSelectingNotes -> {
@@ -91,16 +100,14 @@ fun rememberNotebookHomeStateHolder(
     }
 }
 
-private fun mapToNoteItemStateList(
-    noteWithContents: List<NoteWithContent>,
-    multiSelectedIds: Set<Long>
-): List<NoteItemState> = noteWithContents.mapNotNull { noteWithContent ->
+private fun mapToNoteItemList(
+    noteWithContents: List<NoteWithContent>
+): List<NoteItem> = noteWithContents.mapNotNull { noteWithContent ->
     noteWithContent.note.id?.let { noteId ->
-        NoteItemState(
-            noteId,
-            noteWithContent.note.title,
-            noteWithContent.content.firstOrNull()?.content ?: "",
-            isSelected = multiSelectedIds.contains(noteId)
+        NoteItem(
+            id = noteId,
+            title = noteWithContent.note.title,
+            content = noteWithContent.content.firstOrNull()?.content ?: "",
         )
     }
 }

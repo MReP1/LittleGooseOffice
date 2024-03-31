@@ -35,6 +35,14 @@ data class NoteColumnState(
 
 @CommonParcelize
 @Stable
+data class NoteItem(
+    val id: Long,
+    val title: String,
+    val content: String
+): CommonParcelable
+
+@CommonParcelize
+@Stable
 data class NoteItemState(
     val id: Long,
     val title: String,
