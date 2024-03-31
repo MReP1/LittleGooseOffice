@@ -49,7 +49,7 @@ fun rememberNotebookHomeStateHolder(
     LaunchedEffect(getNoteWithContentFlowUseCase) {
         withContext(Dispatchers.Default) {
             getNoteWithContentFlowUseCase().collectLatest {
-                noteItems = mapToNoteItemList(it)
+                noteItems = it.mapToNoteItemList()
             }
         }
     }
@@ -100,9 +100,7 @@ fun rememberNotebookHomeStateHolder(
     }
 }
 
-private fun mapToNoteItemList(
-    noteWithContents: List<NoteWithContent>
-): List<NoteItem> = noteWithContents.mapNotNull { noteWithContent ->
+private fun List<NoteWithContent>.mapToNoteItemList() = mapNotNull { noteWithContent ->
     noteWithContent.note.id?.let { noteId ->
         NoteItem(
             id = noteId,
