@@ -6,8 +6,11 @@ import androidx.compose.foundation.text2.input.TextFieldState
 import androidx.compose.foundation.text2.input.textAsFlow
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.NonCancellable
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.onCompletion
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import little.goose.data.note.bean.NoteContentBlock
 import little.goose.data.note.bean.NoteWithContent
@@ -27,6 +30,7 @@ fun TextFieldStateGetter(
             TextFieldState(blockContent).also { textFieldState ->
                 collectUpdateJobMap[blockId]?.cancel()
                 collectUpdateJobMap[blockId] = coroutineScope.launch {
+                    var tempCharSequence: CharSequence? = null
                     textFieldState.textAsFlow().map { charSequence ->
                         val nwc = getNoteWithContent() ?: return@map charSequence
                         val blockIndex = nwc.content.indexOfLast { it.id == blockId }
@@ -56,7 +60,17 @@ fun TextFieldStateGetter(
                             ))
                             block1Content
                         } else charSequence
-                    }.debounce(0.2.seconds).collect { textFieldCharSequence ->
+                    }.onEach {
+                        tempCharSequence = it
+                    }.debounce(0.8.seconds).onCompletion {
+                        coroutineScope.launch(NonCancellable) {
+                            getNoteWithContent()?.content?.find { it.id == blockId }?.let { block ->
+                                insertOrReplaceNoteContentBlock(
+                                    block.copy(content = tempCharSequence.toString())
+                                )
+                            }
+                        }
+                    }.collect { textFieldCharSequence ->
                         getNoteWithContent()?.content?.find { it.id == blockId }?.let { block ->
                             insertOrReplaceNoteContentBlock(
                                 block.copy(content = textFieldCharSequence.toString())
