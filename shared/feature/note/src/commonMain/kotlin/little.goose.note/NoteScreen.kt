@@ -7,7 +7,6 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import cafe.adriel.voyager.core.screen.Screen
-import cafe.adriel.voyager.koin.getScreenModel
 import cafe.adriel.voyager.navigator.LocalNavigator
 import cafe.adriel.voyager.navigator.currentOrThrow
 import kotlinx.coroutines.flow.Flow
@@ -15,6 +14,7 @@ import little.goose.note.event.NoteScreenEvent
 import little.goose.note.ui.note.NoteScreen
 import little.goose.note.ui.note.NoteScreenIntent
 import little.goose.note.ui.note.NoteScreenState
+import little.goose.shared.common.commonKoinViewModel
 import org.koin.core.parameter.parametersOf
 
 data class NoteScreen(val noteId: Long) : Screen {
@@ -22,7 +22,7 @@ data class NoteScreen(val noteId: Long) : Screen {
     @Composable
     override fun Content() {
         val navigator = LocalNavigator.currentOrThrow
-        val screenModel = getScreenModel<NoteScreenModel> { parametersOf(noteId) }
+        val screenModel = commonKoinViewModel<NoteScreenModel> { parametersOf(noteId) }
         val screenState by screenModel.noteScreenStateHolder.noteScreenState.collectAsState()
         NoteScreenRoute(
             event = screenModel.noteScreenStateHolder.event,

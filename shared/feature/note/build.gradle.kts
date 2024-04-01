@@ -38,10 +38,16 @@ kotlin {
             implementation(libs.voyager.koin)
             implementation(libs.voyager.screenModel)
             implementation(libs.voyager.transitions)
+            implementation(libs.androidx.lifecycle.viewModel)
+            implementation(libs.androidx.lifecycle.runtime)
+            implementation(libs.androidx.lifecycle.common)
         }
         androidMain.dependencies {
             implementation(libs.koin.android)
             implementation(libs.androidx.compose.ui.tool.preview)
+            implementation(libs.androidx.lifecycle.viewModel.ktx)
+            implementation(libs.androidx.lifecycle.viewModel.android)
+            implementation(libs.koin.androidx.compose)
         }
         iosMain.dependencies {
             implementation("co.touchlab:stately-common:2.0.5")

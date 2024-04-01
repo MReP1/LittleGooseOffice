@@ -1,7 +1,7 @@
 package little.goose.note
 
-import cafe.adriel.voyager.core.model.ScreenModel
-import cafe.adriel.voyager.core.model.screenModelScope
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import little.goose.data.note.domain.DeleteBlockUseCase
 import little.goose.data.note.domain.DeleteNoteAndItsBlocksUseCase
 import little.goose.data.note.domain.GetNoteWithContentFlowWithNoteIdUseCase
@@ -18,11 +18,11 @@ class NoteScreenModel(
     insertOrReplaceNote: InsertOrReplaceNoteUseCase,
     deleteNoteAndItsBlocks: DeleteNoteAndItsBlocksUseCase,
     deleteNoteContentBlockUseCase: DeleteBlockUseCase
-) : ScreenModel {
+) : ViewModel() {
 
     val noteScreenStateHolder = NoteScreenStateHolder(
         noteId,
-        screenModelScope,
+        viewModelScope,
         insertOrReplaceNoteContentBlocks,
         getNoteWithContentFlowWithNoteId,
         insertOrReplaceNoteContentBlock,
@@ -31,8 +31,8 @@ class NoteScreenModel(
         deleteNoteContentBlockUseCase
     )
 
-    override fun onDispose() {
-        super.onDispose()
+    override fun onCleared() {
+        super.onCleared()
         noteScreenStateHolder.clear()
     }
 
