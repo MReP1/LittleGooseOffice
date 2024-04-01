@@ -62,11 +62,7 @@ fun Project.configureKotlin(
                         "-opt-in=kotlinx.coroutines.ExperimentalCoroutinesApi",
                         "-opt-in=androidx.compose.animation.ExperimentalAnimationApi",
                         "-opt-in=androidx.compose.material3.ExperimentalMaterial3Api",
-                        "-opt-in=androidx.compose.foundation.ExperimentalFoundationApi",
-
-                        // Fixme Remove when bump compose compiler up to 1.5.11
-                        "-P",
-                        "plugin:androidx.compose.compiler.plugins.kotlin:suppressKotlinVersionCompatibilityCheck=true"
+                        "-opt-in=androidx.compose.foundation.ExperimentalFoundationApi"
                     )
                 )
                 // open Kotlin context feature
