@@ -19,6 +19,7 @@ import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
 import little.goose.data.note.bean.Note
@@ -67,10 +68,8 @@ class NoteScreenStateHolder(
         getNoteWithContent = noteWithContent::value,
         updateNoteWithContent = noteWithContent::value::set,
         insertOrReplaceNoteContentBlocks = insertOrReplaceNoteContentBlocks,
-        deleter = { blockId ->
-            deleteNoteContentBlockUseCase(blockId)
-            cacheHolder.clearCache(blockId)
-        }
+        deleteNoteContentBlockUseCase = deleteNoteContentBlockUseCase,
+        cacheHolder = cacheHolder
     )
 
     private val format: (

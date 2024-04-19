@@ -6,12 +6,14 @@ import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import little.goose.data.note.bean.NoteContentBlock
 import little.goose.data.note.bean.NoteWithContent
+import little.goose.data.note.domain.DeleteBlockUseCase
 
 internal fun NoteContentBlockDeleter(
     mutex: Mutex,
     getNoteWithContent: () -> NoteWithContent?,
     updateNoteWithContent: (NoteWithContent?) -> Unit,
-    deleter: suspend (id: Long) -> Unit,
+    deleteNoteContentBlockUseCase: DeleteBlockUseCase,
+    cacheHolder: NoteScreenCacheHolder,
     insertOrReplaceNoteContentBlocks: suspend (List<NoteContentBlock>) -> Unit
 ): suspend (id: Long) -> Unit {
     return { blockId ->
@@ -20,9 +22,11 @@ internal fun NoteContentBlockDeleter(
                 noteWithContent.content.find { it.id == blockId }?.let { deletingBlock ->
                     val newBlocks = buildList {
                         val movingBlocks = mutableListOf<NoteContentBlock>()
+                        var deletingIndex = -1
                         noteWithContent.content.forEachIndexed { index, block ->
                             if (block.id == blockId) {
-                                deleter(blockId)
+                                deletingIndex = index
+                                deleteNoteContentBlockUseCase(blockId)
                             } else if (index < deletingBlock.sectionIndex) {
                                 add(block)
                             } else {
@@ -32,6 +36,16 @@ internal fun NoteContentBlockDeleter(
                                 }
                             }
                         }
+                        // update
+                        if (deletingIndex != -1) {
+                            updateNoteWithContent(
+                                noteWithContent.copy(
+                                    content = noteWithContent.content.toMutableList()
+                                        .apply { removeAt(deletingIndex) }
+                                )
+                            )
+                        }
+                        cacheHolder.clearCache(blockId)
                         insertOrReplaceNoteContentBlocks(movingBlocks)
                     }
                     updateNoteWithContent(NoteWithContent(noteWithContent.note, newBlocks))
