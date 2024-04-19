@@ -36,7 +36,7 @@ internal fun NoteContentBlockDeleter(
                                 }
                             }
                         }
-                        // update
+                        // update memory data in case dirty data.
                         if (deletingIndex != -1) {
                             updateNoteWithContent(
                                 noteWithContent.copy(
