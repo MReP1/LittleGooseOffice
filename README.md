@@ -1,7 +1,5 @@
 # LittleGooseOfficial
 
-Little Goose Official repository transfer here cause some reason.
-
 This project was originally started as my graduation design in college. The code is still a bit rough, but it is my first relatively complete project. I will continue to improve and maintain this open-source project in the future.
 
 I am the product manager, designer, and developer of this project. If you have any suggestions, please feel free to submit an issue.
