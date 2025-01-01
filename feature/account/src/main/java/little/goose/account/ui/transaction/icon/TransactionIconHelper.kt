@@ -2,6 +2,7 @@ package little.goose.account.ui.transaction.icon
 
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Pets
+import androidx.compose.material.icons.rounded.Sailing
 import little.goose.account.R
 import little.goose.account.data.constants.AccountConstant.EXPENSE
 import little.goose.account.data.constants.AccountConstant.INCOME
@@ -34,7 +35,8 @@ object TransactionIconHelper {
         21 to Icon.Drawable(R.drawable.icon_blender),
         22 to Icon.Drawable(R.drawable.icon_cut),
         23 to Icon.Drawable(R.drawable.icon_red_packet),
-        24 to Icon.Vector(Icons.Rounded.Pets)
+        24 to Icon.Vector(Icons.Rounded.Pets),
+        25 to Icon.Vector(Icons.Rounded.Sailing)
     )
 
     private val iconMap = mapOf(
@@ -62,6 +64,7 @@ object TransactionIconHelper {
         22 to TransactionIcon(22, EXPENSE, "理发", 22),
         23 to TransactionIcon(23, EXPENSE, "红包", 23),
         24 to TransactionIcon(24, EXPENSE, "宠物", 24),
+        25 to TransactionIcon(25, EXPENSE, "旅游", 25)
     )
 
     val expenseIconList = iconMap.values.filter { it.type == EXPENSE }
